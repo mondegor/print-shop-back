@@ -1,9 +1,9 @@
 package mrlib
 
 import (
+    "fmt"
     "print-shop-back/pkg/mrapp"
     "print-shop-back/pkg/mrlang"
-    "fmt"
 )
 
 type (

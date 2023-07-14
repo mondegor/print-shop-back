@@ -1,14 +1,14 @@
 package main
 
 import (
+    "flag"
     "print-shop-back/config"
     "print-shop-back/internal/app"
     "print-shop-back/pkg/mrlang"
     "print-shop-back/pkg/mrlib"
-    "flag"
 )
 
-const appVersion = "v0.1.0"
+const appVersion = "v0.1.1"
 
 var configPath string
 

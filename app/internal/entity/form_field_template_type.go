@@ -1,8 +1,8 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrerr"
     "encoding/json"
+    "print-shop-back/pkg/mrerr"
 )
 
 type FormFieldTemplateType uint8

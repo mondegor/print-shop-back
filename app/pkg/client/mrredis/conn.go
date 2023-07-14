@@ -1,10 +1,10 @@
 package mrredis
 
 import (
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrerr"
     "context"
     "fmt"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrerr"
     "time"
 
     "github.com/go-redis/redis"

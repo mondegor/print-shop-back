@@ -1,8 +1,8 @@
 package mrcontext
 
 import (
-    "print-shop-back/pkg/mrapp"
     "context"
+    "print-shop-back/pkg/mrapp"
 )
 
 func LoggerNewContext(ctx context.Context, logger mrapp.Logger) context.Context {

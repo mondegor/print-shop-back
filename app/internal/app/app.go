@@ -2,6 +2,12 @@
 package app
 
 import (
+    "context"
+    "fmt"
+    "io"
+    "net/http"
+    "os"
+    "os/signal"
     "print-shop-back/config"
     "print-shop-back/internal/controller/dto"
     "print-shop-back/internal/controller/http_v1"
@@ -12,12 +18,6 @@ import (
     "print-shop-back/pkg/mrerr"
     "print-shop-back/pkg/mrhttp"
     "print-shop-back/pkg/mrlib"
-    "context"
-    "fmt"
-    "io"
-    "net/http"
-    "os"
-    "os/signal"
     "syscall"
     "time"
 

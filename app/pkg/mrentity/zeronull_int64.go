@@ -1,8 +1,8 @@
 package mrentity
 
 import (
-    "print-shop-back/pkg/mrerr"
     "database/sql/driver"
+    "print-shop-back/pkg/mrerr"
 )
 
 type ZeronullInt64 int64

@@ -1,10 +1,10 @@
 package mrcontext
 
 import (
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrlang"
     "context"
     "net/http"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrlang"
 )
 
 func AcceptLanguageFromRequest(r *http.Request) []mrlang.LangCode {

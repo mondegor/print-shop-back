@@ -1,9 +1,9 @@
 package mrhttp
 
 import (
+    "net/http"
     "print-shop-back/pkg/mrapp"
     "print-shop-back/pkg/mrcontext"
-    "net/http"
 )
 
 func (rt *Router) MiddlewareFirst() mrapp.HttpMiddleware {
