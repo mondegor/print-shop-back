@@ -1,6 +1,6 @@
 package mrcontext
 
-import "calc-user-data-back-adm/pkg/mrerr"
+import "print-shop-back/pkg/mrerr"
 
 var (
     ErrHttpRequestPlatformValue = mrerr.NewFactory(

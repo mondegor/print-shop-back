@@ -1,6 +1,6 @@
 package dto
 
-import "calc-user-data-back-adm/pkg/mrentity"
+import "print-shop-back/pkg/mrentity"
 
 type (
     CreateCatalogBox struct {

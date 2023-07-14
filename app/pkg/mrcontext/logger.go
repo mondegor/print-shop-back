@@ -1,7 +1,7 @@
 package mrcontext
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
+    "print-shop-back/pkg/mrapp"
     "context"
 )
 

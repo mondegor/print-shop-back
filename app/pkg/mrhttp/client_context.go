@@ -1,10 +1,10 @@
 package mrhttp
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrcontext"
-    "calc-user-data-back-adm/pkg/mrerr"
-    "calc-user-data-back-adm/pkg/mrlib"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrcontext"
+    "print-shop-back/pkg/mrerr"
+    "print-shop-back/pkg/mrlib"
     "context"
     "encoding/json"
     "fmt"

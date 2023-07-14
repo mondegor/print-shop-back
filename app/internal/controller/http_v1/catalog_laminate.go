@@ -1,12 +1,12 @@
 package http_v1
 
 import (
-    "calc-user-data-back-adm/internal/controller/dto"
-    "calc-user-data-back-adm/internal/entity"
-    "calc-user-data-back-adm/internal/usecase"
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrentity"
-    "calc-user-data-back-adm/pkg/mrlib"
+    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/entity"
+    "print-shop-back/internal/usecase"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrentity"
+    "print-shop-back/pkg/mrlib"
     "fmt"
     "net/http"
 )

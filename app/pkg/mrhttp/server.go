@@ -1,7 +1,7 @@
 package mrhttp
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
+    "print-shop-back/pkg/mrapp"
     "context"
     "fmt"
     "net/http"

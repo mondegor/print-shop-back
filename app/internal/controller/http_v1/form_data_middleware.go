@@ -1,9 +1,9 @@
 package http_v1
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrcontext"
-    "calc-user-data-back-adm/pkg/mrentity"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrcontext"
+    "print-shop-back/pkg/mrentity"
 )
 
 const ctxParentIdKey = mrcontext.CtxParentIdKey

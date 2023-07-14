@@ -1,7 +1,7 @@
 package mrpostgres
 
 import (
-    "calc-user-data-back-adm/pkg/mrcontext"
+    "print-shop-back/pkg/mrcontext"
     "context"
     "strings"
 )

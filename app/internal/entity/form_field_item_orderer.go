@@ -1,6 +1,6 @@
 package entity
 
-import "calc-user-data-back-adm/pkg/mrentity"
+import "print-shop-back/pkg/mrentity"
 
 type Node struct {
     Id mrentity.KeyInt32

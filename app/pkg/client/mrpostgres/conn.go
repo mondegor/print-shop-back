@@ -1,7 +1,7 @@
 package mrpostgres
 
 import (
-    "calc-user-data-back-adm/pkg/mrerr"
+    "print-shop-back/pkg/mrerr"
     "context"
     "fmt"
     "time"

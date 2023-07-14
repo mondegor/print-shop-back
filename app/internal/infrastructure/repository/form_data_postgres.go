@@ -1,10 +1,10 @@
 package repository
 
 import (
-    "calc-user-data-back-adm/internal/entity"
-    "calc-user-data-back-adm/pkg/client/mrpostgres"
-    "calc-user-data-back-adm/pkg/mrentity"
-    "calc-user-data-back-adm/pkg/mrerr"
+    "print-shop-back/internal/entity"
+    "print-shop-back/pkg/client/mrpostgres"
+    "print-shop-back/pkg/mrentity"
+    "print-shop-back/pkg/mrerr"
     "context"
 
     "github.com/Masterminds/squirrel"

@@ -1,6 +1,6 @@
 package mrapp
 
-import "calc-user-data-back-adm/pkg/mrlang"
+import "print-shop-back/pkg/mrlang"
 
 type Locale interface {
     GetLang() mrlang.LangCode

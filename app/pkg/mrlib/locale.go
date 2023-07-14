@@ -1,8 +1,8 @@
 package mrlib
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrlang"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrlang"
     "fmt"
 
     "github.com/ilyakaznacheev/cleanenv"

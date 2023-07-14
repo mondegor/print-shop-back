@@ -1,7 +1,7 @@
 package mrlib
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
+    "print-shop-back/pkg/mrapp"
     "encoding/json"
     "io"
     "os"

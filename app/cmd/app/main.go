@@ -1,10 +1,10 @@
 package main
 
 import (
-    "calc-user-data-back-adm/config"
-    "calc-user-data-back-adm/internal/app"
-    "calc-user-data-back-adm/pkg/mrlang"
-    "calc-user-data-back-adm/pkg/mrlib"
+    "print-shop-back/config"
+    "print-shop-back/internal/app"
+    "print-shop-back/pkg/mrlang"
+    "print-shop-back/pkg/mrlib"
     "flag"
 )
 

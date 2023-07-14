@@ -1,9 +1,9 @@
 package http_v1
 
 import (
-    "calc-user-data-back-adm/internal/entity"
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrcontext"
+    "print-shop-back/internal/entity"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrcontext"
 )
 
 func parseFilterDetailing(c mrapp.ClientData, detailing *[]entity.ItemDetailing) {

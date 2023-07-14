@@ -1,7 +1,7 @@
 package mrlib
 
 import (
-    "calc-user-data-back-adm/pkg/mrerr"
+    "print-shop-back/pkg/mrerr"
     "fmt"
 )
 

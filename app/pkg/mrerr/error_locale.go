@@ -1,8 +1,8 @@
 package mrerr
 
 import (
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrlang"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrlang"
 )
 
 func (e *AppError) GetUserMessage(locale mrapp.Locale) mrlang.ErrorMessage {

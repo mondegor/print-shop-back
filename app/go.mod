@@ -1,4 +1,4 @@
-module calc-user-data-back-adm
+module print-shop-back
 
 go 1.20
 

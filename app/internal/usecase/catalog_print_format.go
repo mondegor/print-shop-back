@@ -1,11 +1,11 @@
 package usecase
 
 import (
-    "calc-user-data-back-adm/internal/entity"
-    "calc-user-data-back-adm/pkg/mrapp"
-    "calc-user-data-back-adm/pkg/mrcontext"
-    "calc-user-data-back-adm/pkg/mrentity"
-    "calc-user-data-back-adm/pkg/mrerr"
+    "print-shop-back/internal/entity"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrcontext"
+    "print-shop-back/pkg/mrentity"
+    "print-shop-back/pkg/mrerr"
     "context"
 )
 

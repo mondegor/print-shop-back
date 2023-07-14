@@ -1,7 +1,7 @@
 package dto
 
 import (
-    "calc-user-data-back-adm/pkg/mrentity"
+    "print-shop-back/pkg/mrentity"
 )
 
 type (
