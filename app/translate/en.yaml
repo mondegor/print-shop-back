@@ -1,0 +1,53 @@
+---
+messages:
+  msgFormFieldTemplateSuccessCreated: Шаблон поля формы был успешно добавлен (eng)
+
+errors:
+  errMessageToUser:
+    reason: Internal server error (en)
+    details:
+      - Contact support in telegram (en)
+
+  errSystem:
+    reason: System server error (en)
+    details:
+      - Contact support in telegram (en)
+
+  errInternal:
+    reason: Internal server error (en)
+    details:
+      - Contact support in telegram (en)
+
+  errHttpRequestParseData:
+    reason: Request body is not valid (en)
+    details:
+      - Check fields REST API endpoint (en)
+
+  errAuthUserEmailAlreadyExists:
+    reason: Email '{{ .email }}' is already exists
+    details:
+      - Contact support in telegram1 (en)
+      - Contact support in telegram2 (en)
+
+  errAuthUserEmailAlreadyExists2:
+    reason: Email '{{ .email }}' is already exists2
+    details:
+      - XXXXXXXXX1
+      - XXXXXXXXX2
+      - XXXXXXXXX3
+
+  errAuthUserEmailAlreadyExists3:
+    reason: Email '{{ .email }}' is already exists3
+    details: [ MMMMMMMMM ]
+
+  errAuthUserEmailAlreadyExistsWithoutDetails:
+    reason: Email '{{ .email }}' is already exists4
+
+  errServiceEntityTemporarilyUnavailable:
+    reason: Service Resource Temporarily Unavailable
+
+  errValidationEmail:
+    reason: Value of email is incorrect
+
+  errValidationMax:
+    reason: Значение поля не может быть более 32 символов (end)

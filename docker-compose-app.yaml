@@ -1,0 +1,6 @@
+version: "3.9"
+
+services:
+  web-app: # ${GO_DOCKER_SERVICE}
+    depends_on:
+      - db-postgres # ${POSTGRES_DOCKER_SERVICE}

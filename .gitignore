@@ -1,0 +1,9 @@
+# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
+.idea
+.vscode
+
+/.env
+
+/app/bin
+/app/logs

@@ -1,0 +1,446 @@
+---
+openapi: 3.0.3
+info:
+  version: 0.1.0
+  title: API управления полями пользовательских форм
+  description: REST API управления полями используемые в пользовательских формах в формате OpenAPI v3
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Nazarov Andrey
+servers:
+  - url: http://localhost:8090
+    description: Dev Server
+tags:
+  - name: Form Field Item
+    description: Form Field Item
+
+paths:
+  /v1/forms/{formId}/fields:
+    get:
+      summary: Метод получения списка полей формы
+      description: Метод предназначен для получения списка всех полей формы, сохраненных в БД
+      operationId: getFormFields
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+
+      responses:
+        "200":
+          description: Получен список полей формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/App.Model.FormFieldItem"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    post:
+      summary: Метод добавления нового поля формы
+      description: Метод предназначен для создания информации о новом поле формы в БД
+      operationId: createFormFieldItem
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Model.FormFieldItem"
+
+      responses:
+        "201":
+          description: Информация о поле формы успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.CreateEntity"
+        "400":
+          # Указанное название поля формы уже существует
+          # Название поля формы не может быть более 32 символов
+          # Название поля формы должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+  /v1/forms/{formId}/fields/{fieldId}:
+    get:
+      summary: Метод получения поля формы по его идентификатору
+      description: Метод предназначен для получения информации о поле формы из БД
+      operationId: getFormFieldItem
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+        - $ref: "#/components/parameters/App.Request.Path.fieldId"
+
+      responses:
+        "204":
+          description: Получена информация о поле формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Model.FormFieldItem"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    put:
+      summary: Метод сохранения поля формы
+      description: Метод предназначен для сохранения информации о поле формы в БД
+      operationId: storeFormFieldItem
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+        - $ref: "#/components/parameters/App.Request.Path.fieldId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Model.FormFieldItem"
+
+      responses:
+        "204":
+          description: Информация о поле формы успешно сохранена
+        "400":
+          # Указанное название переменной поля формы уже существует
+          # Название переменной поля формы не может быть более 32 символов
+          # Название переменной поля формы должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    delete:
+      summary: Метод удаления поля формы
+      description: Метод предназначен для удаления информации о поле формы в БД
+      operationId: removeFormFieldItem
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+        - $ref: "#/components/parameters/App.Request.Path.fieldId"
+
+      responses:
+        "204":
+          description: Информация о поле формы успешно удалена
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+  /v1/forms/{formId}/fields/{fieldId}/move:
+    patch:
+      summary: Метод перемещения поля формы
+      description: Метод предназначен для изменения позиции поля формы в списке полей в БД
+      operationId: moveFormFieldItem
+      tags:
+        - Form Field Item
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formId"
+        - $ref: "#/components/parameters/App.Request.Path.fieldId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.MoveEntity"
+
+      responses:
+        "204":
+          description: Статус поля формы успешно изменён
+        "400":
+          # Поле, после которого необходимо вставить указанное поле не найдено
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+components:
+
+  parameters:
+    App.Request.Header.acceptLanguage:
+      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+      name: Accept-Language
+      in: header
+      schema:
+        type: string
+      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
+
+    App.Request.Header.correlationId:
+      name: CorrelationID
+      in: header
+      schema:
+        type: string
+        format: uuid
+        minLength: 36
+        maxLength: 36
+      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+
+    App.Request.Path.formId:
+      name: formId
+      in: path
+      required: true
+      description: Идентификатор формы
+      schema:
+        type: integer
+      example: 1000
+
+    App.Request.Path.fieldId:
+      name: fieldId
+      in: path
+      required: true
+      description: Идентификатор поля формы
+      schema:
+        type: integer
+      example: 1000
+
+  schemas:
+    App.Response.Model.Error: # RFC 7807 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - detail
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Entity not found"
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Entity [User] with id = [123456] not found. You MUST use PUT to add entity instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.Response.Model.ErrorAttribute:
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым. Указано недопустимое значение атрибута"
+
+    App.Response.Model.CreateEntity:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданного ресурса
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: "Ресурс был успешно создан"
+
+    App.Request.Model.MoveEntity:
+      type: object
+      required:
+        - afterId
+      properties:
+        afterId:
+          description: Идентификатор поля формы, после которого необходимо вставить указанное поле формы
+          type: number
+          example: 11
+
+    App.Model.FormFieldItem:
+      type: object
+      description: |-
+        Шаблон пользовательского компонента \
+        Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+      properties:
+        id: # get
+          type: integer
+          example: 1000
+        version: # get, store, changeStatus, remove
+          description: Текущая версия записи
+          type: number
+          example: 11
+        createdAt: # get
+          description: Дата и время сохранения записи
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        paramName: # get, create, store
+          description: Уникальное имя, которое задаётся при создании шаблона
+          type: string
+          # pattern: [a-zA-Z][a-zA-Z0-9]+
+          minLength: 4
+          maxLength: 32
+          example: "ProcessDevelopment"
+        caption: # get, create, store
+          type: string
+          maxLength: 128
+          example: "Процесс разработки"
+        fieldType: # get
+          description: |-
+            Тип шаблона:
+            - GROUP - объект поле "группа" (пользовательский компонент);
+            - FIELDS - объект список полей;
+          type: string
+          enum:
+            - GROUP
+            - FIELDS
+          example: "GROUP"
+        fieldDetailing: # get
+          description: |-
+            Детализация данных, используемая шаблоном:
+            - NORMAL - пользовательская;
+            - EXTENDED - расширенная (для менеджера);
+          type: string
+          enum:
+            - NORMAL
+            - EXTENDED
+          example: "NORMAL"
+        fieldRequired: # get, create, store
+          description: Обязательность заполнения поля
+          type: boolean
+          example: true
+        fieldBody: # get
+          description: Json объект шаблона соответсвущего спецификации
+          type: string
+          maxLength: 65536 # 64Kb
+          example: "{\"json\": \"object\"}"
+
+  responses:
+    App.Response.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

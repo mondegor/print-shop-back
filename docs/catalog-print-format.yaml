@@ -1,0 +1,412 @@
+---
+openapi: 3.0.3
+info:
+  version: 0.1.0
+  title: API управления картотекой печатных форматов
+  description: REST API управления картотекой печатных форматов в формате OpenAPI v3
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Nazarov Andrey
+servers:
+  - url: http://localhost:8090
+    description: Dev Server
+tags:
+  - name: CatalogPrintFormat
+    description: Catalog Box
+
+paths:
+  /v1/catalog-print-formats:
+    get:
+      summary: Метод получения списка печатных форматов
+      description: Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
+      operationId: getCatalogPrintFormats
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+
+      responses:
+        "200":
+          description: Получен список печатных форматов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/App.Model.CatalogPrintFormat"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    post:
+      summary: Метод добавления нового печатного формата
+      description: Метод предназначен для создания информации о новом печатном формате в БД
+      operationId: createCatalogPrintFormat
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Model.CatalogPrintFormat"
+
+      responses:
+        "201":
+          description: Информация о печатном формате успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.CreateEntity"
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+  /v1/catalog-print-formats/{formatId}:
+    get:
+      summary: Метод получения печатного формата
+      description: Метод предназначен для получения информации о печатном формате из БД
+      operationId: getCatalogPrintFormat
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formatId"
+
+      responses:
+        "204":
+          description: Получена информация о печатном формате
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Model.CatalogPrintFormat"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    put:
+      summary: Метод сохранения печатного формата
+      description: Метод предназначен для сохранения информации о печатном формате в БД
+      operationId: storeCatalogPrintFormat
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formatId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Model.CatalogPrintFormat"
+
+      responses:
+        "204":
+          description: Информация о печатном формате успешно сохранена
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+    delete:
+      summary: Метод удаления печатного формата
+      description: Метод предназначен для удаления информации о печатном формате в БД
+      operationId: removeCatalogPrintFormat
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formatId"
+
+      responses:
+        "204":
+          description: Информация о печатном формате успешно удалена
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+  /v1/catalog-print-formats/{formatId}/status:
+    put:
+      summary: Метод изменения статуса печатного формата
+      description: Метод предназначен для изменения статуса печатного формата в БД
+      operationId: changeCatalogPrintFormatStatus
+      tags:
+        - CatalogPrintFormat
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Path.formatId"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeEntityStatus"
+
+      responses:
+        "204":
+          description: Статус печатного формата успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.Response.Error400"
+        "401":
+          $ref: "#/components/responses/App.Response.Error401"
+        "403":
+          $ref: "#/components/responses/App.Response.Error403"
+        "404":
+          $ref: "#/components/responses/App.Response.Error404"
+        "500":
+          $ref: "#/components/responses/App.Response.Error5XX"
+
+components:
+
+  parameters:
+    App.Request.Header.acceptLanguage:
+      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+      name: Accept-Language
+      in: header
+      schema:
+        type: string
+      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
+
+    App.Request.Header.correlationId:
+      name: CorrelationID
+      in: header
+      schema:
+        type: string
+        format: uuid
+        minLength: 36
+        maxLength: 36
+      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+
+    App.Request.Path.formatId:
+      name: formatId
+      in: path
+      required: true
+      description: Идентификатор печатного формата
+      schema:
+        type: integer
+      example: 1000
+
+  schemas:
+    App.Response.Model.Error: # RFC 7807 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - detail
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Entity not found"
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Entity [User] with id = [123456] not found. You MUST use PUT to add entity instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.Response.Model.ErrorAttribute:
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым. Указано недопустимое значение атрибута"
+
+    App.Response.Model.CreateEntity:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданного ресурса
+          type: integer
+          example: 1000
+        message:
+          type: string
+          example: "Ресурс был успешно создан"
+
+    App.Request.Model.ChangeEntityStatus:
+      type: object
+      properties:
+        version:
+          description: Текущая версия ресурса
+          type: number
+          example: 11
+        status:
+          type: string
+          enum:
+            - DRAFT
+            - ENABLED
+            - DISABLED
+          example: "DRAFT"
+
+    App.Model.CatalogPrintFormat:
+      type: object
+      properties:
+        id: # get
+          type: integer
+          example: 1000
+        version: # get, store, changeStatus, remove
+          description: Текущая версия записи
+          type: number
+          example: 11
+        createdAt: # get
+          description: Дата и время сохранения записи
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        caption: # get, create, store
+          type: string
+          maxLength: 128
+          example: "Название записи"
+        length: # get, create, store
+          type: integer # Micrometer
+          maxLength: 8
+          example: 100000 # 100mm
+        width: # get, create, store
+          type: integer # Micrometer
+          maxLength: 8
+          example: 100000 # 100mm
+        status: # get, changeStatus
+          description: |-
+            Текущий статус записи:
+            - DRAFT - черновик;
+            - ENABLED - используется;
+            - DISABLED - отключён;
+          type: string
+          enum:
+            - DRAFT
+            - ENABLED
+            - DISABLED
+          example: "DRAFT"
+
+  responses:
+    App.Response.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+    App.Response.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.Error"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
