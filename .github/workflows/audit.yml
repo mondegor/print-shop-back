@@ -13,11 +13,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set workdir
+      run: cd ./app
+
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
         go-version: '1.20.3'
-      run: cd ./app
 
     - name: Go modules Cache
       id: go-cache
