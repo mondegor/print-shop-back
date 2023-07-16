@@ -17,15 +17,18 @@ const (
     formDataStoreURL = "/v1/forms/:id"
     formDataChangeStatusURL = "/v1/forms/:id/status/"
     formDataRemove = "/v1/forms/:id"
+    formDataCompileURL = "/v1/forms/:id/compile"
 )
 
 type FormData struct {
     service usecase.FormDataService
+    serviceUIFormData usecase.UIFormDataService
 }
 
-func NewFormData(service usecase.FormDataService) *FormData {
+func NewFormData(service usecase.FormDataService, serviceUIFormData usecase.UIFormDataService) *FormData {
     return &FormData{
         service: service,
+        serviceUIFormData: serviceUIFormData,
     }
 }
 
@@ -36,6 +39,7 @@ func (f *FormData) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, formDataStoreURL, f.Store())
     router.HttpHandlerFunc(http.MethodPut, formDataChangeStatusURL, f.ChangeStatus())
     router.HttpHandlerFunc(http.MethodDelete, formDataRemove, f.Remove())
+    router.HttpHandlerFunc(http.MethodPatch, formDataCompileURL, f.Compile())
 }
 
 func (f *FormData) GetList() mrapp.HttpHandlerFunc {
@@ -80,6 +84,7 @@ func (f *FormData) Create() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormData{
+            ParamName: request.ParamName,
             Caption: request.Caption,
             Detailing: request.Detailing,
         }
@@ -113,6 +118,7 @@ func (f *FormData) Store() mrapp.HttpHandlerFunc {
         item := entity.FormData{
             Id: f.getItemId(c),
             Version: request.Version,
+            ParamName: request.ParamName,
             Caption: request.Caption,
             Detailing: request.Detailing,
         }
@@ -160,6 +166,18 @@ func (f *FormData) Remove() mrapp.HttpHandlerFunc {
         }
 
         return c.SendResponseNoContent()
+    }
+}
+
+func (f *FormData) Compile() mrapp.HttpHandlerFunc {
+    return func(c mrapp.ClientData) error {
+        item, err := f.serviceUIFormData.CompileForm(c.Context(), f.getItemId(c))
+
+        if err != nil {
+            return err
+        }
+
+        return c.SendResponse(http.StatusOK, item)
     }
 }
 

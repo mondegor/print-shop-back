@@ -7,6 +7,9 @@ var (
     ErrInternalTypeAssertion = NewFactory(
         "errInternalTypeAssertion", ErrorKindInternal, "invalid type '{{ .type }}' assertion (value: {{ .value }})")
 
+    ErrInternalParseData = NewFactory(
+        "errInternalParseData", ErrorKindInternal, "data '{{ .name1 }}' parsed to {{ .name2 }} with error")
+
     ErrInternalMapValueNotFound = NewFactory(
         "errInternalMapValueNotFound", ErrorKindInternal, "'{{ .value }}' is not found in map {{ .name }}")
 

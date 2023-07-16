@@ -52,14 +52,8 @@ func (f *FormFieldItem) GetItem(ctx context.Context, id mrentity.KeyInt32, formI
 // Create
 // modifies: item{Id}
 func (f *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) error {
-    err := f.checkParamName(ctx, item)
-
-    if err != nil {
-        return err
-    }
-
     itemTemplate := entity.FormFieldTemplate{Id: item.TemplateId}
-    err = f.storageFormFieldTemplate.LoadOne(ctx, &itemTemplate)
+    err := f.storageFormFieldTemplate.LoadOne(ctx, &itemTemplate)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {
@@ -75,6 +69,12 @@ func (f *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) 
 
     if item.Caption == "" {
         item.Caption = itemTemplate.Caption
+    }
+
+    err = f.checkParamName(ctx, item)
+
+    if err != nil {
+        return err
     }
 
     err = f.storage.Insert(ctx, item)

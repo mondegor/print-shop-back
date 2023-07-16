@@ -34,8 +34,7 @@ func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFiel
             fft.field_type,
             fft.field_detailing,
             fft.field_body,
-            ff.field_required,
-            ff.order_field`).
+            ff.field_required`).
         From("public.form_fields ff").
         Join("public.form_field_templates fft ON ff.template_id = fft.template_id").
         Where(squirrel.Eq{"ff.form_id": listFilter.FormId}).
@@ -72,7 +71,6 @@ func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFiel
             &row.Detailing,
             &row.Body,
             &row.Required,
-            &row.OrderField,
         )
 
         if err != nil {
@@ -91,7 +89,7 @@ func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFiel
 
 // LoadOne
 // uses: row{Id, FormId}
-// modifies: row{TemplateId, Version, CreatedAt, ParamName, Caption, Required, OrderField}
+// modifies: row{TemplateId, Version, CreatedAt, ParamName, Caption, Required}
 func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) error {
     sql := `
         SELECT
@@ -103,8 +101,7 @@ func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) 
             fft.field_type,
             fft.field_detailing,
             fft.field_body,
-            ff.field_required,
-            ff.order_field
+            ff.field_required
         FROM
             public.form_fields ff
         JOIN
@@ -129,7 +126,6 @@ func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) 
         &row.Detailing,
         &row.Body,
         &row.Required,
-        &row.OrderField,
     )
 
     return err
@@ -164,10 +160,9 @@ func (f *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) e
              param_name,
              field_caption,
              field_required,
-             field_status,
-             order_field)
+             field_status)
         VALUES
-            ($1, $2, $3, $4, $5, $6, NULL)
+            ($1, $2, $3, $4, $5, $6)
         RETURNING field_id;`
 
     err := f.client.QueryRow(
@@ -195,7 +190,7 @@ func (f *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) e
             tag_version = tag_version + 1,
             param_name = $5,
             field_caption = $6,
-            field_required = $7,
+            field_required = $7
         WHERE field_id = $1 AND form_id = $2 AND tag_version = $3 AND field_status <> $4;`
 
     commandTag, err := f.client.Exec(

@@ -99,11 +99,13 @@ func Run(cfg *config.Config, logger mrapp.Logger, translator mrapp.Translator) {
     formFieldTemplateService := usecase.NewFormFieldTemplate(formFieldTemplateStorage, errorHelper)
     formFieldTemplateHttp := http_v1.NewFormFieldTemplate(formFieldTemplateService)
 
+    formFieldItemStorage := repository.NewFormFieldItem(postgresClient, queryBuilder)
+
     formDataStorage := repository.NewFormData(postgresClient, queryBuilder)
     formDataService := usecase.NewFormData(formDataStorage, errorHelper)
-    formDataHttp := http_v1.NewFormData(formDataService)
+    uiFormDataService := usecase.NewUIFormData(formDataStorage, formFieldItemStorage, errorHelper)
+    formDataHttp := http_v1.NewFormData(formDataService, uiFormDataService)
 
-    formFieldItemStorage := repository.NewFormFieldItem(postgresClient, queryBuilder)
     formFieldItemOrdererStorage := repository.NewFormFieldItemOrderer(postgresClient, queryBuilder)
     formFieldItemService := usecase.NewFormFieldItem(formFieldItemStorage, formFieldTemplateStorage, errorHelper)
     formFieldItemOrdererService := usecase.NewFormFieldItemOrderer(formFieldItemOrdererStorage, errorHelper)

@@ -28,6 +28,7 @@ func (f *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListF
             form_id,
             tag_version,
             datetime_created,
+            param_name,
             form_caption,
             form_detailing,
             form_status`).
@@ -62,6 +63,7 @@ func (f *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListF
             &row.Id,
             &row.Version,
             &row.CreatedAt,
+            &row.ParamName,
             &row.Caption,
             &row.Detailing,
             &row.Status,
@@ -89,6 +91,7 @@ func (f *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
         SELECT
             tag_version,
             datetime_created,
+            param_name,
             form_caption,
             form_detailing,
             form_body_compiled,
@@ -100,11 +103,30 @@ func (f *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
     return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
         &row.Version,
         &row.CreatedAt,
+        &row.ParamName,
         &row.Caption,
         &row.Detailing,
         &row.Body,
         &row.Status,
     )
+}
+
+// FetchIdByName
+// uses: row{FormId, ParamName}
+func (f *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mrentity.KeyInt32, error) {
+    sql := `
+        SELECT form_id
+        FROM
+            public.form_fields
+        WHERE param_name = $1;`
+
+    var id mrentity.KeyInt32
+
+    err := f.client.QueryRow(ctx, sql, row.ParamName).Scan(
+        &id,
+    )
+
+    return id, err
 }
 
 // FetchStatus
@@ -143,17 +165,19 @@ func (f *FormData) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
 func (f *FormData) Insert(ctx context.Context, row *entity.FormData) error {
     sql := `
         INSERT INTO public.form_data
-            (form_caption,
+            (param_name,
+             form_caption,
              form_detailing,
              form_body_compiled,
              form_status)
         VALUES
-            ($1, $2, '[]', $3)
+            ($1, $2, $3, '[]', $4)
         RETURNING form_id;`
 
     err := f.client.QueryRow(
         ctx,
         sql,
+        row.ParamName,
         row.Caption,
         row.Detailing,
         row.Status,
@@ -171,8 +195,9 @@ func (f *FormData) Update(ctx context.Context, row *entity.FormData) error {
         UPDATE public.form_data
         SET
             tag_version = tag_version + 1,
-            form_caption = $4,
-            form_detailing = $5
+            param_name = $4,
+            form_caption = $5,
+            form_detailing = $6
         WHERE form_id = $1 AND tag_version = $2 AND form_status <> $3;`
 
     commandTag, err := f.client.Exec(
@@ -181,6 +206,7 @@ func (f *FormData) Update(ctx context.Context, row *entity.FormData) error {
         row.Id,
         row.Version,
         entity.ItemStatusRemoved,
+        row.ParamName,
         row.Caption,
         row.Detailing,
     )

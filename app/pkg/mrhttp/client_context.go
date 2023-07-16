@@ -27,6 +27,12 @@ func (c *clientContext) Context() context.Context {
     return c.request.Context()
 }
 
+func (c *clientContext) WithContext(ctx context.Context) mrapp.ClientData {
+    c.request = c.request.WithContext(ctx)
+
+    return c
+}
+
 func (c *clientContext) RequestPath() mrapp.RequestPath {
     if c.requestPath == nil {
         c.requestPath = newRequestPath(c.request)

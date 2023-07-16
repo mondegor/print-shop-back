@@ -35,11 +35,13 @@ CREATE TABLE form_data (
 	form_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
+    param_name varchar(32) NOT NULL,
     form_caption varchar(128) NOT NULL,
 	form_detailing form_detailing NOT NULL,
 	form_body_compiled json NOT NULL,
     form_status item_status NOT NULL,
-	CONSTRAINT form_data_pkey PRIMARY KEY (form_id)
+	CONSTRAINT form_data_pkey PRIMARY KEY (form_id),
+    CONSTRAINT form_data_param_name UNIQUE (param_name)
 );
 
 CREATE TABLE form_fields (
@@ -65,16 +67,18 @@ CREATE TABLE form_fields (
 
 CREATE INDEX form_fields_order_field ON form_fields (form_id, order_field);
 
-INSERT INTO form_field_templates (tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status) VALUES (1, '2023-07-03 16:22:50.911157', 'ProductionFlyers', 'Поля листовой продукции', 'FIELDS', 'NORMAL', '[
+INSERT INTO form_field_templates (template_id, tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status)
+    OVERRIDING SYSTEM VALUE
+VALUES (1, 1, '2023-07-03 16:22:50.911157', 'Product', 'Поля листовой продукции', 'FIELDS', 'NORMAL', '[
   {
-    "id": "ProductQuantity",
+    "id": "%parentId%Quantity",
     "name": "Тираж",
     "type": "number",
     "required": true,
     "view": "text",
     "values": [
       {
-        "id": "ProductQuantity_value",
+        "id": "%parentId%_value",
         "defaultValue": 1000,
         "minValue": 1,
         "maxValue": 1000000
@@ -84,14 +88,14 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   },
 
   {
-    "id": "ProductSimilarTypes",
+    "id": "%parentId%SimilarTypes",
     "name": "Видов",
     "type": "number",
     "required": true,
     "view": "text",
     "values": [
       {
-        "id": "ProductSimilarTypes_value",
+        "id": "%parentId%_value",
         "defaultValue": 1,
         "minValue": 1,
         "maxValue": 100
@@ -100,14 +104,14 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   },
 
   {
-    "id": "ProductFormatX",
+    "id": "%parentId%FormatX",
     "name": "Длина",
     "type": "number",
     "required": true,
     "view": "text",
     "values": [
       {
-        "id": "ProductFormatX_value",
+        "id": "%parentId%_value",
         "defaultValue": 297,
         "minValue": 1,
         "maxValue": 1020
@@ -117,14 +121,14 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   },
 
   {
-    "id": "ProductFormatY",
+    "id": "%parentId%FormatY",
     "name": "Ширина",
     "type": "number",
     "required": true,
     "view": "text",
     "values": [
       {
-        "id": "ProductFormatY_value",
+        "id": "%parentId%_value",
         "defaultValue": 210,
         "minValue": 1,
         "maxValue": 1020
@@ -134,30 +138,29 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   },
 
   {
-    "id": "PrintType",
+    "id": "%parentId%PrintType",
     "type": "number",
     "name": "Вид печати",
     "required": true,
     "view": "radio",
     "values": [
       {
-        "id": "PrintType_PrintAny",
+        "id": "%parentId%_Any",
         "name": "Любая печать"
       },
       {
-        "id": "PrintType_PrintOffset",
+        "id": "%parentId%_Offset",
         "name": "Офсетная печать"
       },
       {
-        "id": "PrintType_PrintDigital",
+        "id": "%parentId%_Digital",
         "name": "Цифровая печать"
       }
     ]
-  }]', 'ENABLED');
-
-INSERT INTO form_field_templates (tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status) VALUES (1, '2023-07-03 16:34:02.369491', 'ProcessMedia', 'Бумага', 'GROUP', 'NORMAL', '[
+  }]', 'ENABLED'),
+(2, 1, '2023-07-03 16:34:02.369491', 'ProcessMedia', 'Бумага', 'GROUP', 'NORMAL', '[
   {
-    "id": "ProcessMedia_MediaType",
+    "id": "%parentId%_Type",
     "name": "Тип бумаги",
     "type": "number",
     "required": true,
@@ -165,13 +168,13 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "media-type",
     "values": [
       {
-        "id": "ProcessMedia_MediaType_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ]
   },
   {
-    "id": "ProcessMedia_MediaDensity",
+    "id": "%parentId%_Density",
     "name": "Плотность",
     "type": "number",
     "required": true,
@@ -179,14 +182,14 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "media-density",
     "values": [
       {
-        "id": "ProcessMedia_MediaDensity_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ],
     "unit": "г/м2"
   },
   {
-    "id": "ProcessMedia_MediaTexture",
+    "id": "%parentId%_Texture",
     "name": "Фактура",
     "type": "number",
     "required": true,
@@ -194,13 +197,13 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "media-texture",
     "values": [
       {
-        "id": "ProcessMedia_MediaTexture_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ]
   },
   {
-    "id": "ProcessMedia_MediaColor",
+    "id": "%parentId%_Color",
     "name": "Цвет",
     "type": "number",
     "required": true,
@@ -208,61 +211,59 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "media-color",
     "values": [
       {
-        "id": "ProcessMedia_MediaColor_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ]
   }
-]', 'ENABLED');
-
-INSERT INTO form_field_templates (tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status) VALUES (1, '2023-07-03 16:38:59.254920', 'ProcessPackaging', 'Упаковка', 'GROUP', 'NORMAL', '[
+]', 'ENABLED'),
+(3, 1, '2023-07-03 16:38:59.254920', 'ProcessPackaging', 'Упаковка', 'GROUP', 'NORMAL', '[
   {
-    "id": "ProcessPackaging_Type",
+    "id": "%parentId%_Type",
     "name": "Тип упаковки",
     "type": "number",
     "required": true,
     "view": "radio",
     "values": [
       {
-        "id": "ProcessPackaging_Type_ShrinkFilm",
+        "id": "%parentId%_ShrinkFilm",
         "name": "Термоусадочная пленка"
       },
       {
-        "id": "ProcessPackaging_Type_CorrugatedBox",
+        "id": "%parentId%_CorrugatedBox",
         "name": "Гофрированная коробка"
       }
     ]
   }
-]', 'ENABLED');
-
-INSERT INTO form_field_templates (tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status) VALUES (1, '2023-07-03 16:35:14.078093', 'ProcessPrinting', 'Печать', 'GROUP', 'NORMAL', '[
+]', 'ENABLED'),
+(4, 1, '2023-07-03 16:35:14.078093', 'ProcessPrinting', 'Печать', 'GROUP', 'NORMAL', '[
   {
-    "id": "ProcessPrinting_SideFace",
+    "id": "%parentId%_SideFace",
     "name": "Лицевая сторона",
     "type": "group",
     "required": true,
     "view": "block",
     "values": [
       {
-        "id": "ProcessPrinting_SideFace_ColorMode",
+        "id": "%parentId%_ColorMode",
         "name": "Количество цветов",
         "type": "number",
         "required": true,
         "view": "combo",
         "values": [
           {
-            "id": "ProcessPrinting_SideFace_ColorMode_1",
+            "id": "%parentId%_1",
             "name": "[ 1 ]"
           },
           {
-            "id": "ProcessPrinting_SideFace_ColorMode_4",
+            "id": "%parentId%_4",
             "name": "[ 4 ]"
           }
         ]
       },
 
       {
-        "id": "ProcessPrinting_SideFace_Varnish",
+        "id": "%parentId%_Varnish",
         "name": "Лакировка",
         "type": "number",
         "required": false,
@@ -270,7 +271,7 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
         "dictionary": "varnish",
         "values": [
           {
-            "id": "ProcessPrinting_SideFace_Varnish_None",
+            "id": "%parentId%_None",
             "name": "без лакировки"
           }
         ]
@@ -279,46 +280,36 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   },
 
   {
-    "id": "ProcessPrinting_SideBack",
+    "id": "%parentId%_SideBack",
     "name": "Обратная сторона",
     "type": "group",
     "required": false,
     "view": "block",
-    "enabledValues": [
-      {
-        "id": "ProcessPrinting_SideBack_Disabled",
-        "checked": false
-      },
-      {
-        "id": "ProcessPrinting_SideBack_Enabled",
-        "checked": true
-      }
-    ],
     "values": [
       {
-        "id": "ProcessPrinting_SideBack_ColorMode",
+        "id": "%parentId%_ColorMode",
         "name": "Количество цветов",
         "type": "number",
         "required": true,
         "view": "combo",
         "values": [
           {
-            "id": "ProcessPrinting_SideBack_ColorMode_0",
+            "id": "%parentId%_0",
             "name": "[ 0 ]"
           },
           {
-            "id": "ProcessPrinting_SideBack_ColorMode_1",
+            "id": "%parentId%_1",
             "name": "[ 1 ]"
           },
           {
-            "id": "ProcessPrinting_SideBack_ColorMode_4",
+            "id": "%parentId%_4",
             "name": "[ 4 ]"
           }
         ]
       },
 
       {
-        "id": "ProcessPrinting_SideBack_Varnish",
+        "id": "%parentId%_Varnish",
         "type": "number",
         "name": "Лакировка",
         "required": false,
@@ -326,36 +317,35 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
         "dictionary": "varnish",
         "values": [
           {
-            "id": "ProcessPrinting_SideBack_Varnish_None",
+            "id": "%parentId%_None",
             "name": "без лакировки"
           }
         ]
       }
     ]
   }
-]', 'ENABLED');
-
-INSERT INTO form_field_templates (tag_version, datetime_created, param_name, template_caption, field_type, field_detailing, field_body, template_status) VALUES (1, '2023-07-03 16:36:48.626009', 'ProcessLaminating', 'Ламинация', 'GROUP', 'NORMAL', '[
+]', 'ENABLED'),
+(5, 1, '2023-07-03 16:36:48.626009', 'ProcessLaminating', 'Ламинация', 'GROUP', 'NORMAL', '[
   {
-    "id": "ProcessLaminating_NumberOfSides",
+    "id": "%parentId%_NumberOfSides",
     "name": "Количество сторон",
     "type": "number",
     "required": true,
     "view": "radio",
     "values": [
       {
-        "id": "ProcessLaminating_NumberOfSides_OneSide",
+        "id": "%parentId%_OneSide",
         "name": "Одна сторона"
       },
       {
-        "id": "ProcessLaminating_NumberOfSides_TwoSides",
+        "id": "%parentId%_TwoSides",
         "name": "Две стороны"
       }
     ]
   },
 
   {
-    "id": "ProcessLaminating_LaminatingTexture",
+    "id": "%parentId%_LaminatingTexture",
     "name": "Тип ламината",
     "type": "number",
     "required": true,
@@ -363,14 +353,14 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "laminating-texture",
     "values": [
       {
-        "id": "ProcessLaminating_LaminatingTexture_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ]
   },
 
   {
-    "id": "ProcessLaminating_LaminatingThikness",
+    "id": "%parentId%_LaminatingThikness",
     "name": "Толщина ламината",
     "type": "number",
     "required": true,
@@ -378,7 +368,7 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
     "dictionary": "laminating-thikness",
     "values": [
       {
-        "id": "ProcessLaminating_LaminatingThikness_None",
+        "id": "%parentId%_None",
         "name": "не указано"
       }
     ],
@@ -386,7 +376,19 @@ INSERT INTO form_field_templates (tag_version, datetime_created, param_name, tem
   }
 ]', 'ENABLED');
 
-INSERT INTO form_data (tag_version, datetime_created, form_caption, form_detailing, form_body_compiled, form_status) VALUES (1, '2023-07-03 19:33:28.945816', 'Флаеры', 'NORMAL', '[]', 'ENABLED');
+ALTER SEQUENCE form_field_templates_template_id_seq RESTART WITH 6;
+
+INSERT INTO form_data (form_id, tag_version, datetime_created, param_name, form_caption, form_detailing, form_body_compiled, form_status)
+    OVERRIDING SYSTEM VALUE
+VALUES (1, 1, '2023-07-03 19:33:28.945816', 'Flyers', 'Флаеры', 'NORMAL', '[]', 'ENABLED');
+
+ALTER SEQUENCE form_data_form_id_seq RESTART WITH 2;
+
+INSERT INTO form_fields (field_id, form_id, tag_version, template_id, datetime_created, param_name, field_caption, field_required, field_status, prev_field_id, next_field_id, order_field)
+    OVERRIDING SYSTEM VALUE
+VALUES (1, 1, 1, 1, '2023-07-15 13:49:58.567032', 'Product', 'Поля листовой продукции', true, 'ENABLED', null, null, null);
+
+ALTER SEQUENCE form_fields_field_id_seq RESTART WITH 2;
 
 
 CREATE TABLE catalog_print_formats (

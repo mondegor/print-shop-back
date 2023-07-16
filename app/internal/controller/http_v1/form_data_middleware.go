@@ -10,18 +10,14 @@ const ctxParentIdKey = mrcontext.CtxParentIdKey
 
 func (f *FormFieldItem) FormDataMiddleware(next mrapp.HttpHandlerFunc) mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        r := c.Request()
-
         id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
-        err := f.serviceFormData.CheckAvailability(r.Context(), id)
+        err := f.serviceFormData.CheckAvailability(c.Request().Context(), id)
 
         if err != nil {
             return err
         }
 
-        mrcontext.IdNewContext(r.Context(), ctxParentIdKey, id)
-
-        return next(c)
+        return next(c.WithContext(mrcontext.IdNewContext(c.Request().Context(), ctxParentIdKey, id)))
     }
 }
 

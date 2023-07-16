@@ -130,11 +130,13 @@ func (l *Logger) formatHeader(buf *[]byte, prefix string, callerSkip int) {
 
 func (l *Logger) formatMessage(buf *[]byte, message any) {
     switch msg := message.(type) {
-        case error:
-            *buf = append(*buf, msg.Error()...)
-        case string:
-            *buf = append(*buf, msg...)
-        default:
-            *buf = append(*buf, fmt.Sprintf("Message %v has unknown type %v", message, msg)...)
+    case error:
+        *buf = append(*buf, msg.Error()...)
+
+    case string:
+        *buf = append(*buf, msg...)
+
+    default:
+        *buf = append(*buf, fmt.Sprintf("Message %v has unknown type %v", message, msg)...)
     }
 }

@@ -8,7 +8,7 @@ import (
     "print-shop-back/pkg/mrlib"
 )
 
-const appVersion = "v0.1.1"
+const appVersion = "v0.2.0"
 
 var configPath string
 

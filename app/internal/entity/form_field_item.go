@@ -18,7 +18,6 @@ type (
         Detailing ItemDetailing `json:"fieldDetailing"` // form_field_templates::field_detailing
         Required   bool   `json:"fieldRequired"` // field_required
         Body       string `json:"fieldBody"` // form_field_templates::field_body
-        OrderField mrentity.KeyInt32 `json:"orderField"` // order_field
     }
 
     FormFieldItemListFilter struct {

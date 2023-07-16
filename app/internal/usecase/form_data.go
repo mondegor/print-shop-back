@@ -62,8 +62,14 @@ func (f *FormData) CheckAvailability(ctx context.Context, id mrentity.KeyInt32) 
 // Create
 // modifies: item{Id}
 func (f *FormData) Create(ctx context.Context, item *entity.FormData) error {
+    err := f.checkParamName(ctx, item)
+
+    if err != nil {
+        return err
+    }
+
     item.Status = entity.ItemStatusDraft
-    err := f.storage.Insert(ctx, item)
+    err = f.storage.Insert(ctx, item)
 
     if err != nil {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, "FormData")
@@ -79,7 +85,13 @@ func (f *FormData) Store(ctx context.Context, item *entity.FormData) error {
         return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
     }
 
-    err := f.storage.Update(ctx, item)
+    err := f.checkParamName(ctx, item)
+
+    if err != nil {
+        return err
+    }
+
+    err = f.storage.Update(ctx, item)
 
     if err != nil {
         return f.errorHelper.WrapErrorForUpdate(err, "FormData")
@@ -130,6 +142,24 @@ func (f *FormData) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     f.logger(ctx).Event("FormData::Removed: id=%d", id)
 
     return nil
+}
+
+func (f *FormData) checkParamName(ctx context.Context, item *entity.FormData) error {
+    id, err := f.storage.FetchIdByName(ctx, item)
+
+    if err != nil {
+        if mrerr.ErrStorageNoRowFound.Is(err) {
+            return nil
+        }
+
+        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "FormData")
+    }
+
+    if item.Id == id {
+        return nil
+    }
+
+    return ErrFormFieldItemParamNameAlreadyExists.New(item.ParamName)
 }
 
 func (f *FormData) logger(ctx context.Context) mrapp.Logger {

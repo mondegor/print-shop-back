@@ -10,6 +10,7 @@ type (
         Id        mrentity.KeyInt32 `json:"id"` // form_id
         Version   mrentity.Version `json:"version"` // tag_version
         CreatedAt time.Time `json:"createdAt"` // datetime_created
+        ParamName  string `json:"paramName"` // param_name
         Caption   string `json:"caption"` // form_caption
         Detailing ItemDetailing `json:"formDetailing"` // form_detailing
         Body      string `json:"formBody"` // form_body_compiled

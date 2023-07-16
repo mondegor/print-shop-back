@@ -27,16 +27,20 @@ type Logger interface {
 
 func ParseLogLevel(level string) LogLevel {
     switch strings.ToLower(level) {
-        case "fatal":
-            return LogFatalLevel
-        case "error":
-            return LogErrorLevel
-        case "warn", "warning":
-            return LogWarnLevel
-        case "info":
-            return LogInfoLevel
-        case "debug":
-            return LogDebugLevel
+    case "fatal":
+        return LogFatalLevel
+
+    case "error":
+        return LogErrorLevel
+
+    case "warn", "warning":
+        return LogWarnLevel
+
+    case "info":
+        return LogInfoLevel
+
+    case "debug":
+        return LogDebugLevel
     }
 
     log.Fatalf("Log level '%s' is incorrect", level)

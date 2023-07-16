@@ -135,6 +135,7 @@ func (f *FormFieldItem) Store() mrapp.HttpHandlerFunc {
             Id: f.getItemId(c),
             FormId: f.getFormId(c),
             Version: request.Version,
+            ParamName: request.ParamName,
             Caption: request.Caption,
             Required: request.Required,
         }
