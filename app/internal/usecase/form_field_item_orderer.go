@@ -55,6 +55,11 @@ func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentit
 
     if currentNode.OrderField < 1 {
         err = f.storage.RecalcOrderField(ctx, 0, 2 * orderFieldStep)
+
+        if err != nil {
+            return err
+        }
+
         currentNode.OrderField = orderFieldStep
     }
 
@@ -157,6 +162,11 @@ func (f *FormFieldItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.
 
     if currentNode.OrderField < 1 {
         err = f.storage.RecalcOrderField(ctx, 0, 2 * orderFieldStep)
+
+        if err != nil {
+            return err
+        }
+
         currentNode.OrderField = orderFieldStep
     }
 
@@ -298,6 +308,10 @@ func (f *FormFieldItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.
     if currentNode.OrderField < afterNode.OrderField {
         if afterNextNode.Id > 0 {
             err = f.storage.RecalcOrderField(ctx, afterNode.OrderField, 2 * orderFieldStep)
+
+            if err != nil {
+                return err
+            }
         }
 
         currentNode.OrderField = afterNode.OrderField + orderFieldStep

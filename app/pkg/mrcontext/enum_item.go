@@ -8,7 +8,7 @@ import (
 
 const maxEnumLen = 32
 
-var regexpEnum = regexp.MustCompile("^[A-Z]([A-Z0-9_]+)?[A-Z0-9]$")
+var regexpEnum = regexp.MustCompile(`^[A-Z]([A-Z0-9_]+)?[A-Z0-9]$`)
 
 func EnumItemFromRequest(r *http.Request, key string) (string, error) {
     value := r.URL.Query().Get(key)

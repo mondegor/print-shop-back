@@ -45,6 +45,10 @@ func (f *FormFieldItemOrderer) LoadFirstNode(ctx context.Context, row *entity.No
 
     err = f.loadNodeByOrderField(ctx, row)
 
+    if err != nil {
+        return err
+    }
+
     if row.PrevId > 0 {
         return mrerr.ErrStorageFetchDataFailed.NewWithData("row.Id=%d; row.PrevId=%d", row.Id, row.PrevId)
     }
@@ -64,6 +68,10 @@ func (f *FormFieldItemOrderer) LoadLastNode(ctx context.Context, row *entity.Nod
     }
 
     err = f.loadNodeByOrderField(ctx, row)
+
+    if err != nil {
+        return err
+    }
 
     if row.NextId > 0 {
         return mrerr.ErrStorageFetchDataFailed.NewWithData("row.Id=%d; row.NextId=%d", row.Id, row.NextId)

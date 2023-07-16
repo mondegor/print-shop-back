@@ -7,8 +7,8 @@ import (
 )
 
 var (
-    regexpArticle = regexp.MustCompile("^[a-zA-Z0-9-]+$")
-    regexpVariable = regexp.MustCompile("^[a-zA-Z][a-zA-Z0-9]+$")
+    regexpArticle = regexp.MustCompile(`^[a-zA-Z0-9-]+$`)
+    regexpVariable = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]+$`)
 )
 
 func ValidateArticle() any {

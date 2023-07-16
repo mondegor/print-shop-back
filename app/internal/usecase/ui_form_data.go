@@ -5,8 +5,6 @@ import (
     "encoding/json"
     "fmt"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
     "print-shop-back/pkg/mrentity"
     "print-shop-back/pkg/mrerr"
     "strings"
@@ -113,13 +111,13 @@ func (f *UIFormData) correctField(parentName string, field *entity.UIFieldItem) 
         }
     }
 
-    for i, _ := range field.Values {
+    for i := range field.Values {
         val := &(field.Values)[i]
         val.Id = strings.Replace(val.Id, "%parentId%", parentName, 1)
         f.correctField(val.Id, val)
     }
 }
 
-func (f *UIFormData) logger(ctx context.Context) mrapp.Logger {
-    return mrcontext.GetLogger(ctx)
-}
+//func (f *UIFormData) logger(ctx context.Context) mrapp.Logger {
+//    return mrcontext.GetLogger(ctx)
+//}

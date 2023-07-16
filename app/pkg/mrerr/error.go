@@ -1,7 +1,6 @@
 package mrerr
 
 import (
-    "errors"
     "fmt"
 )
 
@@ -58,13 +57,14 @@ func (e *AppError) setErrorIfArgsNotEqual() {
         argsErrorFactory = ErrInternalMessageTooManyArguments
     }
 
-    if e.err == nil {
-        e.err = argsErrorFactory.New(e.message)
+    if e.code == argsErrorFactory.code {
+        e.err = fmt.Errorf("infinite loop protection, prev error: %w", e.err)
         return
     }
 
-    // infinite loop protection
-    if !errors.Is(e.err, &AppError{code: argsErrorFactory.code}) {
+    if e.err == nil {
+        e.err = argsErrorFactory.New(e.message)
+    } else {
         e.err = argsErrorFactory.Wrap(e.err, e.message)
     }
 }
