@@ -13,9 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Set workdir
-      run: cd ./app
-
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
@@ -33,25 +30,25 @@ jobs:
           ${{ runner.os }}-go-
 
     - if: steps.go-cache.outputs.cache-hit != 'true'
-      run: go mod download
+      run: cd ./app && go mod download
 
     - name: Build
-      run: go build -v ./...
+      run: cd ./app && go build -v ./...
 
     - name: Run go vet
-      run: go vet ./...
+      run: cd ./app && go vet ./...
 
     - name: Install staticcheck
       run: go install honnef.co/go/tools/cmd/staticcheck@latest
 
     - name: Run staticcheck
-      run: staticcheck ./...
+      run: cd ./app && staticcheck ./...
 
     - name: Install golint
       run: go install golang.org/x/lint/golint@latest
 
     - name: Run golint
-      run: golint ./...
+      run: cd ./app && golint ./...
 
     - name: Run tests
-      run: go test -race -vet=off ./...
+      run: cd ./app && go test -race -vet=off ./...
