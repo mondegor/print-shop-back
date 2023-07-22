@@ -30,7 +30,7 @@ func (f *CatalogLaminate) GetList(ctx context.Context, listFilter *entity.Catalo
     err := f.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogLaminate")
+        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
     return items, nil
@@ -38,14 +38,14 @@ func (f *CatalogLaminate) GetList(ctx context.Context, listFilter *entity.Catalo
 
 func (f *CatalogLaminate) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogLaminate, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogLaminate{Id: id}
     err := f.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "CatalogLaminate")
+        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
     }
 
     return item, nil
@@ -74,17 +74,17 @@ func (f *CatalogLaminate) Create(ctx context.Context, item *entity.CatalogLamina
     err = f.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, "CatalogLaminate")
+        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
-    f.logger(ctx).Event("CatalogLaminate::Created: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogLaminate, item.Id)
 
     return nil
 }
 
 func (f *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := f.checkArticle(ctx, item)
@@ -96,52 +96,52 @@ func (f *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLaminat
     err = f.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogLaminate")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    f.logger(ctx).Event("CatalogLaminate::Stored: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogLaminate, item.Id)
 
     return nil
 }
 
 func (f *CatalogLaminate) ChangeStatus(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := f.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, "CatalogLaminate")
+        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
     }
 
     if !f.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, "CatalogLaminate", item.Id)
+        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogLaminate, item.Id)
     }
 
     err = f.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogLaminate")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    f.logger(ctx).Event("CatalogLaminate::StatusChanged: id=%d, status=%s", item.Id, item.Status)
+    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogLaminate, item.Id, item.Status)
 
     return nil
 }
 
 func (f *CatalogLaminate) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := f.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, "CatalogLaminate")
+        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminate)
     }
 
-    f.logger(ctx).Event("CatalogLaminate::Removed: id=%d", id)
+    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogLaminate, id)
 
     return nil
 }

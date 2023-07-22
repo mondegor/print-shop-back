@@ -39,12 +39,12 @@ func New(code ErrorCode, message string, args ...any) *AppError {
         args: args,
     }
 
-    newErr.setErrorIfArgsNotEqual()
+    newErr.setErrorIfArgsNotEqual(2)
 
     return newErr
 }
 
-func (e *AppError) setErrorIfArgsNotEqual() {
+func (e *AppError) setErrorIfArgsNotEqual(callerSkip int) {
     if len(e.argsNames) == len(e.args) {
         return
     }
@@ -61,6 +61,8 @@ func (e *AppError) setErrorIfArgsNotEqual() {
         e.err = fmt.Errorf("infinite loop protection, prev error: %w", e.err)
         return
     }
+
+    argsErrorFactory = argsErrorFactory.Caller(callerSkip)
 
     if e.err == nil {
         e.err = argsErrorFactory.New(e.message)

@@ -4,8 +4,6 @@ DROP TABLE form_fields;
 DROP TABLE form_data;
 DROP TABLE form_field_templates;
 
-DROP TABLE form_fields_test;
-
 DROP TABLE catalog_print_formats;
 
 DROP TABLE catalog_boxes;

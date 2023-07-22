@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameFormData = "FormData"
+
 type (
     FormData struct { // DB: form_data
         Id        mrentity.KeyInt32 `json:"id"` // form_id

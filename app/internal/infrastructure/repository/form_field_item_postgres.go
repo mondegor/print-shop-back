@@ -3,6 +3,7 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
+    "print-shop-back/internal/usecase"
     "print-shop-back/pkg/client/mrpostgres"
     "print-shop-back/pkg/mrentity"
     "print-shop-back/pkg/mrerr"
@@ -20,6 +21,17 @@ func NewFormFieldItem(client *mrpostgres.Connection, queryBuilder squirrel.State
         client: client,
         builder: queryBuilder,
     }
+}
+
+func (f *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) usecase.ItemMetaData {
+    return NewItemMetaData(
+        "public.form_fields",
+        "field_id",
+        []Condition{
+            squirrel.Eq{"form_id": formId},
+            squirrel.NotEq{"field_status": entity.ItemStatusRemoved},
+        },
+    )
 }
 
 func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFieldItemListFilter, rows *[]entity.FormFieldItem) error {

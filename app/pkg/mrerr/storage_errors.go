@@ -13,6 +13,9 @@ var (
     ErrStorageFetchDataFailed = NewFactory(
         "errStorageFetchDataFailed", ErrorKindInternal, "fetching data is failed")
 
+    ErrStorageFetchedInvalidData = NewFactory(
+        "errStorageFetchedInvalidData", ErrorKindInternal, "fetched data '{{ .value }}' is invalid")
+
     ErrStorageNoRowFound = NewFactory(
         "errStorageNoRowFound", ErrorKindInternalNotice, "no row found")
 

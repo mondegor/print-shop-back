@@ -28,7 +28,7 @@ func (f *CatalogPaperColor) GetList(ctx context.Context, listFilter *entity.Cata
     err := f.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogPaperColor")
+        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogPaperColor)
     }
 
     return items, nil
@@ -36,14 +36,14 @@ func (f *CatalogPaperColor) GetList(ctx context.Context, listFilter *entity.Cata
 
 func (f *CatalogPaperColor) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogPaperColor, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogPaperColor{Id: id}
     err := f.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "CatalogPaperColor")
+        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPaperColor)
     }
 
     return item, nil
@@ -56,68 +56,68 @@ func (f *CatalogPaperColor) Create(ctx context.Context, item *entity.CatalogPape
     err := f.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, "CatalogPaperColor")
+        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPaperColor)
     }
 
-    f.logger(ctx).Event("CatalogPaperColor::Created: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPaperColor, item.Id)
 
     return nil
 }
 
 func (f *CatalogPaperColor) Store(ctx context.Context, item *entity.CatalogPaperColor) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := f.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPaperColor")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaperColor)
     }
 
-    f.logger(ctx).Event("CatalogPaperColor::Stored: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPaperColor, item.Id)
 
     return nil
 }
 
 func (f *CatalogPaperColor) ChangeStatus(ctx context.Context, item *entity.CatalogPaperColor) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := f.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, "CatalogPaperColor")
+        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPaperColor)
     }
 
     if !f.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, "CatalogPaperColor", item.Id)
+        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogPaperColor, item.Id)
     }
 
     err = f.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPaperColor")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaperColor)
     }
 
-    f.logger(ctx).Event("CatalogPaperColor::StatusChanged: id=%d, status=%s", item.Id, item.Status)
+    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPaperColor, item.Id, item.Status)
 
     return nil
 }
 
 func (f *CatalogPaperColor) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := f.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, "CatalogPaperColor")
+        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPaperColor)
     }
 
-    f.logger(ctx).Event("CatalogPaperColor::Removed: id=%d", id)
+    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPaperColor, id)
 
     return nil
 }

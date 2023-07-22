@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameCatalogPaperFacture = "CatalogPaperFacture"
+
 type (
     CatalogPaperFacture struct { // DB: catalog_paper_factures
         Id        mrentity.KeyInt32 `json:"id"` // facture_id

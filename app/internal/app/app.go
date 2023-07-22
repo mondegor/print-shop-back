@@ -106,10 +106,10 @@ func Run(cfg *config.Config, logger mrapp.Logger, translator mrapp.Translator) {
     uiFormDataService := usecase.NewUIFormData(formDataStorage, formFieldItemStorage, errorHelper)
     formDataHttp := http_v1.NewFormData(formDataService, uiFormDataService)
 
-    formFieldItemOrdererStorage := repository.NewFormFieldItemOrderer(postgresClient, queryBuilder)
-    formFieldItemService := usecase.NewFormFieldItem(formFieldItemStorage, formFieldTemplateStorage, errorHelper)
-    formFieldItemOrdererService := usecase.NewFormFieldItemOrderer(formFieldItemOrdererStorage, errorHelper)
-    formFieldItemHttp := http_v1.NewFormFieldItem(formFieldItemService, formFieldItemOrdererService, formDataService, formFieldTemplateService)
+    formFieldItemOrdererStorage := repository.NewItemOrderer(postgresClient, queryBuilder)
+    formFieldItemOrdererComponent := usecase.NewItemOrdererComponent(formFieldItemOrdererStorage)
+    formFieldItemService := usecase.NewFormFieldItem(formFieldItemOrdererComponent, formFieldItemStorage, formFieldTemplateStorage, errorHelper)
+    formFieldItemHttp := http_v1.NewFormFieldItem(formFieldItemService, formDataService, formFieldTemplateService)
 
     logger.Info("Create router")
 

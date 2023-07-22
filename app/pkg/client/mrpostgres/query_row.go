@@ -5,16 +5,14 @@ import "github.com/jackc/pgx/v5"
 type QueryRow struct {
     conn *Connection
     row pgx.Row
-}
-
-func wrapQueryRow(conn *Connection, row pgx.Row) QueryRow {
-    return QueryRow{
-        conn: conn,
-        row: row,
-    }
+    err error
 }
 
 func (qr QueryRow) Scan(dest ...any) error {
+    if qr.err != nil {
+        return qr.conn.wrapError(qr.err)
+    }
+
     err := qr.row.Scan(dest...)
 
     if err != nil {

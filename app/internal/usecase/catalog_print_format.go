@@ -28,7 +28,7 @@ func (f *CatalogPrintFormat) GetList(ctx context.Context, listFilter *entity.Cat
     err := f.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogPrintFormat")
+        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogPrintFormat)
     }
 
     return items, nil
@@ -36,14 +36,14 @@ func (f *CatalogPrintFormat) GetList(ctx context.Context, listFilter *entity.Cat
 
 func (f *CatalogPrintFormat) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogPrintFormat, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogPrintFormat{Id: id}
     err := f.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "CatalogPrintFormat")
+        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPrintFormat)
     }
 
     return item, nil
@@ -56,68 +56,68 @@ func (f *CatalogPrintFormat) Create(ctx context.Context, item *entity.CatalogPri
     err := f.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, "CatalogPrintFormat")
+        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    f.logger(ctx).Event("CatalogPrintFormat::Created: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPrintFormat, item.Id)
 
     return nil
 }
 
 func (f *CatalogPrintFormat) Store(ctx context.Context, item *entity.CatalogPrintFormat) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := f.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPrintFormat")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    f.logger(ctx).Event("CatalogPrintFormat::Stored: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPrintFormat, item.Id)
 
     return nil
 }
 
 func (f *CatalogPrintFormat) ChangeStatus(ctx context.Context, item *entity.CatalogPrintFormat) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := f.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, "CatalogPrintFormat")
+        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPrintFormat)
     }
 
     if !f.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, "CatalogPrintFormat", item.Id)
+        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogPrintFormat, item.Id)
     }
 
     err = f.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPrintFormat")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    f.logger(ctx).Event("CatalogPrintFormat::StatusChanged: id=%d, status=%s", item.Id, item.Status)
+    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPrintFormat, item.Id, item.Status)
 
     return nil
 }
 
 func (f *CatalogPrintFormat) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := f.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, "CatalogPrintFormat")
+        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    f.logger(ctx).Event("CatalogPrintFormat::Removed: id=%d", id)
+    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPrintFormat, id)
 
     return nil
 }

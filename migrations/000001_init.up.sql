@@ -46,17 +46,17 @@ CREATE TABLE form_data (
 
 CREATE TABLE form_fields (
     field_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
-    form_id int4 NOT NULL,
+    form_id int4 NOT NULL CHECK(form_id > 0),
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
-    template_id int4 NOT NULL,
+    template_id int4 NOT NULL CHECK(template_id > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
     param_name varchar(32) NULL,
     field_caption varchar(128) NOT NULL,
     field_required bool NOT NULL,
     field_status item_status NOT NULL,
-    prev_field_id int4 NULL,
-    next_field_id int4 NULL,
-    order_field int8 NULL,
+    prev_field_id int4 NULL CHECK(prev_field_id IS NULL OR prev_field_id > 0),
+    next_field_id int4 NULL CHECK(next_field_id IS NULL OR next_field_id > 0),
+    order_field int8 NULL CHECK(order_field IS NULL OR order_field > 0),
     CONSTRAINT form_fields_pkey PRIMARY KEY (field_id),
     CONSTRAINT form_data_fkey FOREIGN KEY (form_id)
         REFERENCES form_data(form_id) ON DELETE CASCADE,
@@ -546,51 +546,3 @@ CREATE TABLE catalog_laminates (
 );
 
 -- ALTER SEQUENCE catalog_laminates_laminate_id_seq RESTART WITH 1;
-
-
-CREATE TABLE form_fields_test (
-    field_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
-    field_value int4 NOT NULL,
-    prev_field_id int4 NULL,
-    next_field_id int4 NULL,
-    order_field int8 NULL,
-    CONSTRAINT form_fields_test_pkey PRIMARY KEY (field_id)
-);
-
-CREATE INDEX form_fields_test_order_field ON form_fields_test (order_field);
-
-INSERT INTO form_fields_test (field_id, field_value, order_field, prev_field_id, next_field_id)
-OVERRIDING SYSTEM VALUE
-VALUES  (2, 100000, 17408, 4, 14),
-        (37, 200000, 19456, 14, 1),
-        (15, 200000, 4160, 17, 3),
-        (3, 100000, 7168, 15, 4),
-        (14, 200000, 18432, 2, 37),
-        (29, 200000, 2306, 28, 12),
-        (28, 200000, 2177, 19, 29),
-        (19, 200000, 2112, 18, 28),
-        (18, 200000, 2080, 36, 19),
-        (36, 200000, 2064, 13, 18),
-        (13, 200000, 2056, 35, 36),
-        (35, 200000, 2052, 21, 13),
-        (4, 100000, 8192, 3, 2),
-        (12, 200000, 2564, 29, 17),
-        (17, 200000, 4112, 12, 15),
-        (24, 200000, null, null, null),
-        (23, 200000, null, null, null),
-        (32, 200000, null, null, null),
-        (21, 200000, 2049, 33, 35),
-        (30, 200000, null, null, null),
-        (1, 100000, 20480, 37, 5),
-        (16, 200000, 1024, null, 33),
-        (25, 200000, null, null, null),
-        (31, 200000, null, null, null),
-        (22, 200000, null, null, null),
-        (33, 200000, 1536, 16, 21),
-        (20, 200000, null, null, null),
-        (5, 100000, 21504, 1, null),
-        (34, 200000, null, null, null),
-        (39, 200000, null, null, null),
-        (38, 200000, null, null, null);
-
-ALTER SEQUENCE form_fields_test_field_id_seq RESTART WITH 40;

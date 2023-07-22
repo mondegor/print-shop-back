@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameFormFieldItem = "FormFieldItem"
+
 type (
     FormFieldItem struct { // DB: form_fields
         Id         mrentity.KeyInt32 `json:"id"` // field_id

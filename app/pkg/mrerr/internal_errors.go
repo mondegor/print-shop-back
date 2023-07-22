@@ -4,6 +4,9 @@ var (
     ErrInternal = NewFactory(
         ErrorCodeInternal, ErrorKindInternal, "internal server error")
 
+    ErrInternalNilPointer = NewFactory(
+        "errInternalNilPointer", ErrorKindInternal, "nil pointer")
+
     ErrInternalTypeAssertion = NewFactory(
         "errInternalTypeAssertion", ErrorKindInternal, "invalid type '{{ .type }}' assertion (value: {{ .value }})")
 

@@ -3,33 +3,39 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
+    "print-shop-back/pkg/mrapp"
+    "print-shop-back/pkg/mrcontext"
     "print-shop-back/pkg/mrentity"
     "print-shop-back/pkg/mrerr"
 )
 
 const (
-    // orderFieldStep mrentity.ZeronullInt64 = 1024 * 1024
-    orderFieldStep mrentity.ZeronullInt64 = 1024
+    // orderFieldStep mrentity.Int64 = 1024 * 1024
+    orderFieldStep mrentity.Int64 = 1
 )
 
-type FormFieldItemOrderer struct {
-    storage FormFieldItemOrdererStorage
-    errorHelper *mrerr.Helper
+type ItemOrderer struct {
+    storage ItemOrdererStorage
 }
 
-func NewFormFieldItemOrderer(storage FormFieldItemOrdererStorage, errorHelper *mrerr.Helper) *FormFieldItemOrderer {
-    return &FormFieldItemOrderer{
+func NewItemOrdererComponent(storage ItemOrdererStorage) *ItemOrderer {
+    return &ItemOrderer{
         storage: storage,
-        errorHelper: errorHelper,
     }
 }
 
-func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) WithMetaData(meta ItemMetaData) ItemOrdererComponent {
+    return &ItemOrderer{
+        storage: f.storage.WithMetaData(meta),
+    }
+}
+
+func (f *ItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentity.KeyInt32) error {
     if nodeId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
-    firstNode := entity.Node{}
+    firstNode := entity.ItemOrdererNode{}
     err := f.storage.LoadFirstNode(ctx, &firstNode)
 
     if err != nil {
@@ -37,7 +43,7 @@ func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentit
     }
 
     if firstNode.Id == nodeId {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
     err = f.storage.UpdateNodePrevId(ctx, firstNode.Id, mrentity.ZeronullInt32(nodeId))
@@ -46,7 +52,7 @@ func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentit
         return err
     }
 
-    currentNode := entity.Node{
+    currentNode := entity.ItemOrdererNode{
         Id: nodeId,
         PrevId: 0,
         NextId: mrentity.ZeronullInt32(firstNode.Id),
@@ -60,7 +66,7 @@ func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentit
             return err
         }
 
-        currentNode.OrderField = orderFieldStep
+        currentNode.OrderField = mrentity.ZeronullInt64(orderFieldStep)
     }
 
     err = f.storage.UpdateNode(ctx, &currentNode)
@@ -69,15 +75,17 @@ func (f *FormFieldItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentit
         return err
     }
 
+    f.logger(ctx).Event("%s::InsertToFirst: id=%d", entity.ModelNameItemOrderer, nodeId)
+
     return nil
 }
 
-func (f *FormFieldItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity.KeyInt32) error {
     if nodeId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
-    lastNode := entity.Node{}
+    lastNode := entity.ItemOrdererNode{}
     err := f.storage.LoadLastNode(ctx, &lastNode)
 
     if err != nil {
@@ -85,7 +93,7 @@ func (f *FormFieldItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity
     }
 
     if lastNode.Id == nodeId {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
     err = f.storage.UpdateNodeNextId(ctx, lastNode.Id, mrentity.ZeronullInt32(nodeId))
@@ -94,11 +102,11 @@ func (f *FormFieldItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity
         return err
     }
 
-    currentNode := entity.Node{
+    currentNode := entity.ItemOrdererNode{
         Id: nodeId,
         PrevId: mrentity.ZeronullInt32(lastNode.Id),
         NextId: 0,
-        OrderField: lastNode.OrderField + orderFieldStep,
+        OrderField: lastNode.OrderField + mrentity.ZeronullInt64(orderFieldStep),
     }
 
     err = f.storage.UpdateNode(ctx, &currentNode)
@@ -107,17 +115,19 @@ func (f *FormFieldItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity
         return err
     }
 
+    f.logger(ctx).Event("%s::InsertToLast: id=%d", entity.ModelNameItemOrderer, nodeId)
+
     return nil
 }
 
-func (f *FormFieldItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.KeyInt32) error {
     if nodeId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
-    currentNode := entity.Node{Id: nodeId}
+    currentNode := entity.ItemOrdererNode{Id: nodeId}
 
-    firstNode := entity.Node{}
+    firstNode := entity.ItemOrdererNode{}
     err := f.storage.LoadFirstNode(ctx, &firstNode)
 
     if err != nil {
@@ -125,13 +135,26 @@ func (f *FormFieldItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.
     }
 
     if firstNode.Id == currentNode.Id {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("currentNode.Id=%d", currentNode.Id)
+        if firstNode.OrderField == 0 {
+            currentNode.OrderField = mrentity.ZeronullInt64(orderFieldStep)
+            err = f.storage.UpdateNode(ctx, &currentNode)
+
+            if err != nil {
+                return err
+            }
+        }
+
+        return nil
     }
 
     err = f.storage.LoadNode(ctx, &currentNode)
 
     if err != nil {
         return err
+    }
+
+    if mrentity.KeyInt32(currentNode.NextId) == firstNode.Id {
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"currentNode.Id": currentNode.Id, "currentNode.NextId": currentNode.NextId})
     }
 
     err = f.storage.UpdateNodePrevId(ctx, firstNode.Id, mrentity.ZeronullInt32(currentNode.Id))
@@ -167,7 +190,7 @@ func (f *FormFieldItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.
             return err
         }
 
-        currentNode.OrderField = orderFieldStep
+        currentNode.OrderField = mrentity.ZeronullInt64(orderFieldStep)
     }
 
     err = f.storage.UpdateNode(ctx, &currentNode)
@@ -176,17 +199,19 @@ func (f *FormFieldItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.
         return err
     }
 
+    f.logger(ctx).Event("%s::MoveToFirst: id=%d", entity.ModelNameItemOrderer, nodeId)
+
     return nil
 }
 
-func (f *FormFieldItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.KeyInt32) error {
     if nodeId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
-    currentNode := entity.Node{Id: nodeId}
+    currentNode := entity.ItemOrdererNode{Id: nodeId}
 
-    lastNode := entity.Node{}
+    lastNode := entity.ItemOrdererNode{}
     err := f.storage.LoadLastNode(ctx, &lastNode)
 
     if err != nil {
@@ -194,13 +219,26 @@ func (f *FormFieldItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.K
     }
 
     if lastNode.Id == currentNode.Id {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("currentNode.Id=%d", currentNode.Id)
+        if lastNode.OrderField == 0 {
+            currentNode.OrderField = mrentity.ZeronullInt64(orderFieldStep)
+            err = f.storage.UpdateNode(ctx, &currentNode)
+
+            if err != nil {
+                return err
+            }
+        }
+
+        return nil
     }
 
     err = f.storage.LoadNode(ctx, &currentNode)
 
     if err != nil {
         return err
+    }
+
+    if mrentity.KeyInt32(currentNode.PrevId) == lastNode.Id {
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"currentNode.Id": currentNode.Id, "currentNode.PrevId": currentNode.PrevId})
     }
 
     err = f.storage.UpdateNodeNextId(ctx, lastNode.Id, mrentity.ZeronullInt32(currentNode.Id))
@@ -227,7 +265,7 @@ func (f *FormFieldItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.K
 
     currentNode.PrevId = mrentity.ZeronullInt32(lastNode.Id)
     currentNode.NextId = 0
-    currentNode.OrderField = lastNode.OrderField + orderFieldStep
+    currentNode.OrderField = lastNode.OrderField + mrentity.ZeronullInt64(orderFieldStep)
 
     err = f.storage.UpdateNode(ctx, &currentNode)
 
@@ -235,33 +273,43 @@ func (f *FormFieldItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.K
         return err
     }
 
+    f.logger(ctx).Event("%s::MoveToLast: id=%d", entity.ModelNameItemOrderer, nodeId)
+
     return nil
 }
 
-func (f *FormFieldItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.KeyInt32, afterNodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.KeyInt32, afterNodeId mrentity.KeyInt32) error {
     if afterNodeId < 1 {
         return f.MoveToFirst(ctx, nodeId)
     }
 
     if nodeId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("nodeId=%d", nodeId)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId})
     }
 
-    currentNode := entity.Node{Id: nodeId}
+    if nodeId == afterNodeId {
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"nodeId": nodeId, "afterNodeId": afterNodeId})
+    }
+
+    currentNode := entity.ItemOrdererNode{Id: nodeId}
     err := f.storage.LoadNode(ctx, &currentNode)
 
     if err != nil {
         return err
     }
 
-    afterNode := entity.Node{Id: afterNodeId}
+    if mrentity.KeyInt32(currentNode.PrevId) == afterNodeId {
+        return nil
+    }
+
+    afterNode := entity.ItemOrdererNode{Id: afterNodeId}
     err = f.storage.LoadNode(ctx, &afterNode)
 
     if err != nil {
         return err
     }
 
-    afterNextNode := entity.Node{Id: mrentity.KeyInt32(afterNode.NextId)}
+    afterNextNode := entity.ItemOrdererNode{Id: mrentity.KeyInt32(afterNode.NextId)}
 
     if afterNextNode.Id > 0 {
         err = f.storage.LoadNode(ctx, &afterNextNode)
@@ -305,16 +353,16 @@ func (f *FormFieldItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.
     currentNode.NextId = mrentity.ZeronullInt32(afterNextNode.Id)
     currentNode.OrderField = (afterNode.OrderField + afterNextNode.OrderField) / 2
 
-    if currentNode.OrderField < afterNode.OrderField {
+    if currentNode.OrderField <= afterNode.OrderField {
         if afterNextNode.Id > 0 {
-            err = f.storage.RecalcOrderField(ctx, afterNode.OrderField, 2 * orderFieldStep)
+            err = f.storage.RecalcOrderField(ctx, mrentity.Int64(afterNode.OrderField), 2 * orderFieldStep)
 
             if err != nil {
                 return err
             }
         }
 
-        currentNode.OrderField = afterNode.OrderField + orderFieldStep
+        currentNode.OrderField = afterNode.OrderField + mrentity.ZeronullInt64(orderFieldStep)
     }
 
     err = f.storage.UpdateNode(ctx, &currentNode)
@@ -323,15 +371,17 @@ func (f *FormFieldItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.
         return err
     }
 
+    f.logger(ctx).Event("%s::MoveAfterId: id=%d, afterId=%d, ", entity.ModelNameItemOrderer, nodeId, afterNodeId)
+
     return nil
 }
 
-func (f *FormFieldItemOrderer) Unlink(ctx context.Context, nodeId mrentity.KeyInt32) error {
+func (f *ItemOrderer) Unlink(ctx context.Context, nodeId mrentity.KeyInt32) error {
     if nodeId < 1 {
         return f.MoveToFirst(ctx, nodeId)
     }
 
-    currentNode := entity.Node{Id: nodeId}
+    currentNode := entity.ItemOrdererNode{Id: nodeId}
     err := f.storage.LoadNode(ctx, &currentNode)
 
     if err != nil {
@@ -370,9 +420,11 @@ func (f *FormFieldItemOrderer) Unlink(ctx context.Context, nodeId mrentity.KeyIn
         return err
     }
 
+    f.logger(ctx).Event("%s::Unlink: id=%d", entity.ModelNameItemOrderer, nodeId)
+
     return nil
 }
 
-//func (f *FormFieldItemOrderer) logger(ctx context.Context) mrapp.Logger {
-//    return mrcontext.GetLogger(ctx)
-//}
+func (f *ItemOrderer) logger(ctx context.Context) mrapp.Logger {
+   return mrcontext.GetLogger(ctx)
+}

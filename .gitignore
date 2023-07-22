@@ -7,3 +7,5 @@
 
 /app/bin
 /app/logs
+
+/migrations/*dump*

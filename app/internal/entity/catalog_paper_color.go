@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameCatalogPaperColor = "CatalogPaperColor"
+
 type (
     CatalogPaperColor struct { // DB: catalog_paper_colors
         Id        mrentity.KeyInt32 `json:"id"` // color_id

@@ -26,7 +26,7 @@ func NewUIFormData(storage FormDataStorage, storageFormFieldItem FormFieldItemSt
 
 func (f *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*entity.UIForm, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     form := &entity.FormData{Id: id}

@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameCatalogPrintFormat = "CatalogPrintFormat"
+
 type (
     CatalogPrintFormat struct { // DB: catalog_print_format
         Id        mrentity.KeyInt32 `json:"id"` // format_id

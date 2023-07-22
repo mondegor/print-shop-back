@@ -31,10 +31,6 @@ func (e *AppErrorFactory) New(args ...any) *AppError {
     return e.new(nil, args)
 }
 
-func (e *AppErrorFactory) NewWithData(format string, a ...any) *AppError {
-    return e.new(nil, []any{fmt.Sprintf(format, a...)})
-}
-
 func (e *AppErrorFactory) Wrap(err error, args ...any) *AppError {
     if err == nil {
         panic("error is nil, wrapping is not necessary")
@@ -74,7 +70,7 @@ func (e *AppErrorFactory) new(err error, args []any) *AppError {
 }
 
 func (e *AppErrorFactory) init(newErr *AppError) {
-    newErr.setErrorIfArgsNotEqual()
+    newErr.setErrorIfArgsNotEqual(4)
 
     if newErr.err != nil {
         appError, ok := newErr.err.(*AppError)

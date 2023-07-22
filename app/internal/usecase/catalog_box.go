@@ -28,7 +28,7 @@ func (f *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBoxL
     err := f.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogBox")
+        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
     }
 
     return items, nil
@@ -36,14 +36,14 @@ func (f *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBoxL
 
 func (f *CatalogBox) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogBox, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogBox{Id: id}
     err := f.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "CatalogBox")
+        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
     }
 
     return item, nil
@@ -62,17 +62,17 @@ func (f *CatalogBox) Create(ctx context.Context, item *entity.CatalogBox) error 
     err = f.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, "CatalogBox")
+        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("CatalogBox::Created: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogBox, item.Id)
 
     return nil
 }
 
 func (f *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := f.checkArticle(ctx, item)
@@ -84,52 +84,52 @@ func (f *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error {
     err = f.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogBox")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("CatalogBox::Stored: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogBox, item.Id)
 
     return nil
 }
 
 func (f *CatalogBox) ChangeStatus(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := f.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, "CatalogBox")
+        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
     }
 
     if !f.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, "CatalogBox", item.Id)
+        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogBox, item.Id)
     }
 
     err = f.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogBox")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("CatalogBox::StatusChanged: id=%d, status=%s", item.Id, item.Status)
+    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogBox, item.Id, item.Status)
 
     return nil
 }
 
 func (f *CatalogBox) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := f.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, "CatalogBox")
+        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("CatalogBox::Removed: id=%d", id)
+    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogBox, id)
 
     return nil
 }
@@ -142,7 +142,7 @@ func (f *CatalogBox) checkArticle(ctx context.Context, item *entity.CatalogBox) 
             return nil
         }
 
-        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogBox")
+        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
     }
 
     if item.Id == id {

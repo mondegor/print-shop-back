@@ -5,6 +5,8 @@ import (
     "time"
 )
 
+const ModelNameCatalogLaminateType = "CatalogLaminateType"
+
 type (
     CatalogLaminateType struct { // DB: catalog_laminate_types
         Id        mrentity.KeyInt32 `json:"id"` // type_id

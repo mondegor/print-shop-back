@@ -46,7 +46,8 @@ func (c *Connection) Query(ctx context.Context, sql string, args ...any) (pgx.Ro
 func (c *Connection) QueryRow(ctx context.Context, sql string, args ...any) QueryRow {
     c.debugQuery(ctx, sql)
 
-    row := c.conn.QueryRow(ctx, sql, args...)
-
-    return wrapQueryRow(c, row)
+    return QueryRow{
+        conn: c,
+        row: c.conn.QueryRow(ctx, sql, args...),
+    }
 }

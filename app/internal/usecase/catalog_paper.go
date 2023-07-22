@@ -32,7 +32,7 @@ func (f *CatalogPaper) GetList(ctx context.Context, listFilter *entity.CatalogPa
     err := f.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, "CatalogPaper")
+        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogPaper)
     }
 
     return items, nil
@@ -40,14 +40,14 @@ func (f *CatalogPaper) GetList(ctx context.Context, listFilter *entity.CatalogPa
 
 func (f *CatalogPaper) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogPaper, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogPaper{Id: id}
     err := f.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "CatalogPaper")
+        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPaper)
     }
 
     return item, nil
@@ -86,17 +86,17 @@ func (f *CatalogPaper) Create(ctx context.Context, item *entity.CatalogPaper) er
     err = f.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, "CatalogPaper")
+        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPaper)
     }
 
-    f.logger(ctx).Event("CatalogPaper::Created: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPaper, item.Id)
 
     return nil
 }
 
 func (f *CatalogPaper) Store(ctx context.Context, item *entity.CatalogPaper) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := f.checkArticle(ctx, item)
@@ -108,52 +108,52 @@ func (f *CatalogPaper) Store(ctx context.Context, item *entity.CatalogPaper) err
     err = f.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPaper")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaper)
     }
 
-    f.logger(ctx).Event("CatalogPaper::Stored: id=%d", item.Id)
+    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPaper, item.Id)
 
     return nil
 }
 
 func (f *CatalogPaper) ChangeStatus(ctx context.Context, item *entity.CatalogPaper) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("item.Id=%d; item.Version=%d", item.Id, item.Version)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := f.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, "CatalogPaper")
+        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogPaper)
     }
 
     if !f.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, "CatalogPaper", item.Id)
+        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogPaper, item.Id)
     }
 
     err = f.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, "CatalogPaper")
+        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaper)
     }
 
-    f.logger(ctx).Event("CatalogPaper::StatusChanged: id=%d, status=%s", item.Id, item.Status)
+    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPaper, item.Id, item.Status)
 
     return nil
 }
 
 func (f *CatalogPaper) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.NewWithData("id=%d", id)
+        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := f.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, "CatalogPaper")
+        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPaper)
     }
 
-    f.logger(ctx).Event("CatalogPaper::Removed: id=%d", id)
+    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPaper, id)
 
     return nil
 }

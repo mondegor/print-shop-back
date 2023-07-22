@@ -22,18 +22,15 @@ const (
 
 type FormFieldItem struct {
     service usecase.FormFieldItemService
-    serviceFormFieldItemOrderer usecase.FormFieldItemOrdererService
     serviceFormData usecase.FormDataService
     serviceFormFieldTemplate usecase.FormFieldTemplateService
 }
 
 func NewFormFieldItem(service usecase.FormFieldItemService,
-                      serviceFormFieldItemOrderer usecase.FormFieldItemOrdererService,
                       serviceFormData usecase.FormDataService,
                       serviceFormFieldTemplate usecase.FormFieldTemplateService) *FormFieldItem {
     return &FormFieldItem{
         service: service,
-        serviceFormFieldItemOrderer: serviceFormFieldItemOrderer,
         serviceFormData: serviceFormData,
         serviceFormFieldTemplate: serviceFormFieldTemplate,
     }
@@ -89,8 +86,10 @@ func (f *FormFieldItem) Create() mrapp.HttpHandlerFunc {
            return err
         }
 
+        formId := f.getFormId(c)
+
         item := entity.FormFieldItem{
-            FormId: f.getFormId(c),
+            FormId: formId,
             TemplateId: request.TemplateId,
             ParamName: request.ParamName,
             Caption: request.Caption,
@@ -162,10 +161,11 @@ func (f *FormFieldItem) Move() mrapp.HttpHandlerFunc {
             return err
         }
 
-        err := f.serviceFormFieldItemOrderer.MoveAfterId(
+        err := f.service.MoveAfterId(
             c.Context(),
             f.getItemId(c),
             request.AfterNodeId,
+            f.getFormId(c),
         )
 
         if err != nil {
