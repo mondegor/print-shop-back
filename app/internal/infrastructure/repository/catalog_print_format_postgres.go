@@ -160,35 +160,21 @@ func (f *CatalogPrintFormat) Insert(ctx context.Context, row *entity.CatalogPrin
 // Update
 // uses: row{Id, Version, Caption, Length, Width, Status}
 func (f *CatalogPrintFormat) Update(ctx context.Context, row *entity.CatalogPrintFormat) error {
-    sql := `
-        UPDATE public.catalog_print_formats
-        SET
-            tag_version = tag_version + 1,
-            format_caption = $4,
-            format_length = $5,
-            format_width = $6
-        WHERE format_id = $1 AND tag_version = $2 AND format_status <> $3;`
-
-    commandTag, err := f.client.Exec(
-        ctx,
-        sql,
-        row.Id,
-        row.Version,
-        entity.ItemStatusRemoved,
-        row.Caption,
-        row.Length,
-        row.Width,
-    )
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.catalog_print_formats").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"format_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"format_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

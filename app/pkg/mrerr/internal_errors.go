@@ -10,6 +10,12 @@ var (
     ErrInternalTypeAssertion = NewFactory(
         "errInternalTypeAssertion", ErrorKindInternal, "invalid type '{{ .type }}' assertion (value: {{ .value }})")
 
+    ErrInternalInvalidType = NewFactory(
+        "errInternalInvalidType", ErrorKindInternal, "invalid type '{{ .type1 }}', expected: '{{ .type2 }}'")
+
+    ErrInternalInvalidData = NewFactory(
+        "errInternalInvalidData", ErrorKindInternal, "invalid data '{{ .value }}'")
+
     ErrInternalParseData = NewFactory(
         "errInternalParseData", ErrorKindInternal, "data '{{ .name1 }}' parsed to {{ .name2 }} with error")
 
@@ -17,8 +23,11 @@ var (
         "errInternalMapValueNotFound", ErrorKindInternal, "'{{ .value }}' is not found in map {{ .name }}")
 
     ErrInternalMessageNotEnoughArguments = NewFactory(
-        "errInternalMessageNotEnoughArguments", ErrorKindInternal, "Not enough arguments in message '{{ .value }}'")
+        "errInternalMessageNotEnoughArguments", ErrorKindInternal, "not enough arguments in message '{{ .value }}'")
 
     ErrInternalMessageTooManyArguments = NewFactory(
-        "errInternalMessageTooManyArguments", ErrorKindInternal, "Too many arguments in message '{{ .value }}'")
+        "errInternalMessageTooManyArguments", ErrorKindInternal, "too many arguments in message '{{ .value }}'")
+
+    ErrDataContainer = NewFactory(
+        "errDataContainer", ErrorKindInternalNotice, "data: '{{ .value }}'")
 )

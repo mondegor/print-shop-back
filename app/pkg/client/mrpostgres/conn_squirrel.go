@@ -6,14 +6,13 @@ import (
 
     "github.com/Masterminds/squirrel"
     "github.com/jackc/pgx/v5"
-    "github.com/jackc/pgx/v5/pgconn"
 )
 
-func (c *Connection) SqUpdate(ctx context.Context, query squirrel.UpdateBuilder) (pgconn.CommandTag, error) {
+func (c *Connection) SqUpdate(ctx context.Context, query squirrel.UpdateBuilder) error {
     sql, args, err := query.ToSql()
 
     if err != nil {
-        return pgconn.CommandTag{}, mrerr.ErrInternal.Caller(1).Wrap(err)
+        return mrerr.ErrInternal.Caller(1).Wrap(err)
     }
 
     c.debugQuery(ctx, sql)
@@ -21,10 +20,14 @@ func (c *Connection) SqUpdate(ctx context.Context, query squirrel.UpdateBuilder)
     commandTag, err := c.conn.Exec(ctx, sql, args...)
 
     if err != nil {
-        return commandTag, c.wrapError(err)
+        return c.wrapError(err)
     }
 
-    return commandTag, nil
+    if commandTag.RowsAffected() < 1 {
+        return mrerr.ErrStorageRowsNotAffected.Caller(1).New()
+    }
+
+    return nil
 }
 
 func (c *Connection) SqQuery(ctx context.Context, query squirrel.SelectBuilder) (pgx.Rows, error) {

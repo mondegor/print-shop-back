@@ -29,7 +29,7 @@ func (c *ItemMetaData) TableInfo() *entity.TableInfo {
     return c.tableInfo
 }
 
-func (c *ItemMetaData) Select(query squirrel.SelectBuilder) squirrel.SelectBuilder {
+func (c *ItemMetaData) PrepareSelect(query squirrel.SelectBuilder) squirrel.SelectBuilder {
     for _, cond := range c.conditions {
         query = query.Where(cond)
     }
@@ -37,7 +37,7 @@ func (c *ItemMetaData) Select(query squirrel.SelectBuilder) squirrel.SelectBuild
     return query
 }
 
-func (c *ItemMetaData) Update(query squirrel.UpdateBuilder) squirrel.UpdateBuilder {
+func (c *ItemMetaData) PrepareUpdate(query squirrel.UpdateBuilder) squirrel.UpdateBuilder {
     for _, cond := range c.conditions {
         query = query.Where(cond)
     }
@@ -45,7 +45,7 @@ func (c *ItemMetaData) Update(query squirrel.UpdateBuilder) squirrel.UpdateBuild
     return query
 }
 
-func (c *ItemMetaData) Delete(query squirrel.DeleteBuilder) squirrel.DeleteBuilder {
+func (c *ItemMetaData) PrepareDelete(query squirrel.DeleteBuilder) squirrel.DeleteBuilder {
     for _, cond := range c.conditions {
         query = query.Where(cond)
     }

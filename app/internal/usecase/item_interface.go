@@ -32,8 +32,8 @@ type (
 
     ItemMetaData interface {
         TableInfo() *entity.TableInfo
-        Select(queryBuilder squirrel.SelectBuilder) squirrel.SelectBuilder
-        Update(queryBuilder squirrel.UpdateBuilder) squirrel.UpdateBuilder
-        Delete(queryBuilder squirrel.DeleteBuilder) squirrel.DeleteBuilder
+        PrepareSelect(query squirrel.SelectBuilder) squirrel.SelectBuilder
+        PrepareUpdate(query squirrel.UpdateBuilder) squirrel.UpdateBuilder
+        PrepareDelete(query squirrel.DeleteBuilder) squirrel.DeleteBuilder
     }
 )

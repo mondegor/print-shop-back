@@ -190,39 +190,21 @@ func (f *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error {
 // Update
 // uses: row{Id, Version, Article, Caption, Length, Width, Depth, Status}
 func (f *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error {
-    sql := `
-        UPDATE public.catalog_boxes
-        SET
-            tag_version = tag_version + 1,
-            box_article = $4,
-            box_caption = $5,
-            box_length = $6,
-            box_width = $7,
-            box_depth = $8
-        WHERE box_id = $1 AND tag_version = $2 AND box_status <> $3;`
-
-    commandTag, err := f.client.Exec(
-        ctx,
-        sql,
-        row.Id,
-        row.Version,
-        entity.ItemStatusRemoved,
-        row.Article,
-        row.Caption,
-        row.Length,
-        row.Width,
-        row.Depth,
-    )
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.catalog_boxes").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"box_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"box_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

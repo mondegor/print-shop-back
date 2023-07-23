@@ -196,41 +196,21 @@ func (f *CatalogLaminate) Insert(ctx context.Context, row *entity.CatalogLaminat
 // Update
 // uses: row{Id, Version, Article, Caption, TypeId, Length, Weight, Thickness, Status}
 func (f *CatalogLaminate) Update(ctx context.Context, row *entity.CatalogLaminate) error {
-    sql := `
-        UPDATE public.catalog_laminates
-        SET
-            tag_version = tag_version + 1,
-            laminate_article = $4,
-            laminate_caption = $5,
-            type_id = $6,
-            laminate_length = $7,
-            laminate_weight = $8,
-            laminate_thickness = $9
-        WHERE laminate_id = $1 AND tag_version = $2 AND laminate_status <> $3;`
-
-    commandTag, err := f.client.Exec(
-        ctx,
-        sql,
-        row.Id,
-        row.Version,
-        entity.ItemStatusRemoved,
-        row.Article,
-        row.Caption,
-        row.TypeId,
-        row.Length,
-        row.Weight,
-        row.Thickness,
-    )
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.catalog_laminates").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"laminate_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"laminate_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

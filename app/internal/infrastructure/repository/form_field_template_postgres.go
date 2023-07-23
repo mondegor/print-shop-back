@@ -171,61 +171,21 @@ func (f *FormFieldTemplate) Insert(ctx context.Context, row *entity.FormFieldTem
 // Update
 // uses: row{Id, Version, ParamName, Caption, Type, Detailing, Body}
 func (f *FormFieldTemplate) Update(ctx context.Context, row *entity.FormFieldTemplate) error {
-    tbl := f.builder.
-        Update("public.form_field_templates").
-        SetMap(map[string]any{
-            "tag_version": squirrel.Expr("tag_version + 1"),
-            "param_name": row.ParamName,
-            "template_caption": row.Caption,
-            "field_type": row.Type,
-            "field_detailing": row.Detailing,
-            "field_body": row.Body,
-        }).
-        Where(squirrel.Eq{"template_id": row.Id}).
-        Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"template_status": entity.ItemStatusRemoved})
-
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    commandTag, err := f.client.Exec(ctx, sql, args...)
-
-    //sql := `
-    //    UPDATE public.form_field_templates
-    //    SET
-    //        tag_version = tag_version + 1,
-    //        param_name = $4,
-    //        template_caption = $5,
-    //        field_type = $6,
-    //        field_detailing = $7,
-    //        field_body = $8
-    //    WHERE template_id = $1 AND tag_version = $2 AND template_status <> $3;`
-    //
-    //commandTag, err := f.client.Exec(
-    //    ctx,
-    //    sql,
-    //    row.Id,
-    //    row.Version,
-    //    entity.ItemStatusRemoved,
-    //    row.ParamName,
-    //    row.Caption,
-    //    row.Type,
-    //    row.Detailing,
-    //    row.Body,
-    //)
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.form_field_templates").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"template_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"template_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

@@ -12,7 +12,7 @@ const (
     rightDelim = "}}"
 )
 
-var regexpArgName = regexp.MustCompile(`^\.[A-Za-z]+$`)
+var regexpArgName = regexp.MustCompile(`^\.[A-Za-z][A-Za-z0-9]*$`)
 
 func RenderMessage(message string, args []NamedArg) string {
     if message == "" {

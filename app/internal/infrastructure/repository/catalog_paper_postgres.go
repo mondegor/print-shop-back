@@ -214,42 +214,21 @@ func (f *CatalogPaper) Insert(ctx context.Context, row *entity.CatalogPaper) err
 // Update
 // uses: row{Id, Version, Article, Caption, Length, Width, Density, ColorId, FactureId, Thickness, Sides, Status}
 func (f *CatalogPaper) Update(ctx context.Context, row *entity.CatalogPaper) error {
-    tbl := f.builder.
-        Update("public.catalog_papers").
-        SetMap(map[string]any{
-            "tag_version": squirrel.Expr("tag_version + 1"),
-            "paper_article": row.Article,
-            "paper_caption": row.Caption,
-            "paper_length": row.Length,
-            "paper_width": row.Width,
-            "paper_density": row.Density,
-            "color_id": row.ColorId,
-            "facture_id": row.FactureId,
-            "paper_thickness": row.Thickness,
-            "paper_sides": row.Sides,
-            "paper_status": row.Status,
-        }).
-        Where(squirrel.Eq{"paper_id": row.Id}).
-        Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"paper_status": entity.ItemStatusRemoved})
-
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    commandTag, err := f.client.Exec(ctx, sql, args...)
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.catalog_papers").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"paper_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"paper_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

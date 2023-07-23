@@ -191,35 +191,21 @@ func (f *FormData) Insert(ctx context.Context, row *entity.FormData) error {
 // Update
 // uses: row{Id, Version, Caption, Detailing}
 func (f *FormData) Update(ctx context.Context, row *entity.FormData) error {
-    sql := `
-        UPDATE public.form_data
-        SET
-            tag_version = tag_version + 1,
-            param_name = $4,
-            form_caption = $5,
-            form_detailing = $6
-        WHERE form_id = $1 AND tag_version = $2 AND form_status <> $3;`
-
-    commandTag, err := f.client.Exec(
-        ctx,
-        sql,
-        row.Id,
-        row.Version,
-        entity.ItemStatusRemoved,
-        row.ParamName,
-        row.Caption,
-        row.Detailing,
-    )
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    query := f.builder.
+        Update("public.form_data").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"form_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"form_status": entity.ItemStatusRemoved})
 
-    return nil
+    return f.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus

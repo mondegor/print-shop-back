@@ -196,36 +196,25 @@ func (f *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) e
 // Update
 // uses: row{Id, FormId, Version, ParamName, Caption, Required}
 func (f *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) error {
-    sql := `
-        UPDATE public.form_fields
-        SET
-            tag_version = tag_version + 1,
-            param_name = $5,
-            field_caption = $6,
-            field_required = $7
-        WHERE field_id = $1 AND form_id = $2 AND tag_version = $3 AND field_status <> $4;`
-
-    commandTag, err := f.client.Exec(
-        ctx,
-        sql,
-        row.Id,
-        row.FormId,
-        row.Version,
-        entity.ItemStatusRemoved,
-        row.ParamName,
-        row.Caption,
-        row.Required,
-    )
+    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
-        return err
+        if !mrentity.ErrInternalListOfFieldsIsEmpty.Is(err) {
+            return err
+        }
     }
 
-    if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
-    }
+    filledFields["field_required"] = row.Required
 
-    return nil
+    query := f.builder.
+        Update("public.form_fields").
+        Set("tag_version", squirrel.Expr("tag_version + 1")).
+        SetMap(filledFields).
+        Where(squirrel.Eq{"field_id": row.Id}).
+        Where(squirrel.Eq{"tag_version": row.Version}).
+        Where(squirrel.NotEq{"field_status": entity.ItemStatusRemoved})
+
+    return f.client.SqUpdate(ctx, query)
 }
 
 func (f *FormFieldItem) Delete(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {

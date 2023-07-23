@@ -12,9 +12,11 @@ type (
         Id        mrentity.KeyInt32 `json:"id"` // format_id
         Version   mrentity.Version `json:"version"` // tag_version
         CreatedAt time.Time `json:"createdAt"` // datetime_created
-        Caption   string `json:"caption"` // format_caption
-        Length    mrentity.Micrometer `json:"length"` // format_length (mm)
-        Width     mrentity.Micrometer `json:"width"` // format_width (mm)
+
+        Caption   string `json:"caption" db:"format_caption"`
+        Length    mrentity.Micrometer `json:"length" db:"format_length"` // (mm)
+        Width     mrentity.Micrometer `json:"width" db:"format_width"` // (mm)
+
         Status    ItemStatus `json:"status"` // format_status
     }
 
