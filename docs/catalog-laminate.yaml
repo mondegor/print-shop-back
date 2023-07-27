@@ -31,6 +31,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Query.ItemStatuses"
 
       responses:
         "200":
@@ -80,9 +81,9 @@ paths:
           # Артикул не может быть пустым
           # Указанный артикул уже существует
           # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9-]+"
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
           # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
+          # Заголовок записи не может быть более 64 символов
           # Тип ламината содержит недопустимое значение
           $ref: "#/components/responses/App.Response.Error400"
         "401":
@@ -153,9 +154,9 @@ paths:
           # Артикул не может быть пустым
           # Указанный артикул уже существует
           # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9-]+"
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
           # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
+          # Заголовок записи не может быть более 64 символов
           # Тип ламината содержит недопустимое значение
           $ref: "#/components/responses/App.Response.Error400"
         "401":
@@ -169,7 +170,7 @@ paths:
 
     delete:
       summary: Метод удаления ламината
-      description: Метод предназначен для удаления информации о ламинате в БД
+      description: Метод предназначен для удаления информации о ламинате из БД
       operationId: removeCatalogLaminate
       tags:
         - CatalogLaminate
@@ -263,6 +264,15 @@ components:
         type: integer
       example: 1000
 
+    App.Request.Query.ItemStatuses:
+      name: statuses
+      in: query
+      required: false
+      description: Список статусов через ","
+      schema:
+        type: string
+      example: "DRAFT,ENABLED"
+
   schemas:
     App.Response.Model.Error: # RFC 7807 (Problem Details for HTTP APIs)
       type: object
@@ -328,7 +338,7 @@ components:
         version:
           description: Текущая версия ресурса
           type: number
-          example: 11
+          example: 7
         status:
           type: string
           enum:
@@ -346,7 +356,7 @@ components:
         version: # get, store, changeStatus, remove
           description: Текущая версия записи
           type: number
-          example: 11
+          example: 7
         createdAt: # get
           description: Дата и время сохранения записи
           type: string
@@ -355,13 +365,13 @@ components:
         article: # get, create, store
           description: Уникальный артикул записи
           type: string
-          # pattern: [a-zA-Z0-9-]+
+          # pattern: [a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]
           minLength: 4
           maxLength: 32
           example: "item-01843"
         caption: # get, create, store
           type: string
-          maxLength: 128
+          maxLength: 64
           example: "Название записи"
         typeId: # get, create, store
           type: integer

@@ -31,6 +31,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Query.ItemStatuses"
 
       responses:
         "200":
@@ -78,7 +79,7 @@ paths:
                 $ref: "#/components/schemas/App.Response.Model.CreateEntity"
         "400":
           # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
+          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.Response.Error400"
         "401":
           $ref: "#/components/responses/App.Response.Error401"
@@ -146,7 +147,7 @@ paths:
           description: Информация о типе ламината успешно сохранена
         "400":
           # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
+          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.Response.Error400"
         "401":
           $ref: "#/components/responses/App.Response.Error401"
@@ -159,7 +160,7 @@ paths:
 
     delete:
       summary: Метод удаления типа ламината
-      description: Метод предназначен для удаления информации о типе ламината в БД
+      description: Метод предназначен для удаления информации о типе ламината из БД
       operationId: removeCatalogLaminateType
       tags:
         - CatalogLaminateType
@@ -253,6 +254,15 @@ components:
         type: integer
       example: 1000
 
+    App.Request.Query.ItemStatuses:
+      name: statuses
+      in: query
+      required: false
+      description: Список статусов через ","
+      schema:
+        type: string
+      example: "DRAFT,ENABLED"
+
   schemas:
     App.Response.Model.Error: # RFC 7807 (Problem Details for HTTP APIs)
       type: object
@@ -318,7 +328,7 @@ components:
         version:
           description: Текущая версия ресурса
           type: number
-          example: 11
+          example: 7
         status:
           type: string
           enum:
@@ -335,7 +345,7 @@ components:
         version: # get, store, changeStatus, remove
           description: Текущая версия записи
           type: number
-          example: 11
+          example: 7
         createdAt: # get
           description: Дата и время сохранения записи
           type: string
@@ -343,7 +353,7 @@ components:
           example: "2023-01-01T12:00:00.000+02:00"
         caption: # get, create, store
           type: string
-          maxLength: 128
+          maxLength: 64
           example: "Название записи"
         status: # get, changeStatus
           description: |-

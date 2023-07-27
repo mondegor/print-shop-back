@@ -16,14 +16,15 @@ type FormFieldItem struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewFormFieldItem(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *FormFieldItem {
+func NewFormFieldItem(client *mrpostgres.Connection,
+                      queryBuilder squirrel.StatementBuilderType) *FormFieldItem {
     return &FormFieldItem{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) usecase.ItemMetaData {
+func (re *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) usecase.ItemMetaData {
     return NewItemMetaData(
         "public.form_fields",
         "field_id",
@@ -34,8 +35,8 @@ func (f *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) usecase.ItemMetaDa
     )
 }
 
-func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFieldItemListFilter, rows *[]entity.FormFieldItem) error {
-    tbl := f.builder.
+func (re *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFieldItemListFilter, rows *[]entity.FormFieldItem) error {
+    query := re.builder.
         Select(`
             ff.field_id,
             ff.template_id,
@@ -54,16 +55,10 @@ func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFiel
         OrderBy("ff.order_field ASC, ff.field_caption ASC, ff.field_id ASC")
 
     if len(listFilter.Detailing) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"fft.field_detailing": listFilter.Detailing})
+        query = query.Where(squirrel.Eq{"fft.field_detailing": listFilter.Detailing})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -102,7 +97,7 @@ func (f *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFiel
 // LoadOne
 // uses: row{Id, FormId}
 // modifies: row{TemplateId, Version, CreatedAt, ParamName, Caption, Required}
-func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) error {
+func (re *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) error {
     sql := `
         SELECT
             ff.template_id,
@@ -122,7 +117,7 @@ func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) 
             ff.template_id = fft.template_id
         WHERE ff.field_id = $1 AND ff.form_id = $2 AND ff.field_status <> $3;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -145,7 +140,7 @@ func (f *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem) 
 
 // FetchIdByName
 // uses: row{FormId, ParamName}
-func (f *FormFieldItem) FetchIdByName(ctx context.Context, row *entity.FormFieldItem) (mrentity.KeyInt32, error) {
+func (re *FormFieldItem) FetchIdByName(ctx context.Context, row *entity.FormFieldItem) (mrentity.KeyInt32, error) {
     sql := `
         SELECT field_id
         FROM
@@ -154,7 +149,12 @@ func (f *FormFieldItem) FetchIdByName(ctx context.Context, row *entity.FormField
 
     var id mrentity.KeyInt32
 
-    err := f.client.QueryRow(ctx, sql, row.FormId, row.ParamName).Scan(
+    err := re.client.QueryRow(
+        ctx,
+        sql,
+        row.FormId,
+        row.ParamName,
+    ).Scan(
         &id,
     )
 
@@ -164,7 +164,7 @@ func (f *FormFieldItem) FetchIdByName(ctx context.Context, row *entity.FormField
 // Insert
 // uses: row{FormId, TemplateId, ParamName, Caption, Required}
 // modifies: row{Id}
-func (f *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) error {
+func (re *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) error {
     sql := `
         INSERT INTO public.form_fields
             (form_id,
@@ -177,7 +177,7 @@ func (f *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) e
             ($1, $2, $3, $4, $5, $6)
         RETURNING field_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.FormId,
@@ -195,7 +195,7 @@ func (f *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) e
 
 // Update
 // uses: row{Id, FormId, Version, ParamName, Caption, Required}
-func (f *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) error {
+func (re *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) error {
     filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
@@ -206,7 +206,7 @@ func (f *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) e
 
     filledFields["field_required"] = row.Required
 
-    query := f.builder.
+    query := re.builder.
         Update("public.form_fields").
         Set("tag_version", squirrel.Expr("tag_version + 1")).
         SetMap(filledFields).
@@ -214,22 +214,23 @@ func (f *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) e
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"field_status": entity.ItemStatusRemoved})
 
-    return f.client.SqUpdate(ctx, query)
+    return re.client.SqUpdate(ctx, query)
 }
 
-func (f *FormFieldItem) Delete(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {
+func (re *FormFieldItem) Delete(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {
     sql := `
         UPDATE public.form_fields
         SET
             tag_version = tag_version + 1,
             param_name = NULL,
-            order_field = NULL,
+            prev_field_id = NULL,
             next_field_id = NULL,
+            order_field = NULL,
             field_status = $3
         WHERE
             field_id = $1 AND form_id = $2 AND field_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

@@ -16,7 +16,10 @@ type FormFieldItem struct {
     errorHelper *mrerr.Helper
 }
 
-func NewFormFieldItem(componentOrderer ItemOrdererComponent, storage FormFieldItemStorage, storageFormFieldTemplate FormFieldTemplateStorage, errorHelper *mrerr.Helper) *FormFieldItem {
+func NewFormFieldItem(componentOrderer ItemOrdererComponent,
+                      storage FormFieldItemStorage,
+                      storageFormFieldTemplate FormFieldTemplateStorage,
+                      errorHelper *mrerr.Helper) *FormFieldItem {
     return &FormFieldItem{
         componentOrderer: componentOrderer,
         storage: storage,
@@ -25,9 +28,9 @@ func NewFormFieldItem(componentOrderer ItemOrdererComponent, storage FormFieldIt
     }
 }
 
-func (f *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFieldItemListFilter) ([]entity.FormFieldItem, error) {
+func (uc *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFieldItemListFilter) ([]entity.FormFieldItem, error) {
     items := make([]entity.FormFieldItem, 0, 4)
-    err := f.storage.LoadAll(ctx, listFilter, &items)
+    err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
         return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
@@ -36,16 +39,16 @@ func (f *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFiel
     return items, nil
 }
 
-func (f *FormFieldItem) GetItem(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) (*entity.FormFieldItem, error) {
+func (uc *FormFieldItem) GetItem(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) (*entity.FormFieldItem, error) {
     if id < 1 {
         return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.FormFieldItem{Id: id, FormId: formId}
-    err := f.storage.LoadOne(ctx, item)
+    err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormFieldItem)
+        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormFieldItem)
     }
 
     return item, nil
@@ -53,9 +56,9 @@ func (f *FormFieldItem) GetItem(ctx context.Context, id mrentity.KeyInt32, formI
 
 // Create
 // modifies: item{Id}
-func (f *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) error {
+func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) error {
     itemTemplate := entity.FormFieldTemplate{Id: item.TemplateId}
-    err := f.storageFormFieldTemplate.LoadOne(ctx, &itemTemplate)
+    err := uc.storageFormFieldTemplate.LoadOne(ctx, &itemTemplate)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {
@@ -73,22 +76,22 @@ func (f *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) 
         item.Caption = itemTemplate.Caption
     }
 
-    err = f.checkParamName(ctx, item)
+    err = uc.checkParamName(ctx, item)
 
     if err != nil {
         return err
     }
 
-    err = f.storage.Insert(ctx, item)
+    err = uc.storage.Insert(ctx, item)
 
     if err != nil {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
-    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormFieldItem, item.Id)
+    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormFieldItem, item.Id)
 
-    meta := f.storage.GetMetaData(item.FormId)
-    component := f.componentOrderer.WithMetaData(meta)
+    meta := uc.storage.GetMetaData(item.FormId)
+    component := uc.componentOrderer.WithMetaData(meta)
 
     err = component.MoveToLast(
         ctx,
@@ -96,63 +99,63 @@ func (f *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem) 
     )
 
     if err != nil {
-        f.logger(ctx).Error(err)
+        uc.logger(ctx).Error(err)
     }
 
     return nil
 }
 
-func (f *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) error {
+func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    err := f.checkParamName(ctx, item)
+    err := uc.checkParamName(ctx, item)
 
     if err != nil {
         return err
     }
 
-    err = f.storage.Update(ctx, item)
+    err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldItem)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldItem)
     }
 
-    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormFieldItem, item.Id)
+    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormFieldItem, item.Id)
 
     return nil
 }
 
-func (f *FormFieldItem) Remove(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {
+func (uc *FormFieldItem) Remove(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {
     if id < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
-    err := f.storage.Delete(ctx, id, formId)
+    err := uc.storage.Delete(ctx, id, formId)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldItem)
+        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldItem)
     }
 
-    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormFieldItem, id)
+    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormFieldItem, id)
 
     return nil
 }
 
-func (f *FormFieldItem) MoveAfterId(ctx context.Context, id mrentity.KeyInt32, afterId mrentity.KeyInt32, formId mrentity.KeyInt32) error {
+func (uc *FormFieldItem) MoveAfterId(ctx context.Context, id mrentity.KeyInt32, afterId mrentity.KeyInt32, formId mrentity.KeyInt32) error {
     if formId < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"formId": formId})
     }
 
-    meta := f.storage.GetMetaData(formId)
-    component := f.componentOrderer.WithMetaData(meta)
+    meta := uc.storage.GetMetaData(formId)
+    component := uc.componentOrderer.WithMetaData(meta)
 
     return component.MoveAfterId(ctx, id, afterId)
 }
 
-func (f *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFieldItem) error {
-    id, err := f.storage.FetchIdByName(ctx, item)
+func (uc *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFieldItem) error {
+    id, err := uc.storage.FetchIdByName(ctx, item)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {
@@ -169,6 +172,6 @@ func (f *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFie
     return ErrFormFieldItemParamNameAlreadyExists.New(item.ParamName)
 }
 
-func (f *FormFieldItem) logger(ctx context.Context) mrapp.Logger {
+func (uc *FormFieldItem) logger(ctx context.Context) mrapp.Logger {
     return mrcontext.GetLogger(ctx)
 }

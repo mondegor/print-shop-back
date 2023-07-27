@@ -12,12 +12,12 @@ import (
 
 const (
     formDataGetListURL = "/v1/forms"
-    formDataGetItemURL = "/v1/forms/:id"
+    formDataGetItemURL = "/v1/forms/:fid"
     formDataCreateURL = "/v1/forms"
-    formDataStoreURL = "/v1/forms/:id"
-    formDataChangeStatusURL = "/v1/forms/:id/status/"
-    formDataRemove = "/v1/forms/:id"
-    formDataCompileURL = "/v1/forms/:id/compile"
+    formDataStoreURL = "/v1/forms/:fid"
+    formDataChangeStatusURL = "/v1/forms/:fid/status/"
+    formDataRemoveURL = "/v1/forms/:fid"
+    formDataCompileURL = "/v1/forms/:fid/compile"
 )
 
 type FormData struct {
@@ -25,26 +25,27 @@ type FormData struct {
     serviceUIFormData usecase.UIFormDataService
 }
 
-func NewFormData(service usecase.FormDataService, serviceUIFormData usecase.UIFormDataService) *FormData {
+func NewFormData(service usecase.FormDataService,
+                 serviceUIFormData usecase.UIFormDataService) *FormData {
     return &FormData{
         service: service,
         serviceUIFormData: serviceUIFormData,
     }
 }
 
-func (f *FormData) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formDataGetListURL, f.GetList())
-    router.HttpHandlerFunc(http.MethodGet, formDataGetItemURL, f.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, formDataCreateURL, f.Create())
-    router.HttpHandlerFunc(http.MethodPut, formDataStoreURL, f.Store())
-    router.HttpHandlerFunc(http.MethodPut, formDataChangeStatusURL, f.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, formDataRemove, f.Remove())
-    router.HttpHandlerFunc(http.MethodPatch, formDataCompileURL, f.Compile())
+func (ht *FormData) AddHandlers(router mrapp.Router) {
+    router.HttpHandlerFunc(http.MethodGet, formDataGetListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodGet, formDataGetItemURL, ht.GetItem())
+    router.HttpHandlerFunc(http.MethodPost, formDataCreateURL, ht.Create())
+    router.HttpHandlerFunc(http.MethodPut, formDataStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodPut, formDataChangeStatusURL, ht.ChangeStatus())
+    router.HttpHandlerFunc(http.MethodDelete, formDataRemoveURL, ht.Remove())
+    router.HttpHandlerFunc(http.MethodPatch, formDataCompileURL, ht.Compile())
 }
 
-func (f *FormData) GetList() mrapp.HttpHandlerFunc {
+func (ht *FormData) GetList() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        items, err := f.service.GetList(c.Context(), f.newListFilter(c))
+        items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
             return err
@@ -54,7 +55,7 @@ func (f *FormData) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) newListFilter(c mrapp.ClientData) *entity.FormDataListFilter {
+func (ht *FormData) newListFilter(c mrapp.ClientData) *entity.FormDataListFilter {
     var listFilter entity.FormDataListFilter
 
     parseFilterDetailing(c, &listFilter.Detailing)
@@ -63,9 +64,9 @@ func (f *FormData) newListFilter(c mrapp.ClientData) *entity.FormDataListFilter 
     return &listFilter
 }
 
-func (f *FormData) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormData) GetItem() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        item, err := f.service.GetItem(c.Context(), f.getItemId(c))
+        item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -75,7 +76,7 @@ func (f *FormData) GetItem() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) Create() mrapp.HttpHandlerFunc {
+func (ht *FormData) Create() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.CreateFormData{}
 
@@ -89,7 +90,7 @@ func (f *FormData) Create() mrapp.HttpHandlerFunc {
             Detailing: request.Detailing,
         }
 
-        err := f.service.Create(c.Context(), &item)
+        err := ht.service.Create(c.Context(), &item)
 
         if err != nil {
             return err
@@ -107,7 +108,7 @@ func (f *FormData) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) Store() mrapp.HttpHandlerFunc {
+func (ht *FormData) Store() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.StoreFormData{}
 
@@ -116,14 +117,14 @@ func (f *FormData) Store() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormData{
-            Id: f.getItemId(c),
-            Version: request.Version,
+            Id:        ht.getItemId(c),
+            Version:   request.Version,
             ParamName: request.ParamName,
-            Caption: request.Caption,
+            Caption:   request.Caption,
             Detailing: request.Detailing,
         }
 
-        err := f.service.Store(c.Context(), &item)
+        err := ht.service.Store(c.Context(), &item)
 
         if err != nil {
             return err
@@ -133,7 +134,7 @@ func (f *FormData) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) ChangeStatus() mrapp.HttpHandlerFunc {
+func (ht *FormData) ChangeStatus() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.ChangeItemStatus{}
 
@@ -142,12 +143,12 @@ func (f *FormData) ChangeStatus() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormData{
-            Id: f.getItemId(c),
+            Id:      ht.getItemId(c),
             Version: request.Version,
-            Status: request.Status,
+            Status:  request.Status,
         }
 
-        err := f.service.ChangeStatus(c.Context(), &item)
+        err := ht.service.ChangeStatus(c.Context(), &item)
 
         if err != nil {
             return err
@@ -157,9 +158,9 @@ func (f *FormData) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) Remove() mrapp.HttpHandlerFunc {
+func (ht *FormData) Remove() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        err := f.service.Remove(c.Context(), f.getItemId(c))
+        err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -169,9 +170,9 @@ func (f *FormData) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) Compile() mrapp.HttpHandlerFunc {
+func (ht *FormData) Compile() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        item, err := f.serviceUIFormData.CompileForm(c.Context(), f.getItemId(c))
+        item, err := ht.serviceUIFormData.CompileForm(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -181,8 +182,8 @@ func (f *FormData) Compile() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormData) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
-    id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
+func (ht *FormData) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+    id := mrentity.KeyInt32(c.RequestPath().GetInt("fid"))
 
     if id > 0 {
         return id

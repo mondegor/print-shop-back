@@ -12,12 +12,12 @@ import (
 )
 
 const (
-    formFieldItemGetListURL = "/v1/forms/:id/fields"
-    formFieldItemGetItemURL = "/v1/forms/:id/fields/:fid"
-    formFieldItemCreateURL = "/v1/forms/:id/fields"
-    formFieldItemStoreURL = "/v1/forms/:id/fields/:fid"
-    formFieldItemMoveURL = "/v1/forms/:id/fields/:fid/move"
-    formFieldItemRemove = "/v1/forms/:id/fields/:fid"
+    formFieldItemGetListURL = "/v1/forms/:fid/fields"
+    formFieldItemGetItemURL = "/v1/forms/:fid/fields/:id"
+    formFieldItemCreateURL = "/v1/forms/:fid/fields"
+    formFieldItemStoreURL = "/v1/forms/:fid/fields/:id"
+    formFieldItemRemoveURL = "/v1/forms/:fid/fields/:id"
+    formFieldItemMoveURL = "/v1/forms/:fid/fields/:id/move"
 )
 
 type FormFieldItem struct {
@@ -36,18 +36,18 @@ func NewFormFieldItem(service usecase.FormFieldItemService,
     }
 }
 
-func (f *FormFieldItem) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetListURL, f.FormDataMiddleware(f.GetList()))
-    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetItemURL, f.FormDataMiddleware(f.GetItem()))
-    router.HttpHandlerFunc(http.MethodPost, formFieldItemCreateURL, f.FormDataMiddleware(f.Create()))
-    router.HttpHandlerFunc(http.MethodPut, formFieldItemStoreURL, f.FormDataMiddleware(f.Store()))
-    router.HttpHandlerFunc(http.MethodPatch, formFieldItemMoveURL, f.FormDataMiddleware(f.Move()))
-    router.HttpHandlerFunc(http.MethodDelete, formFieldItemRemove, f.FormDataMiddleware(f.Remove()))
+func (ht *FormFieldItem) AddHandlers(router mrapp.Router) {
+    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetListURL, ht.FormDataMiddleware(ht.GetList()))
+    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetItemURL, ht.FormDataMiddleware(ht.GetItem()))
+    router.HttpHandlerFunc(http.MethodPost, formFieldItemCreateURL, ht.FormDataMiddleware(ht.Create()))
+    router.HttpHandlerFunc(http.MethodPut, formFieldItemStoreURL, ht.FormDataMiddleware(ht.Store()))
+    router.HttpHandlerFunc(http.MethodDelete, formFieldItemRemoveURL, ht.FormDataMiddleware(ht.Remove()))
+    router.HttpHandlerFunc(http.MethodPatch, formFieldItemMoveURL, ht.FormDataMiddleware(ht.Move()))
 }
 
-func (f *FormFieldItem) GetList() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) GetList() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        items, err := f.service.GetList(c.Context(), f.newListFilter(c))
+        items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
             return err
@@ -57,18 +57,18 @@ func (f *FormFieldItem) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldItem) newListFilter(c mrapp.ClientData) *entity.FormFieldItemListFilter {
+func (ht *FormFieldItem) newListFilter(c mrapp.ClientData) *entity.FormFieldItemListFilter {
     var listFilter entity.FormFieldItemListFilter
 
-    listFilter.FormId = f.getFormId(c)
+    listFilter.FormId = ht.getFormId(c)
     parseFilterDetailing(c, &listFilter.Detailing)
 
     return &listFilter
 }
 
-func (f *FormFieldItem) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) GetItem() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        item, err := f.service.GetItem(c.Context(), f.getItemId(c), f.getFormId(c))
+        item, err := ht.service.GetItem(c.Context(), ht.getItemId(c), ht.getFormId(c))
 
         if err != nil {
             return err
@@ -78,7 +78,7 @@ func (f *FormFieldItem) GetItem() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldItem) Create() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) Create() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.CreateFormFieldItem{}
 
@@ -86,17 +86,15 @@ func (f *FormFieldItem) Create() mrapp.HttpHandlerFunc {
            return err
         }
 
-        formId := f.getFormId(c)
-
         item := entity.FormFieldItem{
-            FormId: formId,
+            FormId: ht.getFormId(c),
             TemplateId: request.TemplateId,
             ParamName: request.ParamName,
             Caption: request.Caption,
             Required: request.Required,
         }
 
-        err := f.service.Create(c.Context(), &item)
+        err := ht.service.Create(c.Context(), &item)
 
         if err != nil {
             if usecase.ErrFormFieldItemTemplateNotFound.Is(err) {
@@ -122,7 +120,7 @@ func (f *FormFieldItem) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldItem) Store() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) Store() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.StoreFormFieldItem{}
 
@@ -131,15 +129,15 @@ func (f *FormFieldItem) Store() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormFieldItem{
-            Id: f.getItemId(c),
-            FormId: f.getFormId(c),
-            Version: request.Version,
+            Id:        ht.getItemId(c),
+            FormId:    ht.getFormId(c),
+            Version:   request.Version,
             ParamName: request.ParamName,
-            Caption: request.Caption,
-            Required: request.Required,
+            Caption:   request.Caption,
+            Required:  request.Required,
         }
 
-        err := f.service.Store(c.Context(), &item)
+        err := ht.service.Store(c.Context(), &item)
 
         if err != nil {
             if usecase.ErrFormFieldItemParamNameAlreadyExists.Is(err) {
@@ -153,7 +151,19 @@ func (f *FormFieldItem) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldItem) Move() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) Remove() mrapp.HttpHandlerFunc {
+    return func(c mrapp.ClientData) error {
+        err := ht.service.Remove(c.Context(), ht.getItemId(c), ht.getFormId(c))
+
+        if err != nil {
+            return err
+        }
+
+        return c.SendResponseNoContent()
+    }
+}
+
+func (ht *FormFieldItem) Move() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.MoveFormFieldItem{}
 
@@ -161,11 +171,11 @@ func (f *FormFieldItem) Move() mrapp.HttpHandlerFunc {
             return err
         }
 
-        err := f.service.MoveAfterId(
+        err := ht.service.MoveAfterId(
             c.Context(),
-            f.getItemId(c),
+            ht.getItemId(c),
             request.AfterNodeId,
-            f.getFormId(c),
+            ht.getFormId(c),
         )
 
         if err != nil {
@@ -176,20 +186,8 @@ func (f *FormFieldItem) Move() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldItem) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        err := f.service.Remove(c.Context(), f.getItemId(c), f.getFormId(c))
-
-        if err != nil {
-            return err
-        }
-
-        return c.SendResponseNoContent()
-    }
-}
-
-func (f *FormFieldItem) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
-    id := mrentity.KeyInt32(c.RequestPath().GetInt("fid"))
+func (ht *FormFieldItem) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+    id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {
         return id

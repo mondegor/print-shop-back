@@ -67,6 +67,9 @@ func Run(cfg *config.Config, logger mrapp.Logger, translator mrapp.Translator) {
 
     errorHelper := mrerr.NewHelper()
 
+    itemOrdererStorage := repository.NewItemOrderer(postgresClient, queryBuilder)
+    itemOrdererComponent := usecase.NewItemOrdererComponent(itemOrdererStorage)
+
     catalogBoxStorage := repository.NewCatalogBox(postgresClient, queryBuilder)
     catalogBoxService := usecase.NewCatalogBox(catalogBoxStorage, errorHelper)
     catalogBoxHttp := http_v1.NewCatalogBox(catalogBoxService)
@@ -106,9 +109,7 @@ func Run(cfg *config.Config, logger mrapp.Logger, translator mrapp.Translator) {
     uiFormDataService := usecase.NewUIFormData(formDataStorage, formFieldItemStorage, errorHelper)
     formDataHttp := http_v1.NewFormData(formDataService, uiFormDataService)
 
-    formFieldItemOrdererStorage := repository.NewItemOrderer(postgresClient, queryBuilder)
-    formFieldItemOrdererComponent := usecase.NewItemOrdererComponent(formFieldItemOrdererStorage)
-    formFieldItemService := usecase.NewFormFieldItem(formFieldItemOrdererComponent, formFieldItemStorage, formFieldTemplateStorage, errorHelper)
+    formFieldItemService := usecase.NewFormFieldItem(itemOrdererComponent, formFieldItemStorage, formFieldTemplateStorage, errorHelper)
     formFieldItemHttp := http_v1.NewFormFieldItem(formFieldItemService, formDataService, formFieldTemplateService)
 
     logger.Info("Create router")

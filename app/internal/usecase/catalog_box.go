@@ -15,7 +15,8 @@ type CatalogBox struct {
     statusFlow entity.ItemStatusFlow
 }
 
-func NewCatalogBox(storage CatalogBoxStorage, errorHelper *mrerr.Helper) *CatalogBox {
+func NewCatalogBox(storage CatalogBoxStorage,
+                   errorHelper *mrerr.Helper) *CatalogBox {
     return &CatalogBox{
         storage: storage,
         errorHelper: errorHelper,
@@ -23,9 +24,9 @@ func NewCatalogBox(storage CatalogBoxStorage, errorHelper *mrerr.Helper) *Catalo
     }
 }
 
-func (f *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBoxListFilter) ([]entity.CatalogBox, error) {
+func (uc *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBoxListFilter) ([]entity.CatalogBox, error) {
     items := make([]entity.CatalogBox, 0, 16)
-    err := f.storage.LoadAll(ctx, listFilter, &items)
+    err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
         return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
@@ -34,16 +35,16 @@ func (f *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBoxL
     return items, nil
 }
 
-func (f *CatalogBox) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogBox, error) {
+func (uc *CatalogBox) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogBox, error) {
     if id < 1 {
         return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogBox{Id: id}
-    err := f.storage.LoadOne(ctx, item)
+    err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
+        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
     }
 
     return item, nil
@@ -51,91 +52,91 @@ func (f *CatalogBox) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity
 
 // Create
 // modifies: item{Id}
-func (f *CatalogBox) Create(ctx context.Context, item *entity.CatalogBox) error {
-    err := f.checkArticle(ctx, item)
+func (uc *CatalogBox) Create(ctx context.Context, item *entity.CatalogBox) error {
+    err := uc.checkArticle(ctx, item)
 
     if err != nil {
         return err
     }
 
     item.Status = entity.ItemStatusDraft
-    err = f.storage.Insert(ctx, item)
+    err = uc.storage.Insert(ctx, item)
 
     if err != nil {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogBox, item.Id)
+    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogBox, item.Id)
 
     return nil
 }
 
-func (f *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error {
+func (uc *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    err := f.checkArticle(ctx, item)
+    err := uc.checkArticle(ctx, item)
 
     if err != nil {
         return err
     }
 
-    err = f.storage.Update(ctx, item)
+    err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogBox, item.Id)
+    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogBox, item.Id)
 
     return nil
 }
 
-func (f *CatalogBox) ChangeStatus(ctx context.Context, item *entity.CatalogBox) error {
+func (uc *CatalogBox) ChangeStatus(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    currentStatus, err := f.storage.FetchStatus(ctx, item)
+    currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
+        return uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogBox)
     }
 
-    if !f.statusFlow.Check(currentStatus, item.Status) {
+    if !uc.statusFlow.Check(currentStatus, item.Status) {
         return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogBox, item.Id)
     }
 
-    err = f.storage.UpdateStatus(ctx, item)
+    err = uc.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogBox, item.Id, item.Status)
+    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogBox, item.Id, item.Status)
 
     return nil
 }
 
-func (f *CatalogBox) Remove(ctx context.Context, id mrentity.KeyInt32) error {
+func (uc *CatalogBox) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
-    err := f.storage.Delete(ctx, id)
+    err := uc.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogBox)
+        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogBox)
     }
 
-    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogBox, id)
+    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogBox, id)
 
     return nil
 }
 
-func (f *CatalogBox) checkArticle(ctx context.Context, item *entity.CatalogBox) error {
-    id, err := f.storage.FetchIdByArticle(ctx, item)
+func (uc *CatalogBox) checkArticle(ctx context.Context, item *entity.CatalogBox) error {
+    id, err := uc.storage.FetchIdByArticle(ctx, item)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {
@@ -152,6 +153,6 @@ func (f *CatalogBox) checkArticle(ctx context.Context, item *entity.CatalogBox) 
     return ErrCatalogBoxArticleAlreadyExists.New(item.Article)
 }
 
-func (f *CatalogBox) logger(ctx context.Context) mrapp.Logger {
+func (uc *CatalogBox) logger(ctx context.Context) mrapp.Logger {
     return mrcontext.GetLogger(ctx)
 }

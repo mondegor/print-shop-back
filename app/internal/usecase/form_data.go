@@ -15,7 +15,8 @@ type FormData struct {
     statusFlow entity.ItemStatusFlow
 }
 
-func NewFormData(storage FormDataStorage, errorHelper *mrerr.Helper) *FormData {
+func NewFormData(storage FormDataStorage,
+                 errorHelper *mrerr.Helper) *FormData {
     return &FormData{
         storage: storage,
         errorHelper: errorHelper,
@@ -23,9 +24,9 @@ func NewFormData(storage FormDataStorage, errorHelper *mrerr.Helper) *FormData {
     }
 }
 
-func (f *FormData) GetList(ctx context.Context, listFilter *entity.FormDataListFilter) ([]entity.FormData, error) {
+func (uc *FormData) GetList(ctx context.Context, listFilter *entity.FormDataListFilter) ([]entity.FormData, error) {
     items := make([]entity.FormData, 0, 16)
-    err := f.storage.LoadAll(ctx, listFilter, &items)
+    err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
         return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
@@ -34,118 +35,118 @@ func (f *FormData) GetList(ctx context.Context, listFilter *entity.FormDataListF
     return items, nil
 }
 
-func (f *FormData) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.FormData, error) {
+func (uc *FormData) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.FormData, error) {
     if id < 1 {
         return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.FormData{Id: id}
-    err := f.storage.LoadOne(ctx, item)
+    err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
+        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
     }
 
     return item, nil
 }
 
-func (f *FormData) CheckAvailability(ctx context.Context, id mrentity.KeyInt32) error {
+func (uc *FormData) CheckAvailability(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
-    err := f.storage.IsExists(ctx, id)
+    err := uc.storage.IsExists(ctx, id)
 
-    return f.errorHelper.ReturnErrorIfItemNotFound(err, entity.ModelNameFormData)
+    return uc.errorHelper.ReturnErrorIfItemNotFound(err, entity.ModelNameFormData)
 }
 
 // Create
 // modifies: item{Id}
-func (f *FormData) Create(ctx context.Context, item *entity.FormData) error {
-    err := f.checkParamName(ctx, item)
+func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
+    err := uc.checkParamName(ctx, item)
 
     if err != nil {
         return err
     }
 
     item.Status = entity.ItemStatusDraft
-    err = f.storage.Insert(ctx, item)
+    err = uc.storage.Insert(ctx, item)
 
     if err != nil {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormData)
     }
 
-    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormData, item.Id)
+    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormData, item.Id)
 
     return nil
 }
 
-func (f *FormData) Store(ctx context.Context, item *entity.FormData) error {
+func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    err := f.checkParamName(ctx, item)
+    err := uc.checkParamName(ctx, item)
 
     if err != nil {
         return err
     }
 
-    err = f.storage.Update(ctx, item)
+    err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormData, item.Id)
+    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormData, item.Id)
 
     return nil
 }
 
-func (f *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) error {
+func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    currentStatus, err := f.storage.FetchStatus(ctx, item)
+    currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
+        return uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
     }
 
-    if !f.statusFlow.Check(currentStatus, item.Status) {
+    if !uc.statusFlow.Check(currentStatus, item.Status) {
         return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameFormData, item.Id)
     }
 
-    err = f.storage.UpdateStatus(ctx, item)
+    err = uc.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameFormData, item.Id, item.Status)
+    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameFormData, item.Id, item.Status)
 
     return nil
 }
 
-func (f *FormData) Remove(ctx context.Context, id mrentity.KeyInt32) error {
+func (uc *FormData) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
-    err := f.storage.Delete(ctx, id)
+    err := uc.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormData)
+        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormData)
     }
 
-    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormData, id)
+    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormData, id)
 
     return nil
 }
 
-func (f *FormData) checkParamName(ctx context.Context, item *entity.FormData) error {
-    id, err := f.storage.FetchIdByName(ctx, item)
+func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) error {
+    id, err := uc.storage.FetchIdByName(ctx, item)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {
@@ -162,6 +163,6 @@ func (f *FormData) checkParamName(ctx context.Context, item *entity.FormData) er
     return ErrFormFieldItemParamNameAlreadyExists.New(item.ParamName)
 }
 
-func (f *FormData) logger(ctx context.Context) mrapp.Logger {
+func (uc *FormData) logger(ctx context.Context) mrapp.Logger {
     return mrcontext.GetLogger(ctx)
 }

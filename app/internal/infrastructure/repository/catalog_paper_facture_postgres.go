@@ -15,15 +15,16 @@ type CatalogPaperFacture struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogPaperFacture(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *CatalogPaperFacture {
+func NewCatalogPaperFacture(client *mrpostgres.Connection,
+                            queryBuilder squirrel.StatementBuilderType) *CatalogPaperFacture {
     return &CatalogPaperFacture{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *CatalogPaperFacture) LoadAll(ctx context.Context, listFilter *entity.CatalogPaperFactureListFilter, rows *[]entity.CatalogPaperFacture) error {
-    tbl := f.builder.
+func (re *CatalogPaperFacture) LoadAll(ctx context.Context, listFilter *entity.CatalogPaperFactureListFilter, rows *[]entity.CatalogPaperFacture) error {
+    query := re.builder.
         Select(`
             facture_id,
             tag_version,
@@ -35,16 +36,10 @@ func (f *CatalogPaperFacture) LoadAll(ctx context.Context, listFilter *entity.Ca
         OrderBy("facture_caption ASC, facture_id ASC")
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"facture_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"facture_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -78,7 +73,7 @@ func (f *CatalogPaperFacture) LoadAll(ctx context.Context, listFilter *entity.Ca
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, Caption, Status}
-func (f *CatalogPaperFacture) LoadOne(ctx context.Context, row *entity.CatalogPaperFacture) error {
+func (re *CatalogPaperFacture) LoadOne(ctx context.Context, row *entity.CatalogPaperFacture) error {
     sql := `
         SELECT
             tag_version,
@@ -89,7 +84,12 @@ func (f *CatalogPaperFacture) LoadOne(ctx context.Context, row *entity.CatalogPa
             public.catalog_paper_factures
         WHERE facture_id = $1 AND facture_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.Caption,
@@ -99,7 +99,7 @@ func (f *CatalogPaperFacture) LoadOne(ctx context.Context, row *entity.CatalogPa
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *CatalogPaperFacture) FetchStatus(ctx context.Context, row *entity.CatalogPaperFacture) (entity.ItemStatus, error) {
+func (re *CatalogPaperFacture) FetchStatus(ctx context.Context, row *entity.CatalogPaperFacture) (entity.ItemStatus, error) {
     sql := `
         SELECT facture_status
         FROM
@@ -108,7 +108,7 @@ func (f *CatalogPaperFacture) FetchStatus(ctx context.Context, row *entity.Catal
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -123,20 +123,27 @@ func (f *CatalogPaperFacture) FetchStatus(ctx context.Context, row *entity.Catal
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (f *CatalogPaperFacture) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogPaperFacture) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         SELECT 1
         FROM
             public.catalog_paper_factures
         WHERE facture_id = $1 AND facture_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, id, entity.ItemStatusRemoved).Scan(&id)
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        id,
+        entity.ItemStatusRemoved,
+    ).Scan(
+        &id,
+    )
 }
 
 // Insert
 // uses: row{Caption, Status}
 // modifies: row{Id}
-func (f *CatalogPaperFacture) Insert(ctx context.Context, row *entity.CatalogPaperFacture) error {
+func (re *CatalogPaperFacture) Insert(ctx context.Context, row *entity.CatalogPaperFacture) error {
     sql := `
         INSERT INTO public.catalog_paper_factures
             (facture_caption,
@@ -145,7 +152,7 @@ func (f *CatalogPaperFacture) Insert(ctx context.Context, row *entity.CatalogPap
             ($1, $2)
         RETURNING facture_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Caption,
@@ -159,7 +166,7 @@ func (f *CatalogPaperFacture) Insert(ctx context.Context, row *entity.CatalogPap
 
 // Update
 // uses: row{Id, Version, Caption, Status}
-func (f *CatalogPaperFacture) Update(ctx context.Context, row *entity.CatalogPaperFacture) error {
+func (re *CatalogPaperFacture) Update(ctx context.Context, row *entity.CatalogPaperFacture) error {
     sql := `
         UPDATE public.catalog_paper_factures
         SET
@@ -167,7 +174,7 @@ func (f *CatalogPaperFacture) Update(ctx context.Context, row *entity.CatalogPap
             facture_caption = $4
         WHERE facture_id = $1 AND tag_version = $2 AND facture_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -189,7 +196,7 @@ func (f *CatalogPaperFacture) Update(ctx context.Context, row *entity.CatalogPap
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *CatalogPaperFacture) UpdateStatus(ctx context.Context, row *entity.CatalogPaperFacture) error {
+func (re *CatalogPaperFacture) UpdateStatus(ctx context.Context, row *entity.CatalogPaperFacture) error {
     sql := `
         UPDATE public.catalog_paper_factures
         SET
@@ -198,7 +205,7 @@ func (f *CatalogPaperFacture) UpdateStatus(ctx context.Context, row *entity.Cata
         WHERE
             facture_id = $1 AND tag_version = $2 AND facture_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -218,7 +225,7 @@ func (f *CatalogPaperFacture) UpdateStatus(ctx context.Context, row *entity.Cata
     return nil
 }
 
-func (f *CatalogPaperFacture) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogPaperFacture) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.catalog_paper_factures
         SET
@@ -227,7 +234,7 @@ func (f *CatalogPaperFacture) Delete(ctx context.Context, id mrentity.KeyInt32) 
         WHERE
             facture_id = $1 AND facture_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

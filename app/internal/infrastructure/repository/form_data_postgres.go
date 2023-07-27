@@ -15,15 +15,16 @@ type FormData struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewFormData(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *FormData {
+func NewFormData(client *mrpostgres.Connection,
+                 queryBuilder squirrel.StatementBuilderType) *FormData {
     return &FormData{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListFilter, rows *[]entity.FormData) error {
-    tbl := f.builder.
+func (re *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListFilter, rows *[]entity.FormData) error {
+    query := re.builder.
         Select(`
             form_id,
             tag_version,
@@ -37,20 +38,14 @@ func (f *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListF
         OrderBy("form_caption ASC, form_id ASC")
 
     if len(listFilter.Detailing) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"form_detailing": listFilter.Detailing})
+        query = query.Where(squirrel.Eq{"form_detailing": listFilter.Detailing})
     }
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"form_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"form_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -86,7 +81,7 @@ func (f *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataListF
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, Caption, Detailing, Body, Status}
-func (f *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
+func (re *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
     sql := `
         SELECT
             tag_version,
@@ -100,7 +95,12 @@ func (f *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
             public.form_data
         WHERE form_id = $1 AND form_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.ParamName,
@@ -113,7 +113,7 @@ func (f *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
 
 // FetchIdByName
 // uses: row{FormId, ParamName}
-func (f *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mrentity.KeyInt32, error) {
+func (re *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mrentity.KeyInt32, error) {
     sql := `
         SELECT form_id
         FROM
@@ -122,7 +122,11 @@ func (f *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mre
 
     var id mrentity.KeyInt32
 
-    err := f.client.QueryRow(ctx, sql, row.ParamName).Scan(
+    err := re.client.QueryRow(
+        ctx,
+        sql,
+        row.ParamName,
+    ).Scan(
         &id,
     )
 
@@ -131,7 +135,7 @@ func (f *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mre
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (entity.ItemStatus, error) {
+func (re *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (entity.ItemStatus, error) {
     sql := `
         SELECT form_status
         FROM
@@ -140,7 +144,13 @@ func (f *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (entit
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(ctx, sql, row.Id, row.Version, entity.ItemStatusRemoved).Scan(
+    err := re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        row.Version,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &status,
     )
 
@@ -149,20 +159,27 @@ func (f *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (entit
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (f *FormData) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *FormData) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         SELECT 1
         FROM
             public.form_data
         WHERE form_id = $1 AND form_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, id, entity.ItemStatusRemoved).Scan(&id)
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        id,
+        entity.ItemStatusRemoved,
+    ).Scan(
+        &id,
+    )
 }
 
 // Insert
 // uses: row{Caption, Detailing, Status}
 // modifies: row{Id}
-func (f *FormData) Insert(ctx context.Context, row *entity.FormData) error {
+func (re *FormData) Insert(ctx context.Context, row *entity.FormData) error {
     sql := `
         INSERT INTO public.form_data
             (param_name,
@@ -174,7 +191,7 @@ func (f *FormData) Insert(ctx context.Context, row *entity.FormData) error {
             ($1, $2, $3, '[]', $4)
         RETURNING form_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.ParamName,
@@ -190,14 +207,14 @@ func (f *FormData) Insert(ctx context.Context, row *entity.FormData) error {
 
 // Update
 // uses: row{Id, Version, Caption, Detailing}
-func (f *FormData) Update(ctx context.Context, row *entity.FormData) error {
+func (re *FormData) Update(ctx context.Context, row *entity.FormData) error {
     filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    query := f.builder.
+    query := re.builder.
         Update("public.form_data").
         Set("tag_version", squirrel.Expr("tag_version + 1")).
         SetMap(filledFields).
@@ -205,12 +222,12 @@ func (f *FormData) Update(ctx context.Context, row *entity.FormData) error {
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"form_status": entity.ItemStatusRemoved})
 
-    return f.client.SqUpdate(ctx, query)
+    return re.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) error {
+func (re *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) error {
     sql := `
         UPDATE public.form_data
         SET
@@ -219,7 +236,7 @@ func (f *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) error
         WHERE
             form_id = $1 AND tag_version = $2 AND form_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -239,16 +256,17 @@ func (f *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) error
     return nil
 }
 
-func (f *FormData) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *FormData) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.form_data
         SET
             tag_version = tag_version + 1,
+            param_name = NULL,
             form_status = $2
         WHERE
             form_id = $1 AND form_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

@@ -1,6 +1,18 @@
 # Print Shop Back Changelog
 Все изменения сервиса аутентификации будут документироваться на этой странице.
 
+## 2023-07-27
+### Changed
+- Изменена валидация поля article, теперь доступны все символы кроме пробельных;
+- Переименованы `ErrHttpRequestEnumLen` -> `ErrHttpRequestParamLen` и `ErrHttpRequestParseEnum` -> `ErrHttpRequestParseParam` для обобщения;
+
+### Fixed
+- Добавлено забытое поле `Sides` в `entity.CatalogPaper`;
+- Скорректированы значение валидаторов (min, max, lte)ж
+- Добавлен пропущенный фильтр `App.Request.Query.ItemStatuses` в API документацию;
+- `*Remove` -> `*RemoveURL`;
+- В методах формирования списков заменён: `client.Query` -> `client.SqQuery`;
+
 ## 2023-07-23
 ### Add
 - Добавлена возможность обновления только указанных полей структуры;

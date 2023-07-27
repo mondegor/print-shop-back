@@ -25,28 +25,28 @@ func NewItemMetaData(tableName string, primaryKeyName string, conds []Condition)
     }
 }
 
-func (c *ItemMetaData) TableInfo() *entity.TableInfo {
-    return c.tableInfo
+func (mt *ItemMetaData) TableInfo() *entity.TableInfo {
+    return mt.tableInfo
 }
 
-func (c *ItemMetaData) PrepareSelect(query squirrel.SelectBuilder) squirrel.SelectBuilder {
-    for _, cond := range c.conditions {
+func (mt *ItemMetaData) PrepareSelect(query squirrel.SelectBuilder) squirrel.SelectBuilder {
+    for _, cond := range mt.conditions {
         query = query.Where(cond)
     }
 
     return query
 }
 
-func (c *ItemMetaData) PrepareUpdate(query squirrel.UpdateBuilder) squirrel.UpdateBuilder {
-    for _, cond := range c.conditions {
+func (mt *ItemMetaData) PrepareUpdate(query squirrel.UpdateBuilder) squirrel.UpdateBuilder {
+    for _, cond := range mt.conditions {
         query = query.Where(cond)
     }
 
     return query
 }
 
-func (c *ItemMetaData) PrepareDelete(query squirrel.DeleteBuilder) squirrel.DeleteBuilder {
-    for _, cond := range c.conditions {
+func (mt *ItemMetaData) PrepareDelete(query squirrel.DeleteBuilder) squirrel.DeleteBuilder {
+    for _, cond := range mt.conditions {
         query = query.Where(cond)
     }
 

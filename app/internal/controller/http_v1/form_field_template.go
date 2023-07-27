@@ -16,7 +16,7 @@ const (
     formFieldTemplateCreateURL = "/v1/form-field-templates"
     formFieldTemplateStoreURL = "/v1/form-field-templates/:id"
     formFieldTemplateChangeStatusURL = "/v1/form-field-templates/:id/status"
-    formFieldTemplateRemove = "/v1/form-field-templates/:id"
+    formFieldTemplateRemoveURL = "/v1/form-field-templates/:id"
 )
 
 type FormFieldTemplate struct {
@@ -29,18 +29,18 @@ func NewFormFieldTemplate(service usecase.FormFieldTemplateService) *FormFieldTe
     }
 }
 
-func (f *FormFieldTemplate) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetListURL, f.GetList())
-    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetItemURL, f.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, formFieldTemplateCreateURL, f.Create())
-    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateStoreURL, f.Store())
-    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateChangeStatusURL, f.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, formFieldTemplateRemove, f.Remove())
+func (ht *FormFieldTemplate) AddHandlers(router mrapp.Router) {
+    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetItemURL, ht.GetItem())
+    router.HttpHandlerFunc(http.MethodPost, formFieldTemplateCreateURL, ht.Create())
+    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateChangeStatusURL, ht.ChangeStatus())
+    router.HttpHandlerFunc(http.MethodDelete, formFieldTemplateRemoveURL, ht.Remove())
 }
 
-func (f *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        items, err := f.service.GetList(c.Context(), f.newListFilter(c))
+        items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
             return err
@@ -50,7 +50,7 @@ func (f *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormFieldTemplateListFilter {
+func (ht *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormFieldTemplateListFilter {
     var listFilter entity.FormFieldTemplateListFilter
 
     parseFilterDetailing(c, &listFilter.Detailing)
@@ -59,9 +59,9 @@ func (f *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormFieldT
     return &listFilter
 }
 
-func (f *FormFieldTemplate) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) GetItem() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        item, err := f.service.GetItem(c.Context(), f.getItemId(c))
+        item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -71,7 +71,7 @@ func (f *FormFieldTemplate) GetItem() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.CreateFormFieldTemplate{}
 
@@ -87,7 +87,7 @@ func (f *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
             Body: request.Body,
         }
 
-        err := f.service.Create(c.Context(), &item)
+        err := ht.service.Create(c.Context(), &item)
 
         if err != nil {
             return err
@@ -105,7 +105,7 @@ func (f *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.StoreFormFieldTemplate{}
 
@@ -114,16 +114,16 @@ func (f *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormFieldTemplate{
-            Id: f.getItemId(c),
-            Version: request.Version,
+            Id:        ht.getItemId(c),
+            Version:   request.Version,
             ParamName: request.ParamName,
-            Caption: request.Caption,
-            Type: request.Type,
+            Caption:   request.Caption,
+            Type:      request.Type,
             Detailing: request.Detailing,
-            Body: request.Body,
+            Body:      request.Body,
         }
 
-        err := f.service.Store(c.Context(), &item)
+        err := ht.service.Store(c.Context(), &item)
 
         if err != nil {
             return err
@@ -133,7 +133,7 @@ func (f *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.ChangeItemStatus{}
 
@@ -142,12 +142,12 @@ func (f *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
         }
 
         item := entity.FormFieldTemplate{
-            Id: f.getItemId(c),
+            Id:      ht.getItemId(c),
             Version: request.Version,
-            Status: request.Status,
+            Status:  request.Status,
         }
 
-        err := f.service.ChangeStatus(c.Context(), &item)
+        err := ht.service.ChangeStatus(c.Context(), &item)
 
         if err != nil {
             return err
@@ -157,9 +157,9 @@ func (f *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) Remove() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) Remove() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        err := f.service.Remove(c.Context(), f.getItemId(c))
+        err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -169,7 +169,7 @@ func (f *FormFieldTemplate) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *FormFieldTemplate) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *FormFieldTemplate) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

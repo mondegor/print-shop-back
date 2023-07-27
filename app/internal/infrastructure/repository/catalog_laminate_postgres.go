@@ -15,15 +15,16 @@ type CatalogLaminate struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogLaminate(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *CatalogLaminate {
+func NewCatalogLaminate(client *mrpostgres.Connection,
+                        queryBuilder squirrel.StatementBuilderType) *CatalogLaminate {
     return &CatalogLaminate{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *CatalogLaminate) LoadAll(ctx context.Context, listFilter *entity.CatalogLaminateListFilter, rows *[]entity.CatalogLaminate) error {
-    tbl := f.builder.
+func (re *CatalogLaminate) LoadAll(ctx context.Context, listFilter *entity.CatalogLaminateListFilter, rows *[]entity.CatalogLaminate) error {
+    query := re.builder.
         Select(`
             laminate_id,
             tag_version,
@@ -40,16 +41,10 @@ func (f *CatalogLaminate) LoadAll(ctx context.Context, listFilter *entity.Catalo
         OrderBy("laminate_caption ASC, laminate_id ASC")
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"laminate_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"laminate_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -88,7 +83,7 @@ func (f *CatalogLaminate) LoadAll(ctx context.Context, listFilter *entity.Catalo
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, Article, Caption, TypeId, Length, Weight, Thickness, Status}
-func (f *CatalogLaminate) LoadOne(ctx context.Context, row *entity.CatalogLaminate) error {
+func (re *CatalogLaminate) LoadOne(ctx context.Context, row *entity.CatalogLaminate) error {
     sql := `
         SELECT
             tag_version,
@@ -104,7 +99,12 @@ func (f *CatalogLaminate) LoadOne(ctx context.Context, row *entity.CatalogLamina
             public.catalog_laminates
         WHERE laminate_id = $1 AND laminate_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.Article,
@@ -119,7 +119,7 @@ func (f *CatalogLaminate) LoadOne(ctx context.Context, row *entity.CatalogLamina
 
 // FetchIdByArticle
 // uses: row{Article}
-func (f *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.CatalogLaminate) (mrentity.KeyInt32, error) {
+func (re *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.CatalogLaminate) (mrentity.KeyInt32, error) {
     sql := `
         SELECT laminate_id
         FROM
@@ -128,7 +128,11 @@ func (f *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.Cata
 
     var id mrentity.KeyInt32
 
-    err := f.client.QueryRow(ctx, sql, row.Article).Scan(
+    err := re.client.QueryRow(
+        ctx,
+        sql,
+        row.Article,
+    ).Scan(
         &id,
     )
 
@@ -137,7 +141,7 @@ func (f *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.Cata
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *CatalogLaminate) FetchStatus(ctx context.Context, row *entity.CatalogLaminate) (entity.ItemStatus, error) {
+func (re *CatalogLaminate) FetchStatus(ctx context.Context, row *entity.CatalogLaminate) (entity.ItemStatus, error) {
     sql := `
         SELECT laminate_status
         FROM
@@ -146,7 +150,7 @@ func (f *CatalogLaminate) FetchStatus(ctx context.Context, row *entity.CatalogLa
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -162,7 +166,7 @@ func (f *CatalogLaminate) FetchStatus(ctx context.Context, row *entity.CatalogLa
 // Insert
 // uses: row{Article, Caption, TypeId, Length, Weight, Thickness, Status}
 // modifies: row{Id}
-func (f *CatalogLaminate) Insert(ctx context.Context, row *entity.CatalogLaminate) error {
+func (re *CatalogLaminate) Insert(ctx context.Context, row *entity.CatalogLaminate) error {
     sql := `
         INSERT INTO public.catalog_laminates
             (laminate_article,
@@ -176,7 +180,7 @@ func (f *CatalogLaminate) Insert(ctx context.Context, row *entity.CatalogLaminat
             ($1, $2, $3, $4, $5, $6, $7)
         RETURNING laminate_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Article,
@@ -195,14 +199,14 @@ func (f *CatalogLaminate) Insert(ctx context.Context, row *entity.CatalogLaminat
 
 // Update
 // uses: row{Id, Version, Article, Caption, TypeId, Length, Weight, Thickness, Status}
-func (f *CatalogLaminate) Update(ctx context.Context, row *entity.CatalogLaminate) error {
+func (re *CatalogLaminate) Update(ctx context.Context, row *entity.CatalogLaminate) error {
     filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    query := f.builder.
+    query := re.builder.
         Update("public.catalog_laminates").
         Set("tag_version", squirrel.Expr("tag_version + 1")).
         SetMap(filledFields).
@@ -210,12 +214,12 @@ func (f *CatalogLaminate) Update(ctx context.Context, row *entity.CatalogLaminat
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"laminate_status": entity.ItemStatusRemoved})
 
-    return f.client.SqUpdate(ctx, query)
+    return re.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *CatalogLaminate) UpdateStatus(ctx context.Context, row *entity.CatalogLaminate) error {
+func (re *CatalogLaminate) UpdateStatus(ctx context.Context, row *entity.CatalogLaminate) error {
     sql := `
         UPDATE public.catalog_laminates
         SET
@@ -224,7 +228,7 @@ func (f *CatalogLaminate) UpdateStatus(ctx context.Context, row *entity.CatalogL
         WHERE
             laminate_id = $1 AND tag_version = $2 AND laminate_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -244,16 +248,17 @@ func (f *CatalogLaminate) UpdateStatus(ctx context.Context, row *entity.CatalogL
     return nil
 }
 
-func (f *CatalogLaminate) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogLaminate) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.catalog_laminates
         SET
             tag_version = tag_version + 1,
+            laminate_article = NULL,
             laminate_status = $2
         WHERE
             laminate_id = $1 AND laminate_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

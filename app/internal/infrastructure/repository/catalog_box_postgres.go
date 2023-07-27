@@ -15,15 +15,16 @@ type CatalogBox struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogBox(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *CatalogBox {
+func NewCatalogBox(client *mrpostgres.Connection,
+                   queryBuilder squirrel.StatementBuilderType) *CatalogBox {
     return &CatalogBox{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBoxListFilter, rows *[]entity.CatalogBox) error {
-    tbl := f.builder.
+func (re *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBoxListFilter, rows *[]entity.CatalogBox) error {
+    query := re.builder.
         Select(`
             box_id,
             tag_version,
@@ -39,16 +40,10 @@ func (f *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBoxL
         OrderBy("box_caption ASC, box_id ASC")
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"box_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"box_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -86,7 +81,7 @@ func (f *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBoxL
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, Article, Caption, Length, Width, Depth, Status}
-func (f *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error {
+func (re *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error {
     sql := `
         SELECT
             tag_version,
@@ -101,7 +96,12 @@ func (f *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error 
             public.catalog_boxes
         WHERE box_id = $1 AND box_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.Article,
@@ -115,7 +115,7 @@ func (f *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error 
 
 // FetchIdByArticle
 // uses: row{Article}
-func (f *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogBox) (mrentity.KeyInt32, error) {
+func (re *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogBox) (mrentity.KeyInt32, error) {
     sql := `
         SELECT box_id
         FROM
@@ -124,7 +124,11 @@ func (f *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogBo
 
     var id mrentity.KeyInt32
 
-    err := f.client.QueryRow(ctx, sql, row.Article).Scan(
+    err := re.client.QueryRow(
+        ctx,
+        sql,
+        row.Article,
+    ).Scan(
         &id,
     )
 
@@ -133,7 +137,7 @@ func (f *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogBo
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (entity.ItemStatus, error) {
+func (re *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (entity.ItemStatus, error) {
     sql := `
         SELECT box_status
         FROM
@@ -142,7 +146,7 @@ func (f *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (e
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -158,7 +162,7 @@ func (f *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (e
 // Insert
 // uses: row{Article, Caption, Length, Width, Depth, Status}
 // modifies: row{Id}
-func (f *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error {
+func (re *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error {
     sql := `
         INSERT INTO public.catalog_boxes
             (box_article,
@@ -171,7 +175,7 @@ func (f *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error {
             ($1, $2, $3, $4, $5, $6)
         RETURNING box_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Article,
@@ -189,14 +193,14 @@ func (f *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error {
 
 // Update
 // uses: row{Id, Version, Article, Caption, Length, Width, Depth, Status}
-func (f *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error {
+func (re *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error {
     filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    query := f.builder.
+    query := re.builder.
         Update("public.catalog_boxes").
         Set("tag_version", squirrel.Expr("tag_version + 1")).
         SetMap(filledFields).
@@ -204,12 +208,12 @@ func (f *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error {
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"box_status": entity.ItemStatusRemoved})
 
-    return f.client.SqUpdate(ctx, query)
+    return re.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) error {
+func (re *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) error {
     sql := `
         UPDATE public.catalog_boxes
         SET
@@ -218,7 +222,7 @@ func (f *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) e
         WHERE
             box_id = $1 AND tag_version = $2 AND box_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -238,16 +242,17 @@ func (f *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) e
     return nil
 }
 
-func (f *CatalogBox) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogBox) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.catalog_boxes
         SET
             tag_version = tag_version + 1,
+            box_article = NULL,
             box_status = $2
         WHERE
             box_id = $1 AND box_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

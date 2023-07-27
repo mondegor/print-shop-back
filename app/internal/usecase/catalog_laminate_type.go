@@ -15,7 +15,8 @@ type CatalogLaminateType struct {
     statusFlow entity.ItemStatusFlow
 }
 
-func NewCatalogLaminateType(storage CatalogLaminateTypeStorage, errorHelper *mrerr.Helper) *CatalogLaminateType {
+func NewCatalogLaminateType(storage CatalogLaminateTypeStorage,
+                            errorHelper *mrerr.Helper) *CatalogLaminateType {
     return &CatalogLaminateType{
         storage: storage,
         errorHelper: errorHelper,
@@ -23,9 +24,9 @@ func NewCatalogLaminateType(storage CatalogLaminateTypeStorage, errorHelper *mre
     }
 }
 
-func (f *CatalogLaminateType) GetList(ctx context.Context, listFilter *entity.CatalogLaminateTypeListFilter) ([]entity.CatalogLaminateType, error) {
+func (uc *CatalogLaminateType) GetList(ctx context.Context, listFilter *entity.CatalogLaminateTypeListFilter) ([]entity.CatalogLaminateType, error) {
     items := make([]entity.CatalogLaminateType, 0, 16)
-    err := f.storage.LoadAll(ctx, listFilter, &items)
+    err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
         return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminateType)
@@ -34,16 +35,16 @@ func (f *CatalogLaminateType) GetList(ctx context.Context, listFilter *entity.Ca
     return items, nil
 }
 
-func (f *CatalogLaminateType) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogLaminateType, error) {
+func (uc *CatalogLaminateType) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogLaminateType, error) {
     if id < 1 {
         return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogLaminateType{Id: id}
-    err := f.storage.LoadOne(ctx, item)
+    err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminateType)
+        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminateType)
     }
 
     return item, nil
@@ -51,77 +52,77 @@ func (f *CatalogLaminateType) GetItem(ctx context.Context, id mrentity.KeyInt32)
 
 // Create
 // modifies: item{Id}
-func (f *CatalogLaminateType) Create(ctx context.Context, item *entity.CatalogLaminateType) error {
+func (uc *CatalogLaminateType) Create(ctx context.Context, item *entity.CatalogLaminateType) error {
     item.Status = entity.ItemStatusDraft
-    err := f.storage.Insert(ctx, item)
+    err := uc.storage.Insert(ctx, item)
 
     if err != nil {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminateType)
     }
 
-    f.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
+    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
 
     return nil
 }
 
-func (f *CatalogLaminateType) Store(ctx context.Context, item *entity.CatalogLaminateType) error {
+func (uc *CatalogLaminateType) Store(ctx context.Context, item *entity.CatalogLaminateType) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    err := f.storage.Update(ctx, item)
+    err := uc.storage.Update(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
     }
 
-    f.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
+    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
 
     return nil
 }
 
-func (f *CatalogLaminateType) ChangeStatus(ctx context.Context, item *entity.CatalogLaminateType) error {
+func (uc *CatalogLaminateType) ChangeStatus(ctx context.Context, item *entity.CatalogLaminateType) error {
     if item.Id < 1 || item.Version < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
-    currentStatus, err := f.storage.FetchStatus(ctx, item)
+    currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminateType)
+        return uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminateType)
     }
 
-    if !f.statusFlow.Check(currentStatus, item.Status) {
+    if !uc.statusFlow.Check(currentStatus, item.Status) {
         return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogLaminateType, item.Id)
     }
 
-    err = f.storage.UpdateStatus(ctx, item)
+    err = uc.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
+        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
     }
 
-    f.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogLaminateType, item.Id, item.Status)
+    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogLaminateType, item.Id, item.Status)
 
     return nil
 }
 
-func (f *CatalogLaminateType) Remove(ctx context.Context, id mrentity.KeyInt32) error {
+func (uc *CatalogLaminateType) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
         return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
-    err := f.storage.Delete(ctx, id)
+    err := uc.storage.Delete(ctx, id)
 
     if err != nil {
-        return f.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminateType)
+        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminateType)
     }
 
-    f.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogLaminateType, id)
+    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogLaminateType, id)
 
     return nil
 }
 
-func (f *CatalogLaminateType) logger(ctx context.Context) mrapp.Logger {
+func (uc *CatalogLaminateType) logger(ctx context.Context) mrapp.Logger {
     return mrcontext.GetLogger(ctx)
 }

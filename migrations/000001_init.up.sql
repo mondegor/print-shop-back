@@ -17,13 +17,13 @@ CREATE TYPE form_field_type AS ENUM (
 CREATE TYPE catalog_paper_sides AS ENUM (
     'SAME',
     'DIFFERENT');
-
++
 CREATE TABLE form_field_templates (
 	template_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-	param_name varchar(32) NOT NULL,
-	template_caption varchar(128) NOT NULL,
+	param_name character varying(32) NULL,
+	template_caption character varying(128) NOT NULL,
 	field_type form_field_type NOT NULL,
     field_detailing form_detailing NOT NULL,
 	field_body json NOT NULL,
@@ -35,8 +35,8 @@ CREATE TABLE form_data (
 	form_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    param_name varchar(32) NOT NULL,
-    form_caption varchar(128) NOT NULL,
+    param_name character varying(32) NULL,
+    form_caption character varying(128) NOT NULL,
 	form_detailing form_detailing NOT NULL,
 	form_body_compiled json NOT NULL,
     form_status item_status NOT NULL,
@@ -50,17 +50,17 @@ CREATE TABLE form_fields (
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     template_id int4 NOT NULL CHECK(template_id > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    param_name varchar(32) NULL,
-    field_caption varchar(128) NOT NULL,
+    param_name character varying(32) NULL,
+    field_caption character varying(128) NOT NULL,
     field_required bool NOT NULL,
     field_status item_status NOT NULL,
     prev_field_id int4 NULL CHECK(prev_field_id IS NULL OR prev_field_id > 0),
     next_field_id int4 NULL CHECK(next_field_id IS NULL OR next_field_id > 0),
     order_field int8 NULL CHECK(order_field IS NULL OR order_field > 0),
     CONSTRAINT form_fields_pkey PRIMARY KEY (field_id),
-    CONSTRAINT form_data_fkey FOREIGN KEY (form_id)
+    CONSTRAINT form_fields_form_id FOREIGN KEY (form_id)
         REFERENCES form_data(form_id) ON DELETE CASCADE,
-    CONSTRAINT form_field_templates_fkey FOREIGN KEY (template_id)
+    CONSTRAINT form_fields_template_id FOREIGN KEY (template_id)
         REFERENCES form_field_templates(template_id),
     CONSTRAINT form_fields_param_name UNIQUE (form_id, param_name)
 );
@@ -395,7 +395,7 @@ CREATE TABLE catalog_print_formats (
     format_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    format_caption varchar(64) NOT NULL,
+    format_caption character varying(64) NOT NULL,
     format_length int4 NOT NULL CHECK(format_length > 0 AND format_length < 1000000000), -- mm * 1000
     format_width int4 NOT NULL CHECK(format_width > 0 AND format_width < 1000000000), -- mm * 1000
     format_status item_status NOT NULL,
@@ -454,11 +454,11 @@ CREATE TABLE catalog_boxes (
     box_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    box_article varchar(64) NOT NULL,
-    box_caption varchar(64) NOT NULL,
-    box_length int4 NOT NULL CHECK(box_length > 0 AND box_length < 1000000000),-- mm * 1000
-    box_width int4 NOT NULL CHECK(box_width > 0 AND box_width < 1000000000), -- mm * 1000
-    box_depth int4 NOT NULL CHECK(box_depth > 0 AND box_depth < 1000000000), -- mm * 1000
+    box_article character varying(32) NULL,
+    box_caption character varying(64) NOT NULL,
+    box_length int4 NOT NULL CHECK(box_length > 0 AND box_length < 10000001),-- mm * 1000
+    box_width int4 NOT NULL CHECK(box_width > 0 AND box_width < 10000001), -- mm * 1000
+    box_depth int4 NOT NULL CHECK(box_depth > 0 AND box_depth < 10000001), -- mm * 1000
     box_status item_status NOT NULL,
     CONSTRAINT catalog_boxes_pkey PRIMARY KEY (box_id),
     CONSTRAINT catalog_boxes_box_article UNIQUE (box_article)
@@ -471,7 +471,7 @@ CREATE TABLE catalog_paper_colors (
     color_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    color_caption varchar(64) NOT NULL,
+    color_caption character varying(64) NOT NULL,
     color_status item_status NOT NULL,
     CONSTRAINT catalog_paper_colors_pkey PRIMARY KEY (color_id)
 );
@@ -483,7 +483,7 @@ CREATE TABLE catalog_paper_factures (
     facture_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    facture_caption varchar(64) NOT NULL,
+    facture_caption character varying(64) NOT NULL,
     facture_status item_status NOT NULL,
     CONSTRAINT catalog_paper_factures_pkey PRIMARY KEY (facture_id)
 );
@@ -495,21 +495,21 @@ CREATE TABLE catalog_papers (
     paper_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    paper_article varchar(64) NOT NULL,
-    paper_caption varchar(64) NOT NULL,
-    paper_length int4 NOT NULL CHECK(paper_length > 0 AND paper_length < 1000000000), -- mm * 1000
-    paper_width int4 NOT NULL CHECK(paper_width > 0 AND paper_width < 1000000000), -- mm * 1000
-    paper_density int4 NOT NULL CHECK(paper_density > 0 AND paper_density < 10000), -- g/m2
+    paper_article character varying(32) NULL,
+    paper_caption character varying(64) NOT NULL,
+    paper_length int4 NOT NULL CHECK(paper_length > 0 AND paper_length < 10000001), -- mm * 1000
+    paper_width int4 NOT NULL CHECK(paper_width > 0 AND paper_width < 10000001), -- mm * 1000
+    paper_density int4 NOT NULL CHECK(paper_density > 0 AND paper_density < 10001), -- g/m2
     color_id int4 NOT NULL CHECK(color_id > 0),
     facture_id int4 NOT NULL CHECK(facture_id > 0),
-    paper_thickness int4 NOT NULL CHECK(paper_thickness > 0 AND paper_thickness < 1000000000), -- mm * 1000
+    paper_thickness int4 NOT NULL CHECK(paper_thickness > 0 AND paper_thickness < 1000001), -- mm * 1000
     paper_sides catalog_paper_sides NOT NULL,
     paper_status item_status NOT NULL,
     CONSTRAINT catalog_papers_pkey PRIMARY KEY (paper_id),
     CONSTRAINT catalog_papers_paper_article UNIQUE (paper_article),
-    CONSTRAINT catalog_paper_colors_fkey FOREIGN KEY (color_id)
+    CONSTRAINT catalog_papers_color_id FOREIGN KEY (color_id)
         REFERENCES catalog_paper_colors(color_id),
-    CONSTRAINT catalog_paper_factures_fkey FOREIGN KEY (facture_id)
+    CONSTRAINT catalog_papers_facture_id FOREIGN KEY (facture_id)
         REFERENCES catalog_paper_factures(facture_id)
 );
 
@@ -520,7 +520,7 @@ CREATE TABLE catalog_laminate_types (
     type_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    type_caption varchar(64) NOT NULL,
+    type_caption character varying(64) NOT NULL,
     type_status item_status NOT NULL,
     CONSTRAINT catalog_laminate_types_pkey PRIMARY KEY (type_id)
 );
@@ -532,16 +532,16 @@ CREATE TABLE catalog_laminates (
     laminate_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-    laminate_article varchar(64) NOT NULL,
-    laminate_caption varchar(64) NOT NULL,
+    laminate_article character varying(32) NULL,
+    laminate_caption character varying(64) NOT NULL,
     type_id int4 NOT NULL CHECK(type_id > 0),
-    laminate_length int4 NOT NULL CHECK(laminate_length > 0 AND laminate_length < 1000000000), -- mm * 1000
-    laminate_weight int4 NOT NULL CHECK(laminate_weight > 0 AND laminate_weight < 10000), -- g/m2
-    laminate_thickness int4 NOT NULL CHECK(laminate_thickness > 0 AND laminate_thickness < 1000000), -- mkm
+    laminate_length int4 NOT NULL CHECK(laminate_length > 0 AND laminate_length < 1000000001), -- mm * 1000
+    laminate_weight int4 NOT NULL CHECK(laminate_weight > 0 AND laminate_weight < 10001), -- g/m2
+    laminate_thickness int4 NOT NULL CHECK(laminate_thickness > 0 AND laminate_thickness < 1000001), -- mkm
     laminate_status item_status NOT NULL,
     CONSTRAINT catalog_laminates_pkey PRIMARY KEY (laminate_id),
     CONSTRAINT catalog_laminates_laminate_article UNIQUE (laminate_article),
-    CONSTRAINT catalog_laminate_types_fkey FOREIGN KEY (type_id)
+    CONSTRAINT catalog_laminates_type_id FOREIGN KEY (type_id)
         REFERENCES catalog_laminate_types(type_id)
 );
 

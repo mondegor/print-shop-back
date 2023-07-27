@@ -7,7 +7,7 @@ import (
 )
 
 var (
-    regexpArticle = regexp.MustCompile(`^[a-zA-Z0-9-]+$`)
+    regexpArticle = regexp.MustCompile(`^\S+$`)
     regexpVariable = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]+$`)
 )
 

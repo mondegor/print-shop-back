@@ -15,15 +15,16 @@ type CatalogPaperColor struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogPaperColor(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *CatalogPaperColor {
+func NewCatalogPaperColor(client *mrpostgres.Connection,
+                          queryBuilder squirrel.StatementBuilderType) *CatalogPaperColor {
     return &CatalogPaperColor{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *CatalogPaperColor) LoadAll(ctx context.Context, listFilter *entity.CatalogPaperColorListFilter, rows *[]entity.CatalogPaperColor) error {
-    tbl := f.builder.
+func (re *CatalogPaperColor) LoadAll(ctx context.Context, listFilter *entity.CatalogPaperColorListFilter, rows *[]entity.CatalogPaperColor) error {
+    query := re.builder.
         Select(`
             color_id,
             tag_version,
@@ -35,16 +36,10 @@ func (f *CatalogPaperColor) LoadAll(ctx context.Context, listFilter *entity.Cata
         OrderBy("color_caption ASC, color_id ASC")
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"color_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"color_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -78,7 +73,7 @@ func (f *CatalogPaperColor) LoadAll(ctx context.Context, listFilter *entity.Cata
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, Caption, Status}
-func (f *CatalogPaperColor) LoadOne(ctx context.Context, row *entity.CatalogPaperColor) error {
+func (re *CatalogPaperColor) LoadOne(ctx context.Context, row *entity.CatalogPaperColor) error {
     sql := `
         SELECT
             tag_version,
@@ -89,7 +84,12 @@ func (f *CatalogPaperColor) LoadOne(ctx context.Context, row *entity.CatalogPape
             public.catalog_paper_colors
         WHERE color_id = $1 AND color_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.Caption,
@@ -99,7 +99,7 @@ func (f *CatalogPaperColor) LoadOne(ctx context.Context, row *entity.CatalogPape
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *CatalogPaperColor) FetchStatus(ctx context.Context, row *entity.CatalogPaperColor) (entity.ItemStatus, error) {
+func (re *CatalogPaperColor) FetchStatus(ctx context.Context, row *entity.CatalogPaperColor) (entity.ItemStatus, error) {
     sql := `
         SELECT color_status
         FROM
@@ -108,7 +108,7 @@ func (f *CatalogPaperColor) FetchStatus(ctx context.Context, row *entity.Catalog
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -123,20 +123,27 @@ func (f *CatalogPaperColor) FetchStatus(ctx context.Context, row *entity.Catalog
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (f *CatalogPaperColor) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogPaperColor) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         SELECT 1
         FROM
             public.catalog_paper_colors
         WHERE color_id = $1 AND color_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, id, entity.ItemStatusRemoved).Scan(&id)
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        id,
+        entity.ItemStatusRemoved,
+    ).Scan(
+        &id,
+    )
 }
 
 // Insert
 // uses: row{Caption, Status}
 // modifies: row{Id}
-func (f *CatalogPaperColor) Insert(ctx context.Context, row *entity.CatalogPaperColor) error {
+func (re *CatalogPaperColor) Insert(ctx context.Context, row *entity.CatalogPaperColor) error {
     sql := `
         INSERT INTO public.catalog_paper_colors
             (color_caption,
@@ -145,7 +152,7 @@ func (f *CatalogPaperColor) Insert(ctx context.Context, row *entity.CatalogPaper
             ($1, $2)
         RETURNING color_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Caption,
@@ -159,7 +166,7 @@ func (f *CatalogPaperColor) Insert(ctx context.Context, row *entity.CatalogPaper
 
 // Update
 // uses: row{Id, Version, Caption, Status}
-func (f *CatalogPaperColor) Update(ctx context.Context, row *entity.CatalogPaperColor) error {
+func (re *CatalogPaperColor) Update(ctx context.Context, row *entity.CatalogPaperColor) error {
     sql := `
         UPDATE public.catalog_paper_colors
         SET
@@ -167,7 +174,7 @@ func (f *CatalogPaperColor) Update(ctx context.Context, row *entity.CatalogPaper
             color_caption = $4
         WHERE color_id = $1 AND tag_version = $2 AND color_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -189,7 +196,7 @@ func (f *CatalogPaperColor) Update(ctx context.Context, row *entity.CatalogPaper
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *CatalogPaperColor) UpdateStatus(ctx context.Context, row *entity.CatalogPaperColor) error {
+func (re *CatalogPaperColor) UpdateStatus(ctx context.Context, row *entity.CatalogPaperColor) error {
     sql := `
         UPDATE public.catalog_paper_colors
         SET
@@ -198,7 +205,7 @@ func (f *CatalogPaperColor) UpdateStatus(ctx context.Context, row *entity.Catalo
         WHERE
             color_id = $1 AND tag_version = $2 AND color_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -218,7 +225,7 @@ func (f *CatalogPaperColor) UpdateStatus(ctx context.Context, row *entity.Catalo
     return nil
 }
 
-func (f *CatalogPaperColor) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *CatalogPaperColor) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.catalog_paper_colors
         SET
@@ -227,7 +234,7 @@ func (f *CatalogPaperColor) Delete(ctx context.Context, id mrentity.KeyInt32) er
         WHERE
             color_id = $1 AND color_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

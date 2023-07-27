@@ -18,13 +18,13 @@ func EnumItemFromRequest(r *http.Request, key string) (string, error) {
     }
 
     if len(value) > maxEnumLen {
-        return "", ErrHttpRequestEnumLen.New(key, maxEnumLen)
+        return "", ErrHttpRequestParamLen.New(key, maxEnumLen)
     }
 
     value = strings.ToUpper(strings.TrimSpace(value))
 
     if !regexpEnum.MatchString(value) {
-        return "", ErrHttpRequestParseEnum.New(key, value)
+        return "", ErrHttpRequestParseParam.New("enum", key, value)
     }
 
     return value, nil

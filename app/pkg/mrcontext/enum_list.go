@@ -16,7 +16,7 @@ func EnumListFromRequest(r *http.Request, key string) ([]string, error) {
     }
 
     if len(value) > maxEnumListLen {
-        return nil, ErrHttpRequestEnumLen.New(key, maxEnumListLen)
+        return nil, ErrHttpRequestParamLen.New(key, maxEnumListLen)
     }
 
     var items []string
@@ -25,7 +25,7 @@ func EnumListFromRequest(r *http.Request, key string) ([]string, error) {
         item = strings.TrimSpace(item)
 
         if !regexpEnum.MatchString(item) {
-            return nil, ErrHttpRequestParseEnum.New(key, value)
+            return nil, ErrHttpRequestParseParam.New("enum", key, value)
         }
 
         items = append(items, item)

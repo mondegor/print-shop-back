@@ -16,7 +16,7 @@ const (
     catalogPaperCreateURL = "/v1/catalog-papers"
     catalogPaperStoreURL = "/v1/catalog-papers/:id"
     catalogPaperChangeStatusURL = "/v1/catalog-papers/:id/status"
-    catalogPaperRemove = "/v1/catalog-papers/:id"
+    catalogPaperRemoveURL = "/v1/catalog-papers/:id"
 )
 
 type CatalogPaper struct {
@@ -29,18 +29,18 @@ func NewCatalogPaper(service usecase.CatalogPaperService) *CatalogPaper {
     }
 }
 
-func (f *CatalogPaper) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetListURL, f.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetItemURL, f.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogPaperCreateURL, f.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogPaperStoreURL, f.Store())
-    router.HttpHandlerFunc(http.MethodPut, catalogPaperChangeStatusURL, f.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogPaperRemove, f.Remove())
+func (ht *CatalogPaper) AddHandlers(router mrapp.Router) {
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetItemURL, ht.GetItem())
+    router.HttpHandlerFunc(http.MethodPost, catalogPaperCreateURL, ht.Create())
+    router.HttpHandlerFunc(http.MethodPut, catalogPaperStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodPut, catalogPaperChangeStatusURL, ht.ChangeStatus())
+    router.HttpHandlerFunc(http.MethodDelete, catalogPaperRemoveURL, ht.Remove())
 }
 
-func (f *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        items, err := f.service.GetList(c.Context(), f.newListFilter(c))
+        items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
             return err
@@ -50,7 +50,7 @@ func (f *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperListFilter {
+func (ht *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperListFilter {
     var listFilter entity.CatalogPaperListFilter
 
     parseFilterStatuses(c, &listFilter.Statuses)
@@ -58,9 +58,9 @@ func (f *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperLis
     return &listFilter
 }
 
-func (f *CatalogPaper) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) GetItem() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        item, err := f.service.GetItem(c.Context(), f.getItemId(c))
+        item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -70,7 +70,7 @@ func (f *CatalogPaper) GetItem() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) Create() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) Create() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.CreateCatalogPaper{}
 
@@ -87,9 +87,10 @@ func (f *CatalogPaper) Create() mrapp.HttpHandlerFunc {
             ColorId: request.ColorId,
             FactureId: request.FactureId,
             Thickness: request.Thickness,
+            Sides: request.Sides,
         }
 
-        err := f.service.Create(c.Context(), &item)
+        err := ht.service.Create(c.Context(), &item)
 
         if err != nil {
             return err
@@ -107,7 +108,7 @@ func (f *CatalogPaper) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) Store() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) Store() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.StoreCatalogPaper{}
 
@@ -116,19 +117,20 @@ func (f *CatalogPaper) Store() mrapp.HttpHandlerFunc {
         }
 
         item := entity.CatalogPaper{
-            Id: f.getItemId(c),
-            Version: request.Version,
-            Article: request.Article,
-            Caption: request.Caption,
-            Length: request.Length,
-            Width: request.Width,
-            Density: request.Density,
-            ColorId: request.ColorId,
+            Id:        ht.getItemId(c),
+            Version:   request.Version,
+            Article:   request.Article,
+            Caption:   request.Caption,
+            Length:    request.Length,
+            Width:     request.Width,
+            Density:   request.Density,
+            ColorId:   request.ColorId,
             FactureId: request.FactureId,
             Thickness: request.Thickness,
+            Sides:     request.Sides,
         }
 
-        err := f.service.Store(c.Context(), &item)
+        err := ht.service.Store(c.Context(), &item)
 
         if err != nil {
             return err
@@ -138,7 +140,7 @@ func (f *CatalogPaper) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         request := dto.ChangeItemStatus{}
 
@@ -147,12 +149,12 @@ func (f *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
         }
 
         item := entity.CatalogPaper{
-            Id: f.getItemId(c),
+            Id:      ht.getItemId(c),
             Version: request.Version,
-            Status: request.Status,
+            Status:  request.Status,
         }
 
-        err := f.service.ChangeStatus(c.Context(), &item)
+        err := ht.service.ChangeStatus(c.Context(), &item)
 
         if err != nil {
             return err
@@ -162,9 +164,9 @@ func (f *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) Remove() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) Remove() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        err := f.service.Remove(c.Context(), f.getItemId(c))
+        err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
             return err
@@ -174,7 +176,7 @@ func (f *CatalogPaper) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (f *CatalogPaper) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *CatalogPaper) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

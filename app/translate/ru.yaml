@@ -3,9 +3,6 @@ messages:
   msgFormFieldTemplateSuccessCreated: Шаблон поля формы был успешно добавлен (rus)
 
 errors:
-#  errMessageToUser:
-#    reason: Unknown error
-
   errSystem:
     reason: System server error (ru)
     details:
@@ -22,32 +19,9 @@ errors:
       - Check fields REST API endpoint (ru)
       - Check fields REST API endpoint1 (ru)
 
-  errAuthUserEmailAlreadyExists:
-    reason: Емаил '{{ .email }}' уже существует
-    details:
-      - DDDDD1
-      - DDDDD2
-
-  errAuthUserEmailAlreadyExists2:
-    reason: Емаил '{{ .email }}' уже существует2
-    details:
-      - XXXXXXXXX1
-      - XXXXXXXXX2
-      - XXXXXXXXX3
-
-  errAuthUserEmailAlreadyExists3:
-    reason: Емаил '{{ .email }}' уже существует3
-    details: [ MMMMMMMMM ]
-
-  errAuthUserEmailAlreadyExistsWithoutDetails:
-    reason: Емаил '{{ .email }}' уже существует4
-
   errServiceEntityTemporarilyUnavailable:
     reason: Ресурс сервиса временно не доступен
     details: [ detail1, detail2 ]
-
-  errValidationEmail:
-    reason: Емаил '{{ .value }}' является невалидным
 
   errValidationMax:
     reason: Значение поля не может быть более 32 символов

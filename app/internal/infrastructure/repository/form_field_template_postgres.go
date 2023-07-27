@@ -15,15 +15,16 @@ type FormFieldTemplate struct {
     builder squirrel.StatementBuilderType
 }
 
-func NewFormFieldTemplate(client *mrpostgres.Connection, queryBuilder squirrel.StatementBuilderType) *FormFieldTemplate {
+func NewFormFieldTemplate(client *mrpostgres.Connection,
+                          queryBuilder squirrel.StatementBuilderType) *FormFieldTemplate {
     return &FormFieldTemplate{
         client: client,
         builder: queryBuilder,
     }
 }
 
-func (f *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.FormFieldTemplateListFilter, rows *[]entity.FormFieldTemplate) error {
-    tbl := f.builder.
+func (re *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.FormFieldTemplateListFilter, rows *[]entity.FormFieldTemplate) error {
+    query := re.builder.
         Select(`
             template_id,
             tag_version,
@@ -38,16 +39,10 @@ func (f *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.Form
         OrderBy("template_caption ASC, template_id ASC")
 
     if len(listFilter.Statuses) > 0 {
-        tbl = tbl.Where(squirrel.Eq{"template_status": listFilter.Statuses})
+        query = query.Where(squirrel.Eq{"template_status": listFilter.Statuses})
     }
 
-    sql, args, err := tbl.ToSql()
-
-    if err != nil {
-        return mrerr.ErrInternal.Wrap(err)
-    }
-
-    cursor, err := f.client.Query(ctx, sql, args...)
+    cursor, err := re.client.SqQuery(ctx, query)
 
     if err != nil {
         return err
@@ -85,7 +80,7 @@ func (f *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.Form
 // LoadOne
 // uses: row{Id}
 // modifies: row{Version, CreatedAt, ParamName, Caption, Type, Detailing, Body, Status}
-func (f *FormFieldTemplate) LoadOne(ctx context.Context, row *entity.FormFieldTemplate) error {
+func (re *FormFieldTemplate) LoadOne(ctx context.Context, row *entity.FormFieldTemplate) error {
     sql := `
         SELECT
             tag_version,
@@ -100,7 +95,12 @@ func (f *FormFieldTemplate) LoadOne(ctx context.Context, row *entity.FormFieldTe
             public.form_field_templates
         WHERE template_id = $1 AND template_status <> $2;`
 
-    return f.client.QueryRow(ctx, sql, row.Id, entity.ItemStatusRemoved).Scan(
+    return re.client.QueryRow(
+        ctx,
+        sql,
+        row.Id,
+        entity.ItemStatusRemoved,
+    ).Scan(
         &row.Version,
         &row.CreatedAt,
         &row.ParamName,
@@ -114,7 +114,7 @@ func (f *FormFieldTemplate) LoadOne(ctx context.Context, row *entity.FormFieldTe
 
 // FetchStatus
 // uses: row{Id, Version}
-func (f *FormFieldTemplate) FetchStatus(ctx context.Context, row *entity.FormFieldTemplate) (entity.ItemStatus, error) {
+func (re *FormFieldTemplate) FetchStatus(ctx context.Context, row *entity.FormFieldTemplate) (entity.ItemStatus, error) {
     sql := `
         SELECT template_status
         FROM
@@ -123,7 +123,7 @@ func (f *FormFieldTemplate) FetchStatus(ctx context.Context, row *entity.FormFie
 
     var status entity.ItemStatus
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
@@ -139,7 +139,7 @@ func (f *FormFieldTemplate) FetchStatus(ctx context.Context, row *entity.FormFie
 // Insert
 // uses: row{ParamName, Caption, Type, Detailing, Body, Status}
 // modifies: row{Id}
-func (f *FormFieldTemplate) Insert(ctx context.Context, row *entity.FormFieldTemplate) error {
+func (re *FormFieldTemplate) Insert(ctx context.Context, row *entity.FormFieldTemplate) error {
     sql := `
         INSERT INTO public.form_field_templates
             (param_name,
@@ -152,7 +152,7 @@ func (f *FormFieldTemplate) Insert(ctx context.Context, row *entity.FormFieldTem
             ($1, $2, $3, $4, $5, $6)
         RETURNING template_id;`
 
-    err := f.client.QueryRow(
+    err := re.client.QueryRow(
         ctx,
         sql,
         row.ParamName,
@@ -170,14 +170,14 @@ func (f *FormFieldTemplate) Insert(ctx context.Context, row *entity.FormFieldTem
 
 // Update
 // uses: row{Id, Version, ParamName, Caption, Type, Detailing, Body}
-func (f *FormFieldTemplate) Update(ctx context.Context, row *entity.FormFieldTemplate) error {
+func (re *FormFieldTemplate) Update(ctx context.Context, row *entity.FormFieldTemplate) error {
     filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
 
     if err != nil {
         return err
     }
 
-    query := f.builder.
+    query := re.builder.
         Update("public.form_field_templates").
         Set("tag_version", squirrel.Expr("tag_version + 1")).
         SetMap(filledFields).
@@ -185,12 +185,12 @@ func (f *FormFieldTemplate) Update(ctx context.Context, row *entity.FormFieldTem
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"template_status": entity.ItemStatusRemoved})
 
-    return f.client.SqUpdate(ctx, query)
+    return re.client.SqUpdate(ctx, query)
 }
 
 // UpdateStatus
 // uses: row{Id, Version, Status}
-func (f *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormFieldTemplate) error {
+func (re *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormFieldTemplate) error {
     sql := `
         UPDATE public.form_field_templates
         SET
@@ -199,7 +199,7 @@ func (f *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormFi
         WHERE
             template_id = $1 AND tag_version = $2 AND template_status <> $3;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -219,16 +219,17 @@ func (f *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormFi
     return nil
 }
 
-func (f *FormFieldTemplate) Delete(ctx context.Context, id mrentity.KeyInt32) error {
+func (re *FormFieldTemplate) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     sql := `
         UPDATE public.form_field_templates
         SET
             tag_version = tag_version + 1,
+            param_name = NULL,
             template_status = $2
         WHERE
             template_id = $1 AND template_status <> $2;`
 
-    commandTag, err := f.client.Exec(
+    commandTag, err := re.client.Exec(
         ctx,
         sql,
         id,

@@ -16,7 +16,9 @@ type UIFormData struct {
     errorHelper *mrerr.Helper
 }
 
-func NewUIFormData(storage FormDataStorage, storageFormFieldItem FormFieldItemStorage, errorHelper *mrerr.Helper) *UIFormData {
+func NewUIFormData(storage FormDataStorage,
+                   storageFormFieldItem FormFieldItemStorage,
+                   errorHelper *mrerr.Helper) *UIFormData {
     return &UIFormData{
         storage: storage,
         storageFormFieldItem: storageFormFieldItem,
@@ -24,24 +26,24 @@ func NewUIFormData(storage FormDataStorage, storageFormFieldItem FormFieldItemSt
     }
 }
 
-func (f *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*entity.UIForm, error) {
+func (uc *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*entity.UIForm, error) {
     if id < 1 {
         return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     form := &entity.FormData{Id: id}
-    err := f.storage.LoadOne(ctx, form)
+    err := uc.storage.LoadOne(ctx, form)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "FormData")
+        return nil, uc.errorHelper.WrapErrorForSelect(err, "FormData")
     }
 
     listFilter := entity.FormFieldItemListFilter{FormId: id}
     items := make([]entity.FormFieldItem, 0, 4)
-    err = f.storageFormFieldItem.LoadAll(ctx, &listFilter, &items)
+    err = uc.storageFormFieldItem.LoadAll(ctx, &listFilter, &items)
 
     if err != nil {
-        return nil, f.errorHelper.WrapErrorForSelect(err, "FormFieldItem")
+        return nil, uc.errorHelper.WrapErrorForSelect(err, "FormFieldItem")
     }
 
     uiForm := entity.UIForm{
@@ -67,7 +69,7 @@ func (f *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*en
                     field.IsRequired = mrentity.BoolPointer(item.Required)
                 }
 
-                f.correctField(field.Id, &field)
+                uc.correctField(field.Id, &field)
 
                 uiForm.Fields = append(uiForm.Fields, field)
             }
@@ -89,7 +91,7 @@ func (f *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*en
             return nil, err
         }
 
-        f.correctField(group.Id, &group)
+        uc.correctField(group.Id, &group)
 
         uiForm.Fields = append(uiForm.Fields, group)
     }
@@ -97,7 +99,7 @@ func (f *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*en
     return &uiForm, nil
 }
 
-func (f *UIFormData) correctField(parentName string, field *entity.UIFieldItem) {
+func (uc *UIFormData) correctField(parentName string, field *entity.UIFieldItem) {
     field.EnabledValues = nil // :TODO: error if not nil
 
     if field.View == entity.UIItemViewBlock {
@@ -114,7 +116,7 @@ func (f *UIFormData) correctField(parentName string, field *entity.UIFieldItem) 
     for i := range field.Values {
         val := &(field.Values)[i]
         val.Id = strings.Replace(val.Id, "%parentId%", parentName, 1)
-        f.correctField(val.Id, val)
+        uc.correctField(val.Id, val)
     }
 }
 

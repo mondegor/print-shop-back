@@ -31,6 +31,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.acceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.correlationId"
+        - $ref: "#/components/parameters/App.Request.Query.ItemStatuses"
 
       responses:
         "200":
@@ -175,7 +176,7 @@ paths:
 
     delete:
       summary: Метод удаления шаблона поля формы
-      description: Метод предназначен для удаления информации о шаблоне поля формы в БД
+      description: Метод предназначен для удаления информации о шаблоне поля формы из БД
       operationId: removeFormFieldTemplate
       tags:
         - FormFieldTemplate
@@ -269,6 +270,15 @@ components:
         type: integer
       example: 1000
 
+    App.Request.Query.ItemStatuses:
+      name: statuses
+      in: query
+      required: false
+      description: Список статусов через ","
+      schema:
+        type: string
+      example: "DRAFT,ENABLED"
+
   schemas:
     App.Response.Model.Error: # RFC 7807 (Problem Details for HTTP APIs)
       type: object
@@ -334,7 +344,7 @@ components:
         version:
           description: Текущая версия ресурса
           type: number
-          example: 11
+          example: 7
         status:
           type: string
           enum:
@@ -355,7 +365,7 @@ components:
         version: # get, store, changeStatus, remove
           description: Текущая версия записи
           type: number
-          example: 11
+          example: 7
         createdAt: # get
           description: Дата и время сохранения записи
           type: string

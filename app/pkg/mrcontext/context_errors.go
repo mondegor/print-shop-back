@@ -3,6 +3,12 @@ package mrcontext
 import "print-shop-back/pkg/mrerr"
 
 var (
+    ErrHttpRequestParamLen = mrerr.NewFactory(
+        "errHttpRequestParamLen", mrerr.ErrorKindUser, "request param with key '{{ .key }}' has value length greater then max '{{ .maxLength }}'")
+
+    ErrHttpRequestParseParam = mrerr.NewFactory(
+        "errHttpRequestParseParam", mrerr.ErrorKindUser, "request param of type '{{ .type }}' with key '{{ .key }}' contains incorrect value '{{ .value }}'")
+
     ErrHttpRequestPlatformValue = mrerr.NewFactory(
         "errHttpRequestPlatformValue", mrerr.ErrorKindInternal, "header 'Platform' contains incorrect value '{{ .value }}'")
 
@@ -14,10 +20,4 @@ var (
 
     ErrHttpRequestParseUserIP = mrerr.NewFactory(
         "errHttpRequestParseUserIP", mrerr.ErrorKindInternal, "UserIP contains incorrect value '{{ .value }}'")
-
-    ErrHttpRequestParseEnum = mrerr.NewFactory(
-    "errHttpRequestParseEnum", mrerr.ErrorKindUser, "enum with key '{{ .key }}' contains incorrect value '{{ .value }}'")
-
-    ErrHttpRequestEnumLen = mrerr.NewFactory(
-        "errHttpRequestEnumLen", mrerr.ErrorKindUser, "enum with key '{{ .key }}' has value length greater then max '{{ .maxLength }}'")
 )

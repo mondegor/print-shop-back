@@ -8,10 +8,10 @@ import (
 
 const ctxParentIdKey = mrcontext.CtxParentIdKey
 
-func (f *FormFieldItem) FormDataMiddleware(next mrapp.HttpHandlerFunc) mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) FormDataMiddleware(next mrapp.HttpHandlerFunc) mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
-        id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
-        err := f.serviceFormData.CheckAvailability(c.Request().Context(), id)
+        id := mrentity.KeyInt32(c.RequestPath().GetInt("fid"))
+        err := ht.serviceFormData.CheckAvailability(c.Request().Context(), id)
 
         if err != nil {
             return err
@@ -21,6 +21,6 @@ func (f *FormFieldItem) FormDataMiddleware(next mrapp.HttpHandlerFunc) mrapp.Htt
     }
 }
 
-func (f *FormFieldItem) getFormId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *FormFieldItem) getFormId(c mrapp.ClientData) mrentity.KeyInt32 {
     return mrcontext.GetId(c.Context(), ctxParentIdKey)
 }
