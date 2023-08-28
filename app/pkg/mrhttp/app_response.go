@@ -2,9 +2,13 @@ package mrhttp
 
 import "encoding/json"
 
+const (
+    AppErrorAttributeNameSystem = "system"
+)
+
 type (
     // application/problem+json:
-	AppErrorResponse struct {
+    AppErrorResponse struct {
         Title string `json:"title"`
         Details string `json:"details"`
         Request string `json:"request"`

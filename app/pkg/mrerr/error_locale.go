@@ -14,7 +14,7 @@ func (e *AppError) GetUserMessage(locale mrapp.Locale) mrlang.ErrorMessage {
 }
 
 func (e *AppError) renderMessage() []byte {
-    if len(e.argsNames) == 0 {
+    if len(e.argsNames) == 0 || len(e.argsNames) != len(e.args) {
         return []byte(e.message)
     }
 

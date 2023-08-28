@@ -60,8 +60,9 @@ func (c *clientContext) Locale() mrapp.Locale {
 func (c *clientContext) Parse(structRequest any) error {
     dec := json.NewDecoder(c.request.Body)
     dec.DisallowUnknownFields()
+    err := dec.Decode(&structRequest)
 
-    if err := dec.Decode(&structRequest); err != nil {
+    if err != nil {
         return mrerr.ErrHttpRequestParseData.Wrap(err)
     }
 
@@ -73,24 +74,26 @@ func (c *clientContext) Validate(structRequest any) error {
 }
 
 func (c *clientContext) ParseAndValidate(structRequest any) error {
-    if err := c.Parse(structRequest); err != nil {
+    err := c.Parse(structRequest)
+
+    if err != nil {
         return err
     }
 
-    if err := c.Validate(structRequest); err != nil {
-        return err
-    }
-
-    return nil
-}
-
-func (c *clientContext) SendResponseNoContent() error {
-    c.responseWriter.WriteHeader(http.StatusNoContent)
-
-    return nil
+    return c.Validate(structRequest)
 }
 
 func (c *clientContext) SendResponse(status int, structResponse any) error {
+    appError := c.sendResponse(status, structResponse)
+
+    if appError != nil {
+        return appError
+    }
+
+    return nil
+}
+
+func (c *clientContext) sendResponse(status int, structResponse any) *mrerr.AppError {
     c.responseWriter.WriteHeader(status)
 
     bytes, err := json.Marshal(structResponse)
@@ -108,28 +111,77 @@ func (c *clientContext) SendResponse(status int, structResponse any) error {
     return nil
 }
 
-func (c *clientContext) SendResponseWithError(err error) {
-    locale := c.Locale()
+func (c *clientContext) SendResponseNoContent() error {
+    c.responseWriter.WriteHeader(http.StatusNoContent)
 
-    if userErrorList, ok := err.(*mrlib.UserErrorList); ok {
-        errorResponseList := AppErrorListResponse{}
+    return nil
+}
 
-        for _, userError := range *userErrorList {
-            errorResponseList.Add(userError.Id, userError.Err.GetUserMessage(locale).Reason)
+func (c *clientContext) sendErrorResponse(err error) {
+    var appError *mrerr.AppError
+
+    for { // only for break
+        if userErrorList, ok := err.(*mrlib.UserErrorList); ok {
+            appError = c.sendUserErrorListResponse(userErrorList)
+            break
         }
 
-        if err = c.SendResponse(http.StatusBadRequest, errorResponseList); err == nil {
-            return
+        if appErrorTmp, ok := err.(*mrerr.AppError); ok {
+            if appErrorTmp.Kind() == mrerr.ErrorKindUser {
+                appError = c.sendUserErrorResponse(appErrorTmp)
+                break
+            }
+
+            appError = appErrorTmp
+            break
         }
+
+        appError = mrerr.ErrInternal.Wrap(err)
+        break
     }
 
-    statusCode, appError := c.getStatusAndAppError(err)
+    if appError != nil {
+        c.Logger().Error(appError)
+        c.sendAppErrorResponse(c.wrapErrorFunc(appError))
+    }
+}
 
-    c.Logger().Error(err)
+func (c *clientContext) sendUserErrorListResponse(list *mrlib.UserErrorList) *mrerr.AppError {
+    locale := c.Locale()
+    errorResponseList := AppErrorListResponse{}
+
+    for _, userError := range *list {
+        if userError.Err.Kind() != mrerr.ErrorKindUser {
+            c.Logger().Error(userError.Err)
+            continue
+        }
+
+        errorResponseList.Add(
+            userError.Id,
+            userError.Err.GetUserMessage(locale).Reason,
+        )
+    }
+
+    return c.sendResponse(http.StatusBadRequest, errorResponseList)
+}
+
+func (c *clientContext) sendUserErrorResponse(appError *mrerr.AppError) *mrerr.AppError {
+    return c.sendResponse(
+        http.StatusBadRequest,
+        AppErrorListResponse{
+            AppErrorAttribute{
+                Id: AppErrorAttributeNameSystem,
+                Value: appError.GetUserMessage(c.Locale()).Reason,
+            },
+        },
+    )
+}
+
+func (c *clientContext) sendAppErrorResponse(status int, appError *mrerr.AppError) {
     c.responseWriter.Header().Set("Content-Type", "application/problem+json")
-    c.responseWriter.WriteHeader(statusCode)
+    c.responseWriter.WriteHeader(status)
 
-    errMessage := appError.GetUserMessage(locale)
+    errMessage := appError.GetUserMessage(c.Locale())
     errorResponse := AppErrorResponse{
         Title: errMessage.Reason,
         Details: errMessage.DetailsToString(),
@@ -141,26 +193,6 @@ func (c *clientContext) SendResponseWithError(err error) {
     c.responseWriter.Write(errorResponse.Marshal())
 }
 
-func (c *clientContext) getStatusAndAppError(err error) (int, *mrerr.AppError) {
-    statusCode := http.StatusTeapot
-
-    if mrerr.ErrServiceEntityNotFound.Is(err) {
-        statusCode = http.StatusNotFound
-        err = mrerr.ErrHttpResourceNotFound.Wrap(err)
-    } else if mrerr.ErrServiceEntityTemporarilyUnavailable.Is(err) {
-        statusCode = http.StatusInternalServerError
-        err = mrerr.ErrHttpResponseSystemTemporarilyUnableToProcess.Wrap(err)
-    } else {
-        if _, ok := err.(*mrerr.AppError); ok {
-            statusCode = http.StatusInternalServerError
-        } else {
-            err = mrerr.ErrInternal.Wrap(err)
-        }
-    }
-
-    return statusCode, err.(*mrerr.AppError)
-}
-
 func (c *clientContext) getErrorTraceId(err *mrerr.AppError) string {
     errorTraceId := err.EventId()
 
@@ -169,4 +201,20 @@ func (c *clientContext) getErrorTraceId(err *mrerr.AppError) string {
     }
 
     return fmt.Sprintf("%s, %s", c.CorrelationId(), err.EventId())
+}
+
+// :TODO: move to package internal
+func (c *clientContext) wrapErrorFunc(err *mrerr.AppError) (int, *mrerr.AppError) {
+    status := http.StatusInternalServerError
+
+    if mrerr.ErrServiceEntityNotFound.Is(err) {
+        status = http.StatusNotFound
+        err = mrerr.ErrHttpResourceNotFound.Wrap(err)
+    } else if mrerr.ErrServiceEntityTemporarilyUnavailable.Is(err) {
+        err = mrerr.ErrHttpResponseSystemTemporarilyUnableToProcess.Wrap(err)
+    } else if err.Code() == mrerr.ErrorCodeInternal {
+        status = http.StatusTeapot
+    }
+
+    return status, err
 }

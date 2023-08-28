@@ -60,7 +60,11 @@ func (uc *CatalogPrintFormat) Create(ctx context.Context, item *entity.CatalogPr
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPrintFormat, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameCatalogPrintFormat,
+        item.Id,
+    )
 
     return nil
 }
@@ -76,7 +80,11 @@ func (uc *CatalogPrintFormat) Store(ctx context.Context, item *entity.CatalogPri
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPrintFormat, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameCatalogPrintFormat,
+        item.Id,
+    )
 
     return nil
 }
@@ -102,7 +110,12 @@ func (uc *CatalogPrintFormat) ChangeStatus(ctx context.Context, item *entity.Cat
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPrintFormat, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameCatalogPrintFormat,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -118,7 +131,11 @@ func (uc *CatalogPrintFormat) Remove(ctx context.Context, id mrentity.KeyInt32) 
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPrintFormat)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPrintFormat, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameCatalogPrintFormat,
+        id,
+    )
 
     return nil
 }

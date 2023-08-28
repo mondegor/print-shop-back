@@ -129,9 +129,7 @@ func (re *CatalogPaper) LoadOne(ctx context.Context, row *entity.CatalogPaper) e
     )
 }
 
-// FetchIdByArticle
-// uses: row{Article}
-func (re *CatalogPaper) FetchIdByArticle(ctx context.Context, row *entity.CatalogPaper) (mrentity.KeyInt32, error) {
+func (re *CatalogPaper) FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error) {
     sql := `
         SELECT paper_id
         FROM
@@ -143,7 +141,7 @@ func (re *CatalogPaper) FetchIdByArticle(ctx context.Context, row *entity.Catalo
     err := re.client.QueryRow(
         ctx,
         sql,
-        row.Article,
+        article,
     ).Scan(
         &id,
     )

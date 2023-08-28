@@ -71,6 +71,14 @@ func (e *AppError) setErrorIfArgsNotEqual(callerSkip int) {
     }
 }
 
+func (e *AppError) Code() ErrorCode {
+    return e.code
+}
+
+func (e *AppError) Kind() ErrorKind {
+    return e.kind
+}
+
 func (e *AppError) Is(err error) bool {
     if v, ok := err.(*AppError); ok && e.code == v.code {
         return true

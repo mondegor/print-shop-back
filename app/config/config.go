@@ -14,7 +14,6 @@ type (
         Listen `yaml:"listen"`
         Log `yaml:"logger"`
         Storage `yaml:"storage"`
-        // Redis `yaml:"redis"`
         // Sentry `yaml:"sentry"`
         Cors `yaml:"cors"`
         Translation `yaml:"translation"`

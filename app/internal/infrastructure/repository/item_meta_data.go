@@ -9,7 +9,7 @@ import (
 type (
     Condition any
 
-	ItemMetaData struct {
+    ItemMetaData struct {
         tableInfo  *entity.TableInfo
         conditions []Condition
     }

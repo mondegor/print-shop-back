@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    formDataGetListURL = "/v1/forms"
-    formDataGetItemURL = "/v1/forms/:fid"
-    formDataCreateURL = "/v1/forms"
-    formDataStoreURL = "/v1/forms/:fid"
-    formDataChangeStatusURL = "/v1/forms/:fid/status/"
-    formDataRemoveURL = "/v1/forms/:fid"
+    formDataListURL = "/v1/forms"
+    formDataItemURL = "/v1/forms/:fid"
+    formDataChangeStatusURL = "/v1/forms/:fid/status"
     formDataCompileURL = "/v1/forms/:fid/compile"
 )
 
@@ -34,12 +31,15 @@ func NewFormData(service usecase.FormDataService,
 }
 
 func (ht *FormData) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formDataGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, formDataGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, formDataCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, formDataStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, formDataListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, formDataListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, formDataItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, formDataItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, formDataItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, formDataChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, formDataRemoveURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPatch, formDataCompileURL, ht.Compile())
 }
 
@@ -64,7 +64,7 @@ func (ht *FormData) newListFilter(c mrapp.ClientData) *entity.FormDataListFilter
     return &listFilter
 }
 
-func (ht *FormData) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormData) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

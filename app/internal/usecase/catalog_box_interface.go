@@ -19,7 +19,7 @@ type (
     CatalogBoxStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogBoxListFilter, rows *[]entity.CatalogBox) error
         LoadOne(ctx context.Context, row *entity.CatalogBox) error
-        FetchIdByArticle(ctx context.Context, row *entity.CatalogBox) (mrentity.KeyInt32, error)
+        FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error)
         FetchStatus(ctx context.Context, row *entity.CatalogBox) (entity.ItemStatus, error)
         Insert(ctx context.Context, row *entity.CatalogBox) error
         Update(ctx context.Context, row *entity.CatalogBox) error

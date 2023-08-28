@@ -74,7 +74,11 @@ func (co *ItemOrderer) InsertToFirst(ctx context.Context, nodeId mrentity.KeyInt
         return err
     }
 
-    co.logger(ctx).Event("%s::InsertToFirst: id=%d", entity.ModelNameItemOrderer, nodeId)
+    co.logger(ctx).Event(
+        "%s::InsertToFirst: id=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+    )
 
     return nil
 }
@@ -114,7 +118,11 @@ func (co *ItemOrderer) InsertToLast(ctx context.Context, nodeId mrentity.KeyInt3
         return err
     }
 
-    co.logger(ctx).Event("%s::InsertToLast: id=%d", entity.ModelNameItemOrderer, nodeId)
+    co.logger(ctx).Event(
+        "%s::InsertToLast: id=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+    )
 
     return nil
 }
@@ -198,7 +206,11 @@ func (co *ItemOrderer) MoveToFirst(ctx context.Context, nodeId mrentity.KeyInt32
         return err
     }
 
-    co.logger(ctx).Event("%s::MoveToFirst: id=%d", entity.ModelNameItemOrderer, nodeId)
+    co.logger(ctx).Event(
+        "%s::MoveToFirst: id=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+    )
 
     return nil
 }
@@ -272,7 +284,11 @@ func (co *ItemOrderer) MoveToLast(ctx context.Context, nodeId mrentity.KeyInt32)
         return err
     }
 
-    co.logger(ctx).Event("%s::MoveToLast: id=%d", entity.ModelNameItemOrderer, nodeId)
+    co.logger(ctx).Event(
+        "%s::MoveToLast: id=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+    )
 
     return nil
 }
@@ -370,7 +386,12 @@ func (co *ItemOrderer) MoveAfterId(ctx context.Context, nodeId mrentity.KeyInt32
         return err
     }
 
-    co.logger(ctx).Event("%s::MoveAfterId: id=%d, afterId=%d, ", entity.ModelNameItemOrderer, nodeId, afterNodeId)
+    co.logger(ctx).Event(
+        "%s::MoveAfterId: id=%d, afterId=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+        afterNodeId,
+    )
 
     return nil
 }
@@ -419,7 +440,11 @@ func (co *ItemOrderer) Unlink(ctx context.Context, nodeId mrentity.KeyInt32) err
         return err
     }
 
-    co.logger(ctx).Event("%s::Unlink: id=%d", entity.ModelNameItemOrderer, nodeId)
+    co.logger(ctx).Event(
+        "%s::Unlink: id=%d",
+        entity.ModelNameItemOrderer,
+        nodeId,
+    )
 
     return nil
 }

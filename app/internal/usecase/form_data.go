@@ -76,7 +76,11 @@ func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormData, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameFormData,
+        item.Id,
+    )
 
     return nil
 }
@@ -98,7 +102,11 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormData, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameFormData,
+        item.Id,
+    )
 
     return nil
 }
@@ -124,7 +132,12 @@ func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) err
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameFormData, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameFormData,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -140,13 +153,17 @@ func (uc *FormData) Remove(ctx context.Context, id mrentity.KeyInt32) error {
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormData, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameFormData,
+        id,
+    )
 
     return nil
 }
 
 func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) error {
-    id, err := uc.storage.FetchIdByName(ctx, item)
+    id, err := uc.storage.FetchIdByName(ctx, item.ParamName)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {

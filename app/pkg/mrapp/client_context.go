@@ -21,9 +21,8 @@ type (
         Validate(structRequest any) error
         ParseAndValidate(structRequest any) error
 
-        SendResponseNoContent() error
         SendResponse(status int, structResponse any) error
-        SendResponseWithError(err error)
+        SendResponseNoContent() error
     }
 
     RequestPath interface {

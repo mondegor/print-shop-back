@@ -111,9 +111,7 @@ func (re *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
     )
 }
 
-// FetchIdByName
-// uses: row{FormId, ParamName}
-func (re *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mrentity.KeyInt32, error) {
+func (re *FormData) FetchIdByName(ctx context.Context, paramName string) (mrentity.KeyInt32, error) {
     sql := `
         SELECT form_id
         FROM
@@ -125,7 +123,7 @@ func (re *FormData) FetchIdByName(ctx context.Context, row *entity.FormData) (mr
     err := re.client.QueryRow(
         ctx,
         sql,
-        row.ParamName,
+        paramName,
     ).Scan(
         &id,
     )

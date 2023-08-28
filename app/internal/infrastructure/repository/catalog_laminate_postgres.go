@@ -117,9 +117,7 @@ func (re *CatalogLaminate) LoadOne(ctx context.Context, row *entity.CatalogLamin
     )
 }
 
-// FetchIdByArticle
-// uses: row{Article}
-func (re *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.CatalogLaminate) (mrentity.KeyInt32, error) {
+func (re *CatalogLaminate) FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error) {
     sql := `
         SELECT laminate_id
         FROM
@@ -131,7 +129,7 @@ func (re *CatalogLaminate) FetchIdByArticle(ctx context.Context, row *entity.Cat
     err := re.client.QueryRow(
         ctx,
         sql,
-        row.Article,
+        article,
     ).Scan(
         &id,
     )

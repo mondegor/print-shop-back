@@ -1,7 +1,6 @@
 package mrhttp
 
 import (
-    "fmt"
     "net/http"
     "print-shop-back/pkg/mrapp"
     "reflect"
@@ -41,7 +40,10 @@ func (rt *Router) RegisterMiddleware(handlers ...mrapp.HttpMiddleware) {
     // recursion call: handler1(handler2(handler3(router())))
     for i := len(handlers) - 1; i >= 0; i-- {
         rt.generalHandler = handlers[i].Middleware(rt.generalHandler)
-        rt.logger.Info(fmt.Sprintf("Registered Middleware %s", runtime.FuncForPC(reflect.ValueOf(rt.generalHandler).Pointer()).Name()))
+        rt.logger.Info(
+            "Registered Middleware %s",
+            runtime.FuncForPC(reflect.ValueOf(rt.generalHandler).Pointer()).Name(),
+        )
     }
 }
 

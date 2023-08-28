@@ -14,6 +14,16 @@ func Ip2int(ip net.IP) (uint32, error) {
     return binary.BigEndian.Uint32(ip), nil
 }
 
+func Ip2intMust(ip net.IP) uint32 {
+    value, err := Ip2int(ip)
+
+    if err != nil {
+        return 0
+    }
+
+    return value
+}
+
 func Int2ip(number uint32) net.IP {
     ip := make(net.IP, 4)
 

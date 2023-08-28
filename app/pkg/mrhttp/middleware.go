@@ -63,6 +63,26 @@ func (rt *Router) MiddlewarePlatform() mrapp.HttpMiddleware {
     })
 }
 
+func (rt *Router) MiddlewareUserIp() mrapp.HttpMiddleware {
+    return mrapp.HttpMiddlewareFunc(func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            logger := mrcontext.GetLogger(r.Context())
+            logger.Debug("Exec MiddlewareUserIp")
+
+            userIp, err := mrcontext.UserIpFromRequest(r)
+
+            if err != nil {
+                logger.Warn(err.Error())
+            }
+
+            logger.Info("UserIp: %s", userIp.String())
+            ctx := mrcontext.UserIpNewContext(r.Context(), userIp)
+
+            next.ServeHTTP(w, r.WithContext(ctx))
+        })
+    })
+}
+
 func (rt *Router) MiddlewareAuthenticateUser() mrapp.HttpMiddleware {
     return mrapp.HttpMiddlewareFunc(func(next http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +108,7 @@ func (rt *Router) MiddlewareLast(next mrapp.HttpHandlerFunc) http.HandlerFunc {
         err := next(&c)
 
         if err != nil {
-            c.SendResponseWithError(err)
+            c.sendErrorResponse(err)
         }
     }
 }

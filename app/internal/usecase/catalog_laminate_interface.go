@@ -19,7 +19,7 @@ type (
     CatalogLaminateStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogLaminateListFilter, rows *[]entity.CatalogLaminate) error
         LoadOne(ctx context.Context, row *entity.CatalogLaminate) error
-        FetchIdByArticle(ctx context.Context, row *entity.CatalogLaminate) (mrentity.KeyInt32, error)
+        FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error)
         FetchStatus(ctx context.Context, row *entity.CatalogLaminate) (entity.ItemStatus, error)
         Insert(ctx context.Context, row *entity.CatalogLaminate) error
         Update(ctx context.Context, row *entity.CatalogLaminate) error

@@ -60,7 +60,11 @@ func (uc *CatalogPaperColor) Create(ctx context.Context, item *entity.CatalogPap
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPaperColor)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPaperColor, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameCatalogPaperColor,
+        item.Id,
+    )
 
     return nil
 }
@@ -76,7 +80,11 @@ func (uc *CatalogPaperColor) Store(ctx context.Context, item *entity.CatalogPape
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaperColor)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPaperColor, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameCatalogPaperColor,
+        item.Id,
+    )
 
     return nil
 }
@@ -102,7 +110,12 @@ func (uc *CatalogPaperColor) ChangeStatus(ctx context.Context, item *entity.Cata
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaperColor)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPaperColor, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameCatalogPaperColor,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -118,7 +131,11 @@ func (uc *CatalogPaperColor) Remove(ctx context.Context, id mrentity.KeyInt32) e
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPaperColor)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPaperColor, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameCatalogPaperColor,
+        id,
+    )
 
     return nil
 }

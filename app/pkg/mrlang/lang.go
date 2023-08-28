@@ -5,7 +5,7 @@ import "strings"
 const LanguageByDefault = "en"
 
 type (
-	LangCode string // ISO 639 and regions
+    LangCode string // ISO 639 and regions
 
     ErrorMessage struct {
         Reason string `yaml:"reason"`

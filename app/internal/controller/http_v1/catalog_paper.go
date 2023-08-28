@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogPaperGetListURL = "/v1/catalog-papers"
-    catalogPaperGetItemURL = "/v1/catalog-papers/:id"
-    catalogPaperCreateURL = "/v1/catalog-papers"
-    catalogPaperStoreURL = "/v1/catalog-papers/:id"
+    catalogPaperListURL = "/v1/catalog-papers"
+    catalogPaperItemURL = "/v1/catalog-papers/:id"
     catalogPaperChangeStatusURL = "/v1/catalog-papers/:id/status"
-    catalogPaperRemoveURL = "/v1/catalog-papers/:id"
 )
 
 type CatalogPaper struct {
@@ -30,12 +27,14 @@ func NewCatalogPaper(service usecase.CatalogPaperService) *CatalogPaper {
 }
 
 func (ht *CatalogPaper) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogPaperCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogPaperStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogPaperListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogPaperItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogPaperItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogPaperChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogPaperRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperLi
     return &listFilter
 }
 
-func (ht *CatalogPaper) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaper) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

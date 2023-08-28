@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogPaperColorGetListURL = "/v1/catalog-paper-colors"
-    catalogPaperColorGetItemURL = "/v1/catalog-paper-colors/:id"
-    catalogPaperColorCreateURL = "/v1/catalog-paper-colors"
-    catalogPaperColorStoreURL = "/v1/catalog-paper-colors/:id"
+    catalogPaperColorListURL = "/v1/catalog-paper-colors"
+    catalogPaperColorItemURL = "/v1/catalog-paper-colors/:id"
     catalogPaperColorChangeStatusURL = "/v1/catalog-paper-colors/:id/status"
-    catalogPaperColorRemoveURL = "/v1/catalog-paper-colors/:id"
 )
 
 type CatalogPaperColor struct {
@@ -30,12 +27,14 @@ func NewCatalogPaperColor(service usecase.CatalogPaperColorService) *CatalogPape
 }
 
 func (ht *CatalogPaperColor) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperColorGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperColorGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogPaperColorCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogPaperColorStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperColorListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogPaperColorListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperColorItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogPaperColorItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogPaperColorItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogPaperColorChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogPaperColorRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogPaperColor) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogPaperColor) newListFilter(c mrapp.ClientData) *entity.CatalogPa
     return &listFilter
 }
 
-func (ht *CatalogPaperColor) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaperColor) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

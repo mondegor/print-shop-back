@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogLaminateTypeGetListURL = "/v1/catalog-laminate-types"
-    catalogLaminateTypeGetItemURL = "/v1/catalog-laminate-types/:id"
-    catalogLaminateTypeCreateURL = "/v1/catalog-laminate-types"
-    catalogLaminateTypeStoreURL = "/v1/catalog-laminate-types/:id"
+    catalogLaminateTypeListURL = "/v1/catalog-laminate-types"
+    catalogLaminateTypeItemURL = "/v1/catalog-laminate-types/:id"
     catalogLaminateTypeChangeStatusURL = "/v1/catalog-laminate-types/:id/status"
-    catalogLaminateTypeRemoveURL = "/v1/catalog-laminate-types/:id"
 )
 
 type CatalogLaminateType struct {
@@ -30,12 +27,14 @@ func NewCatalogLaminateType(service usecase.CatalogLaminateTypeService) *Catalog
 }
 
 func (ht *CatalogLaminateType) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogLaminateTypeGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogLaminateTypeGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogLaminateTypeCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogLaminateTypeStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogLaminateTypeListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogLaminateTypeListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogLaminateTypeItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogLaminateTypeItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogLaminateTypeItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogLaminateTypeChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogLaminateTypeRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogLaminateType) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogLaminateType) newListFilter(c mrapp.ClientData) *entity.Catalog
     return &listFilter
 }
 
-func (ht *CatalogLaminateType) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogLaminateType) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

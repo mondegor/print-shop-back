@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogPaperFactureGetListURL = "/v1/catalog-paper-factures"
-    catalogPaperFactureGetItemURL = "/v1/catalog-paper-factures/:id"
-    catalogPaperFactureCreateURL = "/v1/catalog-paper-factures"
-    catalogPaperFactureStoreURL = "/v1/catalog-paper-factures/:id"
+    catalogPaperFactureListURL = "/v1/catalog-paper-factures"
+    catalogPaperFactureItemURL = "/v1/catalog-paper-factures/:id"
     catalogPaperFactureChangeStatusURL = "/v1/catalog-paper-factures/:id/status"
-    catalogPaperFactureRemoveURL = "/v1/catalog-paper-factures/:id"
 )
 
 type CatalogPaperFacture struct {
@@ -30,12 +27,14 @@ func NewCatalogPaperFacture(service usecase.CatalogPaperFactureService) *Catalog
 }
 
 func (ht *CatalogPaperFacture) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperFactureGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogPaperFactureGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogPaperFactureCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogPaperFactureStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperFactureListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogPaperFactureListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogPaperFactureItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogPaperFactureItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogPaperFactureItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogPaperFactureChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogPaperFactureRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogPaperFacture) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogPaperFacture) newListFilter(c mrapp.ClientData) *entity.Catalog
     return &listFilter
 }
 
-func (ht *CatalogPaperFacture) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogPaperFacture) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

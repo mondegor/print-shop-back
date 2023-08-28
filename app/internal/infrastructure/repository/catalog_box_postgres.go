@@ -113,9 +113,7 @@ func (re *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error
     )
 }
 
-// FetchIdByArticle
-// uses: row{Article}
-func (re *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogBox) (mrentity.KeyInt32, error) {
+func (re *CatalogBox) FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error) {
     sql := `
         SELECT box_id
         FROM
@@ -127,7 +125,7 @@ func (re *CatalogBox) FetchIdByArticle(ctx context.Context, row *entity.CatalogB
     err := re.client.QueryRow(
         ctx,
         sql,
-        row.Article,
+        article,
     ).Scan(
         &id,
     )

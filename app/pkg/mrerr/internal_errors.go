@@ -19,6 +19,9 @@ var (
     ErrInternalParseData = NewFactory(
         "errInternalParseData", ErrorKindInternal, "data '{{ .name1 }}' parsed to {{ .name2 }} with error")
 
+    ErrInternalFailedToClose = NewFactory(
+        "errInternalFailedToClose", ErrorKindInternal, "failed to close '{{ .name }}'")
+
     ErrInternalMapValueNotFound = NewFactory(
         "errInternalMapValueNotFound", ErrorKindInternal, "'{{ .value }}' is not found in map {{ .name }}")
 

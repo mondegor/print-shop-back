@@ -9,8 +9,14 @@ import (
     "github.com/jackc/pgx/v5"
 )
 
+// go get -u github.com/jackc/pgx/v5
+// go get -u github.com/Masterminds/squirrel
+
+const ConnectionName = "postgres"
+const ConnectionCloseTimeout = 10
+
 type (
-	Connection struct {
+    Connection struct {
         conn *pgx.Conn
     }
 
@@ -27,40 +33,44 @@ type (
 )
 
 func New() *Connection {
-	return &Connection{}
+    return &Connection{}
 }
 
 func (c *Connection) Connect(ctx context.Context, opt Options) error {
-	if c.conn != nil {
-		return mrerr.ErrStorageConnectionIsAlreadyCreated.New("postgres")
-	}
+    if c.conn != nil {
+        return mrerr.ErrStorageConnectionIsAlreadyCreated.New(ConnectionName)
+    }
 
-	ctx, cancel := context.WithTimeout(ctx, opt.ConnTimeout * time.Second)
-	defer cancel()
+    ctx, cancel := context.WithTimeout(ctx, opt.ConnTimeout * time.Second)
+    defer cancel()
 
-	var err error
-	c.conn, err = pgx.Connect(ctx, getConnString(&opt))
+    var err error
+    c.conn, err = pgx.Connect(ctx, getConnString(&opt))
 
-	if err != nil {
-        return mrerr.ErrStorageConnectionFailed.Wrap(err, "postgres")
+    if err != nil {
+        return mrerr.ErrStorageConnectionFailed.Wrap(err, ConnectionName)
     }
 
     return nil
 }
 
-func (c *Connection) Close(ctx context.Context) error {
-	if c.conn == nil {
-        panic("connection had not opened")
-	}
-
-	conn := c.conn
-	c.conn = nil
-
-    if err := conn.Close(ctx); err != nil {
-        return mrerr.ErrStorageConnectionFailed.Wrap(err, "postgres")
+func (c *Connection) Close() error {
+    if c.conn == nil {
+        return mrerr.ErrStorageConnectionIsNotOpened.New(ConnectionName)
     }
 
-	return nil
+    ctx, cancel := context.WithTimeout(context.Background(), ConnectionCloseTimeout * time.Second)
+    defer cancel()
+
+    conn := c.conn
+    c.conn = nil
+    err := conn.Close(ctx)
+
+    if err != nil {
+        return mrerr.ErrStorageConnectionFailed.Wrap(err, ConnectionName)
+    }
+
+    return nil
 }
 
 func getConnString(o *Options) string {

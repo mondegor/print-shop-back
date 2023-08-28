@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    formFieldTemplateGetListURL = "/v1/form-field-templates"
-    formFieldTemplateGetItemURL = "/v1/form-field-templates/:id"
-    formFieldTemplateCreateURL = "/v1/form-field-templates"
-    formFieldTemplateStoreURL = "/v1/form-field-templates/:id"
+    formFieldTemplateListURL = "/v1/form-field-templates"
+    formFieldTemplateItemURL = "/v1/form-field-templates/:id"
     formFieldTemplateChangeStatusURL = "/v1/form-field-templates/:id/status"
-    formFieldTemplateRemoveURL = "/v1/form-field-templates/:id"
 )
 
 type FormFieldTemplate struct {
@@ -30,12 +27,14 @@ func NewFormFieldTemplate(service usecase.FormFieldTemplateService) *FormFieldTe
 }
 
 func (ht *FormFieldTemplate) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, formFieldTemplateCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, formFieldTemplateListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, formFieldTemplateItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, formFieldTemplateItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, formFieldTemplateItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, formFieldTemplateChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, formFieldTemplateRemoveURL, ht.Remove())
 }
 
 func (ht *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
@@ -59,7 +58,7 @@ func (ht *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormField
     return &listFilter
 }
 
-func (ht *FormFieldTemplate) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormFieldTemplate) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

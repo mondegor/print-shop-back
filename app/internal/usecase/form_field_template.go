@@ -60,7 +60,11 @@ func (uc *FormFieldTemplate) Create(ctx context.Context, item *entity.FormFieldT
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormFieldTemplate)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormFieldTemplate, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameFormFieldTemplate,
+        item.Id,
+    )
 
     return nil
 }
@@ -76,7 +80,11 @@ func (uc *FormFieldTemplate) Store(ctx context.Context, item *entity.FormFieldTe
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldTemplate)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormFieldTemplate, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameFormFieldTemplate,
+        item.Id,
+    )
 
     return nil
 }
@@ -102,7 +110,12 @@ func (uc *FormFieldTemplate) ChangeStatus(ctx context.Context, item *entity.Form
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldTemplate)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameFormFieldTemplate, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameFormFieldTemplate,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -118,7 +131,11 @@ func (uc *FormFieldTemplate) Remove(ctx context.Context, id mrentity.KeyInt32) e
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldTemplate)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormFieldTemplate, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameFormFieldTemplate,
+        id,
+    )
 
     return nil
 }

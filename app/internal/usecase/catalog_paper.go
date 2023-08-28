@@ -92,7 +92,11 @@ func (uc *CatalogPaper) Create(ctx context.Context, item *entity.CatalogPaper) e
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogPaper)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogPaper, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameCatalogPaper,
+        item.Id,
+    )
 
     return nil
 }
@@ -114,7 +118,11 @@ func (uc *CatalogPaper) Store(ctx context.Context, item *entity.CatalogPaper) er
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaper)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogPaper, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameCatalogPaper,
+        item.Id,
+    )
 
     return nil
 }
@@ -140,7 +148,12 @@ func (uc *CatalogPaper) ChangeStatus(ctx context.Context, item *entity.CatalogPa
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogPaper)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogPaper, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameCatalogPaper,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -156,13 +169,17 @@ func (uc *CatalogPaper) Remove(ctx context.Context, id mrentity.KeyInt32) error 
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogPaper)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogPaper, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameCatalogPaper,
+        id,
+    )
 
     return nil
 }
 
 func (uc *CatalogPaper) checkArticle(ctx context.Context, item *entity.CatalogPaper) error {
-    id, err := uc.storage.FetchIdByArticle(ctx, item)
+    id, err := uc.storage.FetchIdByArticle(ctx, item.Article)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {

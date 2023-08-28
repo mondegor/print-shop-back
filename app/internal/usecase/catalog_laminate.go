@@ -79,7 +79,11 @@ func (uc *CatalogLaminate) Create(ctx context.Context, item *entity.CatalogLamin
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogLaminate, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameCatalogLaminate,
+        item.Id,
+    )
 
     return nil
 }
@@ -101,7 +105,11 @@ func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLamina
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogLaminate, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameCatalogLaminate,
+        item.Id,
+    )
 
     return nil
 }
@@ -127,7 +135,12 @@ func (uc *CatalogLaminate) ChangeStatus(ctx context.Context, item *entity.Catalo
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogLaminate, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameCatalogLaminate,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -143,13 +156,17 @@ func (uc *CatalogLaminate) Remove(ctx context.Context, id mrentity.KeyInt32) err
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogLaminate, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameCatalogLaminate,
+        id,
+    )
 
     return nil
 }
 
 func (uc *CatalogLaminate) checkArticle(ctx context.Context, item *entity.CatalogLaminate) error {
-    id, err := uc.storage.FetchIdByArticle(ctx, item)
+    id, err := uc.storage.FetchIdByArticle(ctx, item.Article)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {

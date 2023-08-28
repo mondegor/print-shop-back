@@ -88,7 +88,11 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameFormFieldItem, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameFormFieldItem,
+        item.Id,
+    )
 
     meta := uc.storage.GetMetaData(item.FormId)
     component := uc.componentOrderer.WithMetaData(meta)
@@ -122,7 +126,11 @@ func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) 
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameFormFieldItem, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameFormFieldItem,
+        item.Id,
+    )
 
     return nil
 }
@@ -138,7 +146,11 @@ func (uc *FormFieldItem) Remove(ctx context.Context, id mrentity.KeyInt32, formI
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameFormFieldItem, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameFormFieldItem,
+        id,
+    )
 
     return nil
 }
@@ -155,7 +167,7 @@ func (uc *FormFieldItem) MoveAfterId(ctx context.Context, id mrentity.KeyInt32, 
 }
 
 func (uc *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFieldItem) error {
-    id, err := uc.storage.FetchIdByName(ctx, item)
+    id, err := uc.storage.FetchIdByName(ctx, item.FormId, item.ParamName)
 
     if err != nil {
         if mrerr.ErrStorageNoRowFound.Is(err) {

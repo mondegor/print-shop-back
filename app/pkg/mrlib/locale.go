@@ -22,7 +22,9 @@ func NewLocale(code mrlang.LangCode, filePath string) (*Locale, error) {
         code: code,
     }
 
-    if err := cleanenv.ReadConfig(filePath, locale); err != nil {
+    err := cleanenv.ReadConfig(filePath, locale)
+
+    if err != nil {
         return nil, fmt.Errorf("while reading locale '%s', error '%s' occurred", filePath, err)
     }
 

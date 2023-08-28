@@ -12,6 +12,8 @@ import (
     "github.com/go-playground/validator/v10"
 )
 
+// go get -u github.com/go-playground/validator/v10
+
 type Validator struct {
     validate *validator.Validate
 }

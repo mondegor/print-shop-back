@@ -7,7 +7,7 @@ import (
 )
 
 func (c *Connection) Begin(ctx context.Context) (pgx.Tx, error) {
-	tx, err := c.conn.Begin(ctx)
+    tx, err := c.conn.Begin(ctx)
 
     if err != nil {
         return nil, c.wrapError(err)

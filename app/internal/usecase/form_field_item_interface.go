@@ -20,7 +20,7 @@ type (
         GetMetaData(formId mrentity.KeyInt32) ItemMetaData
         LoadAll(ctx context.Context, listFilter *entity.FormFieldItemListFilter, rows *[]entity.FormFieldItem) error
         LoadOne(ctx context.Context, row *entity.FormFieldItem) error
-        FetchIdByName(ctx context.Context, row *entity.FormFieldItem) (mrentity.KeyInt32, error)
+        FetchIdByName(ctx context.Context, formId mrentity.KeyInt32, paramName string) (mrentity.KeyInt32, error)
         Insert(ctx context.Context, row *entity.FormFieldItem) error
         Update(ctx context.Context, row *entity.FormFieldItem) error
         Delete(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error

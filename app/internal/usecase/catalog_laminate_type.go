@@ -60,7 +60,11 @@ func (uc *CatalogLaminateType) Create(ctx context.Context, item *entity.CatalogL
         return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminateType)
     }
 
-    uc.logger(ctx).Event("%s::Create: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Create: id=%d",
+        entity.ModelNameCatalogLaminateType,
+        item.Id,
+    )
 
     return nil
 }
@@ -76,7 +80,11 @@ func (uc *CatalogLaminateType) Store(ctx context.Context, item *entity.CatalogLa
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
     }
 
-    uc.logger(ctx).Event("%s::Store: id=%d", entity.ModelNameCatalogLaminateType, item.Id)
+    uc.logger(ctx).Event(
+        "%s::Store: id=%d",
+        entity.ModelNameCatalogLaminateType,
+        item.Id,
+    )
 
     return nil
 }
@@ -102,7 +110,12 @@ func (uc *CatalogLaminateType) ChangeStatus(ctx context.Context, item *entity.Ca
         return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminateType)
     }
 
-    uc.logger(ctx).Event("%s::ChangeStatus: id=%d, status=%s", entity.ModelNameCatalogLaminateType, item.Id, item.Status)
+    uc.logger(ctx).Event(
+        "%s::ChangeStatus: id=%d, status=%s",
+        entity.ModelNameCatalogLaminateType,
+        item.Id,
+        item.Status,
+    )
 
     return nil
 }
@@ -118,7 +131,11 @@ func (uc *CatalogLaminateType) Remove(ctx context.Context, id mrentity.KeyInt32)
         return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminateType)
     }
 
-    uc.logger(ctx).Event("%s::Remove: id=%d", entity.ModelNameCatalogLaminateType, id)
+    uc.logger(ctx).Event(
+        "%s::Remove: id=%d",
+        entity.ModelNameCatalogLaminateType,
+        id,
+    )
 
     return nil
 }

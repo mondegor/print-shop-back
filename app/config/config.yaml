@@ -21,11 +21,6 @@ storage:
   database: db_pg
   timeout: 5
 
-redis:
-  host: 127.0.0.1
-  port: 6379
-  password: 123456
-
 sentry:
   use: false
   dsn: http://a3f690a558be44f6888cb421bcb283bb@127.0.0.1:9050/2

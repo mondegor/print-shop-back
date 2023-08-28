@@ -34,7 +34,7 @@ func (c *Connection) Exec(ctx context.Context, sql string, args ...any) (pgconn.
 func (c *Connection) Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error) {
     c.debugQuery(ctx, sql)
 
-	rows, err := c.conn.Query(ctx, sql, args...)
+    rows, err := c.conn.Query(ctx, sql, args...)
 
     if err != nil {
         return nil, c.wrapError(err)

@@ -10,16 +10,16 @@ func UserIpFromRequest(r *http.Request) (net.IP, error) {
     ip, _, err := net.SplitHostPort(r.RemoteAddr)
 
     if err != nil {
-        return nil, ErrHttpRequestUserIP.New(r.RemoteAddr)
+        return net.IP{}, ErrHttpRequestUserIP.New(r.RemoteAddr)
     }
 
     parsedIp := net.ParseIP(ip)
 
-    if parsedIp == nil {
-        return nil, ErrHttpRequestParseUserIP.New(ip)
+    if parsedIp != nil {
+        return parsedIp, nil
     }
 
-    return parsedIp, nil
+    return net.IP{}, ErrHttpRequestParseUserIP.New(ip)
 }
 
 func UserIpNewContext(ctx context.Context, userIP net.IP) context.Context {

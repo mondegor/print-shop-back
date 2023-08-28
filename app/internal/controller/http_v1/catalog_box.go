@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogBoxGetListURL = "/v1/catalog-boxes"
-    catalogBoxGetItemURL = "/v1/catalog-boxes/:id"
-    catalogBoxCreateURL = "/v1/catalog-boxes"
-    catalogBoxStoreURL = "/v1/catalog-boxes/:id"
+    catalogBoxListURL = "/v1/catalog-boxes"
+    catalogBoxItemURL = "/v1/catalog-boxes/:id"
     catalogBoxChangeStatusURL = "/v1/catalog-boxes/:id/status"
-    catalogBoxRemoveURL = "/v1/catalog-boxes/:id"
 )
 
 type CatalogBox struct {
@@ -30,12 +27,14 @@ func NewCatalogBox(service usecase.CatalogBoxService) *CatalogBox {
 }
 
 func (ht *CatalogBox) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogBoxGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogBoxGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogBoxCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogBoxStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogBoxListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogBoxListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogBoxItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogBoxItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogBoxItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogBoxChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogBoxRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogBox) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogBox) newListFilter(c mrapp.ClientData) *entity.CatalogBoxListFi
     return &listFilter
 }
 
-func (ht *CatalogBox) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogBox) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

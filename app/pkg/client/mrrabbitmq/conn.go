@@ -1,34 +1,28 @@
-package mrredis
+package mrrabbitmq
 
 import (
-    "context"
-    "fmt"
     "print-shop-back/pkg/mrapp"
     "print-shop-back/pkg/mrerr"
-    "time"
+    "fmt"
 
-    "github.com/go-redsync/redsync/v4"
-    "github.com/go-redsync/redsync/v4/redis/goredis/v9"
-    redislib "github.com/redis/go-redis/v9"
+    amqp "github.com/rabbitmq/amqp091-go"
 )
 
-// go get -u github.com/redis/go-redis/v9
-// go get github.com/go-redsync/redsync/v4
+// go get github.com/rabbitmq/amqp091-go@v1.8.1
 
-const ConnectionName = "redis"
+const ConnectionName = "rabbitmq"
 
 type (
     Connection struct {
-        conn redislib.UniversalClient
-        redsync *redsync.Redsync
+        conn *amqp.Connection
         logger mrapp.Logger
     }
 
     Options struct {
         Host string
         Port string
+        User string
         Password string
-        ConnTimeout time.Duration
     }
 )
 
@@ -38,7 +32,7 @@ func New(logger mrapp.Logger) *Connection {
     }
 }
 
-func (c *Connection) Cli() redislib.UniversalClient {
+func (c *Connection) Cli() *amqp.Connection {
     return c.conn
 }
 
@@ -47,17 +41,13 @@ func (c *Connection) Connect(opt Options) error {
         return mrerr.ErrStorageConnectionIsAlreadyCreated.New(ConnectionName)
     }
 
-    conn := redislib.NewClient(getOptions(&opt))
-    _, err := conn.Ping(context.Background()).Result()
+    conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%s/", opt.User, opt.Password, opt.Host, opt.Port))
 
     if err != nil {
         return mrerr.ErrStorageConnectionFailed.Wrap(err, ConnectionName)
     }
 
     c.conn = conn
-
-    pool := goredis.NewPool(conn)
-    c.redsync = redsync.New(pool)
 
     return nil
 }
@@ -76,15 +66,4 @@ func (c *Connection) Close() error {
     }
 
     return nil
-}
-
-func (c *Connection) NewMutex(name string, options ...redsync.Option) *redsync.Mutex {
-    return c.redsync.NewMutex(name, options...)
-}
-
-func getOptions(o *Options) *redislib.Options {
-    return &redislib.Options{
-        Addr: fmt.Sprintf("%s:%s", o.Host, o.Port),
-        Password: o.Password,
-    }
 }

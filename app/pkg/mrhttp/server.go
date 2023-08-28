@@ -1,10 +1,10 @@
 package mrhttp
 
 import (
+    "print-shop-back/pkg/mrapp"
     "context"
     "fmt"
     "net/http"
-    "print-shop-back/pkg/mrapp"
     "time"
 )
 
@@ -42,17 +42,19 @@ func NewServer(logger mrapp.Logger, opt ServerOptions) *Server {
     }
 }
 
-func (s *Server) Start(opt ListenOptions) {
+func (s *Server) Start(opt ListenOptions) error {
     listener, err := s.createListener(&opt)
 
     if err != nil {
-        s.logger.Fatal(fmt.Errorf("http server start: %w", err))
+        return fmt.Errorf("http server start: %w", err)
     }
 
     go func() {
+        defer close(s.notifyChan)
         s.notifyChan <- s.server.Serve(listener)
-        close(s.notifyChan)
     }()
+
+    return nil
 }
 
 func (s *Server) Notify() <-chan error {

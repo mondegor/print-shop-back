@@ -11,12 +11,9 @@ import (
 )
 
 const (
-    catalogPrintFormatGetListURL = "/v1/catalog-print-formats"
-    catalogPrintFormatGetItemURL = "/v1/catalog-print-formats/:id"
-    catalogPrintFormatCreateURL = "/v1/catalog-print-formats"
-    catalogPrintFormatStoreURL = "/v1/catalog-print-formats/:id"
+    catalogPrintFormatListURL = "/v1/catalog-print-formats"
+    catalogPrintFormatItemURL = "/v1/catalog-print-formats/:id"
     catalogPrintFormatChangeStatusURL = "/v1/catalog-print-formats/:id/status"
-    catalogPrintFormatRemoveURL = "/v1/catalog-print-formats/:id"
 )
 
 type CatalogPrintFormat struct {
@@ -30,12 +27,14 @@ func NewCatalogPrintFormat(service usecase.CatalogPrintFormatService) *CatalogPr
 }
 
 func (ht *CatalogPrintFormat) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogPrintFormatGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogPrintFormatGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogPrintFormatCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogPrintFormatStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogPrintFormatListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogPrintFormatListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogPrintFormatItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogPrintFormatItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogPrintFormatItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogPrintFormatChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogPrintFormatRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogPrintFormat) GetList() mrapp.HttpHandlerFunc {
@@ -58,7 +57,7 @@ func (ht *CatalogPrintFormat) newListFilter(c mrapp.ClientData) *entity.CatalogP
     return &listFilter
 }
 
-func (ht *CatalogPrintFormat) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogPrintFormat) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

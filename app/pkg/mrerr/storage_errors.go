@@ -4,6 +4,9 @@ var (
     ErrStorageConnectionIsAlreadyCreated = NewFactory(
         "errStorageConnectionIsAlreadyCreated", ErrorKindInternal, "connection '{{ .name }}' is already created")
 
+    ErrStorageConnectionIsNotOpened = NewFactory(
+        "errStorageConnectionIsNotOpened", ErrorKindInternal, "connection '{{ .name }}' is not opened")
+
     ErrStorageConnectionFailed = NewFactory(
         "errStorageConnectionFailed", ErrorKindSystem, "connection '{{ .name }}' is failed")
 

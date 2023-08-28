@@ -46,9 +46,9 @@ CREATE TABLE form_data (
 
 CREATE TABLE form_fields (
     field_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
-    form_id int4 NOT NULL CHECK(form_id > 0),
+    form_id int4 NOT NULL,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
-    template_id int4 NOT NULL CHECK(template_id > 0),
+    template_id int4 NOT NULL,
     datetime_created timestamp NOT NULL DEFAULT now(),
     param_name character varying(32) NULL,
     field_caption character varying(128) NOT NULL,
@@ -500,8 +500,8 @@ CREATE TABLE catalog_papers (
     paper_length int4 NOT NULL CHECK(paper_length > 0 AND paper_length < 10000001), -- mm * 1000
     paper_width int4 NOT NULL CHECK(paper_width > 0 AND paper_width < 10000001), -- mm * 1000
     paper_density int4 NOT NULL CHECK(paper_density > 0 AND paper_density < 10001), -- g/m2
-    color_id int4 NOT NULL CHECK(color_id > 0),
-    facture_id int4 NOT NULL CHECK(facture_id > 0),
+    color_id int4 NOT NULL,
+    facture_id int4 NOT NULL,
     paper_thickness int4 NOT NULL CHECK(paper_thickness > 0 AND paper_thickness < 1000001), -- mm * 1000
     paper_sides catalog_paper_sides NOT NULL,
     paper_status item_status NOT NULL,
@@ -534,7 +534,7 @@ CREATE TABLE catalog_laminates (
     datetime_created timestamp NOT NULL DEFAULT now(),
     laminate_article character varying(32) NULL,
     laminate_caption character varying(64) NOT NULL,
-    type_id int4 NOT NULL CHECK(type_id > 0),
+    type_id int4 NOT NULL,
     laminate_length int4 NOT NULL CHECK(laminate_length > 0 AND laminate_length < 1000000001), -- mm * 1000
     laminate_weight int4 NOT NULL CHECK(laminate_weight > 0 AND laminate_weight < 10001), -- g/m2
     laminate_thickness int4 NOT NULL CHECK(laminate_thickness > 0 AND laminate_thickness < 1000001), -- mkm

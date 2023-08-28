@@ -19,7 +19,7 @@ type (
     CatalogPaperStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogPaperListFilter, rows *[]entity.CatalogPaper) error
         LoadOne(ctx context.Context, row *entity.CatalogPaper) error
-        FetchIdByArticle(ctx context.Context, row *entity.CatalogPaper) (mrentity.KeyInt32, error)
+        FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error)
         FetchStatus(ctx context.Context, row *entity.CatalogPaper) (entity.ItemStatus, error)
         Insert(ctx context.Context, row *entity.CatalogPaper) error
         Update(ctx context.Context, row *entity.CatalogPaper) error

@@ -17,7 +17,7 @@ const (
 )
 
 var (
-	uiDataTypeName = map[UIDataType]string{
+    uiDataTypeName = map[UIDataType]string{
         UIDataTypeBoolean: "boolean",
         UIDataTypeGroup: "group",
         UIDataTypeEnum: "enum",

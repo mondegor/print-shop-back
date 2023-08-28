@@ -12,12 +12,9 @@ import (
 )
 
 const (
-    catalogLaminateGetListURL = "/v1/catalog-laminates"
-    catalogLaminateGetItemURL = "/v1/catalog-laminates/:id"
-    catalogLaminateCreateURL = "/v1/catalog-laminates"
-    catalogLaminateStoreURL = "/v1/catalog-laminates/:id"
+    catalogLaminateListURL = "/v1/catalog-laminates"
+    catalogLaminateItemURL = "/v1/catalog-laminates/:id"
     catalogLaminateChangeStatusURL = "/v1/catalog-laminates/:id/status"
-    catalogLaminateRemoveURL = "/v1/catalog-laminates/:id"
 )
 
 type CatalogLaminate struct {
@@ -31,12 +28,14 @@ func NewCatalogLaminate(service usecase.CatalogLaminateService) *CatalogLaminate
 }
 
 func (ht *CatalogLaminate) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, catalogLaminateGetListURL, ht.GetList())
-    router.HttpHandlerFunc(http.MethodGet, catalogLaminateGetItemURL, ht.GetItem())
-    router.HttpHandlerFunc(http.MethodPost, catalogLaminateCreateURL, ht.Create())
-    router.HttpHandlerFunc(http.MethodPut, catalogLaminateStoreURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodGet, catalogLaminateListURL, ht.GetList())
+    router.HttpHandlerFunc(http.MethodPost, catalogLaminateListURL, ht.Create())
+
+    router.HttpHandlerFunc(http.MethodGet, catalogLaminateItemURL, ht.Get())
+    router.HttpHandlerFunc(http.MethodPut, catalogLaminateItemURL, ht.Store())
+    router.HttpHandlerFunc(http.MethodDelete, catalogLaminateItemURL, ht.Remove())
+
     router.HttpHandlerFunc(http.MethodPut, catalogLaminateChangeStatusURL, ht.ChangeStatus())
-    router.HttpHandlerFunc(http.MethodDelete, catalogLaminateRemoveURL, ht.Remove())
 }
 
 func (ht *CatalogLaminate) GetList() mrapp.HttpHandlerFunc {
@@ -59,7 +58,7 @@ func (ht *CatalogLaminate) newListFilter(c mrapp.ClientData) *entity.CatalogLami
     return &listFilter
 }
 
-func (ht *CatalogLaminate) GetItem() mrapp.HttpHandlerFunc {
+func (ht *CatalogLaminate) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 

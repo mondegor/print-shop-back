@@ -12,11 +12,8 @@ import (
 )
 
 const (
-    formFieldItemGetListURL = "/v1/forms/:fid/fields"
-    formFieldItemGetItemURL = "/v1/forms/:fid/fields/:id"
-    formFieldItemCreateURL = "/v1/forms/:fid/fields"
-    formFieldItemStoreURL = "/v1/forms/:fid/fields/:id"
-    formFieldItemRemoveURL = "/v1/forms/:fid/fields/:id"
+    formFieldItemListURL = "/v1/forms/:fid/fields"
+    formFieldItemItemURL = "/v1/forms/:fid/fields/:id"
     formFieldItemMoveURL = "/v1/forms/:fid/fields/:id/move"
 )
 
@@ -37,11 +34,13 @@ func NewFormFieldItem(service usecase.FormFieldItemService,
 }
 
 func (ht *FormFieldItem) AddHandlers(router mrapp.Router) {
-    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetListURL, ht.FormDataMiddleware(ht.GetList()))
-    router.HttpHandlerFunc(http.MethodGet, formFieldItemGetItemURL, ht.FormDataMiddleware(ht.GetItem()))
-    router.HttpHandlerFunc(http.MethodPost, formFieldItemCreateURL, ht.FormDataMiddleware(ht.Create()))
-    router.HttpHandlerFunc(http.MethodPut, formFieldItemStoreURL, ht.FormDataMiddleware(ht.Store()))
-    router.HttpHandlerFunc(http.MethodDelete, formFieldItemRemoveURL, ht.FormDataMiddleware(ht.Remove()))
+    router.HttpHandlerFunc(http.MethodGet, formFieldItemListURL, ht.FormDataMiddleware(ht.GetList()))
+    router.HttpHandlerFunc(http.MethodPost, formFieldItemListURL, ht.FormDataMiddleware(ht.Create()))
+
+    router.HttpHandlerFunc(http.MethodGet, formFieldItemItemURL, ht.FormDataMiddleware(ht.Get()))
+    router.HttpHandlerFunc(http.MethodPut, formFieldItemItemURL, ht.FormDataMiddleware(ht.Store()))
+    router.HttpHandlerFunc(http.MethodDelete, formFieldItemItemURL, ht.FormDataMiddleware(ht.Remove()))
+
     router.HttpHandlerFunc(http.MethodPatch, formFieldItemMoveURL, ht.FormDataMiddleware(ht.Move()))
 }
 
@@ -66,7 +65,7 @@ func (ht *FormFieldItem) newListFilter(c mrapp.ClientData) *entity.FormFieldItem
     return &listFilter
 }
 
-func (ht *FormFieldItem) GetItem() mrapp.HttpHandlerFunc {
+func (ht *FormFieldItem) Get() mrapp.HttpHandlerFunc {
     return func(c mrapp.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c), ht.getFormId(c))
 
