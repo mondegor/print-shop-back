@@ -3,7 +3,8 @@ package entity
 import (
     "encoding/json"
     "fmt"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 const quotesByte = 34
@@ -42,7 +43,7 @@ func (v *UIMixedValue) UnmarshalJSON(data []byte) error {
     }
 
     if err != nil {
-        return mrerr.ErrInternalParseData.Wrap(err, "UIMixedValue", "JSON")
+        return mrcore.FactoryErrInternalParseData.Wrap(err, "UIMixedValue", "JSON")
     }
 
     return nil

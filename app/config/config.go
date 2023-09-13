@@ -1,7 +1,7 @@
 package config
 
 import (
-    "log"
+    "fmt"
     "os"
 
     "github.com/ilyakaznacheev/cleanenv"
@@ -11,12 +11,18 @@ type (
     Config struct {
         AppPath string `yaml:"app_path"`
         Debug bool `yaml:"debug" env:"APPX_DEBUG"`
+        Server `yaml:"server"`
         Listen `yaml:"listen"`
         Log `yaml:"logger"`
         Storage `yaml:"storage"`
-        // Sentry `yaml:"sentry"`
         Cors `yaml:"cors"`
         Translation `yaml:"translation"`
+    }
+
+    Server struct {
+        ReadTimeout int32 `yaml:"readTimeout"`
+        WriteTimeout int32 `yaml:"writeTimeout"`
+        ShutdownTimeout int32 `yaml:"shutdownTimeout"`
     }
 
     Listen struct {
@@ -28,7 +34,6 @@ type (
 
     Log struct {
         Level string `yaml:"level" env:"APPX_LOG_LEVEL"`
-        NoColor bool `yaml:"no_color" env:"APPX_NO_COLOR"`
     }
 
     Storage struct {
@@ -37,20 +42,9 @@ type (
         Username string `yaml:"username" env:"APPX_DB_USER"`
         Password string `yaml:"password" env:"APPX_DB_PASSWORD"`
         Database string `yaml:"database" env:"APPX_DB_NAME"`
-        Timeout int `yaml:"timeout"` // in sec
+        MaxPoolSize int32 `yaml:"maxPoolSize" env:"APPX_DB_MAX_POOL_SIZE"`
+        Timeout int32 `yaml:"timeout"` // in sec
     }
-
-    //Redis struct {
-    //    Host string `yaml:"host" env:"APPX_REDIS_HOST"`
-    //    Port string `yaml:"port" env:"APPX_REDIS_PORT"`
-    //    Password string `yaml:"password" env:"APPX_REDIS_PASSWORD"`
-    //    Timeout int `yaml:"timeout"` // in sec
-    //}
-
-    //Sentry struct {
-    //    Use bool `yaml:"use" env:"APPX_SENTRY_USE"`
-    //    Dsn string `yaml:"dsn" env:"APPX_SENTRY_DSN"`
-    //}
 
     Cors struct {
         AllowedOrigins []string `yaml:"allowed_origins"`
@@ -67,23 +61,23 @@ type (
     }
 )
 
-func New(filePath string) *Config {
+func New(filePath string) (*Config, error) {
     cfg := &Config{}
     err := cleanenv.ReadConfig(filePath, cfg)
 
     if err != nil {
-        log.Fatalf("While reading config '%s', error '%s' occurred", filePath, err)
+        return nil, fmt.Errorf("while reading config '%s', error '%s' occurred", filePath, err)
     }
 
     err = cleanenv.ReadEnv(cfg)
 
     if err != nil {
-        log.Fatal(err)
+        return nil, err
     }
 
     if cfg.AppPath == "" {
         cfg.AppPath = os.Args[0]
     }
 
-    return cfg
+    return cfg, nil
 }

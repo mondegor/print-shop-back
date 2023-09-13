@@ -3,24 +3,29 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-sysmess/mrerr"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrtool"
 )
 
 type FormData struct {
     storage FormDataStorage
-    errorHelper *mrerr.Helper
-    statusFlow entity.ItemStatusFlow
+    eventBox mrcore.EventBox
+    serviceHelper *mrtool.ServiceHelper
+    statusFlow mrcom.ItemStatusFlow
 }
 
 func NewFormData(storage FormDataStorage,
-                 errorHelper *mrerr.Helper) *FormData {
+                 eventBox mrcore.EventBox,
+                 serviceHelper *mrtool.ServiceHelper) *FormData {
     return &FormData{
         storage: storage,
-        errorHelper: errorHelper,
-        statusFlow: entity.ItemStatusFlowDefault,
+        eventBox: eventBox,
+        serviceHelper: serviceHelper,
+        statusFlow: mrcom.ItemStatusFlowDefault,
     }
 }
 
@@ -29,7 +34,7 @@ func (uc *FormData) GetList(ctx context.Context, listFilter *entity.FormDataList
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
+        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
     }
 
     return items, nil
@@ -37,14 +42,14 @@ func (uc *FormData) GetList(ctx context.Context, listFilter *entity.FormDataList
 
 func (uc *FormData) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.FormData, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return nil, mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.FormData{Id: id}
     err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
+        return nil, uc.serviceHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
     }
 
     return item, nil
@@ -52,12 +57,12 @@ func (uc *FormData) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.
 
 func (uc *FormData) CheckAvailability(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := uc.storage.IsExists(ctx, id)
 
-    return uc.errorHelper.ReturnErrorIfItemNotFound(err, entity.ModelNameFormData)
+    return uc.serviceHelper.ReturnErrorIfItemNotFound(err, entity.ModelNameFormData)
 }
 
 // Create
@@ -69,14 +74,14 @@ func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
         return err
     }
 
-    item.Status = entity.ItemStatusDraft
+    item.Status = mrcom.ItemStatusDraft
     err = uc.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormData)
+        return mrcore.FactoryErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Create: id=%d",
         entity.ModelNameFormData,
         item.Id,
@@ -87,7 +92,7 @@ func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
 
 func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := uc.checkParamName(ctx, item)
@@ -99,10 +104,10 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
     err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
+        return uc.serviceHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Store: id=%d",
         entity.ModelNameFormData,
         item.Id,
@@ -113,26 +118,26 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
 
 func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
+        return uc.serviceHelper.WrapErrorForSelect(err, entity.ModelNameFormData)
     }
 
     if !uc.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameFormData, item.Id)
+        return mrcore.FactoryErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameFormData, item.Id)
     }
 
     err = uc.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
+        return uc.serviceHelper.WrapErrorForUpdate(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::ChangeStatus: id=%d, status=%s",
         entity.ModelNameFormData,
         item.Id,
@@ -144,16 +149,16 @@ func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) err
 
 func (uc *FormData) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := uc.storage.Delete(ctx, id)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormData)
+        return uc.serviceHelper.WrapErrorForRemove(err, entity.ModelNameFormData)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Remove: id=%d",
         entity.ModelNameFormData,
         id,
@@ -166,11 +171,11 @@ func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) e
     id, err := uc.storage.FetchIdByName(ctx, item.ParamName)
 
     if err != nil {
-        if mrerr.ErrStorageNoRowFound.Is(err) {
+        if mrcore.FactoryErrStorageNoRowFound.Is(err) {
             return nil
         }
 
-        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
+        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
     }
 
     if item.Id == id {
@@ -178,8 +183,4 @@ func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) e
     }
 
     return ErrFormFieldItemParamNameAlreadyExists.New(item.ParamName)
-}
-
-func (uc *FormData) logger(ctx context.Context) mrapp.Logger {
-    return mrcontext.GetLogger(ctx)
 }

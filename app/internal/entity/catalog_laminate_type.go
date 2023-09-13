@@ -1,8 +1,10 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameCatalogLaminateType = "CatalogLaminateType"
@@ -13,10 +15,10 @@ type (
         Version   mrentity.Version `json:"version"` // tag_version
         CreatedAt time.Time `json:"createdAt"` // datetime_created
         Caption   string `json:"caption"` // type_caption
-        Status    ItemStatus `json:"status"` // type_status
+        Status    mrcom.ItemStatus `json:"status"` // type_status
     }
 
     CatalogLaminateTypeListFilter struct {
-        Statuses  []ItemStatus
+        Statuses  []mrcom.ItemStatus
     }
 )

@@ -2,12 +2,15 @@ package http_v1
 
 import (
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
+    "github.com/mondegor/go-webcore/mrreq"
 )
 
-func parseFilterDetailing(c mrapp.ClientData, detailing *[]entity.ItemDetailing) {
-    items, err := mrcontext.EnumListFromRequest(c.Request(), "detailing")
+func parseFilterDetailing(c mrcore.ClientData, detailing *[]entity.ItemDetailing) {
+    items, err := mrreq.EnumList(c.Request(), "detailing")
 
     if err == nil {
         var itemDetailing entity.ItemDetailing
@@ -16,14 +19,14 @@ func parseFilterDetailing(c mrapp.ClientData, detailing *[]entity.ItemDetailing)
             err = itemDetailing.ParseAndSet(item)
 
             if err != nil {
-                c.Logger().Warn(err.Error())
+                mrctx.Logger(c.Context()).Warn(err.Error())
                 continue
             }
 
             *detailing = append(*detailing, itemDetailing)
         }
     } else {
-        c.Logger().Warn(err.Error())
+        mrctx.Logger(c.Context()).Warn(err.Error())
     }
 
     if len(*detailing) == 0 {
@@ -31,31 +34,31 @@ func parseFilterDetailing(c mrapp.ClientData, detailing *[]entity.ItemDetailing)
     }
 }
 
-func parseFilterStatuses(c mrapp.ClientData, statuses *[]entity.ItemStatus) {
-    items, err := mrcontext.EnumListFromRequest(c.Request(), "statuses")
+func parseFilterStatuses(c mrcore.ClientData, statuses *[]mrcom.ItemStatus) {
+    items, err := mrreq.EnumList(c.Request(), "statuses")
 
     if err == nil {
-        var itemStatus entity.ItemStatus
+        var itemStatus mrcom.ItemStatus
 
         for _, item := range items {
-            if item == entity.ItemStatusRemoved.String() {
+            if item == mrcom.ItemStatusRemoved.String() {
                 continue
             }
 
             err = itemStatus.ParseAndSet(item)
 
             if err != nil {
-                c.Logger().Warn(err.Error())
+                mrctx.Logger(c.Context()).Warn(err.Error())
                 continue
             }
 
             *statuses = append(*statuses, itemStatus)
         }
     } else {
-        c.Logger().Warn(err.Error())
+        mrctx.Logger(c.Context()).Warn(err.Error())
     }
 
     if len(*statuses) == 0 {
-        *statuses = append(*statuses, entity.ItemStatusEnabled)
+        *statuses = append(*statuses, mrcom.ItemStatusEnabled)
     }
 }

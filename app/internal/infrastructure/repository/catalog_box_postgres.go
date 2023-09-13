@@ -3,19 +3,20 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type CatalogBox struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogBox(client *mrpostgres.Connection,
+func NewCatalogBox(client *mrpostgres.ConnAdapter,
                    queryBuilder squirrel.StatementBuilderType) *CatalogBox {
     return &CatalogBox{
         client: client,
@@ -36,7 +37,7 @@ func (re *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBox
             box_depth,
             box_status`).
         From("public.catalog_boxes").
-        Where(squirrel.NotEq{"box_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"box_status": mrcom.ItemStatusRemoved}).
         OrderBy("box_caption ASC, box_id ASC")
 
     if len(listFilter.Statuses) > 0 {
@@ -65,14 +66,14 @@ func (re *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBox
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -100,7 +101,7 @@ func (re *CatalogBox) LoadOne(ctx context.Context, row *entity.CatalogBox) error
         ctx,
         sql,
         row.Id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.Version,
         &row.CreatedAt,
@@ -135,21 +136,21 @@ func (re *CatalogBox) FetchIdByArticle(ctx context.Context, article string) (mre
 
 // FetchStatus
 // uses: row{Id, Version}
-func (re *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (entity.ItemStatus, error) {
+func (re *CatalogBox) FetchStatus(ctx context.Context, row *entity.CatalogBox) (mrcom.ItemStatus, error) {
     sql := `
         SELECT box_status
         FROM
             public.catalog_boxes
         WHERE box_id = $1 AND tag_version = $2 AND box_status <> $3;`
 
-    var status entity.ItemStatus
+    var status mrcom.ItemStatus
 
     err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &status,
     )
@@ -192,7 +193,7 @@ func (re *CatalogBox) Insert(ctx context.Context, row *entity.CatalogBox) error 
 // Update
 // uses: row{Id, Version, Article, Caption, Length, Width, Depth, Status}
 func (re *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error {
-    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
+    filledFields, err := mrentity.FilledFieldsToUpdate(row)
 
     if err != nil {
         return err
@@ -204,7 +205,7 @@ func (re *CatalogBox) Update(ctx context.Context, row *entity.CatalogBox) error 
         SetMap(filledFields).
         Where(squirrel.Eq{"box_id": row.Id}).
         Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"box_status": entity.ItemStatusRemoved})
+        Where(squirrel.NotEq{"box_status": mrcom.ItemStatusRemoved})
 
     return re.client.SqUpdate(ctx, query)
 }
@@ -225,7 +226,7 @@ func (re *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) 
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Status,
     )
 
@@ -234,7 +235,7 @@ func (re *CatalogBox) UpdateStatus(ctx context.Context, row *entity.CatalogBox) 
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -254,7 +255,7 @@ func (re *CatalogBox) Delete(ctx context.Context, id mrentity.KeyInt32) error {
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -262,7 +263,7 @@ func (re *CatalogBox) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

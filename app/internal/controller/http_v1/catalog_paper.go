@@ -3,11 +3,13 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -26,7 +28,7 @@ func NewCatalogPaper(service usecase.CatalogPaperService) *CatalogPaper {
     }
 }
 
-func (ht *CatalogPaper) AddHandlers(router mrapp.Router) {
+func (ht *CatalogPaper) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, catalogPaperListURL, ht.GetList())
     router.HttpHandlerFunc(http.MethodPost, catalogPaperListURL, ht.Create())
 
@@ -37,8 +39,8 @@ func (ht *CatalogPaper) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, catalogPaperChangeStatusURL, ht.ChangeStatus())
 }
 
-func (ht *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPaper) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -49,7 +51,7 @@ func (ht *CatalogPaper) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperListFilter {
+func (ht *CatalogPaper) newListFilter(c mrcore.ClientData) *entity.CatalogPaperListFilter {
     var listFilter entity.CatalogPaperListFilter
 
     parseFilterStatuses(c, &listFilter.Statuses)
@@ -57,8 +59,8 @@ func (ht *CatalogPaper) newListFilter(c mrapp.ClientData) *entity.CatalogPaperLi
     return &listFilter
 }
 
-func (ht *CatalogPaper) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPaper) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -69,9 +71,9 @@ func (ht *CatalogPaper) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateCatalogPaper{}
+func (ht *CatalogPaper) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateCatalogPaper{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -95,9 +97,9 @@ func (ht *CatalogPaper) Create() mrapp.HttpHandlerFunc {
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgCatalogPaperSuccessCreated",
                 "entity has been success created",
             ),
@@ -107,9 +109,9 @@ func (ht *CatalogPaper) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreCatalogPaper{}
+func (ht *CatalogPaper) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreCatalogPaper{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -139,9 +141,9 @@ func (ht *CatalogPaper) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.ChangeItemStatus{}
+func (ht *CatalogPaper) ChangeStatus() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.ChangeItemStatus{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -163,8 +165,8 @@ func (ht *CatalogPaper) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPaper) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -175,7 +177,7 @@ func (ht *CatalogPaper) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPaper) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *CatalogPaper) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

@@ -1,8 +1,8 @@
 package usecase
 
-import "print-shop-back/pkg/mrerr"
+import . "github.com/mondegor/go-sysmess/mrerr"
 
 var (
-    ErrCatalogBoxArticleAlreadyExists = mrerr.NewFactory(
-        "errCatalogBoxArticleAlreadyExists", mrerr.ErrorKindUser, "box article '{{ .name }}' is already exists")
+    ErrCatalogBoxArticleAlreadyExists = NewFactory(
+        "errCatalogBoxArticleAlreadyExists", ErrorKindUser, "box article '{{ .name }}' is already exists")
 )

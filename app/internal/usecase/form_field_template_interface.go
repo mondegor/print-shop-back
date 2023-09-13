@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -19,7 +21,7 @@ type (
     FormFieldTemplateStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.FormFieldTemplateListFilter, rows *[]entity.FormFieldTemplate) error
         LoadOne(ctx context.Context, row *entity.FormFieldTemplate) error
-        FetchStatus(ctx context.Context, row *entity.FormFieldTemplate) (entity.ItemStatus, error)
+        FetchStatus(ctx context.Context, row *entity.FormFieldTemplate) (mrcom.ItemStatus, error)
         Insert(ctx context.Context, row *entity.FormFieldTemplate) error
         Update(ctx context.Context, row *entity.FormFieldTemplate) error
         UpdateStatus(ctx context.Context, row *entity.FormFieldTemplate) error

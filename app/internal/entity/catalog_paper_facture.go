@@ -1,8 +1,10 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameCatalogPaperFacture = "CatalogPaperFacture"
@@ -13,10 +15,10 @@ type (
         Version   mrentity.Version `json:"version"` // tag_version
         CreatedAt time.Time `json:"createdAt"` // datetime_created
         Caption   string `json:"caption"` // facture_caption
-        Status    ItemStatus `json:"status"` // facture_status
+        Status    mrcom.ItemStatus `json:"status"` // facture_status
     }
 
     CatalogPaperFactureListFilter struct {
-        Statuses  []ItemStatus
+        Statuses  []mrcom.ItemStatus
     }
 )

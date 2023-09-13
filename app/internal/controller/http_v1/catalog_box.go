@@ -3,11 +3,13 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -26,7 +28,7 @@ func NewCatalogBox(service usecase.CatalogBoxService) *CatalogBox {
     }
 }
 
-func (ht *CatalogBox) AddHandlers(router mrapp.Router) {
+func (ht *CatalogBox) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, catalogBoxListURL, ht.GetList())
     router.HttpHandlerFunc(http.MethodPost, catalogBoxListURL, ht.Create())
 
@@ -37,8 +39,8 @@ func (ht *CatalogBox) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, catalogBoxChangeStatusURL, ht.ChangeStatus())
 }
 
-func (ht *CatalogBox) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogBox) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -49,7 +51,7 @@ func (ht *CatalogBox) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) newListFilter(c mrapp.ClientData) *entity.CatalogBoxListFilter {
+func (ht *CatalogBox) newListFilter(c mrcore.ClientData) *entity.CatalogBoxListFilter {
     var listFilter entity.CatalogBoxListFilter
 
     parseFilterStatuses(c, &listFilter.Statuses)
@@ -57,8 +59,8 @@ func (ht *CatalogBox) newListFilter(c mrapp.ClientData) *entity.CatalogBoxListFi
     return &listFilter
 }
 
-func (ht *CatalogBox) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogBox) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -69,9 +71,9 @@ func (ht *CatalogBox) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateCatalogBox{}
+func (ht *CatalogBox) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateCatalogBox{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -91,9 +93,9 @@ func (ht *CatalogBox) Create() mrapp.HttpHandlerFunc {
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgCatalogBoxSuccessCreated",
                 "entity has been success created",
             ),
@@ -103,9 +105,9 @@ func (ht *CatalogBox) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreCatalogBox{}
+func (ht *CatalogBox) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreCatalogBox{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -131,9 +133,9 @@ func (ht *CatalogBox) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) ChangeStatus() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.ChangeItemStatus{}
+func (ht *CatalogBox) ChangeStatus() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.ChangeItemStatus{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -155,8 +157,8 @@ func (ht *CatalogBox) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogBox) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -167,7 +169,7 @@ func (ht *CatalogBox) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogBox) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *CatalogBox) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

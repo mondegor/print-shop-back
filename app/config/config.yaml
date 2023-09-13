@@ -4,13 +4,17 @@ debug: true
 
 logger:
   level: debug
-  no_color: true
+
+server:
+  readTimeout: 30
+  writeTimeout: 30
+  shutdownTimeout: 30
 
 listen:
   type: port
   sock_name: app.sock
   bind_ip: 0.0.0.0
-  port: 8090
+  port: 8080
 
 storage:
   type: postgres
@@ -19,11 +23,8 @@ storage:
   username: user_pg
   password: 123456
   database: db_pg
-  timeout: 5
-
-sentry:
-  use: false
-  dsn: http://a3f690a558be44f6888cb421bcb283bb@127.0.0.1:9050/2
+  maxPoolSize: 2
+  timeout: 30
 
 cors:
   allowed_origins:

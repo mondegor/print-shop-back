@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    mrcom_orderer "github.com/mondegor/go-components/mrcom/orderer"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -17,7 +19,7 @@ type (
     }
 
     FormFieldItemStorage interface {
-        GetMetaData(formId mrentity.KeyInt32) ItemMetaData
+        GetMetaData(formId mrentity.KeyInt32) mrcom_orderer.EntityMeta
         LoadAll(ctx context.Context, listFilter *entity.FormFieldItemListFilter, rows *[]entity.FormFieldItem) error
         LoadOne(ctx context.Context, row *entity.FormFieldItem) error
         FetchIdByName(ctx context.Context, formId mrentity.KeyInt32, paramName string) (mrentity.KeyInt32, error)

@@ -3,11 +3,13 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -26,7 +28,7 @@ func NewCatalogLaminateType(service usecase.CatalogLaminateTypeService) *Catalog
     }
 }
 
-func (ht *CatalogLaminateType) AddHandlers(router mrapp.Router) {
+func (ht *CatalogLaminateType) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, catalogLaminateTypeListURL, ht.GetList())
     router.HttpHandlerFunc(http.MethodPost, catalogLaminateTypeListURL, ht.Create())
 
@@ -37,8 +39,8 @@ func (ht *CatalogLaminateType) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, catalogLaminateTypeChangeStatusURL, ht.ChangeStatus())
 }
 
-func (ht *CatalogLaminateType) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogLaminateType) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -49,7 +51,7 @@ func (ht *CatalogLaminateType) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) newListFilter(c mrapp.ClientData) *entity.CatalogLaminateTypeListFilter {
+func (ht *CatalogLaminateType) newListFilter(c mrcore.ClientData) *entity.CatalogLaminateTypeListFilter {
     var listFilter entity.CatalogLaminateTypeListFilter
 
     parseFilterStatuses(c, &listFilter.Statuses)
@@ -57,8 +59,8 @@ func (ht *CatalogLaminateType) newListFilter(c mrapp.ClientData) *entity.Catalog
     return &listFilter
 }
 
-func (ht *CatalogLaminateType) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogLaminateType) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -69,9 +71,9 @@ func (ht *CatalogLaminateType) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateCatalogLaminateType{}
+func (ht *CatalogLaminateType) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateCatalogLaminateType{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -87,9 +89,9 @@ func (ht *CatalogLaminateType) Create() mrapp.HttpHandlerFunc {
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgCatalogLaminateTypeSuccessCreated",
                 "entity has been success created",
             ),
@@ -99,9 +101,9 @@ func (ht *CatalogLaminateType) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreCatalogLaminateType{}
+func (ht *CatalogLaminateType) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreCatalogLaminateType{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -123,9 +125,9 @@ func (ht *CatalogLaminateType) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) ChangeStatus() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.ChangeItemStatus{}
+func (ht *CatalogLaminateType) ChangeStatus() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.ChangeItemStatus{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -147,8 +149,8 @@ func (ht *CatalogLaminateType) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogLaminateType) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -159,7 +161,7 @@ func (ht *CatalogLaminateType) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogLaminateType) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *CatalogLaminateType) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -19,7 +21,7 @@ type (
     CatalogLaminateTypeStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogLaminateTypeListFilter, rows *[]entity.CatalogLaminateType) error
         LoadOne(ctx context.Context, row *entity.CatalogLaminateType) error
-        FetchStatus(ctx context.Context, row *entity.CatalogLaminateType) (entity.ItemStatus, error)
+        FetchStatus(ctx context.Context, row *entity.CatalogLaminateType) (mrcom.ItemStatus, error)
         IsExists(ctx context.Context, id mrentity.KeyInt32) error
         Insert(ctx context.Context, row *entity.CatalogLaminateType) error
         Update(ctx context.Context, row *entity.CatalogLaminateType) error

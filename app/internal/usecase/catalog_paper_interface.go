@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -20,7 +22,7 @@ type (
         LoadAll(ctx context.Context, listFilter *entity.CatalogPaperListFilter, rows *[]entity.CatalogPaper) error
         LoadOne(ctx context.Context, row *entity.CatalogPaper) error
         FetchIdByArticle(ctx context.Context, article string) (mrentity.KeyInt32, error)
-        FetchStatus(ctx context.Context, row *entity.CatalogPaper) (entity.ItemStatus, error)
+        FetchStatus(ctx context.Context, row *entity.CatalogPaper) (mrcom.ItemStatus, error)
         Insert(ctx context.Context, row *entity.CatalogPaper) error
         Update(ctx context.Context, row *entity.CatalogPaper) error
         UpdateStatus(ctx context.Context, row *entity.CatalogPaper) error

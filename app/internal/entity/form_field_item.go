@@ -1,8 +1,9 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameFormFieldItem = "FormFieldItem"

@@ -10,7 +10,7 @@ info:
   contact:
     name: Nazarov Andrey
 servers:
-  - url: http://localhost:8090
+  - url: http://localhost:8080
     description: Dev Server
 tags:
   - name: FormFieldTemplate

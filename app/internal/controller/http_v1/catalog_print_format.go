@@ -3,11 +3,13 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -26,7 +28,7 @@ func NewCatalogPrintFormat(service usecase.CatalogPrintFormatService) *CatalogPr
     }
 }
 
-func (ht *CatalogPrintFormat) AddHandlers(router mrapp.Router) {
+func (ht *CatalogPrintFormat) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, catalogPrintFormatListURL, ht.GetList())
     router.HttpHandlerFunc(http.MethodPost, catalogPrintFormatListURL, ht.Create())
 
@@ -37,8 +39,8 @@ func (ht *CatalogPrintFormat) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, catalogPrintFormatChangeStatusURL, ht.ChangeStatus())
 }
 
-func (ht *CatalogPrintFormat) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPrintFormat) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -49,7 +51,7 @@ func (ht *CatalogPrintFormat) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) newListFilter(c mrapp.ClientData) *entity.CatalogPrintFormatListFilter {
+func (ht *CatalogPrintFormat) newListFilter(c mrcore.ClientData) *entity.CatalogPrintFormatListFilter {
     var listFilter entity.CatalogPrintFormatListFilter
 
     parseFilterStatuses(c, &listFilter.Statuses)
@@ -57,8 +59,8 @@ func (ht *CatalogPrintFormat) newListFilter(c mrapp.ClientData) *entity.CatalogP
     return &listFilter
 }
 
-func (ht *CatalogPrintFormat) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPrintFormat) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -69,9 +71,9 @@ func (ht *CatalogPrintFormat) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateCatalogPrintFormat{}
+func (ht *CatalogPrintFormat) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateCatalogPrintFormat{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -89,9 +91,9 @@ func (ht *CatalogPrintFormat) Create() mrapp.HttpHandlerFunc {
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgCatalogPrintFormatSuccessCreated",
                 "entity has been success created",
             ),
@@ -101,9 +103,9 @@ func (ht *CatalogPrintFormat) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreCatalogPrintFormat{}
+func (ht *CatalogPrintFormat) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreCatalogPrintFormat{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -127,9 +129,9 @@ func (ht *CatalogPrintFormat) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) ChangeStatus() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.ChangeItemStatus{}
+func (ht *CatalogPrintFormat) ChangeStatus() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.ChangeItemStatus{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -151,8 +153,8 @@ func (ht *CatalogPrintFormat) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *CatalogPrintFormat) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -163,7 +165,7 @@ func (ht *CatalogPrintFormat) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *CatalogPrintFormat) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *CatalogPrintFormat) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

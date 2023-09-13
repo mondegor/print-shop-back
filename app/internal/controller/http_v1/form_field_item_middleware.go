@@ -1,26 +1,26 @@
 package http_v1
 
 import (
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
-    "print-shop-back/pkg/mrentity"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
-const ctxParentIdKey = mrcontext.CtxParentIdKey
+type ctxFormIdKey struct {}
 
-func (ht *FormFieldItem) FormDataMiddleware(next mrapp.HttpHandlerFunc) mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        id := mrentity.KeyInt32(c.RequestPath().GetInt("fid"))
-        err := ht.serviceFormData.CheckAvailability(c.Request().Context(), id)
+func (ht *FormFieldItem) FormDataMiddleware(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        id := c.RequestPath().GetInt("fid")
+        err := ht.serviceFormData.CheckAvailability(c.Request().Context(), mrentity.KeyInt32(id))
 
         if err != nil {
             return err
         }
 
-        return next(c.WithContext(mrcontext.IdNewContext(c.Request().Context(), ctxParentIdKey, id)))
+        return next(c.WithContext(mrctx.WithInt64(c.Request().Context(), ctxFormIdKey{}, id)))
     }
 }
 
-func (ht *FormFieldItem) getFormId(c mrapp.ClientData) mrentity.KeyInt32 {
-    return mrcontext.GetId(c.Context(), ctxParentIdKey)
+func (ht *FormFieldItem) getFormId(c mrcore.ClientData) mrentity.KeyInt32 {
+    return mrentity.KeyInt32(mrctx.Int64(c.Context(), ctxFormIdKey{}))
 }

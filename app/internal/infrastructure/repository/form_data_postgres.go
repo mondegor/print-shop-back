@@ -3,19 +3,20 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type FormData struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewFormData(client *mrpostgres.Connection,
+func NewFormData(client *mrpostgres.ConnAdapter,
                  queryBuilder squirrel.StatementBuilderType) *FormData {
     return &FormData{
         client: client,
@@ -34,7 +35,7 @@ func (re *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataList
             form_detailing,
             form_status`).
         From("public.form_data").
-        Where(squirrel.NotEq{"form_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"form_status": mrcom.ItemStatusRemoved}).
         OrderBy("form_caption ASC, form_id ASC")
 
     if len(listFilter.Detailing) > 0 {
@@ -65,14 +66,14 @@ func (re *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataList
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -99,7 +100,7 @@ func (re *FormData) LoadOne(ctx context.Context, row *entity.FormData) error {
         ctx,
         sql,
         row.Id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.Version,
         &row.CreatedAt,
@@ -133,21 +134,21 @@ func (re *FormData) FetchIdByName(ctx context.Context, paramName string) (mrenti
 
 // FetchStatus
 // uses: row{Id, Version}
-func (re *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (entity.ItemStatus, error) {
+func (re *FormData) FetchStatus(ctx context.Context, row *entity.FormData) (mrcom.ItemStatus, error) {
     sql := `
         SELECT form_status
         FROM
             public.form_data
         WHERE form_id = $1 AND tag_version = $2 AND form_status <> $3;`
 
-    var status entity.ItemStatus
+    var status mrcom.ItemStatus
 
     err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &status,
     )
@@ -168,7 +169,7 @@ func (re *FormData) IsExists(ctx context.Context, id mrentity.KeyInt32) error {
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &id,
     )
@@ -206,7 +207,7 @@ func (re *FormData) Insert(ctx context.Context, row *entity.FormData) error {
 // Update
 // uses: row{Id, Version, Caption, Detailing}
 func (re *FormData) Update(ctx context.Context, row *entity.FormData) error {
-    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
+    filledFields, err := mrentity.FilledFieldsToUpdate(row)
 
     if err != nil {
         return err
@@ -218,7 +219,7 @@ func (re *FormData) Update(ctx context.Context, row *entity.FormData) error {
         SetMap(filledFields).
         Where(squirrel.Eq{"form_id": row.Id}).
         Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"form_status": entity.ItemStatusRemoved})
+        Where(squirrel.NotEq{"form_status": mrcom.ItemStatusRemoved})
 
     return re.client.SqUpdate(ctx, query)
 }
@@ -239,7 +240,7 @@ func (re *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) erro
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Status,
     )
 
@@ -248,7 +249,7 @@ func (re *FormData) UpdateStatus(ctx context.Context, row *entity.FormData) erro
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -268,7 +269,7 @@ func (re *FormData) Delete(ctx context.Context, id mrentity.KeyInt32) error {
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -276,7 +277,7 @@ func (re *FormData) Delete(ctx context.Context, id mrentity.KeyInt32) error {
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

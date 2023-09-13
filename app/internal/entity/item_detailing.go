@@ -2,7 +2,8 @@ package entity
 
 import (
     "encoding/json"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type ItemDetailing uint8
@@ -31,7 +32,7 @@ func (e *ItemDetailing) ParseAndSet(value string) error {
         return nil
     }
 
-    return mrerr.ErrInternalMapValueNotFound.New(value, "ItemDetailing")
+    return mrcore.FactoryErrInternalMapValueNotFound.New(value, "ItemDetailing")
 }
 
 func (e ItemDetailing) String() string {
@@ -59,5 +60,5 @@ func (e *ItemDetailing) Scan(value any) error {
         return e.ParseAndSet(val)
     }
 
-    return mrerr.ErrInternalTypeAssertion.New("ItemDetailing", value)
+    return mrcore.FactoryErrInternalTypeAssertion.New("ItemDetailing", value)
 }

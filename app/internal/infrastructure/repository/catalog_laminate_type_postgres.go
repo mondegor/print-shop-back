@@ -3,19 +3,20 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type CatalogLaminateType struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogLaminateType(client *mrpostgres.Connection,
+func NewCatalogLaminateType(client *mrpostgres.ConnAdapter,
                             queryBuilder squirrel.StatementBuilderType) *CatalogLaminateType {
     return &CatalogLaminateType{
         client: client,
@@ -32,7 +33,7 @@ func (re *CatalogLaminateType) LoadAll(ctx context.Context, listFilter *entity.C
             type_caption,
             type_status`).
         From("public.catalog_laminate_types").
-        Where(squirrel.NotEq{"type_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"type_status": mrcom.ItemStatusRemoved}).
         OrderBy("type_caption ASC, type_id ASC")
 
     if len(listFilter.Statuses) > 0 {
@@ -57,14 +58,14 @@ func (re *CatalogLaminateType) LoadAll(ctx context.Context, listFilter *entity.C
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -88,7 +89,7 @@ func (re *CatalogLaminateType) LoadOne(ctx context.Context, row *entity.CatalogL
         ctx,
         sql,
         row.Id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.Version,
         &row.CreatedAt,
@@ -99,21 +100,21 @@ func (re *CatalogLaminateType) LoadOne(ctx context.Context, row *entity.CatalogL
 
 // FetchStatus
 // uses: row{Id, Version}
-func (re *CatalogLaminateType) FetchStatus(ctx context.Context, row *entity.CatalogLaminateType) (entity.ItemStatus, error) {
+func (re *CatalogLaminateType) FetchStatus(ctx context.Context, row *entity.CatalogLaminateType) (mrcom.ItemStatus, error) {
     sql := `
         SELECT type_status
         FROM
             public.catalog_laminate_types
         WHERE type_id = $1 AND tag_version = $2 AND type_status <> $3;`
 
-    var status entity.ItemStatus
+    var status mrcom.ItemStatus
 
     err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &status,
     )
@@ -134,7 +135,7 @@ func (re *CatalogLaminateType) IsExists(ctx context.Context, id mrentity.KeyInt3
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &id,
     )
@@ -179,7 +180,7 @@ func (re *CatalogLaminateType) Update(ctx context.Context, row *entity.CatalogLa
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Caption,
     )
 
@@ -188,7 +189,7 @@ func (re *CatalogLaminateType) Update(ctx context.Context, row *entity.CatalogLa
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -210,7 +211,7 @@ func (re *CatalogLaminateType) UpdateStatus(ctx context.Context, row *entity.Cat
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Status,
     )
 
@@ -219,7 +220,7 @@ func (re *CatalogLaminateType) UpdateStatus(ctx context.Context, row *entity.Cat
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -238,7 +239,7 @@ func (re *CatalogLaminateType) Delete(ctx context.Context, id mrentity.KeyInt32)
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -246,7 +247,7 @@ func (re *CatalogLaminateType) Delete(ctx context.Context, id mrentity.KeyInt32)
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

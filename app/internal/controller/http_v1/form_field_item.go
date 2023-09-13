@@ -3,12 +3,14 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrlib"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-sysmess/mrerr"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -33,7 +35,7 @@ func NewFormFieldItem(service usecase.FormFieldItemService,
     }
 }
 
-func (ht *FormFieldItem) AddHandlers(router mrapp.Router) {
+func (ht *FormFieldItem) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, formFieldItemListURL, ht.FormDataMiddleware(ht.GetList()))
     router.HttpHandlerFunc(http.MethodPost, formFieldItemListURL, ht.FormDataMiddleware(ht.Create()))
 
@@ -44,8 +46,8 @@ func (ht *FormFieldItem) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPatch, formFieldItemMoveURL, ht.FormDataMiddleware(ht.Move()))
 }
 
-func (ht *FormFieldItem) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldItem) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -56,7 +58,7 @@ func (ht *FormFieldItem) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) newListFilter(c mrapp.ClientData) *entity.FormFieldItemListFilter {
+func (ht *FormFieldItem) newListFilter(c mrcore.ClientData) *entity.FormFieldItemListFilter {
     var listFilter entity.FormFieldItemListFilter
 
     listFilter.FormId = ht.getFormId(c)
@@ -65,8 +67,8 @@ func (ht *FormFieldItem) newListFilter(c mrapp.ClientData) *entity.FormFieldItem
     return &listFilter
 }
 
-func (ht *FormFieldItem) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldItem) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c), ht.getFormId(c))
 
         if err != nil {
@@ -77,9 +79,9 @@ func (ht *FormFieldItem) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateFormFieldItem{}
+func (ht *FormFieldItem) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateFormFieldItem{}
 
         if err := c.ParseAndValidate(&request); err != nil {
            return err
@@ -97,19 +99,19 @@ func (ht *FormFieldItem) Create() mrapp.HttpHandlerFunc {
 
         if err != nil {
             if usecase.ErrFormFieldItemTemplateNotFound.Is(err) {
-                return mrlib.NewUserErrorListWithError("templateId", err)
+                return mrerr.NewListWith("templateId", err)
             }
 
             if usecase.ErrFormFieldItemParamNameAlreadyExists.Is(err) {
-                return mrlib.NewUserErrorListWithError("paramName", err)
+                return mrerr.NewListWith("paramName", err)
             }
 
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgFormFieldItemSuccessCreated",
                 "entity has been success created",
             ),
@@ -119,9 +121,9 @@ func (ht *FormFieldItem) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreFormFieldItem{}
+func (ht *FormFieldItem) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreFormFieldItem{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -140,7 +142,7 @@ func (ht *FormFieldItem) Store() mrapp.HttpHandlerFunc {
 
         if err != nil {
             if usecase.ErrFormFieldItemParamNameAlreadyExists.Is(err) {
-                return mrlib.NewUserErrorListWithError("paramName", err)
+                return mrerr.NewListWith("paramName", err)
             }
 
             return err
@@ -150,8 +152,8 @@ func (ht *FormFieldItem) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldItem) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c), ht.getFormId(c))
 
         if err != nil {
@@ -162,9 +164,9 @@ func (ht *FormFieldItem) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) Move() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.MoveFormFieldItem{}
+func (ht *FormFieldItem) Move() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.MoveFormFieldItem{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -185,7 +187,7 @@ func (ht *FormFieldItem) Move() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldItem) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *FormFieldItem) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

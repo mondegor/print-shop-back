@@ -2,7 +2,8 @@ package entity
 
 import (
     "encoding/json"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type UIItemView uint8
@@ -46,7 +47,7 @@ func (e *UIItemView) ParseAndSet(value string) error {
         return nil
     }
 
-    return mrerr.ErrInternalMapValueNotFound.New(value, "UIItemView")
+    return mrcore.FactoryErrInternalMapValueNotFound.New(value, "UIItemView")
 }
 
 func (e UIItemView) String() string {
@@ -74,5 +75,5 @@ func (e *UIItemView) UnmarshalJSON(data []byte) error {
 //        return e.ParseAndSet(val)
 //    }
 //
-//    return mrerr.ErrInternalTypeAssertion.New("UIItemView", value)
+//    return mrcore.FactoryErrInternalTypeAssertion.New("UIItemView", value)
 //}

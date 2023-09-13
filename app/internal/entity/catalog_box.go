@@ -1,8 +1,10 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameCatalogBox = "CatalogBox"
@@ -15,14 +17,14 @@ type (
 
         Article   string `json:"article" db:"box_article"`
         Caption   string `json:"caption" db:"box_caption"`
-        Length    mrentity.Micrometer `json:"length" db:"box_length"` // (mm)
-        Width     mrentity.Micrometer `json:"width" db:"box_width"` // (mm)
-        Depth     mrentity.Micrometer `json:"depth" db:"box_depth"` // (mm)
+        Length    Micrometer `json:"length" db:"box_length"` // (mm)
+        Width     Micrometer `json:"width" db:"box_width"` // (mm)
+        Depth     Micrometer `json:"depth" db:"box_depth"` // (mm)
 
-        Status    ItemStatus `json:"status"` // box_status
+        Status    mrcom.ItemStatus `json:"status"` // box_status
     }
 
     CatalogBoxListFilter struct {
-        Statuses  []ItemStatus
+        Statuses  []mrcom.ItemStatus
     }
 )

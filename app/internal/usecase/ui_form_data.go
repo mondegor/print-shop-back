@@ -5,37 +5,40 @@ import (
     "encoding/json"
     "fmt"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
     "strings"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-sysmess/mrerr"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrtool"
 )
 
 type UIFormData struct {
     storage FormDataStorage
     storageFormFieldItem FormFieldItemStorage
-    errorHelper *mrerr.Helper
+    serviceHelper *mrtool.ServiceHelper
 }
 
 func NewUIFormData(storage FormDataStorage,
                    storageFormFieldItem FormFieldItemStorage,
-                   errorHelper *mrerr.Helper) *UIFormData {
+                   serviceHelper *mrtool.ServiceHelper) *UIFormData {
     return &UIFormData{
         storage: storage,
         storageFormFieldItem: storageFormFieldItem,
-        errorHelper: errorHelper,
+        serviceHelper: serviceHelper,
     }
 }
 
 func (uc *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*entity.UIForm, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return nil, mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     form := &entity.FormData{Id: id}
     err := uc.storage.LoadOne(ctx, form)
 
     if err != nil {
-        return nil, uc.errorHelper.WrapErrorForSelect(err, "FormData")
+        return nil, uc.serviceHelper.WrapErrorForSelect(err, "FormData")
     }
 
     listFilter := entity.FormFieldItemListFilter{FormId: id}
@@ -43,7 +46,7 @@ func (uc *UIFormData) CompileForm(ctx context.Context, id mrentity.KeyInt32) (*e
     err = uc.storageFormFieldItem.LoadAll(ctx, &listFilter, &items)
 
     if err != nil {
-        return nil, uc.errorHelper.WrapErrorForSelect(err, "FormFieldItem")
+        return nil, uc.serviceHelper.WrapErrorForSelect(err, "FormFieldItem")
     }
 
     uiForm := entity.UIForm{
@@ -119,7 +122,3 @@ func (uc *UIFormData) correctField(parentName string, field *entity.UIFieldItem)
         uc.correctField(val.Id, val)
     }
 }
-
-//func (f *UIFormData) logger(ctx context.Context) mrapp.Logger {
-//    return mrcontext.GetLogger(ctx)
-//}

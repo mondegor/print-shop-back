@@ -2,7 +2,8 @@ package entity
 
 import (
     "encoding/json"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type FormFieldTemplateType uint8
@@ -31,7 +32,7 @@ func (e *FormFieldTemplateType) ParseAndSet(value string) error {
         return nil
     }
 
-    return mrerr.ErrInternalMapValueNotFound.New(value, "FormFieldTemplateType")
+    return mrcore.FactoryErrInternalMapValueNotFound.New(value, "FormFieldTemplateType")
 }
 
 func (e FormFieldTemplateType) String() string {
@@ -59,5 +60,5 @@ func (e *FormFieldTemplateType) Scan(value any) error {
         return e.ParseAndSet(val)
     }
 
-    return mrerr.ErrInternalTypeAssertion.New("FormFieldTemplateType", value)
+    return mrcore.FactoryErrInternalTypeAssertion.New("FormFieldTemplateType", value)
 }

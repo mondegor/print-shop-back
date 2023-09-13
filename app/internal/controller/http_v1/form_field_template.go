@@ -3,11 +3,13 @@ package http_v1
 import (
     "fmt"
     "net/http"
-    "print-shop-back/internal/controller/dto"
+    "print-shop-back/internal/controller/view"
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
 )
 
 const (
@@ -26,7 +28,7 @@ func NewFormFieldTemplate(service usecase.FormFieldTemplateService) *FormFieldTe
     }
 }
 
-func (ht *FormFieldTemplate) AddHandlers(router mrapp.Router) {
+func (ht *FormFieldTemplate) AddHandlers(router mrcore.HttpRouter) {
     router.HttpHandlerFunc(http.MethodGet, formFieldTemplateListURL, ht.GetList())
     router.HttpHandlerFunc(http.MethodPost, formFieldTemplateListURL, ht.Create())
 
@@ -37,8 +39,8 @@ func (ht *FormFieldTemplate) AddHandlers(router mrapp.Router) {
     router.HttpHandlerFunc(http.MethodPut, formFieldTemplateChangeStatusURL, ht.ChangeStatus())
 }
 
-func (ht *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldTemplate) GetList() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         items, err := ht.service.GetList(c.Context(), ht.newListFilter(c))
 
         if err != nil {
@@ -49,7 +51,7 @@ func (ht *FormFieldTemplate) GetList() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormFieldTemplateListFilter {
+func (ht *FormFieldTemplate) newListFilter(c mrcore.ClientData) *entity.FormFieldTemplateListFilter {
     var listFilter entity.FormFieldTemplateListFilter
 
     parseFilterDetailing(c, &listFilter.Detailing)
@@ -58,8 +60,8 @@ func (ht *FormFieldTemplate) newListFilter(c mrapp.ClientData) *entity.FormField
     return &listFilter
 }
 
-func (ht *FormFieldTemplate) Get() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldTemplate) Get() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         item, err := ht.service.GetItem(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -70,9 +72,9 @@ func (ht *FormFieldTemplate) Get() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.CreateFormFieldTemplate{}
+func (ht *FormFieldTemplate) Create() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.CreateFormFieldTemplate{}
 
         if err := c.ParseAndValidate(&request); err != nil {
            return err
@@ -92,9 +94,9 @@ func (ht *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
             return err
         }
 
-        response := dto.CreateItemResponse{
+        response := view.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
-            Message: c.Locale().GetMessage(
+            Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgFormFieldTemplateSuccessCreated",
                 "entity has been success created",
             ),
@@ -104,9 +106,9 @@ func (ht *FormFieldTemplate) Create() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.StoreFormFieldTemplate{}
+func (ht *FormFieldTemplate) Store() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.StoreFormFieldTemplate{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -132,9 +134,9 @@ func (ht *FormFieldTemplate) Store() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
-        request := dto.ChangeItemStatus{}
+func (ht *FormFieldTemplate) ChangeStatus() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
+        request := view.ChangeItemStatus{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -156,8 +158,8 @@ func (ht *FormFieldTemplate) ChangeStatus() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) Remove() mrapp.HttpHandlerFunc {
-    return func(c mrapp.ClientData) error {
+func (ht *FormFieldTemplate) Remove() mrcore.HttpHandlerFunc {
+    return func(c mrcore.ClientData) error {
         err := ht.service.Remove(c.Context(), ht.getItemId(c))
 
         if err != nil {
@@ -168,7 +170,7 @@ func (ht *FormFieldTemplate) Remove() mrapp.HttpHandlerFunc {
     }
 }
 
-func (ht *FormFieldTemplate) getItemId(c mrapp.ClientData) mrentity.KeyInt32 {
+func (ht *FormFieldTemplate) getItemId(c mrcore.ClientData) mrentity.KeyInt32 {
     id := mrentity.KeyInt32(c.RequestPath().GetInt("id"))
 
     if id > 0 {

@@ -17,7 +17,7 @@ CREATE TYPE form_field_type AS ENUM (
 CREATE TYPE catalog_paper_sides AS ENUM (
     'SAME',
     'DIFFERENT');
-+
+
 CREATE TABLE form_field_templates (
 	template_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
@@ -464,7 +464,14 @@ CREATE TABLE catalog_boxes (
     CONSTRAINT catalog_boxes_box_article UNIQUE (box_article)
 );
 
--- ALTER SEQUENCE catalog_boxes_box_id_seq RESTART WITH 1;
+INSERT INTO catalog_boxes (box_id, tag_version, datetime_created, box_article, box_caption, box_length, box_width, box_depth, box_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 1, '2023-07-28 19:47:00.917593', 'T-21-310x26x380', 'СДЭК', 310, 260, 380, 'DRAFT'),
+    (2, 1, '2023-07-28 19:49:04.261215', 'T-23-300x300x300', 'СДЭК', 300, 300, 300, 'DRAFT'),
+    (3, 1, '2023-07-30 12:28:57.095098', 'T-23-310x230x195', 'СДЭК', 310, 230, 195, 'DRAFT');
+
+ALTER SEQUENCE catalog_boxes_box_id_seq RESTART WITH 4;
 
 
 CREATE TABLE catalog_paper_colors (
@@ -476,7 +483,12 @@ CREATE TABLE catalog_paper_colors (
     CONSTRAINT catalog_paper_colors_pkey PRIMARY KEY (color_id)
 );
 
--- ALTER SEQUENCE catalog_paper_colors_color_id_seq RESTART WITH 1;
+INSERT INTO catalog_paper_colors (color_id, tag_version, datetime_created, color_caption, color_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 1, '2023-07-26 20:56:43.894664', 'белый', 'DRAFT');
+
+ALTER SEQUENCE catalog_paper_colors_color_id_seq RESTART WITH 2;
 
 
 CREATE TABLE catalog_paper_factures (
@@ -488,7 +500,14 @@ CREATE TABLE catalog_paper_factures (
     CONSTRAINT catalog_paper_factures_pkey PRIMARY KEY (facture_id)
 );
 
--- ALTER SEQUENCE catalog_paper_factures_facture_id_seq RESTART WITH 1;
+INSERT INTO catalog_paper_factures (facture_id, tag_version, datetime_created, facture_caption, facture_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 2, '2023-07-26 20:53:18.942332', 'глянцевая', 'DRAFT'),
+    (2, 2, '2023-07-26 20:53:39.478106', 'матовая', 'DRAFT'),
+    (3, 1, '2023-07-29 13:30:58.387279', 'гладкая', 'DRAFT');
+
+ALTER SEQUENCE catalog_paper_factures_facture_id_seq RESTART WITH 4;
 
 
 CREATE TABLE catalog_papers (
@@ -513,7 +532,16 @@ CREATE TABLE catalog_papers (
         REFERENCES catalog_paper_factures(facture_id)
 );
 
--- ALTER SEQUENCE catalog_papers_paper_id_seq RESTART WITH 1;
+INSERT INTO catalog_papers (paper_id, tag_version, datetime_created, paper_article, paper_caption, paper_length, paper_width, paper_density, color_id, facture_id, paper_thickness, paper_sides, paper_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 3, '2023-07-29 13:08:45.348283', 'mel130-64х90', 'мелованная', 900, 640, 130, 1, 2, 100, 'DIFFERENT', 'DRAFT'),
+    (2, 1, '2023-07-29 13:13:23.991912', 'v130-70х100', 'мелованная', 1000, 700, 130, 1, 2, 100, 'DIFFERENT', 'DRAFT'),
+    (3, 1, '2023-07-29 13:38:24.199768', 'offset-80-70х100', 'офсетная', 1000, 700, 80, 1, 3, 100, 'SAME', 'DRAFT'),
+    (4, 1, '2023-07-30 12:41:25.813125', 'offset-170-70х100', 'мелованная', 1000, 700, 170, 1, 2, 130, 'SAME', 'DRAFT'),
+    (5, 1, '2023-07-30 12:43:54.456152', 'coatGlossy-170-70х100', 'мелованная', 1000, 700, 170, 1, 1, 120, 'SAME', 'DRAFT');
+
+ALTER SEQUENCE catalog_papers_paper_id_seq RESTART WITH 6;
 
 
 CREATE TABLE catalog_laminate_types (
@@ -525,7 +553,14 @@ CREATE TABLE catalog_laminate_types (
     CONSTRAINT catalog_laminate_types_pkey PRIMARY KEY (type_id)
 );
 
--- ALTER SEQUENCE catalog_laminate_types_type_id_seq RESTART WITH 1;
+INSERT INTO catalog_laminate_types (type_id, tag_version, datetime_created, type_caption, type_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 3, '2023-07-26 21:06:17.305547', 'l2222', 'ENABLED'),
+    (2, 1, '2023-07-30 12:30:52.651613', 'глянцевый', 'DRAFT'),
+    (3, 1, '2023-07-30 12:30:58.368544', 'глянцевый', 'DRAFT');
+
+ALTER SEQUENCE catalog_laminate_types_type_id_seq RESTART WITH 4;
 
 
 CREATE TABLE catalog_laminates (
@@ -545,4 +580,11 @@ CREATE TABLE catalog_laminates (
         REFERENCES catalog_laminate_types(type_id)
 );
 
--- ALTER SEQUENCE catalog_laminates_laminate_id_seq RESTART WITH 1;
+INSERT INTO catalog_laminates (laminate_id, tag_version, datetime_created, laminate_article, laminate_caption, type_id, laminate_length, laminate_weight, laminate_thickness, laminate_status)
+    OVERRIDING SYSTEM VALUE
+VALUES
+    (1, 1, '2023-07-26 21:08:40.908057', 'lam-1', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT'),
+    (2, 1, '2023-07-26 21:09:36.034634', '2lam', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT'),
+    (3, 1, '2023-07-26 21:10:03.235812', '2222', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT');
+
+ALTER SEQUENCE catalog_laminates_laminate_id_seq RESTART WITH 4;

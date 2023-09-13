@@ -3,28 +3,34 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
+
+    mrcom_orderer "github.com/mondegor/go-components/mrcom/orderer"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-sysmess/mrerr"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrctx"
+    "github.com/mondegor/go-webcore/mrtool"
 )
 
 type FormFieldItem struct {
-    componentOrderer ItemOrdererComponent
+    componentOrderer mrcom_orderer.Component
     storage FormFieldItemStorage
     storageFormFieldTemplate FormFieldTemplateStorage
-    errorHelper *mrerr.Helper
+    eventBox mrcore.EventBox
+    serviceHelper *mrtool.ServiceHelper
 }
 
-func NewFormFieldItem(componentOrderer ItemOrdererComponent,
+func NewFormFieldItem(componentOrderer mrcom_orderer.Component,
                       storage FormFieldItemStorage,
                       storageFormFieldTemplate FormFieldTemplateStorage,
-                      errorHelper *mrerr.Helper) *FormFieldItem {
+                      eventBox mrcore.EventBox,
+                      serviceHelper *mrtool.ServiceHelper) *FormFieldItem {
     return &FormFieldItem{
         componentOrderer: componentOrderer,
         storage: storage,
         storageFormFieldTemplate: storageFormFieldTemplate,
-        errorHelper: errorHelper,
+        eventBox: eventBox,
+        serviceHelper: serviceHelper,
     }
 }
 
@@ -33,7 +39,7 @@ func (uc *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFie
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
+        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
     return items, nil
@@ -41,14 +47,14 @@ func (uc *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFie
 
 func (uc *FormFieldItem) GetItem(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) (*entity.FormFieldItem, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return nil, mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.FormFieldItem{Id: id, FormId: formId}
     err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameFormFieldItem)
+        return nil, uc.serviceHelper.WrapErrorForSelect(err, entity.ModelNameFormFieldItem)
     }
 
     return item, nil
@@ -61,7 +67,7 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
     err := uc.storageFormFieldTemplate.LoadOne(ctx, &itemTemplate)
 
     if err != nil {
-        if mrerr.ErrStorageNoRowFound.Is(err) {
+        if mrcore.FactoryErrStorageNoRowFound.Is(err) {
             return ErrFormFieldItemTemplateNotFound.Wrap(err, item.TemplateId)
         }
 
@@ -85,10 +91,10 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
     err = uc.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormFieldItem)
+        return mrcore.FactoryErrServiceEntityNotCreated.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Create: id=%d",
         entity.ModelNameFormFieldItem,
         item.Id,
@@ -103,7 +109,7 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
     )
 
     if err != nil {
-        uc.logger(ctx).Error(err)
+        mrctx.Logger(ctx).Err(err)
     }
 
     return nil
@@ -111,7 +117,7 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
 
 func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := uc.checkParamName(ctx, item)
@@ -123,10 +129,10 @@ func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) 
     err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldItem)
+        return uc.serviceHelper.WrapErrorForUpdate(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Store: id=%d",
         entity.ModelNameFormFieldItem,
         item.Id,
@@ -137,16 +143,16 @@ func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) 
 
 func (uc *FormFieldItem) Remove(ctx context.Context, id mrentity.KeyInt32, formId mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := uc.storage.Delete(ctx, id, formId)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldItem)
+        return uc.serviceHelper.WrapErrorForRemove(err, entity.ModelNameFormFieldItem)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Remove: id=%d",
         entity.ModelNameFormFieldItem,
         id,
@@ -157,7 +163,7 @@ func (uc *FormFieldItem) Remove(ctx context.Context, id mrentity.KeyInt32, formI
 
 func (uc *FormFieldItem) MoveAfterId(ctx context.Context, id mrentity.KeyInt32, afterId mrentity.KeyInt32, formId mrentity.KeyInt32) error {
     if formId < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"formId": formId})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"formId": formId})
     }
 
     meta := uc.storage.GetMetaData(formId)
@@ -170,11 +176,11 @@ func (uc *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFi
     id, err := uc.storage.FetchIdByName(ctx, item.FormId, item.ParamName)
 
     if err != nil {
-        if mrerr.ErrStorageNoRowFound.Is(err) {
+        if mrcore.FactoryErrStorageNoRowFound.Is(err) {
             return nil
         }
 
-        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
+        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
     if item.Id == id {
@@ -182,8 +188,4 @@ func (uc *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFi
     }
 
     return ErrFormFieldItemParamNameAlreadyExists.New(item.ParamName)
-}
-
-func (uc *FormFieldItem) logger(ctx context.Context) mrapp.Logger {
-    return mrcontext.GetLogger(ctx)
 }

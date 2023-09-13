@@ -3,20 +3,21 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/internal/usecase"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    mrcom_orderer "github.com/mondegor/go-components/mrcom/orderer"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type FormFieldItem struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewFormFieldItem(client *mrpostgres.Connection,
+func NewFormFieldItem(client *mrpostgres.ConnAdapter,
                       queryBuilder squirrel.StatementBuilderType) *FormFieldItem {
     return &FormFieldItem{
         client: client,
@@ -24,13 +25,13 @@ func NewFormFieldItem(client *mrpostgres.Connection,
     }
 }
 
-func (re *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) usecase.ItemMetaData {
-    return NewItemMetaData(
+func (re *FormFieldItem) GetMetaData(formId mrentity.KeyInt32) mrcom_orderer.EntityMeta {
+    return mrcom_orderer.NewEntityMeta(
         "public.form_fields",
         "field_id",
-        []Condition{
+        []any{
             squirrel.Eq{"form_id": formId},
-            squirrel.NotEq{"field_status": entity.ItemStatusRemoved},
+            squirrel.NotEq{"field_status": mrcom.ItemStatusRemoved},
         },
     )
 }
@@ -51,7 +52,7 @@ func (re *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFie
         From("public.form_fields ff").
         Join("public.form_field_templates fft ON ff.template_id = fft.template_id").
         Where(squirrel.Eq{"ff.form_id": listFilter.FormId}).
-        Where(squirrel.NotEq{"ff.field_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"ff.field_status": mrcom.ItemStatusRemoved}).
         OrderBy("ff.order_field ASC, ff.field_caption ASC, ff.field_id ASC")
 
     if len(listFilter.Detailing) > 0 {
@@ -81,14 +82,14 @@ func (re *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFie
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -122,7 +123,7 @@ func (re *FormFieldItem) LoadOne(ctx context.Context, row *entity.FormFieldItem)
         sql,
         row.Id,
         row.FormId,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.TemplateId,
         &row.Version,
@@ -183,7 +184,7 @@ func (re *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) 
         row.ParamName,
         row.Caption,
         row.Required,
-        entity.ItemStatusEnabled,
+        mrcom.ItemStatusEnabled,
     ).Scan(
         &row.Id,
     )
@@ -194,10 +195,10 @@ func (re *FormFieldItem) Insert(ctx context.Context, row *entity.FormFieldItem) 
 // Update
 // uses: row{Id, FormId, Version, ParamName, Caption, Required}
 func (re *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) error {
-    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
+    filledFields, err := mrentity.FilledFieldsToUpdate(row)
 
     if err != nil {
-        if !mrentity.ErrInternalListOfFieldsIsEmpty.Is(err) {
+        if !mrentity.FactoryErrInternalListOfFieldsIsEmpty.Is(err) {
             return err
         }
     }
@@ -210,7 +211,7 @@ func (re *FormFieldItem) Update(ctx context.Context, row *entity.FormFieldItem) 
         SetMap(filledFields).
         Where(squirrel.Eq{"field_id": row.Id}).
         Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"field_status": entity.ItemStatusRemoved})
+        Where(squirrel.NotEq{"field_status": mrcom.ItemStatusRemoved})
 
     return re.client.SqUpdate(ctx, query)
 }
@@ -233,7 +234,7 @@ func (re *FormFieldItem) Delete(ctx context.Context, id mrentity.KeyInt32, formI
         sql,
         id,
         formId,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -241,7 +242,7 @@ func (re *FormFieldItem) Delete(ctx context.Context, id mrentity.KeyInt32, formI
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

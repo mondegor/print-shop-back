@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -19,7 +21,7 @@ type (
     CatalogPrintFormatStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogPrintFormatListFilter, rows *[]entity.CatalogPrintFormat) error
         LoadOne(ctx context.Context, row *entity.CatalogPrintFormat) error
-        FetchStatus(ctx context.Context, row *entity.CatalogPrintFormat) (entity.ItemStatus, error)
+        FetchStatus(ctx context.Context, row *entity.CatalogPrintFormat) (mrcom.ItemStatus, error)
         Insert(ctx context.Context, row *entity.CatalogPrintFormat) error
         Update(ctx context.Context, row *entity.CatalogPrintFormat) error
         UpdateStatus(ctx context.Context, row *entity.CatalogPrintFormat) error

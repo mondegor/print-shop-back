@@ -3,7 +3,9 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrentity"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 type (
@@ -19,7 +21,7 @@ type (
     CatalogPaperFactureStorage interface {
         LoadAll(ctx context.Context, listFilter *entity.CatalogPaperFactureListFilter, rows *[]entity.CatalogPaperFacture) error
         LoadOne(ctx context.Context, row *entity.CatalogPaperFacture) error
-        FetchStatus(ctx context.Context, row *entity.CatalogPaperFacture) (entity.ItemStatus, error)
+        FetchStatus(ctx context.Context, row *entity.CatalogPaperFacture) (mrcom.ItemStatus, error)
         IsExists(ctx context.Context, id mrentity.KeyInt32) error
         Insert(ctx context.Context, row *entity.CatalogPaperFacture) error
         Update(ctx context.Context, row *entity.CatalogPaperFacture) error

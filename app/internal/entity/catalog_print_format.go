@@ -1,8 +1,10 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameCatalogPrintFormat = "CatalogPrintFormat"
@@ -14,13 +16,13 @@ type (
         CreatedAt time.Time `json:"createdAt"` // datetime_created
 
         Caption   string `json:"caption" db:"format_caption"`
-        Length    mrentity.Micrometer `json:"length" db:"format_length"` // (mm)
-        Width     mrentity.Micrometer `json:"width" db:"format_width"` // (mm)
+        Length    Micrometer `json:"length" db:"format_length"` // (mm)
+        Width     Micrometer `json:"width" db:"format_width"` // (mm)
 
-        Status    ItemStatus `json:"status"` // format_status
+        Status    mrcom.ItemStatus `json:"status"` // format_status
     }
 
     CatalogPrintFormatListFilter struct {
-        Statuses  []ItemStatus
+        Statuses  []mrcom.ItemStatus
     }
 )

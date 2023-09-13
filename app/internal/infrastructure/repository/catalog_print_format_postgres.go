@@ -3,19 +3,20 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type CatalogPrintFormat struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogPrintFormat(client *mrpostgres.Connection,
+func NewCatalogPrintFormat(client *mrpostgres.ConnAdapter,
                            queryBuilder squirrel.StatementBuilderType) *CatalogPrintFormat {
     return &CatalogPrintFormat{
         client: client,
@@ -34,7 +35,7 @@ func (re *CatalogPrintFormat) LoadAll(ctx context.Context, listFilter *entity.Ca
             format_width,
             format_status`).
         From("public.catalog_print_formats").
-        Where(squirrel.NotEq{"format_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"format_status": mrcom.ItemStatusRemoved}).
         OrderBy("format_caption ASC, format_id ASC")
 
     if len(listFilter.Statuses) > 0 {
@@ -61,14 +62,14 @@ func (re *CatalogPrintFormat) LoadAll(ctx context.Context, listFilter *entity.Ca
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -94,7 +95,7 @@ func (re *CatalogPrintFormat) LoadOne(ctx context.Context, row *entity.CatalogPr
         ctx,
         sql,
         row.Id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.Version,
         &row.CreatedAt,
@@ -107,21 +108,21 @@ func (re *CatalogPrintFormat) LoadOne(ctx context.Context, row *entity.CatalogPr
 
 // FetchStatus
 // uses: row{Id, Version}
-func (re *CatalogPrintFormat) FetchStatus(ctx context.Context, row *entity.CatalogPrintFormat) (entity.ItemStatus, error) {
+func (re *CatalogPrintFormat) FetchStatus(ctx context.Context, row *entity.CatalogPrintFormat) (mrcom.ItemStatus, error) {
     sql := `
         SELECT format_status
         FROM
             public.catalog_print_formats
         WHERE format_id = $1 AND tag_version = $2 AND format_status <> $3;`
 
-    var status entity.ItemStatus
+    var status mrcom.ItemStatus
 
     err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &status,
     )
@@ -160,7 +161,7 @@ func (re *CatalogPrintFormat) Insert(ctx context.Context, row *entity.CatalogPri
 // Update
 // uses: row{Id, Version, Caption, Length, Width, Status}
 func (re *CatalogPrintFormat) Update(ctx context.Context, row *entity.CatalogPrintFormat) error {
-    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
+    filledFields, err := mrentity.FilledFieldsToUpdate(row)
 
     if err != nil {
         return err
@@ -172,7 +173,7 @@ func (re *CatalogPrintFormat) Update(ctx context.Context, row *entity.CatalogPri
         SetMap(filledFields).
         Where(squirrel.Eq{"format_id": row.Id}).
         Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"format_status": entity.ItemStatusRemoved})
+        Where(squirrel.NotEq{"format_status": mrcom.ItemStatusRemoved})
 
     return re.client.SqUpdate(ctx, query)
 }
@@ -193,7 +194,7 @@ func (re *CatalogPrintFormat) UpdateStatus(ctx context.Context, row *entity.Cata
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Status,
     )
 
@@ -202,7 +203,7 @@ func (re *CatalogPrintFormat) UpdateStatus(ctx context.Context, row *entity.Cata
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -221,7 +222,7 @@ func (re *CatalogPrintFormat) Delete(ctx context.Context, id mrentity.KeyInt32) 
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -229,7 +230,7 @@ func (re *CatalogPrintFormat) Delete(ctx context.Context, id mrentity.KeyInt32) 
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

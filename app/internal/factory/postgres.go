@@ -3,12 +3,13 @@ package factory
 import (
     "context"
     "print-shop-back/config"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrapp"
     "time"
+
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
-func NewPostgres(cfg *config.Config, logger mrapp.Logger) (*mrpostgres.Connection, error) {
+func NewPostgres(cfg *config.Config, logger mrcore.Logger) (*mrpostgres.ConnAdapter, error) {
     logger.Info("Create postgres connection")
 
     opt := mrpostgres.Options{
@@ -17,13 +18,19 @@ func NewPostgres(cfg *config.Config, logger mrapp.Logger) (*mrpostgres.Connectio
         Username: cfg.Storage.Username,
         Password: cfg.Storage.Password,
         Database: cfg.Storage.Database,
-        MaxPoolSize: 1,
+        MaxPoolSize: cfg.Storage.MaxPoolSize,
         ConnAttempts: 1,
-        ConnTimeout: time.Duration(cfg.Storage.Timeout),
+        ConnTimeout: time.Duration(cfg.Storage.Timeout) * time.Second,
     }
 
     conn := mrpostgres.New()
-    err := conn.Connect(context.TODO(), opt)
+    err := conn.Connect(opt)
+
+    if err != nil {
+        return nil, err
+    }
+
+    err = conn.Ping(context.TODO())
 
     return conn, err
 }

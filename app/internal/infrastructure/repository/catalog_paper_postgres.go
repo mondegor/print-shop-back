@@ -3,19 +3,20 @@ package repository
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/client/mrpostgres"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
 
     "github.com/Masterminds/squirrel"
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-storage/mrpostgres"
+    "github.com/mondegor/go-webcore/mrcore"
 )
 
 type CatalogPaper struct {
-    client *mrpostgres.Connection
+    client *mrpostgres.ConnAdapter
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogPaper(client *mrpostgres.Connection,
+func NewCatalogPaper(client *mrpostgres.ConnAdapter,
                      queryBuilder squirrel.StatementBuilderType) *CatalogPaper {
     return &CatalogPaper{
         client: client,
@@ -40,7 +41,7 @@ func (re *CatalogPaper) LoadAll(ctx context.Context, listFilter *entity.CatalogP
             paper_sides,
             paper_status`).
         From("public.catalog_papers").
-        Where(squirrel.NotEq{"paper_status": entity.ItemStatusRemoved}).
+        Where(squirrel.NotEq{"paper_status": mrcom.ItemStatusRemoved}).
         OrderBy("paper_caption ASC, paper_id ASC")
 
     if len(listFilter.Statuses) > 0 {
@@ -73,14 +74,14 @@ func (re *CatalogPaper) LoadAll(ctx context.Context, listFilter *entity.CatalogP
         )
 
         if err != nil {
-            return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
         }
 
         *rows = append(*rows, row)
     }
 
     if err = cursor.Err(); err != nil {
-        return mrerr.ErrStorageFetchDataFailed.Wrap(err)
+        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
     }
 
     return nil
@@ -112,7 +113,7 @@ func (re *CatalogPaper) LoadOne(ctx context.Context, row *entity.CatalogPaper) e
         ctx,
         sql,
         row.Id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &row.Version,
         &row.CreatedAt,
@@ -151,21 +152,21 @@ func (re *CatalogPaper) FetchIdByArticle(ctx context.Context, article string) (m
 
 // FetchStatus
 // uses: row{Id, Version}
-func (re *CatalogPaper) FetchStatus(ctx context.Context, row *entity.CatalogPaper) (entity.ItemStatus, error) {
+func (re *CatalogPaper) FetchStatus(ctx context.Context, row *entity.CatalogPaper) (mrcom.ItemStatus, error) {
     sql := `
         SELECT paper_status
         FROM
             public.catalog_papers
         WHERE paper_id = $1 AND tag_version = $2 AND paper_status <> $3;`
 
-    var status entity.ItemStatus
+    var status mrcom.ItemStatus
 
     err := re.client.QueryRow(
         ctx,
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     ).Scan(
         &status,
     )
@@ -216,7 +217,7 @@ func (re *CatalogPaper) Insert(ctx context.Context, row *entity.CatalogPaper) er
 // Update
 // uses: row{Id, Version, Article, Caption, Length, Width, Density, ColorId, FactureId, Thickness, Sides, Status}
 func (re *CatalogPaper) Update(ctx context.Context, row *entity.CatalogPaper) error {
-    filledFields, err := mrentity.GetFilledFieldsToUpdate(row)
+    filledFields, err := mrentity.FilledFieldsToUpdate(row)
 
     if err != nil {
         return err
@@ -228,7 +229,7 @@ func (re *CatalogPaper) Update(ctx context.Context, row *entity.CatalogPaper) er
         SetMap(filledFields).
         Where(squirrel.Eq{"paper_id": row.Id}).
         Where(squirrel.Eq{"tag_version": row.Version}).
-        Where(squirrel.NotEq{"paper_status": entity.ItemStatusRemoved})
+        Where(squirrel.NotEq{"paper_status": mrcom.ItemStatusRemoved})
 
     return re.client.SqUpdate(ctx, query)
 }
@@ -249,7 +250,7 @@ func (re *CatalogPaper) UpdateStatus(ctx context.Context, row *entity.CatalogPap
         sql,
         row.Id,
         row.Version,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
         row.Status,
     )
 
@@ -258,7 +259,7 @@ func (re *CatalogPaper) UpdateStatus(ctx context.Context, row *entity.CatalogPap
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil
@@ -278,7 +279,7 @@ func (re *CatalogPaper) Delete(ctx context.Context, id mrentity.KeyInt32) error 
         ctx,
         sql,
         id,
-        entity.ItemStatusRemoved,
+        mrcom.ItemStatusRemoved,
     )
 
     if err != nil {
@@ -286,7 +287,7 @@ func (re *CatalogPaper) Delete(ctx context.Context, id mrentity.KeyInt32) error 
     }
 
     if commandTag.RowsAffected() < 1 {
-        return mrerr.ErrStorageRowsNotAffected.New()
+        return mrcore.FactoryErrStorageRowsNotAffected.New()
     }
 
     return nil

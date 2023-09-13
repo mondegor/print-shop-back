@@ -3,27 +3,32 @@ package usecase
 import (
     "context"
     "print-shop-back/internal/entity"
-    "print-shop-back/pkg/mrapp"
-    "print-shop-back/pkg/mrcontext"
-    "print-shop-back/pkg/mrentity"
-    "print-shop-back/pkg/mrerr"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
+    "github.com/mondegor/go-sysmess/mrerr"
+    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-webcore/mrtool"
 )
 
 type CatalogLaminate struct {
     storage CatalogLaminateStorage
     storageCatalogLaminateType CatalogLaminateTypeStorage
-    errorHelper *mrerr.Helper
-    statusFlow entity.ItemStatusFlow
+    eventBox mrcore.EventBox
+    serviceHelper *mrtool.ServiceHelper
+    statusFlow mrcom.ItemStatusFlow
 }
 
 func NewCatalogLaminate(storage CatalogLaminateStorage,
                         storageCatalogLaminateType CatalogLaminateTypeStorage,
-                        errorHelper *mrerr.Helper) *CatalogLaminate {
+                        eventBox mrcore.EventBox,
+                        serviceHelper *mrtool.ServiceHelper) *CatalogLaminate {
     return &CatalogLaminate{
         storage: storage,
         storageCatalogLaminateType: storageCatalogLaminateType,
-        errorHelper: errorHelper,
-        statusFlow: entity.ItemStatusFlowDefault,
+        eventBox: eventBox,
+        serviceHelper: serviceHelper,
+        statusFlow: mrcom.ItemStatusFlowDefault,
     }
 }
 
@@ -32,7 +37,7 @@ func (uc *CatalogLaminate) GetList(ctx context.Context, listFilter *entity.Catal
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
+        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
     return items, nil
@@ -40,14 +45,14 @@ func (uc *CatalogLaminate) GetList(ctx context.Context, listFilter *entity.Catal
 
 func (uc *CatalogLaminate) GetItem(ctx context.Context, id mrentity.KeyInt32) (*entity.CatalogLaminate, error) {
     if id < 1 {
-        return nil, mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return nil, mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     item := &entity.CatalogLaminate{Id: id}
     err := uc.storage.LoadOne(ctx, item)
 
     if err != nil {
-        return nil, uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
+        return nil, uc.serviceHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
     }
 
     return item, nil
@@ -65,21 +70,21 @@ func (uc *CatalogLaminate) Create(ctx context.Context, item *entity.CatalogLamin
     err = uc.storageCatalogLaminateType.IsExists(ctx, item.TypeId)
 
     if err != nil {
-        if mrerr.ErrStorageNoRowFound.Is(err) {
+        if mrcore.FactoryErrStorageNoRowFound.Is(err) {
             return ErrCatalogLaminateTypeNotFound.Wrap(err, item.TypeId)
         }
 
         return err
     }
 
-    item.Status = entity.ItemStatusDraft
+    item.Status = mrcom.ItemStatusDraft
     err = uc.storage.Insert(ctx, item)
 
     if err != nil {
-        return mrerr.ErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminate)
+        return mrcore.FactoryErrServiceEntityNotCreated.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Create: id=%d",
         entity.ModelNameCatalogLaminate,
         item.Id,
@@ -90,7 +95,7 @@ func (uc *CatalogLaminate) Create(ctx context.Context, item *entity.CatalogLamin
 
 func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     err := uc.checkArticle(ctx, item)
@@ -102,10 +107,10 @@ func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLamina
     err = uc.storage.Update(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
+        return uc.serviceHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Store: id=%d",
         entity.ModelNameCatalogLaminate,
         item.Id,
@@ -116,26 +121,26 @@ func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLamina
 
 func (uc *CatalogLaminate) ChangeStatus(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
+        return uc.serviceHelper.WrapErrorForSelect(err, entity.ModelNameCatalogLaminate)
     }
 
     if !uc.statusFlow.Check(currentStatus, item.Status) {
-        return mrerr.ErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogLaminate, item.Id)
+        return mrcore.FactoryErrServiceIncorrectSwitchStatus.New(currentStatus, item.Status, entity.ModelNameCatalogLaminate, item.Id)
     }
 
     err = uc.storage.UpdateStatus(ctx, item)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
+        return uc.serviceHelper.WrapErrorForUpdate(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::ChangeStatus: id=%d, status=%s",
         entity.ModelNameCatalogLaminate,
         item.Id,
@@ -147,16 +152,16 @@ func (uc *CatalogLaminate) ChangeStatus(ctx context.Context, item *entity.Catalo
 
 func (uc *CatalogLaminate) Remove(ctx context.Context, id mrentity.KeyInt32) error {
     if id < 1 {
-        return mrerr.ErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"id": id})
     }
 
     err := uc.storage.Delete(ctx, id)
 
     if err != nil {
-        return uc.errorHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminate)
+        return uc.serviceHelper.WrapErrorForRemove(err, entity.ModelNameCatalogLaminate)
     }
 
-    uc.logger(ctx).Event(
+    uc.eventBox.Emit(
         "%s::Remove: id=%d",
         entity.ModelNameCatalogLaminate,
         id,
@@ -169,11 +174,11 @@ func (uc *CatalogLaminate) checkArticle(ctx context.Context, item *entity.Catalo
     id, err := uc.storage.FetchIdByArticle(ctx, item.Article)
 
     if err != nil {
-        if mrerr.ErrStorageNoRowFound.Is(err) {
+        if mrcore.FactoryErrStorageNoRowFound.Is(err) {
             return nil
         }
 
-        return mrerr.ErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
+        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
     if item.Id == id {
@@ -181,8 +186,4 @@ func (uc *CatalogLaminate) checkArticle(ctx context.Context, item *entity.Catalo
     }
 
     return ErrCatalogLaminateArticleAlreadyExists.New(item.Article)
-}
-
-func (uc *CatalogLaminate) logger(ctx context.Context) mrapp.Logger {
-    return mrcontext.GetLogger(ctx)
 }

@@ -1,8 +1,10 @@
 package entity
 
 import (
-    "print-shop-back/pkg/mrentity"
     "time"
+
+    "github.com/mondegor/go-components/mrcom"
+    "github.com/mondegor/go-storage/mrentity"
 )
 
 const ModelNameFormData = "FormData"
@@ -18,11 +20,11 @@ type (
         Detailing ItemDetailing `json:"formDetailing" db:"form_detailing"`
 
         Body      string `json:"formBody"` // form_body_compiled
-        Status    ItemStatus `json:"status"` // form_status
+        Status    mrcom.ItemStatus `json:"status"` // form_status
     }
 
     FormDataListFilter struct {
         Detailing []ItemDetailing
-        Statuses  []ItemStatus
+        Statuses  []mrcom.ItemStatus
     }
 )
