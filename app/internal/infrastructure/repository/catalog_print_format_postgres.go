@@ -48,6 +48,8 @@ func (re *CatalogPrintFormat) LoadAll(ctx context.Context, listFilter *entity.Ca
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogPrintFormat
 

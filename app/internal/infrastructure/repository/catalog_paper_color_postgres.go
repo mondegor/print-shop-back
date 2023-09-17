@@ -46,6 +46,8 @@ func (re *CatalogPaperColor) LoadAll(ctx context.Context, listFilter *entity.Cat
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogPaperColor
 

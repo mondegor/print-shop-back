@@ -110,7 +110,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.laminateId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о ламинате
           content:
             application/json;charset=UTF-8:

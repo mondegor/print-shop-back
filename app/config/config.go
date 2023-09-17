@@ -7,22 +7,31 @@ import (
     "github.com/ilyakaznacheev/cleanenv"
 )
 
+const (
+    appName = "print-shop"
+    appVersion = "v0.6.0"
+)
+
 type (
     Config struct {
+        AppName string
+        AppVersion string
         AppPath string `yaml:"app_path"`
+        ConfigPath string
         Debug bool `yaml:"debug" env:"APPX_DEBUG"`
         Server `yaml:"server"`
         Listen `yaml:"listen"`
         Log `yaml:"logger"`
         Storage `yaml:"storage"`
+        // Redis `yaml:"redis"`
         Cors `yaml:"cors"`
         Translation `yaml:"translation"`
     }
 
     Server struct {
-        ReadTimeout int32 `yaml:"readTimeout"`
-        WriteTimeout int32 `yaml:"writeTimeout"`
-        ShutdownTimeout int32 `yaml:"shutdownTimeout"`
+        ReadTimeout int32 `yaml:"read_timeout"`
+        WriteTimeout int32 `yaml:"write_timeout"`
+        ShutdownTimeout int32 `yaml:"shutdown_timeout"`
     }
 
     Listen struct {
@@ -42,9 +51,16 @@ type (
         Username string `yaml:"username" env:"APPX_DB_USER"`
         Password string `yaml:"password" env:"APPX_DB_PASSWORD"`
         Database string `yaml:"database" env:"APPX_DB_NAME"`
-        MaxPoolSize int32 `yaml:"maxPoolSize" env:"APPX_DB_MAX_POOL_SIZE"`
+        MaxPoolSize int32 `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
         Timeout int32 `yaml:"timeout"` // in sec
     }
+
+    //Redis struct {
+    //    Host string `yaml:"host" env:"APPX_REDIS_HOST"`
+    //    Port string `yaml:"port" env:"APPX_REDIS_PORT"`
+    //    Password string `yaml:"password" env:"APPX_REDIS_PASSWORD"`
+    //    Timeout int `yaml:"timeout"` // in sec
+    //}
 
     Cors struct {
         AllowedOrigins []string `yaml:"allowed_origins"`
@@ -62,7 +78,12 @@ type (
 )
 
 func New(filePath string) (*Config, error) {
-    cfg := &Config{}
+    cfg := &Config{
+        AppName: appName,
+        AppVersion: appVersion,
+        ConfigPath: filePath,
+    }
+
     err := cleanenv.ReadConfig(filePath, cfg)
 
     if err != nil {

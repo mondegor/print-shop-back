@@ -49,6 +49,8 @@ func (re *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.For
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.FormFieldTemplate
 

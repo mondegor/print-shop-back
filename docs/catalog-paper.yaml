@@ -111,7 +111,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.paperId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о бумаге
           content:
             application/json;charset=UTF-8:

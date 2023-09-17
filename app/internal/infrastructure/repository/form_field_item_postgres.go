@@ -65,6 +65,8 @@ func (re *FormFieldItem) LoadAll(ctx context.Context, listFilter *entity.FormFie
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         row := entity.FormFieldItem{FormId: listFilter.FormId}
 

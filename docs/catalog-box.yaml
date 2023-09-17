@@ -109,7 +109,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.boxId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о коробке
           content:
             application/json;charset=UTF-8:

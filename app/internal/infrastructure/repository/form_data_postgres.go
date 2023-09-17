@@ -52,6 +52,8 @@ func (re *FormData) LoadAll(ctx context.Context, listFilter *entity.FormDataList
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.FormData
 

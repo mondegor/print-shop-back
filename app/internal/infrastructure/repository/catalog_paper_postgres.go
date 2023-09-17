@@ -54,6 +54,8 @@ func (re *CatalogPaper) LoadAll(ctx context.Context, listFilter *entity.CatalogP
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogPaper
 

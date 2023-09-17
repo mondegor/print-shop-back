@@ -11,6 +11,7 @@ import (
     "github.com/mondegor/go-sysmess/mrerr"
     "github.com/mondegor/go-webcore/mrcore"
     "github.com/mondegor/go-webcore/mrctx"
+    "github.com/mondegor/go-webcore/mrview"
 )
 
 const (
@@ -109,7 +110,7 @@ func (ht *FormFieldItem) Create() mrcore.HttpHandlerFunc {
             return err
         }
 
-        response := view.CreateItemResponse{
+        response := mrview.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
             Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgFormFieldItemSuccessCreated",

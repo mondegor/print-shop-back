@@ -7,9 +7,11 @@ import (
     "print-shop-back/internal/entity"
     "print-shop-back/internal/usecase"
 
+    "github.com/mondegor/go-components/mrcom"
     "github.com/mondegor/go-storage/mrentity"
     "github.com/mondegor/go-webcore/mrcore"
     "github.com/mondegor/go-webcore/mrctx"
+    "github.com/mondegor/go-webcore/mrview"
 )
 
 const (
@@ -98,7 +100,7 @@ func (ht *FormData) Create() mrcore.HttpHandlerFunc {
             return err
         }
 
-        response := view.CreateItemResponse{
+        response := mrview.CreateItemResponse{
             ItemId: fmt.Sprintf("%d", item.Id),
             Message: mrctx.Locale(c.Context()).TranslateMessage(
                 "msgFormDataSuccessCreated",
@@ -138,7 +140,7 @@ func (ht *FormData) Store() mrcore.HttpHandlerFunc {
 
 func (ht *FormData) ChangeStatus() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.ChangeItemStatus{}
+        request := mrcom.ChangeItemStatusRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

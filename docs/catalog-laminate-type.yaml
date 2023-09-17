@@ -105,7 +105,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.typeId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о типе ламината
           content:
             application/json;charset=UTF-8:

@@ -6,9 +6,9 @@ logger:
   level: debug
 
 server:
-  readTimeout: 30
-  writeTimeout: 30
-  shutdownTimeout: 30
+  read_timeout: 30
+  write_timeout: 30
+  shutdown_timeout: 30
 
 listen:
   type: port
@@ -23,8 +23,13 @@ storage:
   username: user_pg
   password: 123456
   database: db_pg
-  maxPoolSize: 2
+  max_pool_size: 2
   timeout: 30
+
+#redis:
+#  host: 127.0.0.1
+#  port: 6379
+#  password: 123456
 
 cors:
   allowed_origins:

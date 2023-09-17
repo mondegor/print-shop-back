@@ -50,6 +50,8 @@ func (re *CatalogBox) LoadAll(ctx context.Context, listFilter *entity.CatalogBox
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogBox
 

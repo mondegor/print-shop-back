@@ -112,7 +112,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.fieldId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о поле формы
           content:
             application/json;charset=UTF-8:

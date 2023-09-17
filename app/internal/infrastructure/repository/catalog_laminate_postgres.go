@@ -51,6 +51,8 @@ func (re *CatalogLaminate) LoadAll(ctx context.Context, listFilter *entity.Catal
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogLaminate
 

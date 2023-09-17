@@ -10,7 +10,7 @@ import (
 )
 
 func NewPostgres(cfg *config.Config, logger mrcore.Logger) (*mrpostgres.ConnAdapter, error) {
-    logger.Info("Create postgres connection")
+    logger.Info("Create and init postgres connection")
 
     opt := mrpostgres.Options{
         Host: cfg.Storage.Host,
@@ -30,7 +30,7 @@ func NewPostgres(cfg *config.Config, logger mrcore.Logger) (*mrpostgres.ConnAdap
         return nil, err
     }
 
-    err = conn.Ping(context.TODO())
+    err = conn.Ping(context.Background())
 
     return conn, err
 }

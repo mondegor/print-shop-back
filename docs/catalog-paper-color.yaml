@@ -105,7 +105,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.colorId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о цвете бумаги
           content:
             application/json;charset=UTF-8:

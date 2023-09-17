@@ -46,6 +46,8 @@ func (re *CatalogPaperFacture) LoadAll(ctx context.Context, listFilter *entity.C
         return err
     }
 
+    defer cursor.Close()
+
     for cursor.Next() {
         var row entity.CatalogPaperFacture
 

@@ -113,7 +113,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Path.templateId"
 
       responses:
-        "204":
+        "200":
           description: Получена информация о шаблоне поля формы
           content:
             application/json;charset=UTF-8:
