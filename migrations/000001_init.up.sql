@@ -6,41 +6,61 @@ CREATE TYPE item_status AS ENUM (
     'DISABLED',
     'REMOVED');
 
+CREATE TYPE resource_status AS ENUM (
+    'DRAFT',
+    'HIDDEN',
+    'PUBLISHED');
+
 CREATE TYPE form_detailing AS ENUM (
-	'NORMAL',
-	'EXTENDED');
+    'NORMAL',
+    'EXTENDED');
 
 CREATE TYPE form_field_type AS ENUM (
-	'GROUP',
-	'FIELDS');
+    'GROUP',
+    'FIELDS');
 
 CREATE TYPE catalog_paper_sides AS ENUM (
     'SAME',
     'DIFFERENT');
 
+CREATE TABLE accounts_companies_pages (
+    account_id uuid NOT NULL,
+    tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
+    datetime_updated timestamp NOT NULL DEFAULT now(),
+    rewrite_name character varying(64) NULL,
+    page_head character varying(128) NOT NULL,
+    logo_path character varying(128) NOT NULL DEFAULT '',
+    site_url character varying(256) NOT NULL,
+    page_status resource_status NOT NULL,
+    datetime_status timestamp NOT NULL DEFAULT now(),
+    CONSTRAINT accounts_companies_pages_pkey PRIMARY KEY (account_id),
+    CONSTRAINT accounts_companies_pages_rewrite_name UNIQUE (rewrite_name)
+);
+
+
 CREATE TABLE form_field_templates (
-	template_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+    template_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
-	param_name character varying(32) NULL,
-	template_caption character varying(128) NOT NULL,
-	field_type form_field_type NOT NULL,
+    param_name character varying(32) NULL,
+    template_caption character varying(128) NOT NULL,
+    field_type form_field_type NOT NULL,
     field_detailing form_detailing NOT NULL,
-	field_body json NOT NULL,
+    field_body json NOT NULL,
     template_status item_status NOT NULL,
-	CONSTRAINT form_field_templates_pkey PRIMARY KEY (template_id)
+    CONSTRAINT form_field_templates_pkey PRIMARY KEY (template_id)
 );
 
 CREATE TABLE form_data (
-	form_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
+    form_id int4 NOT NULL GENERATED ALWAYS AS IDENTITY,
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     datetime_created timestamp NOT NULL DEFAULT now(),
     param_name character varying(32) NULL,
     form_caption character varying(128) NOT NULL,
-	form_detailing form_detailing NOT NULL,
-	form_body_compiled json NOT NULL,
+    form_detailing form_detailing NOT NULL,
+    form_body_compiled json NOT NULL,
     form_status item_status NOT NULL,
-	CONSTRAINT form_data_pkey PRIMARY KEY (form_id),
+    CONSTRAINT form_data_pkey PRIMARY KEY (form_id),
     CONSTRAINT form_data_param_name UNIQUE (param_name)
 );
 
@@ -556,11 +576,9 @@ CREATE TABLE catalog_laminate_types (
 INSERT INTO catalog_laminate_types (type_id, tag_version, datetime_created, type_caption, type_status)
     OVERRIDING SYSTEM VALUE
 VALUES
-    (1, 3, '2023-07-26 21:06:17.305547', 'l2222', 'ENABLED'),
-    (2, 1, '2023-07-30 12:30:52.651613', 'глянцевый', 'DRAFT'),
-    (3, 1, '2023-07-30 12:30:58.368544', 'глянцевый', 'DRAFT');
+    (1, 1, '2023-07-30 12:30:52.651613', 'глянцевый', 'DRAFT');
 
-ALTER SEQUENCE catalog_laminate_types_type_id_seq RESTART WITH 4;
+ALTER SEQUENCE catalog_laminate_types_type_id_seq RESTART WITH 2;
 
 
 CREATE TABLE catalog_laminates (
@@ -583,8 +601,6 @@ CREATE TABLE catalog_laminates (
 INSERT INTO catalog_laminates (laminate_id, tag_version, datetime_created, laminate_article, laminate_caption, type_id, laminate_length, laminate_weight, laminate_thickness, laminate_status)
     OVERRIDING SYSTEM VALUE
 VALUES
-    (1, 1, '2023-07-26 21:08:40.908057', 'lam-1', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT'),
-    (2, 1, '2023-07-26 21:09:36.034634', '2lam', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT'),
-    (3, 1, '2023-07-26 21:10:03.235812', '2222', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT');
+    (1, 1, '2023-07-26 21:08:40.908057', 'lam-1', 'Глянцевый 450', 1, 10000, 450, 30, 'DRAFT');
 
-ALTER SEQUENCE catalog_laminates_laminate_id_seq RESTART WITH 4;
+ALTER SEQUENCE catalog_laminates_laminate_id_seq RESTART WITH 2;

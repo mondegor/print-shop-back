@@ -7,13 +7,17 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-const quotesByte = 34
+const (
+    quotesByte = 34
+)
 
-type UIMixedValue struct {
-    FloatValue float64
-    IsString bool
-    StringValue string
-}
+type (
+    UIMixedValue struct {
+        FloatValue float64
+        IsString bool
+        StringValue string
+    }
+)
 
 func (v UIMixedValue) String() string {
     if v.IsString {

@@ -1,5 +1,7 @@
 -- DROP SCHEMA public;
 
+DROP TABLE accounts_companies_pages;
+
 DROP TABLE form_fields;
 DROP TABLE form_data;
 DROP TABLE form_field_templates;
@@ -16,6 +18,8 @@ DROP TABLE catalog_laminates;
 DROP TABLE catalog_laminate_types;
 
 DROP TYPE item_status;
+
+DROP TYPE resource_status;
 
 DROP TYPE form_detailing;
 DROP TYPE form_field_type;

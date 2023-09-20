@@ -75,7 +75,7 @@ func (ht *CatalogPaperColor) Get() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPaperColor) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateCatalogPaperColor{}
+        request := view.CreateCatalogPaperColorRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -105,7 +105,7 @@ func (ht *CatalogPaperColor) Create() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPaperColor) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreCatalogPaperColor{}
+        request := view.StoreCatalogPaperColorRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

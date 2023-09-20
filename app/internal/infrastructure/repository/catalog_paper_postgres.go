@@ -7,16 +7,15 @@ import (
     "github.com/Masterminds/squirrel"
     "github.com/mondegor/go-components/mrcom"
     "github.com/mondegor/go-storage/mrentity"
-    "github.com/mondegor/go-storage/mrpostgres"
-    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-storage/mrstorage"
 )
 
 type CatalogPaper struct {
-    client *mrpostgres.ConnAdapter
+    client mrstorage.DbConn
     builder squirrel.StatementBuilderType
 }
 
-func NewCatalogPaper(client *mrpostgres.ConnAdapter,
+func NewCatalogPaper(client mrstorage.DbConn,
                      queryBuilder squirrel.StatementBuilderType) *CatalogPaper {
     return &CatalogPaper{
         client: client,
@@ -75,18 +74,10 @@ func (re *CatalogPaper) LoadAll(ctx context.Context, listFilter *entity.CatalogP
             &row.Status,
         )
 
-        if err != nil {
-            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
-        }
-
         *rows = append(*rows, row)
     }
 
-    if err = cursor.Err(); err != nil {
-        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
-    }
-
-    return nil
+    return cursor.Err()
 }
 
 // LoadOne
@@ -233,7 +224,7 @@ func (re *CatalogPaper) Update(ctx context.Context, row *entity.CatalogPaper) er
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"paper_status": mrcom.ItemStatusRemoved})
 
-    return re.client.SqUpdate(ctx, query)
+    return re.client.SqExec(ctx, query)
 }
 
 // UpdateStatus
@@ -247,7 +238,7 @@ func (re *CatalogPaper) UpdateStatus(ctx context.Context, row *entity.CatalogPap
         WHERE
             paper_id = $1 AND tag_version = $2 AND paper_status <> $3;`
 
-    commandTag, err := re.client.Exec(
+    return re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -255,16 +246,6 @@ func (re *CatalogPaper) UpdateStatus(ctx context.Context, row *entity.CatalogPap
         mrcom.ItemStatusRemoved,
         row.Status,
     )
-
-    if err != nil {
-        return err
-    }
-
-    if commandTag.RowsAffected() < 1 {
-        return mrcore.FactoryErrStorageRowsNotAffected.New()
-    }
-
-    return nil
 }
 
 func (re *CatalogPaper) Delete(ctx context.Context, id mrentity.KeyInt32) error {
@@ -277,20 +258,10 @@ func (re *CatalogPaper) Delete(ctx context.Context, id mrentity.KeyInt32) error 
         WHERE
             paper_id = $1 AND paper_status <> $2;`
 
-    commandTag, err := re.client.Exec(
+    return re.client.Exec(
         ctx,
         sql,
         id,
         mrcom.ItemStatusRemoved,
     )
-
-    if err != nil {
-        return err
-    }
-
-    if commandTag.RowsAffected() < 1 {
-        return mrcore.FactoryErrStorageRowsNotAffected.New()
-    }
-
-    return nil
 }

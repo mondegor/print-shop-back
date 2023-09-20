@@ -82,7 +82,7 @@ func (ht *FormFieldItem) Get() mrcore.HttpHandlerFunc {
 
 func (ht *FormFieldItem) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateFormFieldItem{}
+        request := view.CreateFormFieldItemRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
            return err
@@ -124,7 +124,7 @@ func (ht *FormFieldItem) Create() mrcore.HttpHandlerFunc {
 
 func (ht *FormFieldItem) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreFormFieldItem{}
+        request := view.StoreFormFieldItemRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -167,7 +167,7 @@ func (ht *FormFieldItem) Remove() mrcore.HttpHandlerFunc {
 
 func (ht *FormFieldItem) Move() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.MoveFormFieldItem{}
+        request := view.MoveFormFieldItemRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

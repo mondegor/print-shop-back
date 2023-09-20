@@ -3,6 +3,7 @@ app_path:
 debug: true
 
 logger:
+  prefix: print-shop
   level: debug
 
 server:
@@ -26,10 +27,14 @@ storage:
   max_pool_size: 2
   timeout: 30
 
-#redis:
-#  host: 127.0.0.1
-#  port: 6379
-#  password: 123456
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: 123456
+
+fs:
+  base_url: http://127.0.0.1:8080/images
+  download_dir: "./downloads"
 
 cors:
   allowed_origins:

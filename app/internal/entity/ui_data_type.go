@@ -6,8 +6,6 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-type UIDataType uint8
-
 const (
     _ UIDataType = iota
     UIDataTypeBoolean
@@ -15,6 +13,10 @@ const (
     UIDataTypeEnum
     UIDataTypeNumber
     UIDataTypeString
+)
+
+type (
+    UIDataType uint8
 )
 
 var (

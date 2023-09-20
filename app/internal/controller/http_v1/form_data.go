@@ -82,7 +82,7 @@ func (ht *FormData) Get() mrcore.HttpHandlerFunc {
 
 func (ht *FormData) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateFormData{}
+        request := view.CreateFormDataRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
            return err
@@ -114,7 +114,7 @@ func (ht *FormData) Create() mrcore.HttpHandlerFunc {
 
 func (ht *FormData) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreFormData{}
+        request := view.StoreFormDataRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

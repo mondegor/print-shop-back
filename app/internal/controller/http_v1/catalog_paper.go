@@ -75,7 +75,7 @@ func (ht *CatalogPaper) Get() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPaper) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateCatalogPaper{}
+        request := view.CreateCatalogPaperRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -113,7 +113,7 @@ func (ht *CatalogPaper) Create() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPaper) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreCatalogPaper{}
+        request := view.StoreCatalogPaperRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

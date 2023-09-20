@@ -7,16 +7,15 @@ import (
     "github.com/Masterminds/squirrel"
     "github.com/mondegor/go-components/mrcom"
     "github.com/mondegor/go-storage/mrentity"
-    "github.com/mondegor/go-storage/mrpostgres"
-    "github.com/mondegor/go-webcore/mrcore"
+    "github.com/mondegor/go-storage/mrstorage"
 )
 
 type FormFieldTemplate struct {
-    client *mrpostgres.ConnAdapter
+    client mrstorage.DbConn
     builder squirrel.StatementBuilderType
 }
 
-func NewFormFieldTemplate(client *mrpostgres.ConnAdapter,
+func NewFormFieldTemplate(client mrstorage.DbConn,
                           queryBuilder squirrel.StatementBuilderType) *FormFieldTemplate {
     return &FormFieldTemplate{
         client: client,
@@ -66,18 +65,10 @@ func (re *FormFieldTemplate) LoadAll(ctx context.Context, listFilter *entity.For
             &row.Status,
         )
 
-        if err != nil {
-            return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
-        }
-
         *rows = append(*rows, row)
     }
 
-    if err = cursor.Err(); err != nil {
-        return mrcore.FactoryErrStorageFetchDataFailed.Wrap(err)
-    }
-
-    return nil
+    return cursor.Err()
 }
 
 // LoadOne
@@ -188,7 +179,7 @@ func (re *FormFieldTemplate) Update(ctx context.Context, row *entity.FormFieldTe
         Where(squirrel.Eq{"tag_version": row.Version}).
         Where(squirrel.NotEq{"template_status": mrcom.ItemStatusRemoved})
 
-    return re.client.SqUpdate(ctx, query)
+    return re.client.SqExec(ctx, query)
 }
 
 // UpdateStatus
@@ -202,7 +193,7 @@ func (re *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormF
         WHERE
             template_id = $1 AND tag_version = $2 AND template_status <> $3;`
 
-    commandTag, err := re.client.Exec(
+    return re.client.Exec(
         ctx,
         sql,
         row.Id,
@@ -210,16 +201,6 @@ func (re *FormFieldTemplate) UpdateStatus(ctx context.Context, row *entity.FormF
         mrcom.ItemStatusRemoved,
         row.Status,
     )
-
-    if err != nil {
-        return err
-    }
-
-    if commandTag.RowsAffected() < 1 {
-        return mrcore.FactoryErrStorageRowsNotAffected.New()
-    }
-
-    return nil
 }
 
 func (re *FormFieldTemplate) Delete(ctx context.Context, id mrentity.KeyInt32) error {
@@ -232,20 +213,10 @@ func (re *FormFieldTemplate) Delete(ctx context.Context, id mrentity.KeyInt32) e
         WHERE
             template_id = $1 AND template_status <> $2;`
 
-    commandTag, err := re.client.Exec(
+    return re.client.Exec(
         ctx,
         sql,
         id,
         mrcom.ItemStatusRemoved,
     )
-
-    if err != nil {
-        return err
-    }
-
-    if commandTag.RowsAffected() < 1 {
-        return mrcore.FactoryErrStorageRowsNotAffected.New()
-    }
-
-    return nil
 }

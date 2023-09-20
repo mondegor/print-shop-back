@@ -34,7 +34,7 @@ func (uc *FormFieldTemplate) GetList(ctx context.Context, listFilter *entity.For
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldTemplate)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldTemplate)
     }
 
     return items, nil
@@ -76,7 +76,7 @@ func (uc *FormFieldTemplate) Create(ctx context.Context, item *entity.FormFieldT
 
 func (uc *FormFieldTemplate) Store(ctx context.Context, item *entity.FormFieldTemplate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.storage.Update(ctx, item)
@@ -96,7 +96,7 @@ func (uc *FormFieldTemplate) Store(ctx context.Context, item *entity.FormFieldTe
 
 func (uc *FormFieldTemplate) ChangeStatus(ctx context.Context, item *entity.FormFieldTemplate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)

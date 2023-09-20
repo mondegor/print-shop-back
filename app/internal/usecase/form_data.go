@@ -34,7 +34,7 @@ func (uc *FormData) GetList(ctx context.Context, listFilter *entity.FormDataList
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
     }
 
     return items, nil
@@ -92,7 +92,7 @@ func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
 
 func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.checkParamName(ctx, item)
@@ -118,7 +118,7 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
 
 func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -175,7 +175,7 @@ func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) e
             return nil
         }
 
-        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
+        return mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameFormData)
     }
 
     if item.Id == id {

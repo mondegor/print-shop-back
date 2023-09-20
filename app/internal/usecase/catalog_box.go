@@ -34,7 +34,7 @@ func (uc *CatalogBox) GetList(ctx context.Context, listFilter *entity.CatalogBox
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
     }
 
     return items, nil
@@ -82,7 +82,7 @@ func (uc *CatalogBox) Create(ctx context.Context, item *entity.CatalogBox) error
 
 func (uc *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.checkArticle(ctx, item)
@@ -108,7 +108,7 @@ func (uc *CatalogBox) Store(ctx context.Context, item *entity.CatalogBox) error 
 
 func (uc *CatalogBox) ChangeStatus(ctx context.Context, item *entity.CatalogBox) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -165,7 +165,7 @@ func (uc *CatalogBox) checkArticle(ctx context.Context, item *entity.CatalogBox)
             return nil
         }
 
-        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
+        return mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogBox)
     }
 
     if item.Id == id {

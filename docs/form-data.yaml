@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.1.0
+  version: 0.1.1
   title: API управления пользовательскими формами
   description: REST API управления формами для приёма данных от пользователей в формате OpenAPI v3
   license:
@@ -338,12 +338,10 @@ components:
           type: number
           example: 7
         status:
+          description: Статус в который переключается ресурс
           type: string
-          enum:
-            - DRAFT
-            - ENABLED
-            - DISABLED
-          example: "DRAFT"
+          maxLength: 64
+          example: "ENABLED"
 
     App.Model.FormData:
       type: object
@@ -351,7 +349,7 @@ components:
         Форма пользовательского компонента \
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       properties:
-        id: # get
+        id: # formId, get
           type: integer
           example: 1000
         version: # get, store, changeStatus, remove
@@ -371,6 +369,7 @@ components:
           maxLength: 32
           example: "ProductParam"
         caption: # get, create, store
+          description: Название записи
           type: string
           maxLength: 128
           example: "Форма с данными"

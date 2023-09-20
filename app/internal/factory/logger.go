@@ -7,7 +7,7 @@ import (
 )
 
 func NewLogger(cfg *config.Config) (*mrcore.LoggerAdapter, error) {
-    logger, err := mrcore.NewLogger("[" + cfg.AppName + "] ", cfg.Log.Level)
+    logger, err := mrcore.NewLogger("[" + cfg.Log.Prefix + "] ", cfg.Log.Level)
 
     if err != nil {
         return nil, err
@@ -15,7 +15,11 @@ func NewLogger(cfg *config.Config) (*mrcore.LoggerAdapter, error) {
 
     mrcore.SetDefaultLogger(logger)
 
-    logger.Info("APP %s, version: %s", cfg.AppName, cfg.AppVersion)
+    logger.Info("%s, version: %s", cfg.AppName, cfg.AppVersion)
+
+    if cfg.AppInfo != "" {
+        logger.Info(cfg.AppInfo)
+    }
 
     if cfg.Debug {
         logger.Info("DEBUG MODE: ON")

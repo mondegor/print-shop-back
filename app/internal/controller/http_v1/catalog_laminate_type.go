@@ -75,7 +75,7 @@ func (ht *CatalogLaminateType) Get() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogLaminateType) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateCatalogLaminateType{}
+        request := view.CreateCatalogLaminateTypeRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -105,7 +105,7 @@ func (ht *CatalogLaminateType) Create() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogLaminateType) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreCatalogLaminateType{}
+        request := view.StoreCatalogLaminateTypeRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

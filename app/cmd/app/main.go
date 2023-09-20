@@ -13,6 +13,7 @@ import (
 
     sq "github.com/Masterminds/squirrel"
     mrcom_orderer "github.com/mondegor/go-components/mrcom/orderer"
+    "github.com/mondegor/go-storage/mrredislock"
     "github.com/mondegor/go-webcore/mrtool"
 )
 
@@ -52,15 +53,34 @@ func main() {
     appHelper.ExitOnError(err)
     defer appHelper.Close(postgresAdapter)
 
-    // redisAdapter, err := factory.NewRedis(cfg, logger)
-    // appHelper.ExitOnError(err)
-    // defer appHelper.Close(redisAdapter)
+    redisAdapter, err := factory.NewRedis(cfg, logger)
+    appHelper.ExitOnError(err)
+    defer appHelper.Close(redisAdapter)
 
-    // lockerAdapter := mrredsync.NewLockerAdapter(redisAdapter.Cli())
+    fileStorage, err := factory.NewFileStorage(cfg, logger)
+    appHelper.ExitOnError(err)
+
+    lockerAdapter := mrredislock.NewLockerAdapter(redisAdapter.Cli())
     queryBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
 
     itemOrdererStorage := mrcom_orderer.NewRepository(postgresAdapter, queryBuilder)
     itemOrdererComponent := mrcom_orderer.NewComponent(itemOrdererStorage, logger)
+
+    fileService := usecase.NewFile(fileStorage)
+    commonHttp := http_v1.NewCommon(fileService)
+
+    companyPageStorage := repository.NewCompanyPage(postgresAdapter, queryBuilder)
+    companyPageLogoStorage := repository.NewCompanyPageLogo(postgresAdapter, queryBuilder)
+
+    companyPageService := usecase.NewCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage)
+    companyPageHttp := http_v1.NewCompanyPage(companyPageService)
+
+    accountCompanyPageService := usecase.NewAccountCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage, logger, serviceHelper)
+    accountCompanyPageLogoService := usecase.NewAccountCompanyPageLogo(companyPageLogoStorage, fileStorage, lockerAdapter, logger, serviceHelper)
+    accountCompanyPageHttp := http_v1.NewAccountCompanyPage(accountCompanyPageService, accountCompanyPageLogoService)
+
+    publicCompanyPageService := usecase.NewPublicCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage, serviceHelper)
+    publicCompanyPageHttp := http_v1.NewPublicCompanyPage(publicCompanyPageService)
 
     catalogBoxStorage := repository.NewCatalogBox(postgresAdapter, queryBuilder)
     catalogBoxService := usecase.NewCatalogBox(catalogBoxStorage, logger, serviceHelper)
@@ -108,6 +128,10 @@ func main() {
     appHelper.ExitOnError(err)
 
     router.Register(
+        commonHttp,
+        companyPageHttp,
+        accountCompanyPageHttp,
+        publicCompanyPageHttp,
         catalogBoxHttp,
         catalogLaminateHttp,
         catalogLaminateTypeHttp,

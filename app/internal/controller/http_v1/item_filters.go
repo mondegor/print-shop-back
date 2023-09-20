@@ -62,3 +62,28 @@ func parseFilterStatuses(c mrcore.ClientData, statuses *[]mrcom.ItemStatus) {
         *statuses = append(*statuses, mrcom.ItemStatusEnabled)
     }
 }
+
+func parseFilterResourceStatuses(c mrcore.ClientData, statuses *[]entity.ResourceStatus) {
+    items, err := mrreq.EnumList(c.Request(), "statuses")
+
+    if err == nil {
+        var resourceStatus entity.ResourceStatus
+
+        for _, item := range items {
+            if item == mrcom.ItemStatusRemoved.String() {
+                continue
+            }
+
+            err = resourceStatus.ParseAndSet(item)
+
+            if err != nil {
+                mrctx.Logger(c.Context()).Warn(err.Error())
+                continue
+            }
+
+            *statuses = append(*statuses, resourceStatus)
+        }
+    } else {
+        mrctx.Logger(c.Context()).Warn(err.Error())
+    }
+}

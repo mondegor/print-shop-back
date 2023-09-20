@@ -8,14 +8,15 @@ import (
 )
 
 const (
-    appName = "print-shop"
-    appVersion = "v0.6.0"
+    appName = "Print Shop"
+    appVersion = "v0.6.2"
 )
 
 type (
     Config struct {
         AppName string
         AppVersion string
+        AppInfo string
         AppPath string `yaml:"app_path"`
         ConfigPath string
         Debug bool `yaml:"debug" env:"APPX_DEBUG"`
@@ -23,7 +24,8 @@ type (
         Listen `yaml:"listen"`
         Log `yaml:"logger"`
         Storage `yaml:"storage"`
-        // Redis `yaml:"redis"`
+        Redis `yaml:"redis"`
+        FileStorage `yaml:"fs"`
         Cors `yaml:"cors"`
         Translation `yaml:"translation"`
     }
@@ -42,6 +44,7 @@ type (
     }
 
     Log struct {
+        Prefix string `yaml:"prefix"`
         Level string `yaml:"level" env:"APPX_LOG_LEVEL"`
     }
 
@@ -55,12 +58,17 @@ type (
         Timeout int32 `yaml:"timeout"` // in sec
     }
 
-    //Redis struct {
-    //    Host string `yaml:"host" env:"APPX_REDIS_HOST"`
-    //    Port string `yaml:"port" env:"APPX_REDIS_PORT"`
-    //    Password string `yaml:"password" env:"APPX_REDIS_PASSWORD"`
-    //    Timeout int `yaml:"timeout"` // in sec
-    //}
+    Redis struct {
+        Host string `yaml:"host" env:"APPX_REDIS_HOST"`
+        Port string `yaml:"port" env:"APPX_REDIS_PORT"`
+        Password string `yaml:"password" env:"APPX_REDIS_PASSWORD"`
+        Timeout int `yaml:"timeout"` // in sec
+    }
+
+    FileStorage struct {
+        BaseUrl string `yaml:"base_url" env:"APPX_FS_BASE_URL"`
+        DownloadDir string `yaml:"download_dir" env:"APPX_FS_DOWNLOAD_DIR"`
+    }
 
     Cors struct {
         AllowedOrigins []string `yaml:"allowed_origins"`

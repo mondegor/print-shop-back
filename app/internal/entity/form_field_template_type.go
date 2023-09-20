@@ -6,12 +6,14 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-type FormFieldTemplateType uint8
-
 const (
     _ FormFieldTemplateType = iota
     FormFieldTemplateTypeGroup
     FormFieldTemplateTypeFields
+)
+
+type (
+    FormFieldTemplateType uint8
 )
 
 var (

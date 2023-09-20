@@ -23,7 +23,7 @@ errors:
     details:
       - Check fields REST API endpoint (en)
 
-  errServiceEntityTemporarilyUnavailable:
+  errServiceTemporarilyUnavailable:
     reason: Service Resource Temporarily Unavailable
 
   errValidationMax:

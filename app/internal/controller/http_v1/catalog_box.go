@@ -75,7 +75,7 @@ func (ht *CatalogBox) Get() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogBox) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateCatalogBox{}
+        request := view.CreateCatalogBoxRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -109,7 +109,7 @@ func (ht *CatalogBox) Create() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogBox) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreCatalogBox{}
+        request := view.StoreCatalogBoxRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

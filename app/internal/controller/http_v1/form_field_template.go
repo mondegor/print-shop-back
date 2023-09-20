@@ -76,7 +76,7 @@ func (ht *FormFieldTemplate) Get() mrcore.HttpHandlerFunc {
 
 func (ht *FormFieldTemplate) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateFormFieldTemplate{}
+        request := view.CreateFormFieldTemplateRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
            return err
@@ -110,7 +110,7 @@ func (ht *FormFieldTemplate) Create() mrcore.HttpHandlerFunc {
 
 func (ht *FormFieldTemplate) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreFormFieldTemplate{}
+        request := view.StoreFormFieldTemplateRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

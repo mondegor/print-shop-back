@@ -75,7 +75,7 @@ func (ht *CatalogPrintFormat) Get() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPrintFormat) Create() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.CreateCatalogPrintFormat{}
+        request := view.CreateCatalogPrintFormatRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err
@@ -107,7 +107,7 @@ func (ht *CatalogPrintFormat) Create() mrcore.HttpHandlerFunc {
 
 func (ht *CatalogPrintFormat) Store() mrcore.HttpHandlerFunc {
     return func(c mrcore.ClientData) error {
-        request := view.StoreCatalogPrintFormat{}
+        request := view.StoreCatalogPrintFormatRequest{}
 
         if err := c.ParseAndValidate(&request); err != nil {
             return err

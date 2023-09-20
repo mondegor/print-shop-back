@@ -39,7 +39,7 @@ func (uc *FormFieldItem) GetList(ctx context.Context, listFilter *entity.FormFie
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
     return items, nil
@@ -117,7 +117,7 @@ func (uc *FormFieldItem) Create(ctx context.Context, item *entity.FormFieldItem)
 
 func (uc *FormFieldItem) Store(ctx context.Context, item *entity.FormFieldItem) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.checkParamName(ctx, item)
@@ -180,7 +180,7 @@ func (uc *FormFieldItem) checkParamName(ctx context.Context, item *entity.FormFi
             return nil
         }
 
-        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
+        return mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameFormFieldItem)
     }
 
     if item.Id == id {

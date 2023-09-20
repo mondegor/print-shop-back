@@ -19,7 +19,7 @@ errors:
       - Check fields REST API endpoint (ru)
       - Check fields REST API endpoint1 (ru)
 
-  errServiceEntityTemporarilyUnavailable:
+  errServiceTemporarilyUnavailable:
     reason: Ресурс сервиса временно не доступен
     details: [ detail1, detail2 ]
 

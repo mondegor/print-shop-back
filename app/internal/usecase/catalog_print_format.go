@@ -34,7 +34,7 @@ func (uc *CatalogPrintFormat) GetList(ctx context.Context, listFilter *entity.Ca
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogPrintFormat)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogPrintFormat)
     }
 
     return items, nil
@@ -76,7 +76,7 @@ func (uc *CatalogPrintFormat) Create(ctx context.Context, item *entity.CatalogPr
 
 func (uc *CatalogPrintFormat) Store(ctx context.Context, item *entity.CatalogPrintFormat) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.storage.Update(ctx, item)
@@ -96,7 +96,7 @@ func (uc *CatalogPrintFormat) Store(ctx context.Context, item *entity.CatalogPri
 
 func (uc *CatalogPrintFormat) ChangeStatus(ctx context.Context, item *entity.CatalogPrintFormat) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)

@@ -6,12 +6,14 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-type CatalogPaperSide uint8
-
 const (
     _ CatalogPaperSide = iota
     CatalogPaperSideSame
     CatalogPaperSideDifferent
+)
+
+type (
+    CatalogPaperSide uint8
 )
 
 var (

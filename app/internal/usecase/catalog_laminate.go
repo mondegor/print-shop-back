@@ -37,7 +37,7 @@ func (uc *CatalogLaminate) GetList(ctx context.Context, listFilter *entity.Catal
     err := uc.storage.LoadAll(ctx, listFilter, &items)
 
     if err != nil {
-        return nil, mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
+        return nil, mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
     return items, nil
@@ -95,7 +95,7 @@ func (uc *CatalogLaminate) Create(ctx context.Context, item *entity.CatalogLamin
 
 func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     err := uc.checkArticle(ctx, item)
@@ -121,7 +121,7 @@ func (uc *CatalogLaminate) Store(ctx context.Context, item *entity.CatalogLamina
 
 func (uc *CatalogLaminate) ChangeStatus(ctx context.Context, item *entity.CatalogLaminate) error {
     if item.Id < 1 || item.Version < 1 {
-        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Item.Version": item.Version})
+        return mrcore.FactoryErrServiceIncorrectInputData.New(mrerr.Arg{"item.Id": item.Id, "Version": item.Version})
     }
 
     currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -178,7 +178,7 @@ func (uc *CatalogLaminate) checkArticle(ctx context.Context, item *entity.Catalo
             return nil
         }
 
-        return mrcore.FactoryErrServiceEntityTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
+        return mrcore.FactoryErrServiceTemporarilyUnavailable.Wrap(err, entity.ModelNameCatalogLaminate)
     }
 
     if item.Id == id {

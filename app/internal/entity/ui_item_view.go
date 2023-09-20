@@ -6,8 +6,6 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-type UIItemView uint8
-
 const (
     _ UIItemView = iota
     UIItemViewBlock
@@ -17,6 +15,10 @@ const (
     UIItemViewRadio
     UIItemViewRange
     UIItemViewText
+)
+
+type (
+    UIItemView uint8
 )
 
 var (

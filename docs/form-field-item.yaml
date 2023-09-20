@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.1.0
+  version: 0.1.1
   title: API управления полями пользовательских форм
   description: REST API управления полями используемые в пользовательских формах в формате OpenAPI v3
   license:
@@ -360,7 +360,7 @@ components:
         Шаблон пользовательского компонента \
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       properties:
-        id: # get
+        id: # fieldId, get
           type: integer
           example: 1000
         version: # get, store, changeStatus, remove
@@ -380,6 +380,7 @@ components:
           maxLength: 32
           example: "FieldParam"
         caption: # get, create, store
+          description: Название записи
           type: string
           maxLength: 128
           example: "Процесс разработки"

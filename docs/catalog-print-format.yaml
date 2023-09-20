@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.1.0
+  version: 0.1.1
   title: API управления картотекой печатных форматов
   description: REST API управления картотекой печатных форматов в формате OpenAPI v3
   license:
@@ -330,17 +330,15 @@ components:
           type: number
           example: 7
         status:
+          description: Статус в который переключается ресурс
           type: string
-          enum:
-            - DRAFT
-            - ENABLED
-            - DISABLED
-          example: "DRAFT"
+          maxLength: 64
+          example: "ENABLED"
 
     App.Model.CatalogPrintFormat:
       type: object
       properties:
-        id: # get
+        id: # formatId, get
           type: integer
           example: 1000
         version: # get, store, changeStatus, remove
@@ -353,9 +351,10 @@ components:
           format: date-time
           example: "2023-01-01T12:00:00.000+02:00"
         caption: # get, create, store
+          description: Название записи
           type: string
           maxLength: 64
-          example: "Название записи"
+          example: "A4 (210 x 297 mm)"
         length: # get, create, store
           type: integer # Micrometer
           maxLength: 8

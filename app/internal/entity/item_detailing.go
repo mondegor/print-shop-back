@@ -6,12 +6,14 @@ import (
     "github.com/mondegor/go-webcore/mrcore"
 )
 
-type ItemDetailing uint8
-
 const (
     _ ItemDetailing = iota
     ItemDetailingNormal
     ItemDetailingExtended
+)
+
+type (
+    ItemDetailing uint8
 )
 
 var (
