@@ -1,0 +1,237 @@
+/v1/controls/element-templates:
+  get:
+    summary: Метод получения списка шаблонов элементов формы
+    description: Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
+    operationId: getElementTemplates
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список шаблонов элементов формы
+        content:
+          application/json;charset=UTF-8:
+            schema:
+                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления нового шаблона элемента формы
+    description: |-
+      Метод предназначен для создания информации о новом шаблоне элемента формы в БД
+
+      **Ограничения и ошибки полей:**
+    operationId: createElementTemplate
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate"
+
+    responses:
+      "201":
+        description: Информация о шаблоне элемента формы успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+      "400":
+        # Название переменной записи не может быть пустым
+        # Указанное название записи уже существует
+        # Название переменной записи не может быть более 32 символов
+        # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 128 символов
+        # Тип поля формы содержит недопустимое значение
+        # Содержание шаблона поля формы не может быть пустым
+        # Содержание шаблона поля формы не может быть более 65536 символов
+        # Содержание шаблона поля формы некорректно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/element-templates/{templateId}:
+  get:
+    summary: Метод получения шаблона элемента формы по его идентификатору
+    description: Метод предназначен для получения информации о шаблоне элемента формы из БД
+    operationId: getElementTemplate
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+    responses:
+      "200":
+        description: Получена информация о шаблоне элемента формы
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  put:
+    summary: Метод сохранения шаблона элемента формы
+    description: |-
+      Метод предназначен для сохранения информации о шаблоне элемента формы в БД
+
+      **Ограничения и ошибки полей:**
+    operationId: storeElementTemplate
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate"
+
+    responses:
+      "204":
+        description: Информация о шаблоне элемента формы успешно сохранена
+      "400":
+        # Название переменной записи не может быть пустым
+        # Указанное название записи уже существует
+        # Название переменной записи не может быть более 32 символов
+        # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 128 символов
+        # Тип поля формы содержит недопустимое значение
+        # Содержание шаблона поля формы не может быть пустым
+        # Содержание шаблона поля формы не может быть более 65536 символов
+        # Содержание шаблона поля формы некорректно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления шаблона элемента формы
+    description: Метод предназначен для удаления информации о шаблоне элемента формы из БД
+    operationId: removeElementTemplate
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+    responses:
+      "204":
+        description: Информация о шаблоне элемента формы успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/element-templates/{templateId}/status:
+  put:
+    summary: Метод изменения статуса шаблона элемента формы
+    description: |-
+      Метод предназначен для изменения статуса шаблона элемента формы в БД
+
+      **Ограничения и ошибки полей:**
+      - version: required,gte=1 | ErrVersionInvalid
+      - status: required,enum | ErrSwitchStatusRejected
+    operationId: changeElementTemplatestatus
+    tags:
+      - Controls.ElementTemplates
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+    responses:
+      "204":
+        description: Статус шаблона элемента формы успешно изменён
+      "400":
+        # Указанный статус содержит недопустимое значение
+        # В данный статус переключение невозможно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

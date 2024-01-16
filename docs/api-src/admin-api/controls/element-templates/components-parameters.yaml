@@ -1,0 +1,9 @@
+Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID:
+  description: Идентификатор шаблона элемента
+  name: templateId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

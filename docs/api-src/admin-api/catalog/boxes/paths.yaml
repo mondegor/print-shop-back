@@ -1,0 +1,229 @@
+/v1/catalog/boxes:
+  get:
+    summary: Метод получения списка коробок
+    description: Метод предназначен для получения списка всех коробок, сохраненных в БД
+    operationId: getBoxes
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMax"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список коробок
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.BoxList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления новой коробки
+    description: |-
+      Метод предназначен для создания информации о новой коробке в БД
+
+      **Ограничения и ошибки полей:**
+      - Article: required,min=3,max=32,pattern=article
+      - Caption: required,max=64
+      - Length: required,gte=1,lte=10000000
+      - Depth: required,gte=1,lte=10000000
+    operationId: createBox
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Request.Model.CreateBox"
+
+    responses:
+      "201":
+        description: Информация о коробке успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/boxes/{boxId}:
+  get:
+    summary: Метод получения коробки
+    description: Метод предназначен для получения информации о коробке из БД
+    operationId: getBox
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+    responses:
+      "200":
+        description: Получена информация о коробке
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.Box"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  put:
+    summary: Метод сохранения коробки
+    description: |-
+      Метод предназначен для сохранения информации о коробке в БД
+
+      **Ограничения и ошибки полей:**
+      - Version: required,gte=1
+      - Article: omitempty,min=3,max=32,pattern=article
+      - Caption: omitempty,max=64
+      - Length: omitempty,gte=1,lte=10000000
+      - Depth: omitempty,gte=1,lte=10000000
+    operationId: storeBox
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Request.Model.StoreBox"
+
+    responses:
+      "204":
+        description: Информация о коробке успешно сохранена
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления коробки
+    description: Метод предназначен для удаления информации о коробке из БД
+    operationId: removeBox
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+    responses:
+      "204":
+        description: Информация о коробке успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/boxes/{boxId}/status:
+  put:
+    summary: Метод изменения статуса коробки
+    description: |-
+      Метод предназначен для изменения статуса коробки в БД
+
+      **Ограничения и ошибки полей:**
+      - version: required,gte=1 | ErrVersionInvalid
+      - status: required,enum | ErrSwitchStatusRejected
+    operationId: changeBoxStatus
+    tags:
+      - Catalog.Boxes
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+    responses:
+      "204":
+        description: Статус коробки успешно изменён
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

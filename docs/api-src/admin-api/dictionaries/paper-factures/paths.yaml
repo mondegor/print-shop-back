@@ -1,0 +1,222 @@
+/v1/dictionaries/paper-factures:
+  get:
+    summary: Метод получения списка фактуры бумаги
+    description: Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
+    operationId: getPaperFactures
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список фактуры бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления новой фактуры бумаги
+    description: |-
+      Метод предназначен для создания информации о новой фактуре бумаги в БД
+
+      **Ограничения и ошибки полей:**
+    operationId: createPaperFacture
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture"
+
+    responses:
+      "201":
+        description: Информация о фактуре бумаги успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+      "400":
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 64 символов
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/paper-factures/{factureId}:
+  get:
+    summary: Метод получения фактуры бумаги
+    description: Метод предназначен для получения информации о фактуре бумаги из БД
+    operationId: getPaperFacture
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+    responses:
+      "200":
+        description: Получена информация о фактуре бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  put:
+    summary: Метод сохранения фактуры бумаги
+    description: |-
+      Метод предназначен для сохранения информации о фактуре бумаги в БД
+
+      **Ограничения и ошибки полей:**
+    operationId: storePaperFacture
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Request.Model.StorePaperFacture"
+
+    responses:
+      "204":
+        description: Информация о фактуре бумаги успешно сохранена
+      "400":
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 64 символов
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления фактуры бумаги
+    description: Метод предназначен для удаления информации о фактуре бумаги из БД
+    operationId: removePaperFacture
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+    responses:
+      "204":
+        description: Информация о фактуре бумаги успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/paper-factures/{factureId}/status:
+  put:
+    summary: Метод изменения статуса фактуры бумаги
+    description: |-
+      Метод предназначен для изменения статуса фактуры бумаги в БД
+
+      **Ограничения и ошибки полей:**
+      - version: required,gte=1 | ErrVersionInvalid
+      - status: required,enum | ErrSwitchStatusRejected
+    operationId: changePaperFactureStatus
+    tags:
+      - Dictionaries.PaperFactures
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+    responses:
+      "204":
+        description: Статус фактуры бумаги успешно изменён
+      "400":
+        # Указанный статус содержит недопустимое значение
+        # В данный статус переключение невозможно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

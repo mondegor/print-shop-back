@@ -1,0 +1,6 @@
+App.Field.Phone:
+  description: Номер телефона
+  type: string
+  format: phone
+  maxLength: 32
+  example: "+7 999 888 77 66"

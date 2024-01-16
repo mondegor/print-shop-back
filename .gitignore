@@ -6,6 +6,7 @@
 /.env
 
 /app/bin
-/app/logs
+/app/img
 
+/golang
 /*dump*

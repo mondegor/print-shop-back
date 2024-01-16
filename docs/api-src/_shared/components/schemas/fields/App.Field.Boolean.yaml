@@ -1,0 +1,4 @@
+App.Field.Boolean:
+  description: Значение флага записи
+  type: boolean
+  example: true

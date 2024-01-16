@@ -1,0 +1,10 @@
+App.Enum.DeliveryMethod:
+  description: |-
+    Метод доставки:
+    - COURIER - курьер;
+    - PICKPOINT - пункт выдачи;
+  type: string
+  enum:
+    - COURIER
+    - PICKPOINT
+  example: "COURIER"

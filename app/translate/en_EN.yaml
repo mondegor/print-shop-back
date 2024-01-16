@@ -1,0 +1,53 @@
+---
+lang_id: 2
+
+messages:
+  msgElementTemplateSuccessCreated: Шаблон поля формы был успешно добавлен (eng)
+
+errors:
+  # Ошибки создаваемые AppErrorFactory
+
+  errInternal:
+    reason: "Internal server error"
+
+  errSystem:
+    reason: "System server error"
+
+  errHttpClientUnauthorized: # 401
+    reason: "User authorization required"
+
+  errHttpAccessForbidden: # 403
+    reason: "Forbidden - You don't have permission to access"
+
+  errHttpResourceNotFound: # 404
+    reason: "Resource Not Found"
+
+  errHttpRequestParseData:
+    reason: "Request body is not valid"
+
+  errServiceTemporarilyUnavailable:
+    reason: "The system is temporarily unable to process your request. Please try again later"
+
+  # Ошибки генерируемые валидатором.
+  # ID формируется из "validator_err" и имени валидатора, которое указано
+  # в `` поля структуры (например: min, max, required).
+  # Можно использовать следующие переменные:
+  #   {{ .name }} - название поля, где произошла ошибка;
+  #   {{ .type }} - тип поля (например: int32);
+  #   {{ .value }} - текущее значение поля;
+  #   {{ .param }} - параметр валидатора (например: max=16 -> param=16);
+
+  validator_err_required:
+    reason: "The field is required"
+
+  validator_err_min:
+    reason: "The field value must be at least {{ .param }} characters (current value: {{ .value }})"
+
+  validator_err_max:
+    reason: "The field value must be no more than {{ .param }} characters (current value: {{ .value }})"
+
+  validator_err_gte:
+    reason: "The field value must be greater than or equal to {{ .param }} (current value: {{ .value }})"
+
+  validator_err_lte:
+    reason: "The field value must be less than or equal to {{ .param }} (current value: {{ .value }})"

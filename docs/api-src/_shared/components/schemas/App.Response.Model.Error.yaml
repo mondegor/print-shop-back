@@ -1,0 +1,52 @@
+App.Response.Model.ErrorList:
+  description: DTO списка пользовательских ошибок 400
+  type: array
+  items:
+    $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+App.Response.Model.ErrorAttribute:
+  description: DTO пользовательской ошибки 400
+  type: object
+  required:
+    - id
+    - value
+  properties:
+    id:
+      description: Название атрибута, где произошла ошибка
+      type: string
+      example: "attributeName"
+    value:
+      description: Описание ошибки
+      type: string
+      example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
+
+App.Response.Model.ErrorDetails: # RFC 7807 (Problem Details for HTTP APIs)
+  description: DTO следующих ошибок - 401, 403, 404, 5XX
+  type: object
+  required:
+    - title
+    - details
+    - request
+    - time
+  properties:
+    title:
+      description: Краткое описание проблемы, понятное человеку
+      type: string
+      example: "Resource not found"
+    details:
+      description: Описание конкретно возникшей ошибки, понятное человеку
+      type: string
+      example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+    request:
+      description: Метод и URL запроса
+      type: string
+      example: "PUT /users/123456"
+    time:
+      description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"
+    errorTraceId:
+      description: Идентификатор конкретного возникновения ошибки
+      type: string
+      example: "5add1be1-90ab5d42-02fa8b1f-672503f2"

@@ -1,0 +1,10 @@
+Custom.Enum.FormElementType:
+  description: |-
+    Тип элемента формы:
+    - GROUP - элемент "группа" (контейнер элементов);
+    - ELEMENT_LIST - список элементов;
+  type: string
+  enum:
+    - GROUP
+    - ELEMENT_LIST
+  example: "ELEMENT_LIST"

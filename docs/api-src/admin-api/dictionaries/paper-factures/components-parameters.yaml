@@ -1,0 +1,9 @@
+Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID:
+  description: Идентификатор фактуры бумаги
+  name: factureId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

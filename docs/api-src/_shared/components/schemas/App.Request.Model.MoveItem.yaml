@@ -1,0 +1,12 @@
+App.Request.Model.MoveItem:
+  description: DTO перемещения записи в рамках списка
+  type: object
+  required:
+    - afterId
+  properties:
+    afterId:
+      description: |-
+        Идентификатор записи, после которой необходимо вставить указанную запись.\
+        При afterId = 0 запись вставляется в начало списка.
+      type: integer
+      example: 7

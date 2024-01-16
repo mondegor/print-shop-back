@@ -1,0 +1,9 @@
+App.Request.Header.AcceptLanguage:
+  description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+  name: Accept-Language
+  in: header
+  required: false
+  schema:
+    type: string
+    default: "ru-RU"
+  example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"

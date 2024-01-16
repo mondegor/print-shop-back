@@ -1,0 +1,27 @@
+Catalog.Papers.AdminAPI.Request.Path.PaperID:
+  description: Идентификатор бумаги
+  name: paperId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000
+
+Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs:
+  description: Список идентификаторов цветов бумаги через ","
+  name: colors
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "1,2,3"
+
+Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs:
+  description: Список идентификаторов фактур бумаги через ","
+  name: factures
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "1,2,3"

@@ -1,0 +1,25 @@
+App.Request.Query.ListSorter.SortField:
+  description: Название колонки, по которой происходит сортировка
+  name: sortField
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "caption"
+
+App.Request.Query.ListSorter.SortDirection:
+  description: Направление сортировки
+  name: sortDirection
+  in: query
+  required: false
+  schema:
+    description: |-
+      Направление сортировки:
+      - ASC - по возрастанию;
+      - DESC - по убыванию;
+    type: string
+    enum:
+      - ASC
+      - DESC
+    default: "ASC"
+  example: "DESC"

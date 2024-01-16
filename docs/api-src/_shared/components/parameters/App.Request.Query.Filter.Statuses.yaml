@@ -1,0 +1,9 @@
+App.Request.Query.Filter.Statuses:
+  description: Список статусов через "," (см. App.Enum.Status)
+  name: statuses
+  in: query
+  required: false
+  schema:
+    type: string
+    default: "ENABLED"
+  example: "DRAFT,ENABLED"

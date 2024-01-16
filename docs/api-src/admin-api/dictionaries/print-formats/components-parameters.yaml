@@ -1,0 +1,9 @@
+Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID:
+  description: Идентификатор печатного формата
+  name: formatId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

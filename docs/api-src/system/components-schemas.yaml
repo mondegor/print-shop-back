@@ -1,0 +1,44 @@
+System.Response.Model.ServiceStatus:
+  description: DTO - статус сервиса
+  type: object
+  properties:
+    status:
+      description: Статус сервиса
+      type: string
+      maxLength: 32
+      example: "OK"
+
+System.Response.Model.SystemInfo:
+  description: DTO - системная информация о запущеном сервисе
+  type: object
+  required:
+    - name
+    - version
+    - hostName
+    - debug
+    - startedAt
+  properties:
+    name:
+      description: Название сервиса
+      type: string
+      maxLength: 64
+      example: "Sample Service"
+    version:
+      description: Версия сервиса
+      type: string
+      maxLength: 16
+      example: "v0.1.0"
+    hostName:
+      description: Название хоста, на котором запущен сервис
+      type: string
+      maxLength: 64
+      example: "host-name"
+    debug:
+      description: Статус режима отладки
+      type: boolean
+      example: true
+    startedAt:
+      description: Время запуска сервиса (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"

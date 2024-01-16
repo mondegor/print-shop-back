@@ -1,0 +1,5 @@
+App.Field.Date:
+  description: Дата (UTC)
+  type: string
+  format: date
+  example: "2023-01-01"

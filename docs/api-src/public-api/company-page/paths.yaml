@@ -1,0 +1,24 @@
+/v1/company/{pageName}:
+  get:
+    summary: Метод получения страницы компании
+    description: Метод предназначен для получения информации об указанной странице компании из БД
+    operationId: getCompanyPage
+    tags:
+      - CompaniesPages
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/CompanyPage.PublicAPI.Request.Path.PageName"
+
+    responses:
+      "200":
+        description: Получена информация об указанной странице компании
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/CompanyPage.PublicAPI.Response.Model.CompanyPage"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

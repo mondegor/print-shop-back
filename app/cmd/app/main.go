@@ -1,169 +1,181 @@
 package main
 
 import (
-    "context"
-    "flag"
-    "log"
-    "net/http"
-    "print-shop-back/config"
-    "print-shop-back/internal/controller/http_v1"
-    "print-shop-back/internal/factory"
-    "print-shop-back/internal/infrastructure/repository"
-    "print-shop-back/internal/usecase"
+	"context"
+	"flag"
+	"log"
+	"print-shop-back/config"
+	"print-shop-back/internal/factory"
+	"print-shop-back/internal/modules"
+	factory_catalog_adm "print-shop-back/internal/modules/catalog/factory/admin-api"
+	factory_controls_adm "print-shop-back/internal/modules/controls/factory/admin-api"
+	factory_dictionaries_adm "print-shop-back/internal/modules/dictionaries/factory/admin-api"
+	factory_filestation_pub "print-shop-back/internal/modules/file-station/factory/public-api"
+	factory_provider_accounts_adm "print-shop-back/internal/modules/provider-accounts/factory/admin-api"
+	factory_provider_accounts_pacc "print-shop-back/internal/modules/provider-accounts/factory/provider-account-api"
+	factory_provider_account_pub "print-shop-back/internal/modules/provider-accounts/factory/public-api"
 
-    sq "github.com/Masterminds/squirrel"
-    mrcom_orderer "github.com/mondegor/go-components/mrcom/orderer"
-    "github.com/mondegor/go-storage/mrredislock"
-    "github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-storage/mrredislock"
+	"github.com/mondegor/go-webcore/mrtool"
 )
 
 var (
-    configPath string
-    logLevel string
+	configPath string
+	logLevel   string
 )
 
 func init() {
-    flag.StringVar(&configPath,"config-path", "./config/config.yaml", "Path to application config file")
-    flag.StringVar(&logLevel, "log-level", "", "Logging level")
+	flag.StringVar(&configPath, "config-path", "./config/config.yaml", "Path to application config file")
+	flag.StringVar(&logLevel, "log-level", "", "Logging level")
 }
 
 func main() {
-    flag.Parse()
+	flag.Parse()
 
-    cfg, err := config.New(configPath)
+	sharedOptions := &modules.Options{}
+	cfg, err := config.New(configPath)
 
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    if logLevel != "" {
-        cfg.Log.Level = logLevel
-    }
+	if logLevel != "" {
+		cfg.Log.Level = logLevel
+	}
 
-    logger, err := factory.NewLogger(cfg)
+	logger, err := factory.NewLogger(cfg)
 
-    if err != nil {
-        log.Fatal(err)
-    }
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    appHelper := mrtool.NewAppHelper(logger)
-    serviceHelper := mrtool.NewServiceHelper()
+	sharedOptions.Cfg = cfg
+	sharedOptions.Logger = logger
+	sharedOptions.EventBox = logger
 
-    postgresAdapter, err := factory.NewPostgres(cfg, logger)
-    appHelper.ExitOnError(err)
-    defer appHelper.Close(postgresAdapter)
+	appHelper := mrtool.NewAppHelper(logger)
+	sharedOptions.ServiceHelper = mrtool.NewServiceHelper()
 
-    redisAdapter, err := factory.NewRedis(cfg, logger)
-    appHelper.ExitOnError(err)
-    defer appHelper.Close(redisAdapter)
+	sharedOptions.PostgresAdapter, err = factory.NewPostgres(cfg, logger)
+	appHelper.ExitOnError(err)
+	defer appHelper.Close(sharedOptions.PostgresAdapter)
 
-    fileStorage, err := factory.NewFileStorage(cfg, logger)
-    appHelper.ExitOnError(err)
+	sharedOptions.RedisAdapter, err = factory.NewRedis(cfg, logger)
+	appHelper.ExitOnError(err)
+	defer appHelper.Close(sharedOptions.RedisAdapter)
 
-    lockerAdapter := mrredislock.NewLockerAdapter(redisAdapter.Cli())
-    queryBuilder := sq.StatementBuilder.PlaceholderFormat(sq.Dollar)
+	sharedOptions.FileProviderPool, err = factory.NewFileProviderPool(cfg, logger)
+	appHelper.ExitOnError(err)
 
-    itemOrdererStorage := mrcom_orderer.NewRepository(postgresAdapter, queryBuilder)
-    itemOrdererComponent := mrcom_orderer.NewComponent(itemOrdererStorage, logger)
+	sharedOptions.Locker = mrredislock.NewLockerAdapter(sharedOptions.RedisAdapter.Cli())
+	sharedOptions.OrdererAPI = factory.NewOrdererAPI(cfg, sharedOptions.PostgresAdapter, logger, logger)
 
-    fileService := usecase.NewFile(fileStorage)
-    commonHttp := http_v1.NewCommon(fileService)
+	sharedOptions.Translator, err = factory.NewTranslator(cfg, logger)
+	appHelper.ExitOnError(err)
 
-    companyPageStorage := repository.NewCompanyPage(postgresAdapter, queryBuilder)
-    companyPageLogoStorage := repository.NewCompanyPageLogo(postgresAdapter, queryBuilder)
+	sharedOptions.DictionariesLaminateTypeAPI, err = factory.NewDictionariesLaminateTypeAPI(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    companyPageService := usecase.NewCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage)
-    companyPageHttp := http_v1.NewCompanyPage(companyPageService)
+	sharedOptions.DictionariesPaperColorAPI, err = factory.NewDictionariesPaperColorAPI(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    accountCompanyPageService := usecase.NewAccountCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage, logger, serviceHelper)
-    accountCompanyPageLogoService := usecase.NewAccountCompanyPageLogo(companyPageLogoStorage, fileStorage, lockerAdapter, logger, serviceHelper)
-    accountCompanyPageHttp := http_v1.NewAccountCompanyPage(accountCompanyPageService, accountCompanyPageLogoService)
+	sharedOptions.DictionariesPaperFactureAPI, err = factory.NewDictionariesPaperFactureAPI(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    publicCompanyPageService := usecase.NewPublicCompanyPage(cfg.FileStorage.BaseUrl, companyPageStorage, serviceHelper)
-    publicCompanyPageHttp := http_v1.NewPublicCompanyPage(publicCompanyPageService)
+	sharedOptions.DictionariesPrintFormatAPI, err = factory.NewDictionariesPrintFormatAPI(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogBoxStorage := repository.NewCatalogBox(postgresAdapter, queryBuilder)
-    catalogBoxService := usecase.NewCatalogBox(catalogBoxStorage, logger, serviceHelper)
-    catalogBoxHttp := http_v1.NewCatalogBox(catalogBoxService)
+	// module's access
+	modulesAccess, err := factory.NewModulesAccess(cfg, logger)
+	appHelper.ExitOnError(err)
 
-    catalogLaminateTypeStorage := repository.NewCatalogLaminateType(postgresAdapter, queryBuilder)
-    catalogLaminateTypeService := usecase.NewCatalogLaminateType(catalogLaminateTypeStorage, logger, serviceHelper)
-    catalogLaminateTypeHttp := http_v1.NewCatalogLaminateType(catalogLaminateTypeService)
+	// module's options
+	catalogOptions, err := factory.NewCatalogOptions(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogLaminateStorage := repository.NewCatalogLaminate(postgresAdapter, queryBuilder)
-    catalogLaminateService := usecase.NewCatalogLaminate(catalogLaminateStorage, catalogLaminateTypeStorage, logger, serviceHelper)
-    catalogLaminateHttp := http_v1.NewCatalogLaminate(catalogLaminateService)
+	controlsOptions, err := factory.NewControlsOptions(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogPaperColorStorage := repository.NewCatalogPaperColor(postgresAdapter, queryBuilder)
-    catalogPaperColorService := usecase.NewCatalogPaperColor(catalogPaperColorStorage, logger, serviceHelper)
-    catalogPaperColorHttp := http_v1.NewCatalogPaperColor(catalogPaperColorService)
+	dictionariesAreaOptions, err := factory.NewDictionariesOptions(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogPaperFactureStorage := repository.NewCatalogPaperFacture(postgresAdapter, queryBuilder)
-    catalogPaperFactureService := usecase.NewCatalogPaperFacture(catalogPaperFactureStorage, logger, serviceHelper)
-    catalogPaperFactureHttp := http_v1.NewCatalogPaperFacture(catalogPaperFactureService)
+	fileStationOptions, err := factory.NewFileStationOptions(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogPaperStorage := repository.NewCatalogPaper(postgresAdapter, queryBuilder)
-    catalogPaperService := usecase.NewCatalogPaper(catalogPaperStorage, catalogPaperColorStorage, catalogPaperFactureStorage, logger, serviceHelper)
-    catalogPaperHttp := http_v1.NewCatalogPaper(catalogPaperService)
+	providerAccountsOptions, err := factory.NewProviderAccountsOptions(sharedOptions)
+	appHelper.ExitOnError(err)
 
-    catalogPrintFormatStorage := repository.NewCatalogPrintFormat(postgresAdapter, queryBuilder)
-    catalogPrintFormatService := usecase.NewCatalogPrintFormat(catalogPrintFormatStorage, logger, serviceHelper)
-    catalogPrintFormatHttp := http_v1.NewCatalogPrintFormat(catalogPrintFormatService)
+	// http router
+	router, err := factory.NewHttpRouter(cfg, logger, sharedOptions.Translator)
+	appHelper.ExitOnError(err)
 
-    formFieldTemplateStorage := repository.NewFormFieldTemplate(postgresAdapter, queryBuilder)
-    formFieldTemplateService := usecase.NewFormFieldTemplate(formFieldTemplateStorage, logger, serviceHelper)
-    formFieldTemplateHttp := http_v1.NewFormFieldTemplate(formFieldTemplateService)
+	// section: admin-api
+	sectionAdminAPI := factory.NewClientSectionAdminAPI(cfg, logger, modulesAccess)
 
-    formFieldItemStorage := repository.NewFormFieldItem(postgresAdapter, queryBuilder)
+	appHelper.ExitOnError(
+		factory.RegisterSystemHandlers(cfg, logger, router, sectionAdminAPI),
+	)
 
-    formDataStorage := repository.NewFormData(postgresAdapter, queryBuilder)
-    formDataService := usecase.NewFormData(formDataStorage, logger, serviceHelper)
-    uiFormDataService := usecase.NewUIFormData(formDataStorage, formFieldItemStorage, serviceHelper)
-    formDataHttp := http_v1.NewFormData(formDataService, uiFormDataService)
+	controllers, err := factory_catalog_adm.NewModule(catalogOptions, sectionAdminAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
 
-    formFieldItemService := usecase.NewFormFieldItem(itemOrdererComponent, formFieldItemStorage, formFieldTemplateStorage, logger, serviceHelper)
-    formFieldItemHttp := http_v1.NewFormFieldItem(formFieldItemService, formDataService, formFieldTemplateService)
+	controllers, err = factory_controls_adm.NewModule(controlsOptions, sectionAdminAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
 
-    router, err := factory.NewHttpRouter(cfg, logger)
-    appHelper.ExitOnError(err)
+	controllers, err = factory_dictionaries_adm.NewModule(dictionariesAreaOptions, sectionAdminAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
 
-    router.Register(
-        commonHttp,
-        companyPageHttp,
-        accountCompanyPageHttp,
-        publicCompanyPageHttp,
-        catalogBoxHttp,
-        catalogLaminateHttp,
-        catalogLaminateTypeHttp,
-        catalogPaperHttp,
-        catalogPaperColorHttp,
-        catalogPaperFactureHttp,
-        catalogPrintFormatHttp,
-        formFieldTemplateHttp,
-        formDataHttp,
-        formFieldItemHttp,
-    )
+	controllers, err = factory_provider_accounts_adm.NewModule(providerAccountsOptions, sectionAdminAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
 
-    serverAdapter, err := factory.NewHttpServer(cfg, logger, router)
-    appHelper.ExitOnError(err)
-    defer appHelper.Close(serverAdapter)
+	// section: provider-account-api
+	sectionProviderAccountAPI := factory.NewClientSectionProviderAccountAPI(cfg, logger, modulesAccess)
 
-    ctx, cancel := context.WithCancel(context.Background())
-    defer cancel()
+	appHelper.ExitOnError(
+		factory.RegisterSystemHandlers(cfg, logger, router, sectionProviderAccountAPI),
+	)
 
-    go appHelper.GracefulShutdown(cancel)
+	controllers, err = factory_provider_accounts_pacc.NewModule(providerAccountsOptions, sectionProviderAccountAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
 
-    logger.Info("Waiting for requests. To exit press CTRL+C")
+	// section: public-api
+	sectionPublicAPI := factory.NewClientSectionPublicAPI(cfg, logger, modulesAccess)
 
-    select {
-    case <-ctx.Done():
-        err = serverAdapter.Close()
-        logger.Info("Application stopped")
-    case err = <-serverAdapter.Notify():
-        logger.Info("Application stopped with error")
-    }
+	appHelper.ExitOnError(
+		factory.RegisterSystemHandlers(cfg, logger, router, sectionPublicAPI),
+	)
 
-    if err != nil && err != http.ErrServerClosed {
-        logger.Err(err)
-    }
+	controllers, err = factory_filestation_pub.NewModule(fileStationOptions, sectionPublicAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
+
+	controllers, err = factory_provider_account_pub.NewModule(providerAccountsOptions, sectionPublicAPI)
+	appHelper.ExitOnError(err)
+	router.Register(controllers...)
+
+	// http server
+	serverAdapter, err := factory.NewHttpServer(cfg, logger, router)
+	appHelper.ExitOnError(err)
+	defer appHelper.Close(serverAdapter)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go appHelper.GracefulShutdown(cancel)
+
+	logger.Info("Waiting for requests. To exit press CTRL+C")
+
+	select {
+	case <-ctx.Done():
+		logger.Info("Application stopped")
+	case err = <-serverAdapter.Notify():
+		logger.Info("Application stopped with error")
+	}
+
+	logger.Err(err)
 }

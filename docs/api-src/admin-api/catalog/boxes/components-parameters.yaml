@@ -1,0 +1,9 @@
+Catalog.Boxes.AdminAPI.Request.Path.BoxID:
+  description: Идентификатор коробки
+  name: boxId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

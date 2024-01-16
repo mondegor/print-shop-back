@@ -1,0 +1,5 @@
+App.Response.Model.BinaryFile:
+  description: DTO - бинарный файл
+  type: string
+  format: binary
+  maxLength: 16777216

@@ -1,0 +1,9 @@
+Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID:
+  description: Идентификатор цвета бумаги
+  name: colorId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

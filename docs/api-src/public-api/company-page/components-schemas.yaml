@@ -1,0 +1,19 @@
+CompanyPage.PublicAPI.Response.Model.CompanyPage:
+  description: DTO - публичная страница компании
+  type: object
+  properties:
+    pageHead:
+      description: Заголовок страницы компании
+      type: string
+      maxLength: 128
+      example: "Компания 0001"
+    logoUrl:
+      description: URL логотипа компании
+      type: string
+      maxLength: 128
+      example: "https://localhost/company-logo.png"
+    siteUrl:
+      description: URL страницы сайта компании
+      type: string
+      maxLength: 256
+      example: "https://site.localhost/"

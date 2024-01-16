@@ -1,0 +1,20 @@
+App.ResponseJson.Error400:
+  description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+  content:
+    application/json;charset=UTF-8:
+      schema:
+        $ref: "#/components/schemas/App.Response.Model.ErrorList"
+
+App.ResponseJson.Error404:
+  description: Запрашиваемый ресурс не был найден
+  content:
+    application/problem+json;charset=UTF-8:
+      schema:
+        $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+App.ResponseJson.Error5XX:
+  description: Внутренняя ошибка сервера
+  content:
+    application/problem+json;charset=UTF-8:
+      schema:
+        $ref: "#/components/schemas/App.Response.Model.ErrorDetails"

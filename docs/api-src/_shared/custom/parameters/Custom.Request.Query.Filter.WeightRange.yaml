@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.WeightMin:
+  description: Минимальный вес (g/m2)
+  name: weight-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100g/m2
+
+Custom.Request.Query.Filter.WeightMax:
+  description: Максимальный вес (g/m2)
+  name: weight-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100g/m2

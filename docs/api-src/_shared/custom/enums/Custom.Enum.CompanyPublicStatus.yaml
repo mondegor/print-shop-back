@@ -1,0 +1,12 @@
+Custom.Enum.CompanyPublicStatus:
+  description: |-
+    Текущий статус публикации данных компании:
+    - HIDDEN - скрыта;
+    - PUBLISHED - опубликована страница компании;
+    - PUBLISHED_SHARED - опубликована страница компании и ссылки на неё;
+  type: string
+  enum:
+    - HIDDEN
+    - PUBLISHED
+    - PUBLISHED_SHARED
+  example: "PUBLISHED"

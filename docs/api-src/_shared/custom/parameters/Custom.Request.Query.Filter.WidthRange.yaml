@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.WidthMin:
+  description: Минимальная ширина (µm)
+  name: width-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm
+
+Custom.Request.Query.Filter.WidthMax:
+  description: Максимальная ширина (µm)
+  name: width-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm

@@ -1,0 +1,194 @@
+---
+openapi: 3.0.3
+info:
+  version: 0.3.0
+  title: API - System Info
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Andrey Nazarov
+  description: |-
+    REST API проекта print-shop - System Info
+servers:
+  - url: http://localhost:8080
+    description: Local Host
+  - url: http://localhost:8080/adm
+    description: Local Host
+tags:
+  - name: System
+    description: API System Info
+
+paths:
+  /:
+    get:
+      summary: Метод получения статуса сервиса
+      description: Метод предназначен для получения статуса сервиса
+      operationId: getSystemStatus
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Получен статус сервиса
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/System.Response.Model.ServiceStatus"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /health:
+    get:
+      summary: Метод получения ответа сервиса 200 OK
+      description: Метод предназначен для проверки, что сервис жив и отвечает
+      operationId: getSystemStatusOk
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Возвращён ответ сервиса 200 OK
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /system-info:
+    get:
+      summary: Метод получения списка торговых марок
+      description: Метод предназначен для получения списка всех торговых марок, сохраненных в БД
+      operationId: getTrademarks
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Получен список торговых марок
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/System.Response.Model.SystemInfo"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+components:
+
+  schemas:
+    App.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
+
+    App.Response.Model.ErrorDetails: # RFC 7807 (Problem Details for HTTP APIs)
+      description: DTO следующих ошибок - 401, 403, 404, 5XX
+      type: object
+      required:
+        - title
+        - details
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Resource not found"
+        details:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    System.Response.Model.ServiceStatus:
+      description: DTO - статус сервиса
+      type: object
+      properties:
+        status:
+          description: Статус сервиса
+          type: string
+          maxLength: 32
+          example: "OK"
+
+    System.Response.Model.SystemInfo:
+      description: DTO - системная информация о запущеном сервисе
+      type: object
+      required:
+        - name
+        - version
+        - hostName
+        - debug
+        - startedAt
+      properties:
+        name:
+          description: Название сервиса
+          type: string
+          maxLength: 64
+          example: "Sample Service"
+        version:
+          description: Версия сервиса
+          type: string
+          maxLength: 16
+          example: "v0.1.0"
+        hostName:
+          description: Название хоста, на котором запущен сервис
+          type: string
+          maxLength: 64
+          example: "host-name"
+        debug:
+          description: Статус режима отладки
+          type: boolean
+          example: true
+        startedAt:
+          description: Время запуска сервиса (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+
+  responses:
+    App.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorList"
+
+    App.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"

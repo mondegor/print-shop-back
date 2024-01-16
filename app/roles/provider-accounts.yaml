@@ -1,0 +1,7 @@
+---
+privileges:
+  - apiProviderAccount
+
+permissions:
+  - modFileStationImageProxy
+  - modProviderAccountsCompanyPage

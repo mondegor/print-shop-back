@@ -1,0 +1,9 @@
+Custom.Request.Query.Filter.ElementDetailing:
+  description: Список типов детализации через "," (см. Custom.Enum.FormElementDetailing)
+  name: detailing
+  in: query
+  required: false
+  schema:
+    type: string
+    default: "NORMAL"
+  example: "NORMAL,EXTENDED"

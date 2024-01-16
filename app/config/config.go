@@ -1,112 +1,192 @@
 package config
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
+	"time"
 
-    "github.com/ilyakaznacheev/cleanenv"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 const (
-    appName = "Print Shop"
-    appVersion = "v0.6.2"
+	appName    = "Print Shop"
+	appVersion = "v0.7.0"
 )
 
 type (
-    Config struct {
-        AppName string
-        AppVersion string
-        AppInfo string
-        AppPath string `yaml:"app_path"`
-        ConfigPath string
-        Debug bool `yaml:"debug" env:"APPX_DEBUG"`
-        Server `yaml:"server"`
-        Listen `yaml:"listen"`
-        Log `yaml:"logger"`
-        Storage `yaml:"storage"`
-        Redis `yaml:"redis"`
-        FileStorage `yaml:"fs"`
-        Cors `yaml:"cors"`
-        Translation `yaml:"translation"`
-    }
+	Config struct {
+		AppName         string
+		AppVersion      string
+		AppInfo         string
+		AppPath         string
+		AppStartedAt    time.Time
+		ConfigPath      string
+		Debugging       `yaml:"debugging"`
+		Log             `yaml:"logger"`
+		Server          `yaml:"server"`
+		Listen          `yaml:"listen"`
+		Storage         `yaml:"storage"`
+		Redis           `yaml:"redis"`
+		FileSystem      `yaml:"file_system"`
+		FileProviders   `yaml:"file_providers"`
+		Cors            `yaml:"cors"`
+		Translation     `yaml:"translation"`
+		ClientSections  `yaml:"client_sections"`
+		ModulesAccess   `yaml:"modules_access"`
+		ModulesSettings `yaml:"modules_settings"`
+	}
 
-    Server struct {
-        ReadTimeout int32 `yaml:"read_timeout"`
-        WriteTimeout int32 `yaml:"write_timeout"`
-        ShutdownTimeout int32 `yaml:"shutdown_timeout"`
-    }
+	Debugging struct {
+		Debug       bool `yaml:"debug" env:"APPX_DEBUG"`
+		ErrorCaller `yaml:"caller"`
+	}
 
-    Listen struct {
-        Type string `yaml:"type" env:"APPX_SERVICE_LISTEN_TYPE"`
-        SockName string `yaml:"sock_name" env:"APPX_SERVICE_LISTEN_SOCK"`
-        BindIP string `yaml:"bind_ip" env:"APPX_SERVICE_BIND"`
-        Port string `yaml:"port" env:"APPX_SERVICE_PORT"`
-    }
+	ErrorCaller struct {
+		Deep         int    `yaml:"deep" env:"APPX_ERR_CALLER_DEEP"`
+		UseShortPath bool   `yaml:"use_short_path" env:"APPX_ERR_CALLER_USE_SHORT_PATH"`
+		RootPath     string `yaml:"root_path"`
+	}
 
-    Log struct {
-        Prefix string `yaml:"prefix"`
-        Level string `yaml:"level" env:"APPX_LOG_LEVEL"`
-    }
+	Log struct {
+		Prefix    string `yaml:"prefix" env:"APPX_LOG_PREFIX"`
+		Level     string `yaml:"level" env:"APPX_LOG_LEVEL"`
+		LogCaller `yaml:"caller"`
+	}
 
-    Storage struct {
-        Host string `yaml:"host" env:"APPX_DB_HOST"`
-        Port string `yaml:"port" env:"APPX_DB_PORT"`
-        Username string `yaml:"username" env:"APPX_DB_USER"`
-        Password string `yaml:"password" env:"APPX_DB_PASSWORD"`
-        Database string `yaml:"database" env:"APPX_DB_NAME"`
-        MaxPoolSize int32 `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
-        Timeout int32 `yaml:"timeout"` // in sec
-    }
+	LogCaller struct {
+		Deep         int    `yaml:"deep" env:"APPX_LOG_CALLER_DEEP"`
+		UseShortPath bool   `yaml:"use_short_path" env:"APPX_LOG_CALLER_USE_SHORT_PATH"`
+		RootPath     string `yaml:"root_path"`
+	}
 
-    Redis struct {
-        Host string `yaml:"host" env:"APPX_REDIS_HOST"`
-        Port string `yaml:"port" env:"APPX_REDIS_PORT"`
-        Password string `yaml:"password" env:"APPX_REDIS_PASSWORD"`
-        Timeout int `yaml:"timeout"` // in sec
-    }
+	Server struct {
+		ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_SERVER_READ_TIMEOUT"`
+		WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_SERVER_WRITE_TIMEOUT"`
+		ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_SERVER_SHUTDOWN_TIMEOUT"`
+	}
 
-    FileStorage struct {
-        BaseUrl string `yaml:"base_url" env:"APPX_FS_BASE_URL"`
-        DownloadDir string `yaml:"download_dir" env:"APPX_FS_DOWNLOAD_DIR"`
-    }
+	Listen struct {
+		Type     string `yaml:"type" env:"APPX_SERVICE_LISTEN_TYPE"`
+		SockName string `yaml:"sock_name" env:"APPX_SERVICE_LISTEN_SOCK"`
+		BindIP   string `yaml:"bind_ip" env:"APPX_SERVICE_BIND"`
+		Port     string `yaml:"port" env:"APPX_SERVICE_PORT"`
+	}
 
-    Cors struct {
-        AllowedOrigins []string `yaml:"allowed_origins"`
-        AllowedMethods []string `yaml:"allowed_methods"`
-        AllowedHeaders []string `yaml:"allowed_headers"`
-        ExposedHeaders []string `yaml:"exposed_headers"`
-        AllowCredentials bool `yaml:"allow_credentials"`
-    }
+	Storage struct {
+		Host        string        `yaml:"host" env:"APPX_DB_HOST"`
+		Port        string        `yaml:"port" env:"APPX_DB_PORT"`
+		Username    string        `yaml:"username" env:"APPX_DB_USER"`
+		Password    string        `yaml:"password" env:"APPX_DB_PASSWORD"`
+		Database    string        `yaml:"database" env:"APPX_DB_NAME"`
+		MaxPoolSize int           `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
+		Timeout     time.Duration `yaml:"timeout"`
+	}
 
-    Translation struct {
-        DirPath string `yaml:"dir_path"`
-        FileType string `yaml:"file_type"`
-        LangCodes []string `yaml:"lang_codes"`
-    }
+	Redis struct {
+		Host     string        `yaml:"host" env:"APPX_REDIS_HOST"`
+		Port     string        `yaml:"port" env:"APPX_REDIS_PORT"`
+		Password string        `yaml:"password" env:"APPX_REDIS_PASSWORD"`
+		Timeout  time.Duration `yaml:"timeout"`
+	}
+
+	FileSystem struct {
+		DirMode    uint32 `yaml:"dir_mode" env:"APPX_FILESYSTEM_DIR_MODE"`
+		CreateDirs bool   `yaml:"create_dirs" env:"APPX_FILESYSTEM_CREATE_DIRS"`
+	}
+
+	FileProviders struct {
+		ImageStorage struct {
+			Name    string `yaml:"name"`
+			RootDir string `yaml:"root_dir" env:"APPX_IMAGESTORAGE_ROOT_DIR"`
+		} `yaml:"image_storage"`
+	}
+
+	Cors struct {
+		AllowedOrigins   []string `yaml:"allowed_origins" env:"APPX_CORS_ALLOWED_ORIGINS"` // items by "," separated
+		AllowedMethods   []string `yaml:"allowed_methods"`
+		AllowedHeaders   []string `yaml:"allowed_headers"`
+		ExposedHeaders   []string `yaml:"exposed_headers"`
+		AllowCredentials bool     `yaml:"allow_credentials"`
+	}
+
+	Translation struct {
+		DirPath      string   `yaml:"dir_path"`
+		LangCodes    []string `yaml:"lang_codes" env:"APPX_TRANSLATION_LANGS"` // items by "," separated
+		Dictionaries struct {
+			DirPath string   `yaml:"dir_path"`
+			List    []string `yaml:"list"`
+		} `yaml:"dictionaries"`
+	}
+
+	ClientSections struct {
+		AdminAPI struct {
+			Privilege string `yaml:"privilege"`
+			Auth      struct {
+				Secret   string `yaml:"secret" env:"APPX_ADMIN_API_AUTH_SECRET"`
+				Audience string `yaml:"audience" env:"APPX_ADMIN_API_AUTH_AUDIENCE"`
+			} `yaml:"auth"`
+		} `yaml:"admin_api"`
+		ProviderAccountAPI struct {
+			Privilege string `yaml:"privilege"`
+			Auth      struct {
+				Secret   string `yaml:"secret" env:"APPX_PR_ACCOUNT_API_AUTH_SECRET"`
+				Audience string `yaml:"audience" env:"APPX_PR_ACCOUNT_API_AUTH_AUDIENCE"`
+			} `yaml:"auth"`
+		} `yaml:"provider_account_api"`
+		PublicAPI struct {
+			Privilege string `yaml:"privilege"`
+			Auth      struct {
+				Secret   string `yaml:"secret" env:"APPX_PUBLIC_API_AUTH_SECRET"`
+				Audience string `yaml:"audience" env:"APPX_PUBLIC_API_AUTH_AUDIENCE"`
+			} `yaml:"auth"`
+		} `yaml:"public_api"`
+	}
+
+	ModulesAccess struct {
+		Roles       `yaml:"roles"`
+		Privileges  []string `yaml:"privileges"`
+		Permissions []string `yaml:"permissions"`
+	}
+
+	Roles struct {
+		DirPath  string   `yaml:"dir_path"`
+		FileType string   `yaml:"file_type"`
+		List     []string `yaml:"list"`
+	}
+
+	ModulesSettings struct {
+		ProviderAccount struct {
+			CompanyPageLogo struct {
+				FileProvider string `yaml:"file_provider"` // FileProviders.ImageStorage
+			} `yaml:"company_page_logo"`
+		} `yaml:"provider_account"`
+		FileStation struct {
+			ImageProxy struct {
+				Host         string `yaml:"host" env:"APPX_IMAGE_HOST"`
+				BaseURL      string `yaml:"base_url"`
+				FileProvider string `yaml:"file_provider"` // FileProviders.ImageStorage
+			} `yaml:"image_proxy"`
+		} `yaml:"file_station"`
+	}
 )
 
 func New(filePath string) (*Config, error) {
-    cfg := &Config{
-        AppName: appName,
-        AppVersion: appVersion,
-        ConfigPath: filePath,
-    }
+	cfg := &Config{
+		AppName:    appName,
+		AppVersion: appVersion,
+		ConfigPath: filePath,
+	}
 
-    err := cleanenv.ReadConfig(filePath, cfg)
+	if err := cleanenv.ReadConfig(filePath, cfg); err != nil {
+		return nil, fmt.Errorf("error parsing config file '%s': %w", filePath, err)
+	}
 
-    if err != nil {
-        return nil, fmt.Errorf("while reading config '%s', error '%s' occurred", filePath, err)
-    }
+	if err := cleanenv.ReadEnv(cfg); err != nil {
+		return nil, fmt.Errorf("error reading ENV from config file '%s': %w", filePath, err)
+	}
 
-    err = cleanenv.ReadEnv(cfg)
+	cfg.AppPath = os.Args[0]
+	cfg.AppStartedAt = time.Now().UTC()
 
-    if err != nil {
-        return nil, err
-    }
-
-    if cfg.AppPath == "" {
-        cfg.AppPath = os.Args[0]
-    }
-
-    return cfg, nil
+	return cfg, nil
 }

@@ -1,0 +1,9 @@
+App.Enum.Address.HouseType:
+  description: |-
+    - BUILDING - многоквартирный дом;
+    - HOUSE - частный дом;
+  type: string
+  enum:
+    - BUILDING
+    - HOUSE
+  example: "BUILDING"

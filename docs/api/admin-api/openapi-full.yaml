@@ -1,0 +1,3943 @@
+---
+openapi: 3.0.3
+info:
+  version: 0.0.1
+  title: Private API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Andrey Nazarov
+  description: |-
+    Private REST API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://localhost:8080/adm
+    description: Local Host
+tags:
+  - name: Catalog.Boxes
+    description: Private API Catalog boxes
+
+  - name: Catalog.Laminates
+    description: Private API Catalog laminates
+
+  - name: Catalog.Papers
+    description: Private API Catalog papers
+
+  - name: Dictionaries.LaminateTypes
+    description: Private API Dictionary laminate types
+
+  - name: Dictionaries.PaperColors
+    description: Private API Dictionary paper colors
+
+  - name: Dictionaries.PaperFactures
+    description: Private API Dictionary paper factures
+
+  - name: Dictionaries.PrintFormats
+    description: Private API Dictionary print formats
+
+  - name: Controls.ElementTemplates
+    description: Private API Form field templates
+
+  - name: Controls.Forms
+    description: Private API Forms
+
+  - name: Controls.FormElements
+    description: Private API Form elements
+
+  - name: CompaniesPages
+    description: Private API Companies' pages
+
+paths:
+  /v1/catalog/boxes:
+    get:
+      summary: Метод получения списка коробок
+      description: Метод предназначен для получения списка всех коробок, сохраненных в БД
+      operationId: getBoxes
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMax"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список коробок
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.BoxList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления новой коробки
+      description: |-
+        Метод предназначен для создания информации о новой коробке в БД
+
+        **Ограничения и ошибки полей:**
+        - Article: required,min=3,max=32,pattern=article
+        - Caption: required,max=64
+        - Length: required,gte=1,lte=10000000
+        - Depth: required,gte=1,lte=10000000
+      operationId: createBox
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Request.Model.CreateBox"
+
+      responses:
+        "201":
+          description: Информация о коробке успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/boxes/{boxId}:
+    get:
+      summary: Метод получения коробки
+      description: Метод предназначен для получения информации о коробке из БД
+      operationId: getBox
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+      responses:
+        "200":
+          description: Получена информация о коробке
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.Box"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения коробки
+      description: |-
+        Метод предназначен для сохранения информации о коробке в БД
+
+        **Ограничения и ошибки полей:**
+        - Version: required,gte=1
+        - Article: omitempty,min=3,max=32,pattern=article
+        - Caption: omitempty,max=64
+        - Length: omitempty,gte=1,lte=10000000
+        - Depth: omitempty,gte=1,lte=10000000
+      operationId: storeBox
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Request.Model.StoreBox"
+
+      responses:
+        "204":
+          description: Информация о коробке успешно сохранена
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления коробки
+      description: Метод предназначен для удаления информации о коробке из БД
+      operationId: removeBox
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+      responses:
+        "204":
+          description: Информация о коробке успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/boxes/{boxId}/status:
+    put:
+      summary: Метод изменения статуса коробки
+      description: |-
+        Метод предназначен для изменения статуса коробки в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changeBoxStatus
+      tags:
+        - Catalog.Boxes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус коробки успешно изменён
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates:
+    get:
+      summary: Метод получения списка ламината
+      description: Метод предназначен для получения списка всего ламината, сохраненного в БД
+      operationId: getLaminates
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового ламината
+      description: |-
+        Метод предназначен для создания информации о новом ламинате в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createLaminate
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate"
+
+      responses:
+        "201":
+          description: Информация о ламинате успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Артикул не может быть пустым
+          # Указанный артикул уже существует
+          # Артикул не может быть более 32 символов
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          # Тип ламината содержит недопустимое значение
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates/{laminateId}:
+    get:
+      summary: Метод получения ламината
+      description: Метод предназначен для получения информации о ламинате из БД
+      operationId: getLaminate
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
+
+      responses:
+        "200":
+          description: Получена информация о ламинате
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.Laminate"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения ламината
+      description: |-
+        Метод предназначен для сохранения информации о ламинате в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storeLaminate
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate"
+
+      responses:
+        "204":
+          description: Информация о ламинате успешно сохранена
+        "400":
+          # Артикул не может быть пустым
+          # Указанный артикул уже существует
+          # Артикул не может быть более 32 символов
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          # Тип ламината содержит недопустимое значение
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления ламината
+      description: Метод предназначен для удаления информации о ламинате из БД
+      operationId: removeLaminate
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
+
+      responses:
+        "204":
+          description: Информация о ламинате успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates/{laminateId}/status:
+    put:
+      summary: Метод изменения статуса ламината
+      description: |-
+        Метод предназначен для изменения статуса ламината в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changeLaminateStatus
+      tags:
+        - Catalog.Laminates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус ламината успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers:
+    get:
+      summary: Метод получения списка бумаги
+      description: Метод предназначен для получения списка всей бумаги, сохраненных в БД
+      operationId: getPapers
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMin"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления новой бумаги
+      description: |-
+        Метод предназначен для создания информации о новой бумаге в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createPaper
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Request.Model.CreatePaper"
+
+      responses:
+        "201":
+          description: Информация о бумаге успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Артикул не может быть пустым
+          # Указанный артикул уже существует
+          # Артикул не может быть более 32 символов
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          # Цвет бумаги содержит недопустимое значение
+          # Фактура бумаги содержит недопустимое значение
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/{paperId}:
+    get:
+      summary: Метод получения бумаги
+      description: Метод предназначен для получения информации о бумаге из БД
+      operationId: getPaper
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
+
+      responses:
+        "200":
+          description: Получена информация о бумаге
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.Paper"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения бумаги
+      description: |-
+        Метод предназначен для сохранения информации о бумаге в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storePaper
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Request.Model.StorePaper"
+
+      responses:
+        "204":
+          description: Информация о бумаге успешно сохранена
+        "400":
+          # Артикул не может быть пустым
+          # Указанный артикул уже существует
+          # Артикул не может быть более 32 символов
+          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          # Цвет бумаги содержит недопустимое значение
+          # Фактура бумаги содержит недопустимое значение
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления бумаги
+      description: Метод предназначен для удаления информации о бумаге из БД
+      operationId: removePaper
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
+
+      responses:
+        "204":
+          description: Информация о бумаге успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/{paperId}/status:
+    put:
+      summary: Метод изменения статуса бумаги
+      description: |-
+        Метод предназначен для изменения статуса бумаги в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changePaperStatus
+      tags:
+        - Catalog.Papers
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус бумаги успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/laminate-types:
+    get:
+      summary: Метод получения списка типов ламината
+      description: Метод предназначен для получения списка всех типов ламината, сохраненных в БД
+      operationId: getLaminateTypes
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список типов ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового типа ламината
+      description: |-
+        Метод предназначен для создания информации о новом типе ламината в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createLaminateType
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType"
+
+      responses:
+        "201":
+          description: Информация о типе ламината успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/laminate-types/{typeId}:
+    get:
+      summary: Метод получения типа ламината
+      description: Метод предназначен для получения информации о типе ламината из БД
+      operationId: getLaminateType
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+
+      responses:
+        "200":
+          description: Получена информация о типе ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения типа ламината
+      description: |-
+        Метод предназначен для сохранения информации о типе ламината в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storeLaminateType
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType"
+
+      responses:
+        "204":
+          description: Информация о типе ламината успешно сохранена
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления типа ламината
+      description: Метод предназначен для удаления информации о типе ламината из БД
+      operationId: removeLaminateType
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+
+      responses:
+        "204":
+          description: Информация о типе ламината успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/laminate-types/{typeId}/status:
+    put:
+      summary: Метод изменения статуса типа ламината
+      description: |-
+        Метод предназначен для изменения статуса типа ламината в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changeLaminateTypeStatus
+      tags:
+        - Dictionaries.LaminateTypes
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус типа ламината успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-colors:
+    get:
+      summary: Метод получения списка цветов бумаги
+      description: Метод предназначен для получения списка всех цветов бумаги, сохраненных в БД
+      operationId: getPaperColors
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового цвета бумаги
+      description: |-
+        Метод предназначен для создания информации о новом цвете бумаги в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createPaperColor
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor"
+
+      responses:
+        "201":
+          description: Информация о цвете бумаги успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-colors/{colorId}:
+    get:
+      summary: Метод получения цвета бумаги
+      description: Метод предназначен для получения информации о цвете бумаги из БД
+      operationId: getPaperColor
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
+
+      responses:
+        "200":
+          description: Получена информация о цвете бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения цвета бумаги
+      description: |-
+        Метод предназначен для сохранения информации о цвете бумаги в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storePaperColor
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Request.Model.StorePaperColor"
+
+      responses:
+        "204":
+          description: Информация о цвете бумаги успешно сохранена
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления цвета бумаги
+      description: Метод предназначен для удаления информации о цвете бумаги из БД
+      operationId: removePaperColor
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
+
+      responses:
+        "204":
+          description: Информация о цвете бумаги успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-colors/{colorId}/status:
+    put:
+      summary: Метод изменения статуса цвета бумаги
+      description: |-
+        Метод предназначен для изменения статуса цвета бумаги в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changePaperColorStatus
+      tags:
+        - Dictionaries.PaperColors
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус цвета бумаги успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-factures:
+    get:
+      summary: Метод получения списка фактуры бумаги
+      description: Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
+      operationId: getPaperFactures
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список фактуры бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления новой фактуры бумаги
+      description: |-
+        Метод предназначен для создания информации о новой фактуре бумаги в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createPaperFacture
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture"
+
+      responses:
+        "201":
+          description: Информация о фактуре бумаги успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-factures/{factureId}:
+    get:
+      summary: Метод получения фактуры бумаги
+      description: Метод предназначен для получения информации о фактуре бумаги из БД
+      operationId: getPaperFacture
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+      responses:
+        "200":
+          description: Получена информация о фактуре бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения фактуры бумаги
+      description: |-
+        Метод предназначен для сохранения информации о фактуре бумаги в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storePaperFacture
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Request.Model.StorePaperFacture"
+
+      responses:
+        "204":
+          description: Информация о фактуре бумаги успешно сохранена
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления фактуры бумаги
+      description: Метод предназначен для удаления информации о фактуре бумаги из БД
+      operationId: removePaperFacture
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+      responses:
+        "204":
+          description: Информация о фактуре бумаги успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-factures/{factureId}/status:
+    put:
+      summary: Метод изменения статуса фактуры бумаги
+      description: |-
+        Метод предназначен для изменения статуса фактуры бумаги в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changePaperFactureStatus
+      tags:
+        - Dictionaries.PaperFactures
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус фактуры бумаги успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/print-formats:
+    get:
+      summary: Метод получения списка печатных форматов
+      description: Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
+      operationId: getPrintFormats
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список печатных форматов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового печатного формата
+      description: |-
+        Метод предназначен для создания информации о новом печатном формате в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createPrintFormat
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat"
+
+      responses:
+        "201":
+          description: Информация о печатном формате успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/print-formats/{formatId}:
+    get:
+      summary: Метод получения печатного формата
+      description: Метод предназначен для получения информации о печатном формате из БД
+      operationId: getPrintFormat
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+      responses:
+        "200":
+          description: Получена информация о печатном формате
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения печатного формата
+      description: |-
+        Метод предназначен для сохранения информации о печатном формате в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storePrintFormat
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat"
+
+      responses:
+        "204":
+          description: Информация о печатном формате успешно сохранена
+        "400":
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 64 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления печатного формата
+      description: Метод предназначен для удаления информации о печатном формате из БД
+      operationId: removePrintFormat
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+      responses:
+        "204":
+          description: Информация о печатном формате успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/print-formats/{formatId}/status:
+    put:
+      summary: Метод изменения статуса печатного формата
+      description: |-
+        Метод предназначен для изменения статуса печатного формата в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changePrintFormatStatus
+      tags:
+        - Dictionaries.PrintFormats
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус печатного формата успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/element-templates:
+    get:
+      summary: Метод получения списка шаблонов элементов формы
+      description: Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
+      operationId: getElementTemplates
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список шаблонов элементов формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового шаблона элемента формы
+      description: |-
+        Метод предназначен для создания информации о новом шаблоне элемента формы в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createElementTemplate
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate"
+
+      responses:
+        "201":
+          description: Информация о шаблоне элемента формы успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          # Тип поля формы содержит недопустимое значение
+          # Содержание шаблона поля формы не может быть пустым
+          # Содержание шаблона поля формы не может быть более 65536 символов
+          # Содержание шаблона поля формы некорректно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/element-templates/{templateId}:
+    get:
+      summary: Метод получения шаблона элемента формы по его идентификатору
+      description: Метод предназначен для получения информации о шаблоне элемента формы из БД
+      operationId: getElementTemplate
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+      responses:
+        "200":
+          description: Получена информация о шаблоне элемента формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения шаблона элемента формы
+      description: |-
+        Метод предназначен для сохранения информации о шаблоне элемента формы в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storeElementTemplate
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate"
+
+      responses:
+        "204":
+          description: Информация о шаблоне элемента формы успешно сохранена
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          # Тип поля формы содержит недопустимое значение
+          # Содержание шаблона поля формы не может быть пустым
+          # Содержание шаблона поля формы не может быть более 65536 символов
+          # Содержание шаблона поля формы некорректно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления шаблона элемента формы
+      description: Метод предназначен для удаления информации о шаблоне элемента формы из БД
+      operationId: removeElementTemplate
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+      responses:
+        "204":
+          description: Информация о шаблоне элемента формы успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/element-templates/{templateId}/status:
+    put:
+      summary: Метод изменения статуса шаблона элемента формы
+      description: |-
+        Метод предназначен для изменения статуса шаблона элемента формы в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changeElementTemplatestatus
+      tags:
+        - Controls.ElementTemplates
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус шаблона элемента формы успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/forms:
+    get:
+      summary: Метод получения списка форм
+      description: Метод предназначен для получения списка всех форм, сохраненных в БД
+      operationId: getForms
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список форм
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.FormList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления новой формы
+      description: |-
+        Метод предназначен для создания информации о новой форме в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createForm
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.CreateForm"
+
+      responses:
+        "201":
+          description: Информация о форме успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/forms/{formId}:
+    get:
+      summary: Метод получения формы
+      description: Метод предназначен для получения формы из БД
+      operationId: getForm
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+
+      responses:
+        "200":
+          description: Получена информация о форме
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения формы
+      description: |-
+        Метод предназначен для сохранения информации о форме в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storeForm
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.StoreForm"
+
+      responses:
+        "204":
+          description: Информация о форме успешно сохранена
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления формы
+      description: Метод предназначен для удаления информации о форме из БД
+      operationId: removeForm
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+
+      responses:
+        "204":
+          description: Информация о форме успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/forms/{formId}/status:
+    put:
+      summary: Метод изменения статуса формы
+      description: |-
+        Метод предназначен для изменения статуса формы в БД
+
+        **Ограничения и ошибки полей:**
+        - version: required,gte=1 | ErrVersionInvalid
+        - status: required,enum | ErrSwitchStatusRejected
+      operationId: changeFormStatus
+      tags:
+        - Controls.Forms
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+      responses:
+        "204":
+          description: Статус формы успешно изменён
+        "400":
+          # Указанный статус содержит недопустимое значение
+          # В данный статус переключение невозможно
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/form-elements:
+    get:
+      summary: Метод получения списка элементов формы
+      description: Метод предназначен для получения списка всех элементов формы, сохраненных в БД
+      operationId: getFormElements
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Query.FormID"
+
+      responses:
+        "200":
+          description: Получен список элементов формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElementList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового элемента формы
+      description: |-
+        Метод предназначен для создания информации о новом элементе формы в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: createFormElement
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.CreateFormElement"
+
+      responses:
+        "201":
+          description: Информация об элементе формы успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/form-elements/{elementId}:
+    get:
+      summary: Метод получения элемента формы по его идентификатору
+      description: Метод предназначен для получения информации об элементе формы из БД
+      operationId: getFormElement
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+
+      responses:
+        "200":
+          description: Получена информация об элементе формы
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    put:
+      summary: Метод сохранения элемента формы
+      description: |-
+        Метод предназначен для сохранения информации об элементе формы в БД
+
+        **Ограничения и ошибки полей:**
+      operationId: storeFormElement
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.StoreFormElement"
+
+      responses:
+        "204":
+          description: Информация об элементе формы успешно сохранена
+        "400":
+          # Название переменной записи не может быть пустым
+          # Указанное название записи уже существует
+          # Название переменной записи не может быть более 32 символов
+          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
+          # Заголовок записи не может быть пустым
+          # Заголовок записи не может быть более 128 символов
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления элемента формы
+      description: Метод предназначен для удаления информации об элементе формы из БД
+      operationId: removeFormElement
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+
+      responses:
+        "204":
+          description: Информация об элементе формы успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/form-elements/{elementId}/move:
+    patch:
+      summary: Метод перемещения элемента формы
+      description: Метод предназначен для изменения позиции элемента формы в списке элементов в БД
+      operationId: moveFormElement
+      tags:
+        - Controls.FormElements
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Request.Model.MoveItem"
+
+      responses:
+        "204":
+          description: Элемент формы был успешно перемещён
+        "400":
+          # Поле, после которого необходимо вставить указанное поле не найдено
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/provider-accounts/companies-pages:
+    get:
+      summary: Метод получения списка страниц компаний
+      description: Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
+      operationId: getCompanyPages
+      tags:
+        - CompaniesPages
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses"
+
+      responses:
+        "200":
+          description: Получен список страниц компаний всех аккаунтов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+components:
+
+  parameters:
+    App.Request.Header.AcceptLanguage:
+      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+        default: "ru"
+      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
+
+    App.Request.Header.CorrelationID:
+      description: Уникальный идентификатор запроса
+      name: CorrelationID
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+
+    App.Request.Query.Filter.SearchText:
+      description: Поисковая строка
+      name: query
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+      example: "перфокарта"
+
+    App.Request.Query.Filter.Statuses:
+      description: Список статусов через "," (см. App.Enum.Status)
+      name: statuses
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "ENABLED"
+      example: "DRAFT,ENABLED"
+
+    App.Request.Query.ListPager.PageIndex:
+      description: Индекс страницы списка с записями
+      name: pageIndex
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1024
+        default: 0
+      example: 2
+
+    App.Request.Query.ListPager.PageSize:
+      description: Количество записей на страницу списка
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1024
+        default: 50
+      example: 70
+
+    App.Request.Query.ListSorter.SortField:
+      description: Название колонки, по которой происходит сортировка
+      name: sortField
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "caption"
+
+    App.Request.Query.ListSorter.SortDirection:
+      description: Направление сортировки
+      name: sortDirection
+      in: query
+      required: false
+      schema:
+        description: |-
+          Направление сортировки:
+          - ASC - по возрастанию;
+          - DESC - по убыванию;
+        type: string
+        enum:
+          - ASC
+          - DESC
+        default: "ASC"
+      example: "DESC"
+
+    Custom.Request.Query.Filter.DensityMin:
+      description: Минимальная плотность (g/m2)
+      name: density-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100g/m2
+
+    Custom.Request.Query.Filter.DensityMax:
+      description: Максимальная плотность (g/m2)
+      name: density-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100g/m2
+
+    Custom.Request.Query.Filter.DepthMin:
+      description: Минимальная глубина (µm)
+      name: depth-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Custom.Request.Query.Filter.DepthMax:
+      description: Максимальная глубина (µm)
+      name: depth-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Custom.Request.Query.Filter.ElementDetailing:
+      description: Список типов детализации через "," (см. Custom.Enum.FormElementDetailing)
+      name: detailing
+      in: query
+      required: false
+      schema:
+        type: string
+        default: "NORMAL"
+      example: "NORMAL,EXTENDED"
+
+    Custom.Request.Query.Filter.LengthMin:
+      description: Минимальная длина (µm)
+      name: length-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Custom.Request.Query.Filter.LengthMax:
+      description: Максимальная длина (µm)
+      name: length-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Custom.Request.Query.Filter.WeightMin:
+      description: Минимальный вес (g/m2)
+      name: weight-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100g/m2
+
+    Custom.Request.Query.Filter.WeightMax:
+      description: Максимальный вес (g/m2)
+      name: weight-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100g/m2
+
+    Custom.Request.Query.Filter.WidthMin:
+      description: Минимальная ширина (µm)
+      name: width-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Custom.Request.Query.Filter.WidthMax:
+      description: Максимальная ширина (µm)
+      name: width-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100mm
+
+    Catalog.Boxes.AdminAPI.Request.Path.BoxID:
+      description: Идентификатор коробки
+      name: boxId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Catalog.Laminates.AdminAPI.Request.Path.LaminateID:
+      description: Идентификатор ламината
+      name: laminateId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs:
+      description: Список идентификаторов типов ламината через ","
+      name: types
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "1,2,3"
+
+    Catalog.Papers.AdminAPI.Request.Path.PaperID:
+      description: Идентификатор бумаги
+      name: paperId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs:
+      description: Список идентификаторов цветов бумаги через ","
+      name: colors
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "1,2,3"
+
+    Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs:
+      description: Список идентификаторов фактур бумаги через ","
+      name: factures
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "1,2,3"
+
+    Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID:
+      description: Идентификатор типа ламината
+      name: typeId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID:
+      description: Идентификатор цвета бумаги
+      name: colorId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID:
+      description: Идентификатор фактуры бумаги
+      name: factureId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID:
+      description: Идентификатор печатного формата
+      name: formatId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID:
+      description: Идентификатор шаблона элемента
+      name: templateId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.Forms.AdminAPI.Request.Path.FormID:
+      description: Идентификатор формы
+      name: formId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.FormElements.AdminAPI.Request.Path.ElementID:
+      description: Идентификатор поля формы
+      name: elementId
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.FormElements.AdminAPI.Request.Query.FormID:
+      description: Идентификатор формы
+      name: formId
+      in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses:
+      name: statuses
+      in: query
+      required: false
+      description: Список статусов страницы через ","
+      schema:
+        type: string
+      example: "HIDDEN,PUBLISHED"
+
+  schemas:
+    App.Enum.Status:
+      description: |-
+        Текущий статус записи:
+        - DRAFT - черновик;
+        - ENABLED - используется;
+        - DISABLED - отключена;
+      type: string
+      enum:
+        - DRAFT
+        - ENABLED
+        - DISABLED
+      example: "ENABLED"
+
+    App.Field.Article:
+      description: Уникальный артикул записи (любые буквы без пробелов)
+      type: string
+      pattern: "^S+$"
+      minLength: 2
+      maxLength: 64
+      example: "item-FLEX-92744"
+
+    App.Field.Caption:
+      description: Название записи
+      type: string
+      maxLength: 128
+      example: "Название"
+
+    App.Field.Date.CreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"
+
+    App.Field.Date.UpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      nullable: true
+      example: "2023-01-01T12:00:00.000+02:00"
+
+    App.Field.IntegerID:
+      description: Идентификатор записи
+      type: integer
+      minimum: 1
+      example: 1000
+
+    App.Field.ListPager.Total:
+      description: Количество записей в БД с учётом указанных в запросе фильтров
+      type: integer
+      minimum: 0
+      example: 584
+
+    App.Field.TagVersion:
+      description: Текущая версия записи
+      type: integer
+      minimum: 1
+      example: 5
+
+    App.Measure.GramPerMeter2:
+      description: Поверхностная плотность (g/m2)
+      type: integer
+      maxLength: 10
+      example: 100000 # 100g/m2
+
+    App.Measure.Micrometer:
+      description: Микрометр (µm, 0.001mm)
+      type: integer
+      maxLength: 10
+      example: 100000 # 100mm
+
+    App.Request.Model.ChangeStatus:
+      description: |-
+        DTO изменения статуса записи
+
+        Возможные варианты переключений:
+        - DRAFT -> ENABLED, DISABLED;
+        - ENABLED -> DISABLED;
+        - DISABLED -> ENABLED;
+      type: object
+      required:
+        - version
+        - status
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    App.Request.Model.MoveItem:
+      description: DTO перемещения записи в рамках списка
+      type: object
+      required:
+        - afterId
+      properties:
+        afterId:
+          description: |-
+            Идентификатор записи, после которой необходимо вставить указанную запись.\
+            При afterId = 0 запись вставляется в начало списка.
+          type: integer
+          example: 7
+
+    App.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
+
+    App.Response.Model.ErrorDetails: # RFC 7807 (Problem Details for HTTP APIs)
+      description: DTO следующих ошибок - 401, 403, 404, 5XX
+      type: object
+      required:
+        - title
+        - details
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Resource not found"
+        details:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: integer
+          minimum: 1
+          example: 1000
+        message:
+          type: string
+          example: "Запись была успешно создана"
+
+    Custom.Enum.FormElementDetailing:
+      description: |-
+        Детализация данных формы/элемента формы:
+        - NORMAL - пользовательская;
+        - EXTENDED - расширенная (для менеджера, технолога);
+      type: string
+      enum:
+        - NORMAL
+        - EXTENDED
+      example: "NORMAL"
+
+    Custom.Enum.FormElementType:
+      description: |-
+        Тип элемента формы:
+        - GROUP - элемент "группа" (контейнер элементов);
+        - ELEMENT_LIST - список элементов;
+      type: string
+      enum:
+        - GROUP
+        - ELEMENT_LIST
+      example: "ELEMENT_LIST"
+
+    Custom.Enum.PaperSides:
+      description: |-
+        Стороны бумаги:
+        - SAME - одинаковые;
+        - DIFFERENT - разные;
+      type: string
+      enum:
+        - SAME
+        - DIFFERENT
+      example: "SAME"
+
+    Custom.Request.Query.Field.ParamName:
+      description: Уникальное имя формы/элемента формы
+      type: string
+      pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
+      minLength: 4
+      maxLength: 32
+      example: "ParamName"
+
+    Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
+      description: DTO добавления новой упаковочной коробки
+      type: object
+      required:
+        - article
+        - caption
+        - length
+        - width
+        - depth
+      properties:
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "СДЭК"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        depth:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
+      description: DTO сохранения упаковочной коробки
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "СДЭК"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        depth:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Catalog.Boxes.AdminAPI.Response.Model.BoxList:
+      description: DTO - список упаковочных коробок
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.Box"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Catalog.Boxes.AdminAPI.Response.Model.Box:
+      description: DTO - упаковочная коробка
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - article
+        - caption
+        - length
+        - width
+        - depth
+        - status
+      properties:
+        id: # boxId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "СДЭК"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        depth:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
+      description: DTO добавления новой ламината
+      type: object
+      required:
+        - article
+        - caption
+        - typeId
+        - length
+        - weight
+        - thickness
+      properties:
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый 450"
+        typeId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
+      description: DTO сохранения ламината
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый 450"
+        typeId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
+      description: DTO - список ламината
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.Laminate"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Catalog.Laminates.AdminAPI.Response.Model.Laminate:
+      description: DTO - ламинат
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - article
+        - caption
+        - typeId
+        - length
+        - weight
+        - thickness
+        - status
+      properties:
+        id: # laminateId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый 450"
+        typeId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
+      description: DTO добавления новой бумаги
+      type: object
+      required:
+        - article
+        - caption
+        - colorId
+        - factureId
+        - length
+        - width
+        - density
+        - thickness
+        - sides
+      properties:
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Мелованная"
+        colorId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+        factureId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        sides:
+          $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+    Catalog.Papers.AdminAPI.Request.Model.StorePaper:
+      description: DTO сохранения бумаги
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Мелованная"
+        colorId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+        factureId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        sides:
+          $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+    Catalog.Papers.AdminAPI.Response.Model.PaperList:
+      description: DTO - список бумаги
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.Paper"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Catalog.Papers.AdminAPI.Response.Model.Paper:
+      description: DTO - бумага
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - article
+        - caption
+        - colorId
+        - factureId
+        - length
+        - width
+        - density
+        - thickness
+        - sides
+        - status
+      properties:
+        id: # paperId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Мелованная"
+        colorId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+        factureId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        sides:
+          $ref: "#/components/schemas/Custom.Enum.PaperSides"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType:
+      description: DTO добавления нового типа ламината
+      type: object
+      required:
+        - caption
+      properties:
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый"
+
+    Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType:
+      description: DTO сохранения типа ламината
+      type: object
+      required:
+        - version
+        - caption
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый"
+
+    Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList:
+      description: DTO - список типов ламината
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType:
+      description: DTO - тип ламината
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - caption
+        - status
+      properties:
+        id: # typeId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor:
+      description: DTO добавления нового цвета бумаги
+      type: object
+      required:
+        - caption
+      properties:
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Белый"
+
+    Dictionaries.PaperColors.AdminAPI.Request.Model.StorePaperColor:
+      description: DTO сохранения цвета бумаги
+      type: object
+      required:
+        - version
+        - caption
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Белый"
+
+    Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList:
+      description: DTO - список цветов бумаги
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
+      description: DTO - цвет бумаги
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - caption
+        - status
+      properties:
+        id: # colorId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Белый"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture:
+      description: DTO добавления нового фактуры бумаги
+      type: object
+      required:
+        - caption
+      properties:
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Гладкая"
+
+    Dictionaries.PaperFactures.AdminAPI.Request.Model.StorePaperFacture:
+      description: DTO сохранения фактуры бумаги
+      type: object
+      required:
+        - version
+        - caption
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Гладкая"
+
+    Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList:
+      description: DTO - список фактур бумаги
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture:
+      description: DTO - фактура бумаги
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - caption
+        - status
+      properties:
+        id: # factureId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Гладкая"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
+      description: DTO добавления нового печатного формата
+      type: object
+      required:
+        - caption
+        - length
+        - width
+      properties:
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "A4 (210 x 297 mm)"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
+      description: DTO сохранения печатного формата
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "A4 (210 x 297 mm)"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+
+    Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
+      description: DTO - список печатных форматов
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
+      description: DTO - печатный формат
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - caption
+        - length
+        - width
+        - status
+      properties:
+        id: # formatId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "A4 (210 x 297 mm)"
+        length:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Measure.Micrometer"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate:
+      description: DTO добавления нового шаблона элемента
+      type: object
+      required:
+        - paramName
+        - caption
+        - elementType
+        - elementDetailing
+        - elementBody
+      properties:
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Шаблон процесса печати"
+        elementType:
+          $ref: "#/components/schemas/Custom.Enum.FormElementType"
+        elementDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        elementBody:
+          description: Json объект шаблона соответсвущего спецификации
+          type: string
+          example: "{\"json\": \"object\"}"
+
+    Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate:
+      description: DTO сохранения шаблона элемента
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Шаблон процесса печати"
+        elementType:
+          $ref: "#/components/schemas/Custom.Enum.FormElementType"
+        elementDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        elementBody:
+          description: Json объект шаблона соответсвущего спецификации
+          type: string
+          example: "{\"json\": \"object\"}"
+
+    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList:
+      description: DTO - список шаблонов элементов
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
+      description: |-
+        DTO - шаблон элемента формы пользовательского интерфейса
+        Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+      type: object
+      properties:
+        id: # templateId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Шаблон процесса печати"
+        elementType:
+          $ref: "#/components/schemas/Custom.Enum.FormElementType"
+        elementDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        elementBody:
+          description: Json объект шаблона соответсвущего спецификации
+          type: string
+          example: "{\"json\": \"object\"}"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Controls.Forms.AdminAPI.Request.Model.CreateForm:
+      description: DTO добавления новой формы
+      type: object
+      required:
+        - paramName
+        - caption
+        - formDetailing
+      properties:
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Листовая продукция"
+        formDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+
+    Controls.Forms.AdminAPI.Request.Model.StoreForm:
+      description: DTO сохранения формы
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Листовая продукция"
+        formDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+
+    Controls.Forms.AdminAPI.Response.Model.FormList:
+      description: DTO - список форм
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Controls.Forms.AdminAPI.Response.Model.Form:
+      description: |-
+        DTO - форма пользовательского интерфейса
+        Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+      type: object
+      required:
+        - id
+        - version
+        - createdAt
+        - paramName
+        - caption
+        - formDetailing
+        - formBody
+        - status
+      properties:
+        id: # formId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Листовая продукция"
+        formDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        formBody:
+          description: Json объект формы соответсвущего спецификации
+          type: string
+          maxLength: 65536 # 64Kb
+          example: "{\"json\": \"object\"}"
+        status:
+          $ref: "#/components/schemas/App.Enum.Status"
+
+    Controls.FormElements.AdminAPI.Request.Model.CreateFormElement:
+      description: DTO сохранения элемента формы
+      type: object
+      required:
+        - templateId
+      properties:
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Процесс печати"
+        templateId:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.IntegerID"
+            - description: Идентификатор шаблона элемента (/v1/controls/element-templates)
+        elementRequired:
+          description: Обязательность заполнения элемента в форме
+          type: boolean
+          example: true
+
+    Controls.FormElements.AdminAPI.Request.Model.StoreFormElement:
+      description: DTO сохранения элемента формы
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        formId:
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Процесс печати"
+        elementRequired:
+          description: Обязательность заполнения элемента в форме
+          type: boolean
+          example: true
+
+    Controls.FormElements.AdminAPI.Response.Model.FormElementList:
+      description: DTO - список элементов формы
+      type: array
+      items:
+        $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+
+    Controls.FormElements.AdminAPI.Response.Model.FormElement:
+      description: |-
+        DTO - элемент формы пользовательского интерфейса
+        Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+      type: object
+      properties:
+        id: # elementId
+          $ref: "#/components/schemas/App.Field.IntegerID"
+        version:
+          $ref: "#/components/schemas/App.Field.TagVersion"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+        paramName:
+          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Процесс печати"
+        elementType:
+          $ref: "#/components/schemas/Custom.Enum.FormElementType"
+        elementDetailing:
+          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        elementRequired:
+          description: Обязательность заполнения элемента
+          type: boolean
+          example: true
+        elementBody:
+          description: Json объект элемента формы
+          type: string
+          maxLength: 65536 # 64Kb
+          example: "{\"json\": \"object\"}"
+
+    ProviderAccounts.CompanyPages.AdminAPI.Field.Status:
+      description: |-
+        Текущий статус страницы:
+        - HIDDEN - скрыто;
+        - PUBLISHED - опубликована;
+      type: string
+      enum:
+        - HIDDEN
+        - PUBLISHED
+      example: "PUBLISHED"
+
+    ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage:
+      type: object
+      properties:
+        accountId:
+          type: integer
+          example: 1000
+        updatedAt:
+          description: Дата и время обновления записи
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
+        rewriteName:
+          description: Уникальное название страницы
+          type: string
+          maxLength: 64
+          example: "company-name"
+        pageHead:
+          description: Заголовок страницы компании
+          type: string
+          maxLength: 128
+          example: "Компания 0001"
+        logoPath:
+          description: Относительный путь к логотипу компании
+          type: string
+          maxLength: 128
+          example: ""
+        siteUrl:
+          description: URL страницы сайта компании
+          type: string
+          maxLength: 256
+          example: "https://site.localhost/"
+        status:
+          $ref: "#/components/schemas/ProviderAccounts.CompanyPages.AdminAPI.Field.Status"
+
+  responses:
+    App.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorList"
+
+    App.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

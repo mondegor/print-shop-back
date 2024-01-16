@@ -1,0 +1,17 @@
+---
+privileges:
+  - apiAdm
+
+permissions:
+  - modCatalogBox
+  - modCatalogPaper
+  - modCatalogLaminate
+  - modControlsFormData
+  - modControlsFormElement
+  - modControlsElementTemplate
+  - modDictionariesPaperColor
+  - modDictionariesPaperFacture
+  - modDictionariesPrintFormat
+  - modDictionariesLaminateType
+  - modFileStationImageProxy
+  - modProviderAccountsCompanyPage

@@ -1,0 +1,17 @@
+App.Request.Model.ChangeStatus:
+  description: |-
+    DTO изменения статуса записи
+
+    Возможные варианты переключений:
+    - DRAFT -> ENABLED, DISABLED;
+    - ENABLED -> DISABLED;
+    - DISABLED -> ENABLED;
+  type: object
+  required:
+    - version
+    - status
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

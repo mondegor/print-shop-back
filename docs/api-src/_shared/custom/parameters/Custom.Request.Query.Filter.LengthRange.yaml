@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.LengthMin:
+  description: Минимальная длина (µm)
+  name: length-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm
+
+Custom.Request.Query.Filter.LengthMax:
+  description: Максимальная длина (µm)
+  name: length-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm

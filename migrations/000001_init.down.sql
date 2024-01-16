@@ -1,34 +1,41 @@
--- DROP SCHEMA public;
+-- --------------------------------------------------------------------------------------------------
 
-DROP TABLE accounts_companies_pages;
+DROP TABLE ps_provider_accounts.companies_pages;
 
-DROP TABLE form_fields;
-DROP TABLE form_data;
-DROP TABLE form_field_templates;
+DROP TYPE ps_provider_accounts.resource_status;
 
-DROP TABLE catalog_print_formats;
+DROP SCHEMA ps_provider_accounts;
 
-DROP TABLE catalog_boxes;
+-- --------------------------------------------------------------------------------------------------
 
-DROP TABLE catalog_papers;
-DROP TABLE catalog_paper_colors;
-DROP TABLE catalog_paper_factures;
+DROP TABLE ps_controls.form_elements;
+DROP TABLE ps_controls.forms;
+DROP TABLE ps_controls.element_templates;
 
-DROP TABLE catalog_laminates;
-DROP TABLE catalog_laminate_types;
+DROP TYPE ps_controls.item_status;
+DROP TYPE ps_controls.element_detailing;
+DROP TYPE ps_controls.element_type;
 
-DROP TYPE item_status;
+DROP SCHEMA ps_controls;
 
-DROP TYPE resource_status;
+-- --------------------------------------------------------------------------------------------------
 
-DROP TYPE form_detailing;
-DROP TYPE form_field_type;
+DROP TABLE ps_dictionaries.laminate_types;
+DROP TABLE ps_dictionaries.paper_colors;
+DROP TABLE ps_dictionaries.paper_factures;
+DROP TABLE ps_dictionaries.print_formats;
 
-DROP TYPE catalog_paper_sides;
+DROP TYPE ps_dictionaries.item_status;
 
--- DROP SEQUENCE form_fields_field_id_seq;
---
--- DROP SEQUENCE form_field_templates_template_id_seq;
---
--- DROP SEQUENCE form_product_form_id_seq;
+DROP SCHEMA ps_dictionaries;
 
+-- --------------------------------------------------------------------------------------------------
+
+DROP TABLE ps_catalog.boxes;
+DROP TABLE ps_catalog.laminates;
+DROP TABLE ps_catalog.papers;
+
+DROP TYPE ps_catalog.item_status;
+DROP TYPE ps_catalog.paper_sides;
+
+DROP SCHEMA ps_catalog;

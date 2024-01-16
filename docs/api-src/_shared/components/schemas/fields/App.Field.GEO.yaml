@@ -1,0 +1,11 @@
+App.Field.GEO.Latitude:
+  description: Широта
+  type: string
+  maxLength: 16
+  example: "55.7539351000"
+
+App.Field.GEO.Longitude:
+  description: Долгота
+  type: string
+  maxLength: 16
+  example: "37.6204404000"

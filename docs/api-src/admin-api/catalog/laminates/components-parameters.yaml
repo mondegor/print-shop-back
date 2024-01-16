@@ -1,0 +1,18 @@
+Catalog.Laminates.AdminAPI.Request.Path.LaminateID:
+  description: Идентификатор ламината
+  name: laminateId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000
+
+Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs:
+  description: Список идентификаторов типов ламината через ","
+  name: types
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "1,2,3"

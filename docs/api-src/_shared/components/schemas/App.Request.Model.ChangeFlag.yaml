@@ -1,0 +1,7 @@
+App.Request.Model.ChangeFlag:
+  type: object
+  required:
+    - value
+  properties:
+    value:
+      $ref: "#/components/schemas/App.Field.Boolean"

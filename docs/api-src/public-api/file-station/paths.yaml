@@ -1,0 +1,27 @@
+/img/{filePath}:
+  get:
+    summary: Метод получения указанного изображения
+    description: Метод предназначен для получения указанного файла изображения из файлового хранилища
+    operationId: getImageFile
+    tags:
+      - FileStation
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/FileStation.PublicAPI.Request.Path.FilePath"
+
+    responses:
+      "200":
+        description: Получен файл указанного изображения
+        content:
+          image/png:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.BinaryFile"
+          image/jpeg:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.BinaryFile"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.DepthMin:
+  description: Минимальная глубина (µm)
+  name: depth-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm
+
+Custom.Request.Query.Filter.DepthMax:
+  description: Максимальная глубина (µm)
+  name: depth-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100mm

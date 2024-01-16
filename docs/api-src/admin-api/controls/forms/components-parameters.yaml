@@ -1,0 +1,9 @@
+Controls.Forms.AdminAPI.Request.Path.FormID:
+  description: Идентификатор формы
+  name: formId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

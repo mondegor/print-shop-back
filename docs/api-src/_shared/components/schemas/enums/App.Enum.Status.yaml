@@ -1,0 +1,12 @@
+App.Enum.Status:
+  description: |-
+    Текущий статус записи:
+    - DRAFT - черновик;
+    - ENABLED - используется;
+    - DISABLED - отключена;
+  type: string
+  enum:
+    - DRAFT
+    - ENABLED
+    - DISABLED
+  example: "ENABLED"

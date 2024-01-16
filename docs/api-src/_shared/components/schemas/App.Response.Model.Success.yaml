@@ -1,0 +1,3 @@
+App.Response.Model.Success:
+  type: boolean
+  example: true

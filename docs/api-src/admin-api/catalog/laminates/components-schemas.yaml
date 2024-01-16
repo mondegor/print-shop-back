@@ -1,0 +1,112 @@
+Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
+  description: DTO добавления новой ламината
+  type: object
+  required:
+    - article
+    - caption
+    - typeId
+    - length
+    - weight
+    - thickness
+  properties:
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый 450"
+    typeId:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.IntegerID"
+        - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+    length:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+
+Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
+  description: DTO сохранения ламината
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый 450"
+    typeId:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.IntegerID"
+        - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+    length:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+
+Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
+  description: DTO - список ламината
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.Laminate"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Catalog.Laminates.AdminAPI.Response.Model.Laminate:
+  description: DTO - ламинат
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - article
+    - caption
+    - typeId
+    - length
+    - weight
+    - thickness
+    - status
+  properties:
+    id: # laminateId
+      $ref: "#/components/schemas/App.Field.IntegerID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый 450"
+    typeId:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.IntegerID"
+        - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+    length:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Measure.Micrometer"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

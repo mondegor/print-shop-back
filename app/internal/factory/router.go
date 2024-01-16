@@ -1,48 +1,36 @@
 package factory
 
 import (
-    "net/http"
-    "print-shop-back/config"
+	"print-shop-back/config"
 
-    "github.com/mondegor/go-webcore/mrcore"
-    "github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-sysmess/mrlang"
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func NewHttpRouter(cfg *config.Config, logger mrcore.Logger) (mrcore.HttpRouter, error) {
-    responseTranslator, err := NewTranslator(cfg, logger)
+func NewHttpRouter(cfg *config.Config, logger mrcore.Logger, translator *mrlang.Translator) (mrcore.HttpRouter, error) {
+	requestValidator, err := NewValidator(cfg, logger)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    requestValidator, err := NewValidator(cfg, logger)
+	logger.Info("Create and init http router")
 
-    if err != nil {
-        return nil, err
-    }
+	corsOptions := mrserver.CorsOptions{
+		AllowedOrigins:   cfg.Cors.AllowedOrigins,
+		AllowedMethods:   cfg.Cors.AllowedMethods,
+		AllowedHeaders:   cfg.Cors.AllowedHeaders,
+		ExposedHeaders:   cfg.Cors.ExposedHeaders,
+		AllowCredentials: cfg.Cors.AllowCredentials,
+		Logger:           logger,
+	}
 
-    logger.Info("Create and init http router")
+	router := mrserver.NewRouter(logger, mrserver.HandlerAdapter(nil))
+	router.RegisterMiddleware(
+		mrserver.NewCors(corsOptions),
+		mrserver.MiddlewareFirst(logger, translator, requestValidator),
+	)
 
-    corsOptions := mrserver.CorsOptions{
-        AllowedOrigins: cfg.Cors.AllowedOrigins,
-        AllowedMethods: cfg.Cors.AllowedMethods,
-        AllowedHeaders: cfg.Cors.AllowedHeaders,
-        ExposedHeaders: cfg.Cors.ExposedHeaders,
-        AllowCredentials: cfg.Cors.AllowCredentials,
-        Debug: cfg.Debug,
-    }
-
-    router := mrserver.NewRouter(logger, mrserver.HandlerAdapter(requestValidator))
-    router.RegisterMiddleware(
-        mrserver.NewCors(corsOptions),
-        mrserver.MiddlewareFirst(logger),
-        mrserver.MiddlewareUserIp(),
-        mrserver.MiddlewareAcceptLanguage(responseTranslator),
-        mrserver.MiddlewarePlatform(mrcore.PlatformWeb),
-        mrserver.MiddlewareAuthenticateUser(),
-    )
-
-    router.HandlerFunc(http.MethodGet, "/", mrserver.MainPage)
-
-    return router, nil
+	return router, nil
 }

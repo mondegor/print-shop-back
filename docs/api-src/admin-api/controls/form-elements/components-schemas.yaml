@@ -1,0 +1,81 @@
+Controls.FormElements.AdminAPI.Request.Model.CreateFormElement:
+  description: DTO сохранения элемента формы
+  type: object
+  required:
+    - templateId
+  properties:
+    paramName:
+      $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Процесс печати"
+    templateId:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.IntegerID"
+        - description: Идентификатор шаблона элемента (/v1/controls/element-templates)
+    elementRequired:
+      description: Обязательность заполнения элемента в форме
+      type: boolean
+      example: true
+
+Controls.FormElements.AdminAPI.Request.Model.StoreFormElement:
+  description: DTO сохранения элемента формы
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    formId:
+      $ref: "#/components/schemas/App.Field.IntegerID"
+    paramName:
+      $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Процесс печати"
+    elementRequired:
+      description: Обязательность заполнения элемента в форме
+      type: boolean
+      example: true
+
+Controls.FormElements.AdminAPI.Response.Model.FormElementList:
+  description: DTO - список элементов формы
+  type: array
+  items:
+    $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+
+Controls.FormElements.AdminAPI.Response.Model.FormElement:
+  description: |-
+    DTO - элемент формы пользовательского интерфейса
+    Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+  type: object
+  properties:
+    id: # elementId
+      $ref: "#/components/schemas/App.Field.IntegerID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+    paramName:
+      $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Процесс печати"
+    elementType:
+      $ref: "#/components/schemas/Custom.Enum.FormElementType"
+    elementDetailing:
+      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+    elementRequired:
+      description: Обязательность заполнения элемента
+      type: boolean
+      example: true
+    elementBody:
+      description: Json объект элемента формы
+      type: string
+      maxLength: 65536 # 64Kb
+      example: "{\"json\": \"object\"}"

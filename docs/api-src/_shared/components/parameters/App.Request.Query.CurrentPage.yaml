@@ -1,0 +1,9 @@
+App.Request.Query.CurrentPage:
+  description: Текущая страница списка, по умолчанию = 1, min = 1
+  name: page
+  in: query
+  required: false
+  schema:
+    type: integer
+    default: 0
+  example: 1
