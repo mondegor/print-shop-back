@@ -60,7 +60,9 @@ func (uc *Box) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Box, er
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.Box{ID: id}
+	item := &entity.Box{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameBox, id)

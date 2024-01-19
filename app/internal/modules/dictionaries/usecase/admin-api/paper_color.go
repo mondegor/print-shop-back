@@ -59,7 +59,9 @@ func (uc *PaperColor) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.PaperColor{ID: id}
+	item := &entity.PaperColor{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaperColor, id)

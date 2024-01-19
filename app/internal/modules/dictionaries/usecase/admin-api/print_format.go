@@ -59,7 +59,9 @@ func (uc *PrintFormat) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.PrintFormat{ID: id}
+	item := &entity.PrintFormat{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)

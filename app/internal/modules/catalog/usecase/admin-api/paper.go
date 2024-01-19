@@ -67,7 +67,9 @@ func (uc *Paper) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Paper
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.Paper{ID: id}
+	item := &entity.Paper{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
@@ -77,7 +79,7 @@ func (uc *Paper) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Paper
 }
 
 func (uc *Paper) Create(ctx context.Context, item *entity.Paper) error {
-	if err := uc.checkPaper(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -105,7 +107,7 @@ func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
 		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
 	}
 
-	if err := uc.checkPaper(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -176,7 +178,7 @@ func (uc *Paper) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	return nil
 }
 
-func (uc *Paper) checkPaper(ctx context.Context, item *entity.Paper) error {
+func (uc *Paper) checkItem(ctx context.Context, item *entity.Paper) error {
 	if err := uc.checkArticle(ctx, item); err != nil {
 		return err
 	}

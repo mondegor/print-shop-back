@@ -4,10 +4,10 @@ go 1.20
 
 require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mondegor/go-components v0.3.11
-	github.com/mondegor/go-storage v0.6.14
-	github.com/mondegor/go-sysmess v0.6.0
-	github.com/mondegor/go-webcore v0.9.6
+	github.com/mondegor/go-components v0.3.12
+	github.com/mondegor/go-storage v0.6.16
+	github.com/mondegor/go-sysmess v0.6.1
+	github.com/mondegor/go-webcore v0.9.8
 )
 
 require (
@@ -26,7 +26,6 @@ require (
 	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/redis/go-redis/v9 v9.4.0 // indirect
 	github.com/rs/cors v1.10.1 // indirect
 	golang.org/x/crypto v0.18.0 // indirect

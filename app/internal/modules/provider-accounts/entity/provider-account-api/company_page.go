@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	ModelNameCompanyPage = "provider-account-api.ProviderAccounts.CompanyPage"
+	ModelNameCompanyPage     = "provider-account-api.ProviderAccounts.CompanyPage"
+	ModelNameCompanyPageLogo = "provider-account-api.ProviderAccounts.CompanyPageLogo"
 )
 
 type (

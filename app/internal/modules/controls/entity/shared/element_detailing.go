@@ -13,6 +13,7 @@ const (
 	ElementDetailingNormal
 	ElementDetailingExtended
 
+	elementDetailingLast     = uint8(ElementDetailingExtended)
 	enumNameElementDetailing = "ElementDetailing"
 )
 
@@ -41,6 +42,15 @@ func (e *ElementDetailing) ParseAndSet(value string) error {
 	return fmt.Errorf("'%s' is not found in map %s", value, enumNameElementDetailing)
 }
 
+func (e *ElementDetailing) Set(value uint8) error {
+	if value > 0 && value <= elementDetailingLast {
+		*e = ElementDetailing(value)
+		return nil
+	}
+
+	return fmt.Errorf("number '%d' is not registered in %s", value, enumNameElementDetailing)
+}
+
 func (e ElementDetailing) String() string {
 	return elementDetailingName[e]
 }
@@ -65,8 +75,8 @@ func (e *ElementDetailing) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *ElementDetailing) Scan(value any) error {
-	if val, ok := value.(string); ok {
-		return e.ParseAndSet(val)
+	if val, ok := value.(int64); ok {
+		return e.Set(uint8(val))
 	}
 
 	return mrcore.FactoryErrInternalTypeAssertion.New(enumNameElementDetailing, value)
@@ -74,7 +84,7 @@ func (e *ElementDetailing) Scan(value any) error {
 
 // Value implements the driver Valuer interface.
 func (e ElementDetailing) Value() (driver.Value, error) {
-	return e.String(), nil
+	return uint8(e), nil
 }
 
 func ParseElementDetailingList(items []string) ([]ElementDetailing, error) {

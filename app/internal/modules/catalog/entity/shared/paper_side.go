@@ -13,6 +13,7 @@ const (
 	PaperSideSame
 	PaperSideDifferent
 
+	paperSideLast     = uint8(PaperSideDifferent)
 	enumNamePaperSide = "PaperSide"
 )
 
@@ -41,6 +42,15 @@ func (e *PaperSide) ParseAndSet(value string) error {
 	return fmt.Errorf("'%s' is not found in map %s", value, enumNamePaperSide)
 }
 
+func (e *PaperSide) Set(value uint8) error {
+	if value > 0 && value <= paperSideLast {
+		*e = PaperSide(value)
+		return nil
+	}
+
+	return fmt.Errorf("number '%d' is not registered in %s", value, enumNamePaperSide)
+}
+
 func (e PaperSide) String() string {
 	return paperSideName[e]
 }
@@ -65,8 +75,8 @@ func (e *PaperSide) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *PaperSide) Scan(value any) error {
-	if val, ok := value.(string); ok {
-		return e.ParseAndSet(val)
+	if val, ok := value.(int64); ok {
+		return e.Set(uint8(val))
 	}
 
 	return mrcore.FactoryErrInternalTypeAssertion.New(enumNamePaperSide, value)
@@ -74,7 +84,7 @@ func (e *PaperSide) Scan(value any) error {
 
 // Value implements the driver Valuer interface.
 func (e PaperSide) Value() (driver.Value, error) {
-	return e.String(), nil
+	return uint8(e), nil
 }
 
 func ParsePaperSideList(items []string) ([]PaperSide, error) {

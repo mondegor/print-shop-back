@@ -6,9 +6,7 @@ import (
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/provider-account-api"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrdebug"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-webcore/mrreq"
 )
 
 const (
@@ -43,29 +41,15 @@ func (ht *CompanyPageLogo) AddHandlers(router mrcore.HttpRouter) {
 
 func (ht *CompanyPageLogo) UploadLogo() mrcore.HttpHandlerFunc {
 	return func(c mrcore.ClientContext) error {
-		logger := mrctx.Logger(c.Context())
-
-		file, hdr, err := c.Request().FormFile(module.ParamNameFileCompanyLogo)
+		file, err := mrreq.File(c.Request(), module.ParamNameFileCompanyLogo)
 
 		if err != nil {
-			mrdebug.MultipartForm(logger, c.Request().MultipartForm)
-			return mrcore.FactoryErrHttpMultipartFormFile.Wrap(err, module.ParamNameFileCompanyLogo)
+			return err
 		}
 
-		defer file.Close()
+		defer file.Body.Close()
 
-		mrdebug.MultipartFileHeader(logger, hdr)
-
-		item := mrtype.File{
-			FileInfo: mrtype.FileInfo{
-				ContentType:  hdr.Header.Get("Content-Type"),
-				OriginalName: hdr.Filename,
-				Size:         hdr.Size,
-			},
-			Body: file,
-		}
-
-		if err = ht.service.StoreFile(c.Context(), tmpAccountID, item); err != nil {
+		if err = ht.service.StoreFile(c.Context(), tmpAccountID, file); err != nil {
 			return ht.wrapError(err, c)
 		}
 

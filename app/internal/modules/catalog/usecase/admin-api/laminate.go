@@ -64,7 +64,9 @@ func (uc *Laminate) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.La
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.Laminate{ID: id}
+	item := &entity.Laminate{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, id)
@@ -74,7 +76,7 @@ func (uc *Laminate) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.La
 }
 
 func (uc *Laminate) Create(ctx context.Context, item *entity.Laminate) error {
-	if err := uc.checkLaminate(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -102,7 +104,7 @@ func (uc *Laminate) Store(ctx context.Context, item *entity.Laminate) error {
 		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
 	}
 
-	if err := uc.checkLaminate(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -173,7 +175,7 @@ func (uc *Laminate) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	return nil
 }
 
-func (uc *Laminate) checkLaminate(ctx context.Context, item *entity.Laminate) error {
+func (uc *Laminate) checkItem(ctx context.Context, item *entity.Laminate) error {
 	if err := uc.checkArticle(ctx, item); err != nil {
 		return err
 	}

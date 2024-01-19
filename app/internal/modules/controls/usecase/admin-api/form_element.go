@@ -66,7 +66,9 @@ func (uc *FormElement) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.FormElement{ID: id}
+	item := &entity.FormElement{
+		ID: id,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, id)
@@ -90,7 +92,7 @@ func (uc *FormElement) Create(ctx context.Context, item *entity.FormElement) err
 		item.Caption = itemTemplate.Caption
 	}
 
-	if err = uc.checkFormElement(ctx, item); err != nil {
+	if err = uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -123,7 +125,7 @@ func (uc *FormElement) Store(ctx context.Context, item *entity.FormElement) erro
 		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, item.ID)
 	}
 
-	if err := uc.checkFormElement(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, item); err != nil {
 		return err
 	}
 
@@ -185,7 +187,7 @@ func (uc *FormElement) MoveAfterID(ctx context.Context, id mrtype.KeyInt32, afte
 	return nil
 }
 
-func (uc *FormElement) checkFormElement(ctx context.Context, item *entity.FormElement) error {
+func (uc *FormElement) checkItem(ctx context.Context, item *entity.FormElement) error {
 	if err := uc.checkParamName(ctx, item); err != nil {
 		return err
 	}

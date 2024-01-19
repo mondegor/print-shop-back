@@ -42,7 +42,9 @@ func (uc *CompanyPage) GetItem(ctx context.Context, accountID mrtype.KeyString) 
 		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	item := &entity.CompanyPage{AccountID: accountID}
+	item := &entity.CompanyPage{
+		AccountID: accountID,
+	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
 		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)

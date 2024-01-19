@@ -13,6 +13,7 @@ const (
 	ElementTypeGroup
 	ElementTypeList
 
+	elementTypeLast     = uint8(ElementTypeList)
 	enumNameElementType = "ElementType"
 )
 
@@ -41,6 +42,15 @@ func (e *ElementType) ParseAndSet(value string) error {
 	return fmt.Errorf("'%s' is not found in map %s", value, enumNameElementType)
 }
 
+func (e *ElementType) Set(value uint8) error {
+	if value > 0 && value <= elementTypeLast {
+		*e = ElementType(value)
+		return nil
+	}
+
+	return fmt.Errorf("number '%d' is not registered in %s", value, enumNameElementType)
+}
+
 func (e ElementType) String() string {
 	return elementTypeName[e]
 }
@@ -65,8 +75,8 @@ func (e *ElementType) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *ElementType) Scan(value any) error {
-	if val, ok := value.(string); ok {
-		return e.ParseAndSet(val)
+	if val, ok := value.(int64); ok {
+		return e.Set(uint8(val))
 	}
 
 	return mrcore.FactoryErrInternalTypeAssertion.New(enumNameElementType, value)
@@ -74,7 +84,7 @@ func (e *ElementType) Scan(value any) error {
 
 // Value implements the driver Valuer interface.
 func (e ElementType) Value() (driver.Value, error) {
-	return e.String(), nil
+	return uint8(e), nil
 }
 
 func ParseElementTypeList(items []string) ([]ElementType, error) {

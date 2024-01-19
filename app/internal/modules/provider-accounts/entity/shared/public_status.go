@@ -16,6 +16,7 @@ const (
 	PublicStatusPublished
 	PublicStatusPublishedShared
 
+	publicStatusLast     = uint8(PublicStatusPublishedShared)
 	enumNamePublicStatus = "PublicStatus"
 )
 
@@ -67,6 +68,15 @@ func (e *PublicStatus) ParseAndSet(value string) error {
 	return fmt.Errorf("'%s' is not found in map %s", value, enumNamePublicStatus)
 }
 
+func (e *PublicStatus) Set(value uint8) error {
+	if value > 0 && value <= publicStatusLast {
+		*e = PublicStatus(value)
+		return nil
+	}
+
+	return fmt.Errorf("number '%d' is not registered in %s", value, enumNamePublicStatus)
+}
+
 func (e PublicStatus) String() string {
 	return publicStatusName[e]
 }
@@ -91,8 +101,8 @@ func (e *PublicStatus) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *PublicStatus) Scan(value any) error {
-	if val, ok := value.(string); ok {
-		return e.ParseAndSet(val)
+	if val, ok := value.(int64); ok {
+		return e.Set(uint8(val))
 	}
 
 	return mrcore.FactoryErrInternalTypeAssertion.New(enumNamePublicStatus, value)
@@ -100,7 +110,7 @@ func (e *PublicStatus) Scan(value any) error {
 
 // Value implements the driver Valuer interface.
 func (e PublicStatus) Value() (driver.Value, error) {
-	return e.String(), nil
+	return uint8(e), nil
 }
 
 func ParsePublicStatusList(items []string) ([]PublicStatus, error) {
