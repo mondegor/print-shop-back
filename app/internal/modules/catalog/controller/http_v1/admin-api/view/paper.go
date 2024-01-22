@@ -10,7 +10,7 @@ import (
 
 type (
 	CreatePaperRequest struct {
-		Article   string                  `json:"article" validate:"required,min=3,max=32,article"`
+		Article   string                  `json:"article" validate:"required,min=3,max=32,tag_article"`
 		Caption   string                  `json:"caption" validate:"required,max=64"`
 		ColorID   mrtype.KeyInt32         `json:"colorId" validate:"required,gte=1"`
 		FactureID mrtype.KeyInt32         `json:"factureId" validate:"required,gte=1"`
@@ -23,7 +23,7 @@ type (
 
 	StorePaperRequest struct {
 		Version   int32                   `json:"version" validate:"required,gte=1"`
-		Article   string                  `json:"article" validate:"omitempty,min=3,max=32,article"`
+		Article   string                  `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
 		Caption   string                  `json:"caption" validate:"omitempty,max=64"`
 		ColorID   mrtype.KeyInt32         `json:"colorId" validate:"omitempty,gte=1"`
 		FactureID mrtype.KeyInt32         `json:"factureId" validate:"omitempty,gte=1"`

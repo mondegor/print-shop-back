@@ -13,6 +13,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
@@ -25,197 +26,188 @@ const (
 
 type (
 	Box struct {
-		section    mrcore.ClientSection
+		parser     view_shared.RequestParser
+		sender     mrserver.ResponseSender
 		service    usecase.BoxService
 		listSorter mrview.ListSorter
 	}
 )
 
 func NewBox(
-	section mrcore.ClientSection,
+	parser view_shared.RequestParser,
+	sender mrserver.ResponseSender,
 	service usecase.BoxService,
 	listSorter mrview.ListSorter,
 ) *Box {
 	return &Box{
-		section:    section,
+		parser:     parser,
+		sender:     sender,
 		service:    service,
 		listSorter: listSorter,
 	}
 }
 
-func (ht *Box) AddHandlers(router mrcore.HttpRouter) {
-	moduleAccessFunc := func(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
-		return ht.section.MiddlewareWithPermission(module.UnitBoxPermission, next)
-	}
+func (ht *Box) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{http.MethodGet, boxURL, "", ht.GetList},
+		{http.MethodPost, boxURL, "", ht.Create},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(boxURL), moduleAccessFunc(ht.GetList()))
-	router.HttpHandlerFunc(http.MethodPost, ht.section.Path(boxURL), moduleAccessFunc(ht.Create()))
+		{http.MethodGet, boxItemURL, "", ht.Get},
+		{http.MethodPut, boxItemURL, "", ht.Store},
+		{http.MethodDelete, boxItemURL, "", ht.Remove},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(boxItemURL), moduleAccessFunc(ht.Get()))
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(boxItemURL), moduleAccessFunc(ht.Store()))
-	router.HttpHandlerFunc(http.MethodDelete, ht.section.Path(boxItemURL), moduleAccessFunc(ht.Remove()))
-
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(boxChangeStatusURL), moduleAccessFunc(ht.ChangeStatus()))
-}
-
-func (ht *Box) GetList() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		items, totalItems, err := ht.service.GetList(c.Context(), ht.listParams(c))
-
-		if err != nil {
-			return err
-		}
-
-		return c.SendResponse(
-			http.StatusOK,
-			view.BoxListResponse{
-				Items: items,
-				Total: totalItems,
-			},
-		)
+		{http.MethodPut, boxChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
-func (ht *Box) listParams(c mrcore.ClientContext) entity.BoxParams {
+func (ht *Box) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusOK,
+		view.BoxListResponse{
+			Items: items,
+			Total: totalItems,
+		},
+	)
+}
+
+func (ht *Box) listParams(r *http.Request) entity.BoxParams {
 	return entity.BoxParams{
 		Filter: entity.BoxListFilter{
-			SearchText: view_shared.ParseFilterString(c, module.ParamNameFilterSearchText),
-			Length:     view_shared.ParseFilterRangeInt64(c, module.ParamNameFilterLengthRange),
-			Width:      view_shared.ParseFilterRangeInt64(c, module.ParamNameFilterWidthRange),
-			Depth:      view_shared.ParseFilterRangeInt64(c, module.ParamNameFilterDepthRange),
-			Statuses:   view_shared.ParseFilterStatusList(c, module.ParamNameFilterStatuses),
+			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
+			Length:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange),
+			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange),
+			Depth:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterDepthRange),
+			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
-		Sorter: view_shared.ParseSortParams(c, ht.listSorter),
-		Pager:  view_shared.ParsePageParams(c),
+		Sorter: ht.parser.SortParams(r, ht.listSorter),
+		Pager:  ht.parser.PageParams(r),
 	}
 }
 
-func (ht *Box) Get() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		item, err := ht.service.GetItem(c.Context(), ht.getItemID(c))
+func (ht *Box) Get(w http.ResponseWriter, r *http.Request) error {
+	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
 
-		if err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(http.StatusOK, item)
+	if err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-func (ht *Box) Create() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.CreateBoxRequest{}
+func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
+	request := view.CreateBoxRequest{}
 
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.Box{
-			Article: request.Article,
-			Caption: request.Caption,
-			Length:  request.Length,
-			Width:   request.Width,
-			Depth:   request.Depth,
-		}
-
-		if err := ht.service.Create(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(
-			http.StatusCreated,
-			view.SuccessCreatedItemResponse{
-				ItemID: strconv.Itoa(int(item.ID)),
-				Message: mrctx.Locale(c.Context()).TranslateMessage(
-					"msgCatalogBoxSuccessCreated",
-					"entity has been success created",
-				),
-			},
-		)
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
-}
 
-func (ht *Box) Store() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.StoreBoxRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.Box{
-			ID:         ht.getItemID(c),
-			TagVersion: request.Version,
-			Article:    request.Article,
-			Caption:    request.Caption,
-			Length:     request.Length,
-			Width:      request.Width,
-			Depth:      request.Depth,
-		}
-
-		if err := ht.service.Store(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	item := entity.Box{
+		Article: request.Article,
+		Caption: request.Caption,
+		Length:  request.Length,
+		Width:   request.Width,
+		Depth:   request.Depth,
 	}
-}
 
-func (ht *Box) ChangeStatus() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.ChangeItemStatusRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.Box{
-			ID:         ht.getItemID(c),
-			TagVersion: request.TagVersion,
-			Status:     request.Status,
-		}
-
-		if err := ht.service.ChangeStatus(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	if err := ht.service.Create(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusCreated,
+		view.SuccessCreatedItemResponse{
+			ItemID: strconv.Itoa(int(item.ID)),
+			Message: mrctx.Locale(r.Context()).TranslateMessage(
+				"msgCatalogBoxSuccessCreated",
+				"entity has been success created",
+			),
+		},
+	)
 }
 
-func (ht *Box) Remove() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		if err := ht.service.Remove(c.Context(), ht.getItemID(c)); err != nil {
-			return ht.wrapError(err, c)
-		}
+func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
+	request := view.StoreBoxRequest{}
 
-		return c.SendResponseNoContent()
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
+
+	item := entity.Box{
+		ID:         ht.getItemID(r),
+		TagVersion: request.Version,
+		Article:    request.Article,
+		Caption:    request.Caption,
+		Length:     request.Length,
+		Width:      request.Width,
+		Depth:      request.Depth,
+	}
+
+	if err := ht.service.Store(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Box) getItemID(c mrcore.ClientContext) mrtype.KeyInt32 {
-	return view_shared.ParseKeyInt32FromPath(c, "id")
+func (ht *Box) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
+	request := view.ChangeItemStatusRequest{}
+
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
+	}
+
+	item := entity.Box{
+		ID:         ht.getItemID(r),
+		TagVersion: request.TagVersion,
+		Status:     request.Status,
+	}
+
+	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Box) getRawItemID(c mrcore.ClientContext) string {
-	return c.ParamFromPath("id")
+func (ht *Box) Remove(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Box) wrapError(err error, c mrcore.ClientContext) error {
+func (ht *Box) getItemID(r *http.Request) mrtype.KeyInt32 {
+	return ht.parser.PathKeyInt32(r, "id")
+}
+
+func (ht *Box) getRawItemID(r *http.Request) string {
+	return ht.parser.PathParamString(r, "id")
+}
+
+func (ht *Box) wrapError(err error, r *http.Request) error {
 	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
-		return usecase_shared.FactoryErrBoxNotFound.Wrap(err, ht.getRawItemID(c))
+		return usecase_shared.FactoryErrBoxNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
 	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
-		return mrerr.NewFieldError("version", err)
+		return mrerr.NewCustomError("version", err)
 	}
 
 	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
-		return mrerr.NewFieldError("status", err)
+		return mrerr.NewCustomError("status", err)
 	}
 
 	if usecase_shared.FactoryErrBoxArticleAlreadyExists.Is(err) {
-		return mrerr.NewFieldError("article", err)
+		return mrerr.NewCustomError("article", err)
 	}
 
 	return err

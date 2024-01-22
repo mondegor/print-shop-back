@@ -10,24 +10,32 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func newUnitFormData(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
+func createUnitFormData(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
+
+	if c, err := newUnitFormData(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
+}
+
+func newUnitFormData(opts *factory.Options) (*http_v1.FormData, error) {
 	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.FormData{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(entity.FormData{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	storage := repository.NewFormDataPostgres(
@@ -43,7 +51,12 @@ func newUnitFormData(
 		),
 	)
 	service := usecase.NewFormData(storage, opts.EventBox, opts.ServiceHelper)
-	*c = append(*c, http_v1.NewFormData(section, service, metaOrderBy))
+	controller := http_v1.NewFormData(
+		opts.RequestParser,
+		opts.ResponseSender,
+		service,
+		metaOrderBy,
+	)
 
-	return nil
+	return controller, nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func NewHttpServer(cfg *config.Config, logger mrcore.Logger, router mrcore.HttpRouter) (*mrserver.ServerAdapter, error) {
+func NewHttpServer(cfg *config.Config, logger mrcore.Logger, router mrserver.HttpRouter) (*mrserver.ServerAdapter, error) {
 	logger.Info("Create and start http server")
 
 	server := mrserver.NewServer(logger, mrserver.ServerOptions{

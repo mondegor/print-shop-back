@@ -4,39 +4,37 @@ import (
 	module "print-shop-back/internal/modules/controls"
 	"print-shop-back/internal/modules/controls/factory"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrfactory"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func NewModule(opts *factory.Options, section mrcore.ClientSection) ([]mrcore.HttpController, error) {
-	opts.Logger.Info("Init module %s in section %s", module.Name, section.Caption())
+func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
 
-	var c []mrcore.HttpController
+	mrfactory.InfoCreateModule(opts.Logger, module.Name)
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitElementTemplateName)
 
-	if err := newModule(&c, opts, section); err != nil {
+	if l, err := createUnitElementTemplate(opts); err != nil {
 		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitElementTemplatePermission)...)
 	}
 
-	return c, nil
-}
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitFormDataName)
 
-func newModule(c *[]mrcore.HttpController, opts *factory.Options, section mrcore.ClientSection) error {
-	opts.Logger.Info("Init unit %s in %s section", module.UnitElementTemplateName, section.Caption())
-
-	if err := newUnitElementTemplate(c, opts, section); err != nil {
-		return err
+	if l, err := createUnitFormData(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitFormDataPermission)...)
 	}
 
-	opts.Logger.Info("Init unit %s in %s section", module.UnitFormDataName, section.Caption())
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitFormElementName)
 
-	if err := newUnitFormData(c, opts, section); err != nil {
-		return err
+	if l, err := createUnitFormElement(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitFormElementPermission)...)
 	}
 
-	opts.Logger.Info("Init unit %s in %s section", module.UnitFormElementName, section.Caption())
-
-	if err := newUnitFormElement(c, opts, section); err != nil {
-		return err
-	}
-
-	return nil
+	return list, nil
 }

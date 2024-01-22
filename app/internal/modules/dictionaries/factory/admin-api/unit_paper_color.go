@@ -10,18 +10,26 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func newUnitPaperColor(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
+func createUnitPaperColor(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
+
+	if c, err := newUnitPaperColor(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
+}
+
+func newUnitPaperColor(opts *factory.Options) (*http_v1.PaperColor, error) {
 	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.PaperColor{})
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	storage := repository.NewPaperColorPostgres(
@@ -33,7 +41,12 @@ func newUnitPaperColor(
 		),
 	)
 	service := usecase.NewPaperColor(storage, opts.EventBox, opts.ServiceHelper)
-	*c = append(*c, http_v1.NewPaperColor(section, service, metaOrderBy))
+	controller := http_v1.NewPaperColor(
+		opts.RequestParser,
+		opts.ResponseSender,
+		service,
+		metaOrderBy,
+	)
 
-	return nil
+	return controller, nil
 }

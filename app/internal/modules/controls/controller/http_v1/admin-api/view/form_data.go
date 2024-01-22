@@ -7,14 +7,14 @@ import (
 
 type (
 	CreateFormDataRequest struct {
-		ParamName string                         `json:"paramName" validate:"required,min=4,max=32,variable"`
+		ParamName string                         `json:"paramName" validate:"required,min=4,max=32,tag_variable"`
 		Caption   string                         `json:"caption" validate:"required,max=128"`
 		Detailing entity_shared.ElementDetailing `json:"formDetailing"`
 	}
 
 	StoreFormDataRequest struct {
 		TagVersion int32                          `json:"version" validate:"required,gte=1"`
-		ParamName  string                         `json:"paramName" validate:"omitempty,min=4,max=32,variable"`
+		ParamName  string                         `json:"paramName" validate:"omitempty,min=4,max=32,tag_variable"`
 		Caption    string                         `json:"caption" validate:"omitempty,max=128"`
 		Detailing  entity_shared.ElementDetailing `json:"formDetailing" validate:"omitempty"`
 	}

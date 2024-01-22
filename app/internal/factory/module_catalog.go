@@ -2,6 +2,7 @@ package factory
 
 import (
 	"print-shop-back/internal/modules"
+	view_shared "print-shop-back/internal/modules/catalog/controller/http_v1/shared/view"
 	"print-shop-back/internal/modules/catalog/factory"
 )
 
@@ -29,6 +30,14 @@ func NewCatalogOptions(opts *modules.Options) (*factory.Options, error) {
 		EventBox:        opts.EventBox,
 		ServiceHelper:   opts.ServiceHelper,
 		PostgresAdapter: opts.PostgresAdapter,
+		RequestParser: view_shared.NewParser(
+			opts.RequestParsers.Base,
+			opts.RequestParsers.ItemStatus,
+			opts.RequestParsers.KeyInt32,
+			opts.RequestParsers.SortPage,
+			opts.RequestParsers.Validator,
+		),
+		ResponseSender: opts.ResponseSender,
 
 		LaminateTypeAPI: opts.DictionariesLaminateTypeAPI,
 		PaperColorAPI:   opts.DictionariesPaperColorAPI,

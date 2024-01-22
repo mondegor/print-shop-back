@@ -11,8 +11,8 @@ import (
 func RegisterSystemHandlers(
 	cfg *config.Config,
 	logger mrcore.Logger,
-	router mrcore.HttpRouter,
-	section mrcore.ClientSection,
+	router mrserver.HttpRouter,
+	section mrcore.AppSection,
 ) error {
 	logger.Info("Init system handlers in section %s", section.Caption())
 

@@ -81,7 +81,7 @@ translation:
       - dictionaries/paper-facture
       - dictionaries/print-format
 
-client_sections:
+app_sections:
   admin_api:
     privilege: apiAdm
     auth:
@@ -98,7 +98,7 @@ client_sections:
       secret: "The secret for symmetric security key"
       audience: "127.0.0.1:80"
 
-modules_access:
+access_control:
   roles:
     dir_path: "./roles"
     file_type: yaml

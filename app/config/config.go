@@ -10,7 +10,7 @@ import (
 
 const (
 	appName    = "Print Shop"
-	appVersion = "v0.7.1"
+	appVersion = "v0.8.0"
 )
 
 type (
@@ -31,8 +31,8 @@ type (
 		FileProviders   `yaml:"file_providers"`
 		Cors            `yaml:"cors"`
 		Translation     `yaml:"translation"`
-		ClientSections  `yaml:"client_sections"`
-		ModulesAccess   `yaml:"modules_access"`
+		AppSections     `yaml:"app_sections"`
+		AccessControl   `yaml:"access_control"`
 		ModulesSettings `yaml:"modules_settings"`
 	}
 
@@ -118,7 +118,7 @@ type (
 		} `yaml:"dictionaries"`
 	}
 
-	ClientSections struct {
+	AppSections struct {
 		AdminAPI struct {
 			Privilege string `yaml:"privilege"`
 			Auth      struct {
@@ -142,7 +142,7 @@ type (
 		} `yaml:"public_api"`
 	}
 
-	ModulesAccess struct {
+	AccessControl struct {
 		Roles       `yaml:"roles"`
 		Privileges  []string `yaml:"privileges"`
 		Permissions []string `yaml:"permissions"`

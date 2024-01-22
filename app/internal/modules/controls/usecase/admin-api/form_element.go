@@ -172,7 +172,7 @@ func (uc *FormElement) MoveAfterID(ctx context.Context, id mrtype.KeyInt32, afte
 	}
 
 	if item.FormID < 1 {
-		return mrcore.FactoryErrInternalWithData.New(entity.ModelNameFormElement, mrmsg.Data{"formId": item.FormID})
+		return mrcore.FactoryErrInternal.WithAttr(entity.ModelNameFormElement, mrmsg.Data{"formId": item.FormID}).New()
 	}
 
 	meta := uc.storage.GetMetaData(item.FormID)

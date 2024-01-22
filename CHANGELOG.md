@@ -1,6 +1,28 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-01-22
+### Changed
+- Расформирован объект `ClientContext` и его одноименный интерфейс, в результате:
+    - Изменена сигнатура обработчиков с `func(c mrcore.ClientContext)` на `func(w http.ResponseWriter, r *http.Request) error`;
+    - С помощью интерфейсов `RequestDecoder`, `ResponseEncoder` можно задавать различные форматы
+      принимаемых и отправляемых данных (сейчас реализован только формат `JSON`);
+    - Запросы обрабатываются встраиваемыми в обработчики объектов `mrparser.*` через интерфейсы:
+      `mrserver.RequestParserPath`, `RequestParser`, `RequestParserItemStatus`, `RequestParserKeyInt32`,
+      `RequestParserSortPage`, `RequestParserUUID`, `RequestParserValidate`;
+    - Ответы отправляются встраиваемыми в обработчики объекты `mrresponse.*` через интерфейсы:
+      `mrserver.ResponseSender`, `FileResponseSender`, `ErrorResponseSender`;
+    - Вместо метода `Validate(structRequest any)` используется объект `mrparser.Validator`;
+- Произведены следующие замены:
+    - `HttpController.AddHandlers` -> `Handlers() []HttpHandler`.
+      Убрана зависимость контроллера от роутера и секции.
+      Для установки стандартных разрешений добавлены следующие методы
+      `mrfactory.WithPermission`, `mrfactory.WithMiddlewareCheckAccess`;
+    - `ModulesAccess` -> `AccessControl` (`modules_access` -> `access_control`) и добавлен интерфейс `mrcore.AccessControl`;
+    - `ClientSection` -> `AppSection` (`client_section` -> `app_section`) удалена зависимость от `AccessControl`;
+- При внедрении новой версии библиотеки `go-sysmess` было заменено:
+    - `mrerr.FieldErrorList` -> `CustomErrorList`;
+
 ## 2024-01-19
 ### Changed
 - В БД `enum` типы заменены на `int2` и удалены. Доработано, чтобы `enum` типы сохранялись в виде `int`;

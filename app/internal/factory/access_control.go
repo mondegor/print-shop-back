@@ -8,16 +8,16 @@ import (
 	"github.com/mondegor/go-webcore/mrperms"
 )
 
-func NewModulesAccess(cfg *config.Config, logger mrcore.Logger) (*mrperms.ModulesAccess, error) {
-	logger.Info("Create and init roles and permissions for modules access")
+func NewAccessControl(cfg *config.Config, logger mrcore.Logger) (*mrperms.AccessControl, error) {
+	logger.Info("Create and init roles and permissions for access control")
 
-	m, err := mrperms.NewModulesAccess(
-		mrperms.ModulesAccessOptions{
-			RolesDirPath:  cfg.ModulesAccess.Roles.DirPath,
-			RolesFileType: cfg.ModulesAccess.Roles.FileType,
-			Roles:         cfg.ModulesAccess.Roles.List,
-			Privileges:    cfg.ModulesAccess.Privileges,
-			Permissions:   cfg.ModulesAccess.Permissions,
+	m, err := mrperms.NewAccessControl(
+		mrperms.AccessControlOptions{
+			RolesDirPath:  cfg.AccessControl.Roles.DirPath,
+			RolesFileType: cfg.AccessControl.Roles.FileType,
+			Roles:         cfg.AccessControl.Roles.List,
+			Privileges:    cfg.AccessControl.Privileges,
+			Permissions:   cfg.AccessControl.Permissions,
 		},
 	)
 

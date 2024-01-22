@@ -1,11 +1,13 @@
 package factory
 
 import (
-	catalog "print-shop-back/pkg/modules/dictionaries"
+	view_shared "print-shop-back/internal/modules/catalog/controller/http_v1/shared/view"
+	dictionaries "print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 	"github.com/mondegor/go-webcore/mrtool"
 )
 
@@ -15,10 +17,12 @@ type (
 		EventBox        mrcore.EventBox
 		ServiceHelper   *mrtool.ServiceHelper
 		PostgresAdapter *mrpostgres.ConnAdapter
+		RequestParser   *view_shared.Parser
+		ResponseSender  *mrresponse.Sender
 
-		LaminateTypeAPI catalog.LaminateTypeAPI
-		PaperColorAPI   catalog.PaperColorAPI
-		PaperFactureAPI catalog.PaperFactureAPI
+		LaminateTypeAPI dictionaries.LaminateTypeAPI
+		PaperColorAPI   dictionaries.PaperColorAPI
+		PaperFactureAPI dictionaries.PaperFactureAPI
 
 		UnitBox      *UnitBoxOptions
 		UnitLaminate *UnitLaminateOptions

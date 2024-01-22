@@ -5,16 +5,30 @@ import (
 	"print-shop-back/internal/modules/file-station/factory"
 	usecase "print-shop-back/internal/modules/file-station/usecase/public-api"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
 
-func newUnitImageProxy(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
-	service := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.ServiceHelper)
-	*c = append(*c, http_v1.NewImageProxy(section, service, opts.UnitImageProxy.BaseURL))
+func createUnitImageProxy(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
 
-	return nil
+	if c, err := newUnitImageProxy(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
+}
+
+func newUnitImageProxy(opts *factory.Options) (*http_v1.ImageProxy, error) {
+	service := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.ServiceHelper)
+	controller := http_v1.NewImageProxy(
+		opts.RequestParser,
+		mrresponse.NewFileSender(opts.ResponseSender),
+		service,
+		opts.UnitImageProxy.BaseURL,
+	)
+
+	return controller, nil
 }

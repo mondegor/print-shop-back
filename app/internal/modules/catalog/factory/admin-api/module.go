@@ -4,39 +4,37 @@ import (
 	module "print-shop-back/internal/modules/catalog"
 	"print-shop-back/internal/modules/catalog/factory"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrfactory"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func NewModule(opts *factory.Options, section mrcore.ClientSection) ([]mrcore.HttpController, error) {
-	opts.Logger.Info("Init module %s in section %s", module.Name, section.Caption())
+func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
 
-	var c []mrcore.HttpController
+	mrfactory.InfoCreateModule(opts.Logger, module.Name)
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitBoxName)
 
-	if err := newModule(&c, opts, section); err != nil {
+	if l, err := createUnitBox(opts); err != nil {
 		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitBoxPermission)...)
 	}
 
-	return c, nil
-}
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitLaminateName)
 
-func newModule(c *[]mrcore.HttpController, opts *factory.Options, section mrcore.ClientSection) error {
-	opts.Logger.Info("Init unit %s in %s section", module.UnitBoxName, section.Caption())
-
-	if err := newUnitBox(c, opts, section); err != nil {
-		return err
+	if l, err := createUnitLaminate(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitLaminatePermission)...)
 	}
 
-	opts.Logger.Info("Init unit %s in %s section", module.UnitLaminateName, section.Caption())
+	mrfactory.InfoCreateUnit(opts.Logger, module.UnitPaperName)
 
-	if err := newUnitLaminate(c, opts, section); err != nil {
-		return err
+	if l, err := createUnitPaper(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, mrfactory.WithPermission(l, module.UnitPaperPermission)...)
 	}
 
-	opts.Logger.Info("Init unit %s in %s section", module.UnitPaperName, section.Caption())
-
-	if err := newUnitPaper(c, opts, section); err != nil {
-		return err
-	}
-
-	return nil
+	return list, nil
 }

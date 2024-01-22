@@ -4,27 +4,8 @@ import (
 	"net/http"
 	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
 
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrreq"
+	"github.com/mondegor/go-webcore/mrserver/mrreq"
 )
-
-func ParseFilterPublicStatusList(c mrcore.ClientContext, key string) []entity_shared.PublicStatus {
-	items, err := parseFilterPublicStatusList(
-		c.Request(),
-		key,
-		[]entity_shared.PublicStatus{
-			entity_shared.PublicStatusPublished,
-			entity_shared.PublicStatusPublishedShared,
-		},
-	)
-
-	if err != nil {
-		mrctx.Logger(c.Context()).Warn(err)
-	}
-
-	return items
-}
 
 func parseFilterPublicStatusList(r *http.Request, key string, defaultItems []entity_shared.PublicStatus) ([]entity_shared.PublicStatus, error) {
 	def := func(defaultItems []entity_shared.PublicStatus) []entity_shared.PublicStatus {

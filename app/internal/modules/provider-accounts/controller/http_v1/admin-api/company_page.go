@@ -8,7 +8,7 @@ import (
 	entity "print-shop-back/internal/modules/provider-accounts/entity/admin-api"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/admin-api"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrview"
 )
 
@@ -18,57 +18,57 @@ const (
 
 type (
 	CompanyPage struct {
-		section    mrcore.ClientSection
+		parser     view_shared.RequestParser
+		sender     mrserver.ResponseSender
 		service    usecase.CompanyPageService
 		listSorter mrview.ListSorter
 	}
 )
 
 func NewCompanyPage(
-	section mrcore.ClientSection,
+	parser view_shared.RequestParser,
+	sender mrserver.ResponseSender,
 	service usecase.CompanyPageService,
 	listSorter mrview.ListSorter,
 ) *CompanyPage {
 	return &CompanyPage{
-		section:    section,
+		parser:     parser,
+		sender:     sender,
 		service:    service,
 		listSorter: listSorter,
 	}
 }
 
-func (ht *CompanyPage) AddHandlers(router mrcore.HttpRouter) {
-	moduleAccessFunc := func(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
-		return ht.section.MiddlewareWithPermission(module.UnitCompanyPagePermission, next)
-	}
-
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(companyPageURL), moduleAccessFunc(ht.GetList()))
-}
-
-func (ht *CompanyPage) GetList() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		items, totalItems, err := ht.service.GetList(c.Context(), ht.listParams(c))
-
-		if err != nil {
-			return err
-		}
-
-		return c.SendResponse(
-			http.StatusOK,
-			view.CompanyPageListResponse{
-				Items: items,
-				Total: totalItems,
-			},
-		)
+func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{http.MethodGet, companyPageURL, "", ht.GetList},
 	}
 }
 
-func (ht *CompanyPage) listParams(c mrcore.ClientContext) entity.CompanyPageParams {
+func (ht *CompanyPage) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusOK,
+		view.CompanyPageListResponse{
+			Items: items,
+			Total: totalItems,
+		},
+	)
+}
+
+func (ht *CompanyPage) listParams(r *http.Request) entity.CompanyPageParams {
 	return entity.CompanyPageParams{
 		Filter: entity.CompanyPageListFilter{
-			SearchText: view_shared.ParseFilterString(c, module.ParamNameFilterSearchText),
-			Statuses:   view_shared.ParseFilterPublicStatusList(c, module.ParamNameFilterStatuses),
+			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
+			Statuses:   ht.parser.FilterPublicStatusList(r, module.ParamNameFilterStatuses),
 		},
-		Sorter: view_shared.ParseSortParams(c, ht.listSorter),
-		Pager:  view_shared.ParsePageParams(c),
+		Sorter: ht.parser.SortParams(r, ht.listSorter),
+		Pager:  ht.parser.PageParams(r),
 	}
 }

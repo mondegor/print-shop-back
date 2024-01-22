@@ -6,17 +6,30 @@ import (
 	repository "print-shop-back/internal/modules/provider-accounts/infrastructure/repository/public-api"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/public-api"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func newUnitCompanyPage(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
+func createUnitCompanyPage(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
+
+	if c, err := newUnitCompanyPage(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
+}
+
+func newUnitCompanyPage(opts *factory.Options) (*http_v1.CompanyPage, error) {
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
 	service := usecase.NewCompanyPage(storage, opts.ServiceHelper)
-	*c = append(*c, http_v1.NewCompanyPage(section, service, opts.UnitCompanyPage.LogoURLBuilder))
+	controller := http_v1.NewCompanyPage(
+		opts.RequestParsers.Path,
+		opts.ResponseSender,
+		service,
+		opts.UnitCompanyPage.LogoURLBuilder,
+	)
 
-	return nil
+	return controller, nil
 }

@@ -26,7 +26,7 @@ func RegisterFileImageStorage(
 	fs *mrfilestorage.FileSystem,
 	logger mrcore.Logger,
 ) error {
-	storage, err := newFileProvider(
+	storage, err := newFileStorageProvider(
 		fs,
 		cfg.FileProviders.ImageStorage.RootDir,
 		logger,
@@ -39,7 +39,7 @@ func RegisterFileImageStorage(
 	return pool.Register(cfg.FileProviders.ImageStorage.Name, storage)
 }
 
-func newFileProvider(
+func newFileStorageProvider(
 	fs *mrfilestorage.FileSystem,
 	rootDir string,
 	logger mrcore.Logger,

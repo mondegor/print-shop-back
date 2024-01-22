@@ -13,6 +13,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
@@ -25,191 +26,182 @@ const (
 
 type (
 	ElementTemplate struct {
-		section    mrcore.ClientSection
+		parser     view_shared.RequestParser
+		sender     mrserver.ResponseSender
 		service    usecase.ElementTemplateService
 		listSorter mrview.ListSorter
 	}
 )
 
 func NewElementTemplate(
-	section mrcore.ClientSection,
+	parser view_shared.RequestParser,
+	sender mrserver.ResponseSender,
 	service usecase.ElementTemplateService,
 	listSorter mrview.ListSorter,
 ) *ElementTemplate {
 	return &ElementTemplate{
-		section:    section,
+		parser:     parser,
+		sender:     sender,
 		service:    service,
 		listSorter: listSorter,
 	}
 }
 
-func (ht *ElementTemplate) AddHandlers(router mrcore.HttpRouter) {
-	moduleAccessFunc := func(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
-		return ht.section.MiddlewareWithPermission(module.UnitElementTemplatePermission, next)
-	}
+func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{http.MethodGet, elementTemplateURL, "", ht.GetList},
+		{http.MethodPost, elementTemplateURL, "", ht.Create},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(elementTemplateURL), moduleAccessFunc(ht.GetList()))
-	router.HttpHandlerFunc(http.MethodPost, ht.section.Path(elementTemplateURL), moduleAccessFunc(ht.Create()))
+		{http.MethodGet, elementTemplateItemURL, "", ht.Get},
+		{http.MethodPut, elementTemplateItemURL, "", ht.Store},
+		{http.MethodDelete, elementTemplateItemURL, "", ht.Remove},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(elementTemplateItemURL), moduleAccessFunc(ht.Get()))
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(elementTemplateItemURL), moduleAccessFunc(ht.Store()))
-	router.HttpHandlerFunc(http.MethodDelete, ht.section.Path(elementTemplateItemURL), moduleAccessFunc(ht.Remove()))
-
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(elementTemplateChangeStatusURL), moduleAccessFunc(ht.ChangeStatus()))
-}
-
-func (ht *ElementTemplate) GetList() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		items, totalItems, err := ht.service.GetList(c.Context(), ht.listParams(c))
-
-		if err != nil {
-			return err
-		}
-
-		return c.SendResponse(
-			http.StatusOK,
-			view.ElementTemplateListResponse{
-				Items: items,
-				Total: totalItems,
-			},
-		)
+		{http.MethodPut, elementTemplateChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
-func (ht *ElementTemplate) listParams(c mrcore.ClientContext) entity.ElementTemplateParams {
+func (ht *ElementTemplate) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusOK,
+		view.ElementTemplateListResponse{
+			Items: items,
+			Total: totalItems,
+		},
+	)
+}
+
+func (ht *ElementTemplate) listParams(r *http.Request) entity.ElementTemplateParams {
 	return entity.ElementTemplateParams{
 		Filter: entity.ElementTemplateListFilter{
-			SearchText: view_shared.ParseFilterString(c, module.ParamNameFilterSearchText),
-			Detailing:  view_shared.ParseFilterElementDetailingList(c, module.ParamNameFilterElementDetailing),
-			Statuses:   view_shared.ParseFilterStatusList(c, module.ParamNameFilterStatuses),
+			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
+			Detailing:  ht.parser.FilterElementDetailingList(r, module.ParamNameFilterElementDetailing),
+			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
-		Sorter: view_shared.ParseSortParams(c, ht.listSorter),
-		Pager:  view_shared.ParsePageParams(c),
+		Sorter: ht.parser.SortParams(r, ht.listSorter),
+		Pager:  ht.parser.PageParams(r),
 	}
 }
 
-func (ht *ElementTemplate) Get() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		item, err := ht.service.GetItem(c.Context(), ht.getItemID(c))
+func (ht *ElementTemplate) Get(w http.ResponseWriter, r *http.Request) error {
+	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
 
-		if err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(http.StatusOK, item)
+	if err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-func (ht *ElementTemplate) Create() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.CreateElementTemplateRequest{}
+func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
+	request := view.CreateElementTemplateRequest{}
 
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.ElementTemplate{
-			ParamName: request.ParamName,
-			Caption:   request.Caption,
-			Type:      request.Type,
-			Detailing: request.Detailing,
-			Body:      request.Body,
-		}
-
-		if err := ht.service.Create(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(
-			http.StatusCreated,
-			view.SuccessCreatedItemResponse{
-				ItemID: fmt.Sprintf("%d", item.ID),
-				Message: mrctx.Locale(c.Context()).TranslateMessage(
-					"msgControlsElementTemplateSuccessCreated",
-					"entity has been success created",
-				),
-			},
-		)
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
-}
 
-func (ht *ElementTemplate) Store() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.StoreElementTemplateRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.ElementTemplate{
-			ID:         ht.getItemID(c),
-			TagVersion: request.TagVersion,
-			ParamName:  request.ParamName,
-			Caption:    request.Caption,
-			Type:       request.Type,
-			Detailing:  request.Detailing,
-			Body:       request.Body,
-		}
-
-		if err := ht.service.Store(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	item := entity.ElementTemplate{
+		ParamName: request.ParamName,
+		Caption:   request.Caption,
+		Type:      request.Type,
+		Detailing: request.Detailing,
+		Body:      request.Body,
 	}
-}
 
-func (ht *ElementTemplate) ChangeStatus() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.ChangeItemStatusRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.ElementTemplate{
-			ID:         ht.getItemID(c),
-			TagVersion: request.TagVersion,
-			Status:     request.Status,
-		}
-
-		if err := ht.service.ChangeStatus(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	if err := ht.service.Create(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusCreated,
+		view.SuccessCreatedItemResponse{
+			ItemID: fmt.Sprintf("%d", item.ID),
+			Message: mrctx.Locale(r.Context()).TranslateMessage(
+				"msgControlsElementTemplateSuccessCreated",
+				"entity has been success created",
+			),
+		},
+	)
 }
 
-func (ht *ElementTemplate) Remove() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		if err := ht.service.Remove(c.Context(), ht.getItemID(c)); err != nil {
-			return ht.wrapError(err, c)
-		}
+func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
+	request := view.StoreElementTemplateRequest{}
 
-		return c.SendResponseNoContent()
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
+
+	item := entity.ElementTemplate{
+		ID:         ht.getItemID(r),
+		TagVersion: request.TagVersion,
+		ParamName:  request.ParamName,
+		Caption:    request.Caption,
+		Type:       request.Type,
+		Detailing:  request.Detailing,
+		Body:       request.Body,
+	}
+
+	if err := ht.service.Store(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *ElementTemplate) getItemID(c mrcore.ClientContext) mrtype.KeyInt32 {
-	return view_shared.ParseKeyInt32FromPath(c, "id")
+func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
+	request := view.ChangeItemStatusRequest{}
+
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
+	}
+
+	item := entity.ElementTemplate{
+		ID:         ht.getItemID(r),
+		TagVersion: request.TagVersion,
+		Status:     request.Status,
+	}
+
+	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *ElementTemplate) getRawItemID(c mrcore.ClientContext) string {
-	return c.ParamFromPath("id")
+func (ht *ElementTemplate) Remove(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *ElementTemplate) wrapError(err error, c mrcore.ClientContext) error {
+func (ht *ElementTemplate) getItemID(r *http.Request) mrtype.KeyInt32 {
+	return ht.parser.PathKeyInt32(r, "id")
+}
+
+func (ht *ElementTemplate) getRawItemID(r *http.Request) string {
+	return ht.parser.PathParamString(r, "id")
+}
+
+func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
 	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
-		return usecase_shared.FactoryErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(c))
+		return usecase_shared.FactoryErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
 	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
-		return mrerr.NewFieldError("version", err)
+		return mrerr.NewCustomError("version", err)
 	}
 
 	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
-		return mrerr.NewFieldError("status", err)
+		return mrerr.NewCustomError("status", err)
 	}
 
 	return err

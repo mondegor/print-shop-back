@@ -14,6 +14,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
@@ -26,209 +27,200 @@ const (
 
 type (
 	FormElement struct {
-		section    mrcore.ClientSection
+		parser     view_shared.RequestParser
+		sender     mrserver.ResponseSender
 		service    usecase.FormElementService
 		listSorter mrview.ListSorter
 	}
 )
 
 func NewFormElement(
-	section mrcore.ClientSection,
+	parser view_shared.RequestParser,
+	sender mrserver.ResponseSender,
 	service usecase.FormElementService,
 	listSorter mrview.ListSorter,
 ) *FormElement {
 	return &FormElement{
-		section:    section,
+		parser:     parser,
+		sender:     sender,
 		service:    service,
 		listSorter: listSorter,
 	}
 }
 
-func (ht *FormElement) AddHandlers(router mrcore.HttpRouter) {
-	moduleAccessFunc := func(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
-		return ht.section.MiddlewareWithPermission(module.UnitFormElementPermission, next)
-	}
+func (ht *FormElement) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{http.MethodGet, formElementURL, "", ht.GetList},
+		{http.MethodPost, formElementURL, "", ht.Create},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(formElementURL), moduleAccessFunc(ht.GetList()))
-	router.HttpHandlerFunc(http.MethodPost, ht.section.Path(formElementURL), moduleAccessFunc(ht.Create()))
+		{http.MethodGet, formElementItemURL, "", ht.Get},
+		{http.MethodPut, formElementItemURL, "", ht.Store},
+		{http.MethodDelete, formElementItemURL, "", ht.Remove},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(formElementItemURL), moduleAccessFunc(ht.Get()))
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(formElementItemURL), moduleAccessFunc(ht.Store()))
-	router.HttpHandlerFunc(http.MethodDelete, ht.section.Path(formElementItemURL), moduleAccessFunc(ht.Remove()))
-
-	router.HttpHandlerFunc(http.MethodPatch, ht.section.Path(formElementMoveURL), moduleAccessFunc(ht.Move()))
-}
-
-func (ht *FormElement) GetList() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		formID, err := view_shared.ParseFormDataID(c)
-
-		if err != nil {
-			return err
-		}
-
-		items, totalItems, err := ht.service.GetList(c.Context(), ht.listParams(c, formID))
-
-		if err != nil {
-			return err
-		}
-
-		return c.SendResponse(
-			http.StatusOK,
-			view.FormElementListResponse{
-				Items: items,
-				Total: totalItems,
-			},
-		)
+		{http.MethodPatch, formElementMoveURL, "", ht.Move},
 	}
 }
 
-func (ht *FormElement) listParams(c mrcore.ClientContext, formID mrtype.KeyInt32) entity.FormElementParams {
+func (ht *FormElement) GetList(w http.ResponseWriter, r *http.Request) error {
+	formID, err := ht.parser.FormDataID(r)
+
+	if err != nil {
+		return err
+	}
+
+	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r, formID))
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusOK,
+		view.FormElementListResponse{
+			Items: items,
+			Total: totalItems,
+		},
+	)
+}
+
+func (ht *FormElement) listParams(r *http.Request, formID mrtype.KeyInt32) entity.FormElementParams {
 	return entity.FormElementParams{
 		FormID: formID,
 		Filter: entity.FormElementListFilter{
-			SearchText: view_shared.ParseFilterString(c, module.ParamNameFilterSearchText),
-			Detailing:  view_shared.ParseFilterElementDetailingList(c, module.ParamNameFilterElementDetailing),
+			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
+			Detailing:  ht.parser.FilterElementDetailingList(r, module.ParamNameFilterElementDetailing),
 		},
-		Sorter: view_shared.ParseSortParams(c, ht.listSorter),
-		Pager:  view_shared.ParsePageParams(c),
+		Sorter: ht.parser.SortParams(r, ht.listSorter),
+		Pager:  ht.parser.PageParams(r),
 	}
 }
 
-func (ht *FormElement) Get() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		item, err := ht.service.GetItem(c.Context(), ht.getItemID(c))
+func (ht *FormElement) Get(w http.ResponseWriter, r *http.Request) error {
+	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
 
-		if err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(http.StatusOK, item)
+	if err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-func (ht *FormElement) Create() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.CreateFormElementRequest{}
+func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
+	request := view.CreateFormElementRequest{}
 
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.FormElement{
-			FormID:     request.FormID,
-			TemplateID: request.TemplateID,
-			ParamName:  request.ParamName,
-			Caption:    request.Caption,
-			Required:   request.Required,
-		}
-
-		if err := ht.service.Create(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(
-			http.StatusCreated,
-			view.SuccessCreatedItemResponse{
-				ItemID: fmt.Sprintf("%d", item.ID),
-				Message: mrctx.Locale(c.Context()).TranslateMessage(
-					"msgControlsFormElementSuccessCreated",
-					"entity has been success created",
-				),
-			},
-		)
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
-}
 
-func (ht *FormElement) Store() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.StoreFormElementRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.FormElement{
-			ID:         ht.getItemID(c),
-			TagVersion: request.TagVersion,
-			ParamName:  request.ParamName,
-			Caption:    request.Caption,
-			Required:   request.Required,
-		}
-
-		if err := ht.service.Store(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	item := entity.FormElement{
+		FormID:     request.FormID,
+		TemplateID: request.TemplateID,
+		ParamName:  request.ParamName,
+		Caption:    request.Caption,
+		Required:   request.Required,
 	}
-}
 
-func (ht *FormElement) Remove() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		if err := ht.service.Remove(c.Context(), ht.getItemID(c)); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	if err := ht.service.Create(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusCreated,
+		view.SuccessCreatedItemResponse{
+			ItemID: fmt.Sprintf("%d", item.ID),
+			Message: mrctx.Locale(r.Context()).TranslateMessage(
+				"msgControlsFormElementSuccessCreated",
+				"entity has been success created",
+			),
+		},
+	)
 }
 
-func (ht *FormElement) Move() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.MoveFormElementRequest{}
+func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
+	request := view.StoreFormElementRequest{}
 
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		if err := ht.service.MoveAfterID(c.Context(), ht.getItemID(c), request.AfterNodeID); err != nil {
-			return ht.wrapErrorNode(c, err)
-		}
-
-		return c.SendResponseNoContent()
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
+
+	item := entity.FormElement{
+		ID:         ht.getItemID(r),
+		TagVersion: request.TagVersion,
+		ParamName:  request.ParamName,
+		Caption:    request.Caption,
+		Required:   request.Required,
+	}
+
+	if err := ht.service.Store(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *FormElement) getItemID(c mrcore.ClientContext) mrtype.KeyInt32 {
-	return view_shared.ParseKeyInt32FromPath(c, "id")
+func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *FormElement) getRawItemID(c mrcore.ClientContext) string {
-	return c.ParamFromPath("id")
+func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
+	request := view.MoveFormElementRequest{}
+
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
+	}
+
+	if err := ht.service.MoveAfterID(r.Context(), ht.getItemID(r), request.AfterNodeID); err != nil {
+		return ht.wrapErrorNode(r, err)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *FormElement) wrapError(err error, c mrcore.ClientContext) error {
+func (ht *FormElement) getItemID(r *http.Request) mrtype.KeyInt32 {
+	return ht.parser.PathKeyInt32(r, "id")
+}
+
+func (ht *FormElement) getRawItemID(r *http.Request) string {
+	return ht.parser.PathParamString(r, "id")
+}
+
+func (ht *FormElement) wrapError(err error, r *http.Request) error {
 	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
-		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(c))
+		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
 	if usecase_shared.FactoryErrFormDataNotFound.Is(err) {
-		return mrerr.NewFieldError("formId", err)
+		return mrerr.NewCustomError("formId", err)
 	}
 
 	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
-		return mrerr.NewFieldError("version", err)
+		return mrerr.NewCustomError("version", err)
 	}
 
 	if usecase_shared.FactoryErrFormElementParamNameAlreadyExists.Is(err) {
-		return mrerr.NewFieldError("paramName", err)
+		return mrerr.NewCustomError("paramName", err)
 	}
 
 	if usecase_shared.FactoryErrElementTemplateNotFound.Is(err) {
-		return mrerr.NewFieldError("templateId", err)
+		return mrerr.NewCustomError("templateId", err)
 	}
 
 	return err
 }
 
-func (ht *FormElement) wrapErrorNode(c mrcore.ClientContext, err error) error {
+func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
 	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
-		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(c))
+		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
 	if mrorderer.FactoryErrAfterNodeNotFound.Is(err) {
-		return mrerr.NewFieldError("afterNodeId", err)
+		return mrerr.NewCustomError("afterNodeId", err)
 	}
 
 	return err

@@ -2,6 +2,7 @@ package factory
 
 import (
 	"print-shop-back/internal/modules"
+	view_shared "print-shop-back/internal/modules/dictionaries/controller/http_v1/shared/view"
 	"print-shop-back/internal/modules/dictionaries/factory"
 	factory_api "print-shop-back/internal/modules/dictionaries/factory/api"
 	usecase_api "print-shop-back/internal/modules/dictionaries/usecase/api"
@@ -37,6 +38,14 @@ func NewDictionariesOptions(opts *modules.Options) (*factory.Options, error) {
 		EventBox:        opts.EventBox,
 		ServiceHelper:   opts.ServiceHelper,
 		PostgresAdapter: opts.PostgresAdapter,
+		RequestParser: view_shared.NewParser(
+			opts.RequestParsers.Base,
+			opts.RequestParsers.ItemStatus,
+			opts.RequestParsers.KeyInt32,
+			opts.RequestParsers.SortPage,
+			opts.RequestParsers.Validator,
+		),
+		ResponseSender: opts.ResponseSender,
 
 		UnitLaminateType: &factory.UnitLaminateTypeOptions{
 			Dictionary: laminateTypeDictionary,

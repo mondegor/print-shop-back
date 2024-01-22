@@ -4,38 +4,22 @@ import (
 	"net/http"
 	entity_shared "print-shop-back/internal/modules/controls/entity/shared"
 
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrreq"
+	"github.com/mondegor/go-webcore/mrserver/mrreq"
 )
 
-func ParseFilterElementDetailingList(c mrcore.ClientContext, key string) []entity_shared.ElementDetailing {
-	items, err := parseFilterDetailingList(
-		c.Request(),
-		key,
-		entity_shared.ElementDetailingNormal,
-	)
-
-	if err != nil {
-		mrctx.Logger(c.Context()).Warn(err)
-	}
-
-	return items
-}
-
-func parseFilterDetailingList(r *http.Request, key string, defaultItem entity_shared.ElementDetailing) ([]entity_shared.ElementDetailing, error) {
-	def := func(defaultItem entity_shared.ElementDetailing) []entity_shared.ElementDetailing {
-		if defaultItem == 0 {
+func parseFilterDetailingList(r *http.Request, key string, defaultItems []entity_shared.ElementDetailing) ([]entity_shared.ElementDetailing, error) {
+	def := func(defaultItems []entity_shared.ElementDetailing) []entity_shared.ElementDetailing {
+		if len(defaultItems) == 0 {
 			return []entity_shared.ElementDetailing{}
 		}
 
-		return []entity_shared.ElementDetailing{defaultItem}
+		return defaultItems
 	}
 
 	enums, err := mrreq.ParseEnumList(r, key)
 
 	if err != nil {
-		return def(defaultItem), err
+		return def(defaultItems), err
 	}
 
 	items, err := entity_shared.ParseElementDetailingList(enums)
@@ -45,7 +29,7 @@ func parseFilterDetailingList(r *http.Request, key string, defaultItem entity_sh
 	}
 
 	if len(items) == 0 {
-		return def(defaultItem), nil
+		return def(defaultItems), nil
 	}
 
 	return items, nil

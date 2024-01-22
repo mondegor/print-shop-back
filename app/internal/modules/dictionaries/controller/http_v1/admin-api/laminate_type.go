@@ -13,6 +13,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
@@ -25,182 +26,173 @@ const (
 
 type (
 	LaminateType struct {
-		section    mrcore.ClientSection
+		parser     view_shared.RequestParser
+		sender     mrserver.ResponseSender
 		service    usecase.LaminateTypeService
 		listSorter mrview.ListSorter
 	}
 )
 
 func NewLaminateType(
-	section mrcore.ClientSection,
+	parser view_shared.RequestParser,
+	sender mrserver.ResponseSender,
 	service usecase.LaminateTypeService,
 	listSorter mrview.ListSorter,
 ) *LaminateType {
 	return &LaminateType{
-		section:    section,
+		parser:     parser,
+		sender:     sender,
 		service:    service,
 		listSorter: listSorter,
 	}
 }
 
-func (ht *LaminateType) AddHandlers(router mrcore.HttpRouter) {
-	moduleAccessFunc := func(next mrcore.HttpHandlerFunc) mrcore.HttpHandlerFunc {
-		return ht.section.MiddlewareWithPermission(module.UnitLaminateTypePermission, next)
-	}
+func (ht *LaminateType) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{http.MethodGet, laminateTypeURL, "", ht.GetList},
+		{http.MethodPost, laminateTypeURL, "", ht.Create},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(laminateTypeURL), moduleAccessFunc(ht.GetList()))
-	router.HttpHandlerFunc(http.MethodPost, ht.section.Path(laminateTypeURL), moduleAccessFunc(ht.Create()))
+		{http.MethodGet, laminateTypeItemURL, "", ht.Get},
+		{http.MethodPut, laminateTypeItemURL, "", ht.Store},
+		{http.MethodDelete, laminateTypeItemURL, "", ht.Remove},
 
-	router.HttpHandlerFunc(http.MethodGet, ht.section.Path(laminateTypeItemURL), moduleAccessFunc(ht.Get()))
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(laminateTypeItemURL), moduleAccessFunc(ht.Store()))
-	router.HttpHandlerFunc(http.MethodDelete, ht.section.Path(laminateTypeItemURL), moduleAccessFunc(ht.Remove()))
-
-	router.HttpHandlerFunc(http.MethodPut, ht.section.Path(laminateTypeChangeStatusURL), moduleAccessFunc(ht.ChangeStatus()))
-}
-
-func (ht *LaminateType) GetList() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		items, totalItems, err := ht.service.GetList(c.Context(), ht.listParams(c))
-
-		if err != nil {
-			return err
-		}
-
-		return c.SendResponse(
-			http.StatusOK,
-			view.LaminateTypeListResponse{
-				Items: items,
-				Total: totalItems,
-			},
-		)
+		{http.MethodPut, laminateTypeChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
-func (ht *LaminateType) listParams(c mrcore.ClientContext) entity.LaminateTypeParams {
+func (ht *LaminateType) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusOK,
+		view.LaminateTypeListResponse{
+			Items: items,
+			Total: totalItems,
+		},
+	)
+}
+
+func (ht *LaminateType) listParams(r *http.Request) entity.LaminateTypeParams {
 	return entity.LaminateTypeParams{
 		Filter: entity.LaminateTypeListFilter{
-			SearchText: view_shared.ParseFilterString(c, module.ParamNameFilterSearchText),
-			Statuses:   view_shared.ParseFilterStatusList(c, module.ParamNameFilterStatuses),
+			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
+			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
-		Sorter: view_shared.ParseSortParams(c, ht.listSorter),
-		Pager:  view_shared.ParsePageParams(c),
+		Sorter: ht.parser.SortParams(r, ht.listSorter),
+		Pager:  ht.parser.PageParams(r),
 	}
 }
 
-func (ht *LaminateType) Get() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		item, err := ht.service.GetItem(c.Context(), ht.getItemID(c))
+func (ht *LaminateType) Get(w http.ResponseWriter, r *http.Request) error {
+	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
 
-		if err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(http.StatusOK, item)
+	if err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-func (ht *LaminateType) Create() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.CreateLaminateTypeRequest{}
+func (ht *LaminateType) Create(w http.ResponseWriter, r *http.Request) error {
+	request := view.CreateLaminateTypeRequest{}
 
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.LaminateType{
-			Caption: request.Caption,
-		}
-
-		if err := ht.service.Create(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponse(
-			http.StatusCreated,
-			view.SuccessCreatedItemResponse{
-				ItemID: fmt.Sprintf("%d", item.ID),
-				Message: mrctx.Locale(c.Context()).TranslateMessage(
-					"msgDictionariesLaminateTypeSuccessCreated",
-					"entity has been success created",
-				),
-			},
-		)
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
-}
 
-func (ht *LaminateType) Store() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.StoreLaminateTypeRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.LaminateType{
-			ID:         ht.getItemID(c),
-			TagVersion: request.Version,
-			Caption:    request.Caption,
-		}
-
-		if err := ht.service.Store(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	item := entity.LaminateType{
+		Caption: request.Caption,
 	}
-}
 
-func (ht *LaminateType) ChangeStatus() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		request := view.ChangeItemStatusRequest{}
-
-		if err := c.Validate(&request); err != nil {
-			return err
-		}
-
-		item := entity.LaminateType{
-			ID:         ht.getItemID(c),
-			TagVersion: request.TagVersion,
-			Status:     request.Status,
-		}
-
-		if err := ht.service.ChangeStatus(c.Context(), &item); err != nil {
-			return ht.wrapError(err, c)
-		}
-
-		return c.SendResponseNoContent()
+	if err := ht.service.Create(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
 	}
+
+	return ht.sender.Send(
+		w,
+		http.StatusCreated,
+		view.SuccessCreatedItemResponse{
+			ItemID: fmt.Sprintf("%d", item.ID),
+			Message: mrctx.Locale(r.Context()).TranslateMessage(
+				"msgDictionariesLaminateTypeSuccessCreated",
+				"entity has been success created",
+			),
+		},
+	)
 }
 
-func (ht *LaminateType) Remove() mrcore.HttpHandlerFunc {
-	return func(c mrcore.ClientContext) error {
-		if err := ht.service.Remove(c.Context(), ht.getItemID(c)); err != nil {
-			return err
-		}
+func (ht *LaminateType) Store(w http.ResponseWriter, r *http.Request) error {
+	request := view.StoreLaminateTypeRequest{}
 
-		return c.SendResponseNoContent()
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
 	}
+
+	item := entity.LaminateType{
+		ID:         ht.getItemID(r),
+		TagVersion: request.Version,
+		Caption:    request.Caption,
+	}
+
+	if err := ht.service.Store(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *LaminateType) getItemID(c mrcore.ClientContext) mrtype.KeyInt32 {
-	return view_shared.ParseKeyInt32FromPath(c, "id")
+func (ht *LaminateType) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
+	request := view.ChangeItemStatusRequest{}
+
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
+	}
+
+	item := entity.LaminateType{
+		ID:         ht.getItemID(r),
+		TagVersion: request.TagVersion,
+		Status:     request.Status,
+	}
+
+	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *LaminateType) getRawItemID(c mrcore.ClientContext) string {
-	return c.ParamFromPath("id")
+func (ht *LaminateType) Remove(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+		return err
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
-func (ht *LaminateType) wrapError(err error, c mrcore.ClientContext) error {
+func (ht *LaminateType) getItemID(r *http.Request) mrtype.KeyInt32 {
+	return ht.parser.PathKeyInt32(r, "id")
+}
+
+func (ht *LaminateType) getRawItemID(r *http.Request) string {
+	return ht.parser.PathParamString(r, "id")
+}
+
+func (ht *LaminateType) wrapError(err error, r *http.Request) error {
 	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
-		return dictionaries.FactoryErrLaminateTypeNotFound.Wrap(err, ht.getRawItemID(c))
+		return dictionaries.FactoryErrLaminateTypeNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
 	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
-		return mrerr.NewFieldError("version", err)
+		return mrerr.NewCustomError("version", err)
 	}
 
 	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
-		return mrerr.NewFieldError("status", err)
+		return mrerr.NewCustomError("status", err)
 	}
 
 	return err

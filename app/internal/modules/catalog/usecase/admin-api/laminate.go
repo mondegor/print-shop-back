@@ -4,7 +4,7 @@ import (
 	"context"
 	entity "print-shop-back/internal/modules/catalog/entity/admin-api"
 	usecase_shared "print-shop-back/internal/modules/catalog/usecase/shared"
-	catalog "print-shop-back/pkg/modules/dictionaries"
+	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
@@ -16,7 +16,7 @@ import (
 type (
 	Laminate struct {
 		storage         LaminateStorage
-		laminateTypeAPI catalog.LaminateTypeAPI
+		laminateTypeAPI dictionaries.LaminateTypeAPI
 		eventBox        mrcore.EventBox
 		serviceHelper   *mrtool.ServiceHelper
 		statusFlow      mrenum.StatusFlow
@@ -25,7 +25,7 @@ type (
 
 func NewLaminate(
 	storage LaminateStorage,
-	laminateTypeAPI catalog.LaminateTypeAPI,
+	laminateTypeAPI dictionaries.LaminateTypeAPI,
 	eventBox mrcore.EventBox,
 	serviceHelper *mrtool.ServiceHelper,
 ) *Laminate {

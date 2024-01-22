@@ -6,38 +6,41 @@ import (
 	repository "print-shop-back/internal/modules/provider-accounts/infrastructure/repository/provider-account-api"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/provider-account-api"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
 
-func newUnitCompanyPage(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
-	if err := newUnitCompanyPageLogo(c, opts, section); err != nil {
-		return err
+func createUnitCompanyPage(opts *factory.Options) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
+
+	if c, err := newUnitCompanyPage(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
 	}
 
-	return newUnitCompanyPageMain(c, opts, section)
+	if c, err := newUnitCompanyPageLogo(opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
 }
 
-func newUnitCompanyPageMain(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
+func newUnitCompanyPage(opts *factory.Options) (*http_v1.CompanyPage, error) {
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
 	service := usecase.NewCompanyPage(storage, opts.EventBox, opts.ServiceHelper, opts.UnitCompanyPage.LogoURLBuilder)
-	*c = append(*c, http_v1.NewCompanyPage(section, service))
+	controller := http_v1.NewCompanyPage(
+		opts.RequestParsers.Parser,
+		opts.ResponseSender,
+		service,
+	)
 
-	return nil
+	return controller, nil
 }
 
-func newUnitCompanyPageLogo(
-	c *[]mrcore.HttpController,
-	opts *factory.Options,
-	section mrcore.ClientSection,
-) error {
+func newUnitCompanyPageLogo(opts *factory.Options) (*http_v1.CompanyPageLogo, error) {
 	storage := repository.NewCompanyPageLogoPostgres(opts.PostgresAdapter)
 	service := usecase.NewCompanyPageLogo(
 		storage,
@@ -46,7 +49,10 @@ func newUnitCompanyPageLogo(
 		opts.EventBox,
 		opts.ServiceHelper,
 	)
-	*c = append(*c, http_v1.NewCompanyPageLogo(section, service))
+	controller := http_v1.NewCompanyPageLogo(
+		mrresponse.NewFileSender(opts.ResponseSender),
+		service,
+	)
 
-	return nil
+	return controller, nil
 }
