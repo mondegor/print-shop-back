@@ -14,10 +14,11 @@ import (
 
 type (
 	RequestParser interface {
-		mrserver.RequestParser
+		mrserver.RequestParserInt64
 		mrserver.RequestParserItemStatus
 		mrserver.RequestParserKeyInt32
 		mrserver.RequestParserSortPage
+		mrserver.RequestParserString
 		mrserver.RequestParserValidate
 
 		FormDataID(r *http.Request) (mrtype.KeyInt32, error)
@@ -25,27 +26,30 @@ type (
 	}
 
 	Parser struct {
-		*mrparser.Base
+		*mrparser.Int64
 		*mrparser.ItemStatus
 		*mrparser.KeyInt32
 		*mrparser.SortPage
+		*mrparser.String
 		*mrparser.Validator
 	}
 )
 
 func NewParser(
-	p1 *mrparser.Base,
+	p1 *mrparser.Int64,
 	p2 *mrparser.ItemStatus,
 	p3 *mrparser.KeyInt32,
 	p4 *mrparser.SortPage,
-	p5 *mrparser.Validator,
+	p5 *mrparser.String,
+	p6 *mrparser.Validator,
 ) *Parser {
 	return &Parser{
-		Base:       p1,
+		Int64:      p1,
 		ItemStatus: p2,
 		KeyInt32:   p3,
 		SortPage:   p4,
-		Validator:  p5,
+		String:     p5,
+		Validator:  p6,
 	}
 }
 
@@ -53,7 +57,7 @@ func (p *Parser) FormDataID(r *http.Request) (mrtype.KeyInt32, error) {
 	value, err := mrreq.ParseInt64(r, "formId", true)
 
 	if err != nil {
-		return 0, usecase_shared.FactoryErrFormDataNotFound.Wrap(err, p.RawQueryParam(r, "formId"))
+		return 0, usecase_shared.FactoryErrFormDataNotFound.Wrap(err, p.RawParamString(r, "formId"))
 	}
 
 	return mrtype.KeyInt32(value), nil

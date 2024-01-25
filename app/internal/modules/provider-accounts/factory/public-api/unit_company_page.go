@@ -25,7 +25,7 @@ func newUnitCompanyPage(opts *factory.Options) (*http_v1.CompanyPage, error) {
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
 	service := usecase.NewCompanyPage(storage, opts.ServiceHelper)
 	controller := http_v1.NewCompanyPage(
-		opts.RequestParsers.Path,
+		opts.RequestParsers.String,
 		opts.ResponseSender,
 		service,
 		opts.UnitCompanyPage.LogoURLBuilder,

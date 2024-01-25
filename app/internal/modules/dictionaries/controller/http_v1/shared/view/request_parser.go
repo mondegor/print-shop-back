@@ -7,34 +7,38 @@ import (
 
 type (
 	RequestParser interface {
-		mrserver.RequestParser
+		mrserver.RequestParserInt64
 		mrserver.RequestParserItemStatus
 		mrserver.RequestParserKeyInt32
 		mrserver.RequestParserSortPage
+		mrserver.RequestParserString
 		mrserver.RequestParserValidate
 	}
 
 	Parser struct {
-		*mrparser.Base
+		*mrparser.Int64
 		*mrparser.ItemStatus
 		*mrparser.KeyInt32
 		*mrparser.SortPage
+		*mrparser.String
 		*mrparser.Validator
 	}
 )
 
 func NewParser(
-	p1 *mrparser.Base,
+	p1 *mrparser.Int64,
 	p2 *mrparser.ItemStatus,
 	p3 *mrparser.KeyInt32,
 	p4 *mrparser.SortPage,
-	p5 *mrparser.Validator,
+	p5 *mrparser.String,
+	p6 *mrparser.Validator,
 ) *Parser {
 	return &Parser{
-		Base:       p1,
+		Int64:      p1,
 		ItemStatus: p2,
 		KeyInt32:   p3,
 		SortPage:   p4,
-		Validator:  p5,
+		String:     p5,
+		Validator:  p6,
 	}
 }

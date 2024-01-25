@@ -6,7 +6,7 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 	"github.com/mondegor/go-webcore/mrtool"
 )
@@ -30,7 +30,8 @@ type (
 	}
 
 	RequestParsers struct {
-		Path   mrserver.RequestParserPath
+		String *mrparser.String
+		Image  *mrparser.Image
 		Parser *view_shared.Parser
 	}
 )

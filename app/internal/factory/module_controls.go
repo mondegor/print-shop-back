@@ -14,10 +14,11 @@ func NewControlsOptions(opts *modules.Options) (*factory.Options, error) {
 		ServiceHelper:   opts.ServiceHelper,
 		PostgresAdapter: opts.PostgresAdapter,
 		RequestParser: view_shared.NewParser(
-			opts.RequestParsers.Base,
+			opts.RequestParsers.Int64,
 			opts.RequestParsers.ItemStatus,
 			opts.RequestParsers.KeyInt32,
 			opts.RequestParsers.SortPage,
+			opts.RequestParsers.String,
 			opts.RequestParsers.Validator,
 		),
 		ResponseSender: opts.ResponseSender,

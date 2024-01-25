@@ -50,6 +50,7 @@ func newUnitCompanyPageLogo(opts *factory.Options) (*http_v1.CompanyPageLogo, er
 		opts.ServiceHelper,
 	)
 	controller := http_v1.NewCompanyPageLogo(
+		opts.RequestParsers.Image,
 		mrresponse.NewFileSender(opts.ResponseSender),
 		service,
 	)

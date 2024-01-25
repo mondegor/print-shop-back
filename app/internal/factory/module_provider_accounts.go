@@ -22,12 +22,14 @@ func NewProviderAccountsOptions(opts *modules.Options) (*factory.Options, error)
 		PostgresAdapter: opts.PostgresAdapter,
 		Locker:          opts.Locker,
 		RequestParsers: &factory.RequestParsers{
-			Path: opts.RequestParsers.Path,
+			String: opts.RequestParsers.String,
+			Image:  opts.RequestParsers.Image,
 			Parser: view_shared.NewParser(
-				opts.RequestParsers.Base,
+				opts.RequestParsers.Int64,
 				opts.RequestParsers.ItemStatus,
 				opts.RequestParsers.KeyInt32,
 				opts.RequestParsers.SortPage,
+				opts.RequestParsers.String,
 				opts.RequestParsers.Validator,
 			),
 		},

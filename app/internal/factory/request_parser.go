@@ -5,7 +5,6 @@ import (
 	"print-shop-back/internal/modules"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/mrjulienrouter"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
@@ -22,15 +21,20 @@ func NewRequestParsers(cfg *config.Config, logger mrcore.Logger) (*modules.Reque
 		return nil, err
 	}
 
-	path := mrserver.RequestParserPathFunc(mrjulienrouter.PathParam)
+	pathFunc := mrjulienrouter.PathParam
 
 	return &modules.RequestParsers{
-		Path:       path,
-		Base:       mrparser.NewBase(path),
+		// Bool:       mrparser.NewBool(),
+		// DateTime:   mrparser.NewDateTime(),
+		Int64:      mrparser.NewInt64(pathFunc),
 		ItemStatus: mrparser.NewItemStatus(),
-		KeyInt32:   mrparser.NewKeyInt32(path),
+		KeyInt32:   mrparser.NewKeyInt32(pathFunc),
 		SortPage:   mrparser.NewSortPage(),
-		Validator:  mrparser.NewValidator(mrjson.NewDecoder(), validator),
+		String:     mrparser.NewString(pathFunc),
+		// UUID:       mrparser.NewUUID(pathFunc),
+		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
+		// File:       mrparser.NewFile(),
+		Image: mrparser.NewImage(mrparser.ImageOptions{}),
 	}, nil
 }
 

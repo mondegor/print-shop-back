@@ -6,7 +6,7 @@ import (
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/provider-account-api"
 
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrreq"
+	"github.com/mondegor/go-webcore/mrserver/mrparser"
 )
 
 const (
@@ -15,19 +15,19 @@ const (
 
 type (
 	CompanyPageLogo struct {
-		// parser     mrserver.RequestParser
+		parser  mrserver.RequestParserImage
 		sender  mrserver.ResponseSender
 		service usecase.CompanyPageLogoService
 	}
 )
 
 func NewCompanyPageLogo(
-	// parser     mrserver.RequestParser,
+	parser mrserver.RequestParserImage,
 	sender mrserver.ResponseSender,
 	service usecase.CompanyPageLogoService,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
-		// parser: parser,
+		parser:  parser,
 		sender:  sender,
 		service: service,
 	}
@@ -41,10 +41,10 @@ func (ht *CompanyPageLogo) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) error {
-	file, err := mrreq.File(r, module.ParamNameFileCompanyLogo)
+	file, err := ht.parser.FormImage(r, module.ParamNameFileCompanyLogo)
 
 	if err != nil {
-		return err
+		return mrparser.WrapImageError(err, module.ParamNameFileCompanyLogo)
 	}
 
 	defer file.Body.Close()

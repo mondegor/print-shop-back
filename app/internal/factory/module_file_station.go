@@ -17,7 +17,7 @@ func NewFileStationOptions(opts *modules.Options) (*factory.Options, error) {
 	return &factory.Options{
 		Logger:         opts.Logger,
 		ServiceHelper:  opts.ServiceHelper,
-		RequestParser:  opts.RequestParsers.Path,
+		RequestParser:  opts.RequestParsers.String,
 		ResponseSender: opts.ResponseSender,
 
 		UnitImageProxy: &factory.UnitImageProxyOptions{

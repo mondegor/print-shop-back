@@ -43,16 +43,16 @@ func NewCompanyPageLogo(
 	}
 }
 
-func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID mrtype.KeyString, file mrtype.File) error {
+func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID mrtype.KeyString, image mrtype.Image) error {
 	if accountID == "" {
 		return mrcore.FactoryErrServiceEntityNotFound.New()
 	}
 
-	if file.OriginalName == "" || file.Size == 0 {
+	if image.OriginalName == "" || image.Size == 0 {
 		return mrcore.FactoryErrServiceInvalidFile.New()
 	}
 
-	newLogoPath, err := uc.getLogoPath(accountID, file.OriginalName)
+	newLogoPath, err := uc.getLogoPath(accountID, image.OriginalName)
 
 	if err != nil {
 		return err
@@ -72,16 +72,17 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID mrtype.KeySt
 		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
 	}
 
-	file.Path = newLogoPath
+	image.Path = newLogoPath
 
-	if err = uc.fileAPI.Upload(ctx, file); err != nil {
-		return uc.serviceHelper.WrapErrorEntityFailed(err, "FileProviderAPI", file.Path)
+	if err = uc.fileAPI.Upload(ctx, image.ToFile()); err != nil {
+		return uc.serviceHelper.WrapErrorEntityFailed(err, "FileProviderAPI", image.Path)
 	}
 
-	// :TODO: store width + height
 	logoMeta := mrentity.ImageMeta{
-		Path: newLogoPath,
-		Size: file.Size,
+		Path:   newLogoPath,
+		Width:  image.Width,
+		Height: image.Height,
+		Size:   image.Size,
 	}
 
 	if err = uc.storage.UpdateMeta(ctx, accountID, logoMeta); err != nil {
