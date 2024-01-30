@@ -1,15 +1,17 @@
 package factory
 
 import (
+	"context"
 	"print-shop-back/config"
 	"strings"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrperms"
 )
 
-func NewAccessControl(cfg *config.Config, logger mrcore.Logger) (*mrperms.AccessControl, error) {
-	logger.Info("Create and init roles and permissions for access control")
+func NewAccessControl(ctx context.Context, cfg config.Config) (mrperms.AccessControl, error) {
+	logger := mrlog.Ctx(ctx)
+	logger.Info().Msg("Create and init roles and permissions for access control")
 
 	m, err := mrperms.NewAccessControl(
 		mrperms.AccessControlOptions{
@@ -25,10 +27,10 @@ func NewAccessControl(cfg *config.Config, logger mrcore.Logger) (*mrperms.Access
 		return nil, err
 	}
 
-	logger.Info("Registered roles: %s", strings.Join(m.RegisteredRoles(), ", "))
-	logger.Info("Guest role: %s", m.GuestRole())
-	logger.Info("Registered privileges: %s", strings.Join(m.RegisteredPrivileges(), ", "))
-	logger.Debug("Registered permissions:\n - %s", strings.Join(m.RegisteredPermissions(), ",\n - "))
+	logger.Info().Msgf("Registered roles: %s", strings.Join(m.RegisteredRoles(), ", "))
+	logger.Info().Msgf("Guest role: %s", m.GuestRole())
+	logger.Info().Msgf("Registered privileges: %s", strings.Join(m.RegisteredPrivileges(), ", "))
+	logger.Debug().Msgf("Registered permissions:\n - %s", strings.Join(m.RegisteredPermissions(), ",\n - "))
 
 	return m, nil
 }

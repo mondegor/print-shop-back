@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/catalog"
 	http_v1 "print-shop-back/internal/modules/catalog/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/catalog/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitBox(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitBox(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitBox(opts); err != nil {
+	if c, err := newUnitBox(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,14 +26,14 @@ func createUnitBox(opts *factory.Options) ([]mrserver.HttpController, error) {
 	return list, nil
 }
 
-func newUnitBox(opts *factory.Options) (*http_v1.Box, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.Box{})
+func newUnitBox(ctx context.Context, opts factory.Options) (*http_v1.Box, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.Box{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(entity.Box{})
+	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.Box{})
 
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func newUnitBox(opts *factory.Options) (*http_v1.Box, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 		mrsql.NewBuilderUpdateWithMeta(
@@ -50,7 +51,7 @@ func newUnitBox(opts *factory.Options) (*http_v1.Box, error) {
 			mrpostgres.NewSqlBuilderSet(),
 		),
 	)
-	service := usecase.NewBox(storage, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewBox(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewBox(
 		opts.RequestParser,
 		opts.ResponseSender,

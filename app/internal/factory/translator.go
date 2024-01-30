@@ -1,14 +1,17 @@
 package factory
 
 import (
+	"context"
+	"fmt"
 	"print-shop-back/config"
 
 	"github.com/mondegor/go-sysmess/mrlang"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 )
 
-func NewTranslator(cfg *config.Config, logger mrcore.Logger) (*mrlang.Translator, error) {
-	logger.Info("Create and init language translator")
+func NewTranslator(ctx context.Context, cfg config.Config) (*mrlang.Translator, error) {
+	logger := mrlog.Ctx(ctx)
+	logger.Info().Msg("Create and init language translator")
 
 	tr, err := mrlang.NewTranslator(
 		mrlang.TranslatorOptions{
@@ -23,18 +26,26 @@ func NewTranslator(cfg *config.Config, logger mrcore.Logger) (*mrlang.Translator
 		return nil, err
 	}
 
-	logger.Debug("Locales:\n")
+	logger.Debug().MsgFunc(
+		func() string {
+			var buf []byte
 
-	for _, localeCode := range tr.RegisteredLocales() {
-		locale, _ := tr.LocaleByCode(localeCode)
-		logger.Debug("- ID=%d;code=%s\n", locale.LangID(), localeCode)
-	}
+			buf = append(buf, "Locales:\n"...)
 
-	logger.Debug("Multi language dictionaries:\n")
+			for _, localeCode := range tr.RegisteredLocales() {
+				locale, _ := tr.LocaleByCode(localeCode)
+				buf = append(buf, fmt.Sprintf("- ID=%d;code=%s\n", locale.LangID(), localeCode)...)
+			}
 
-	for _, dictName := range tr.RegisteredDictionaries() {
-		logger.Debug("- %s\n", dictName)
-	}
+			buf = append(buf, "Multi language dictionaries:"...)
+
+			for _, dictName := range tr.RegisteredDictionaries() {
+				buf = append(buf, "\n- "+dictName...)
+			}
+
+			return string(buf)
+		},
+	)
 
 	return tr, nil
 }

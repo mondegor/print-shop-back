@@ -5,23 +5,22 @@ import (
 	entity "print-shop-back/internal/modules/provider-accounts/entity/public-api"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtool"
 )
 
 type (
 	CompanyPage struct {
 		storage       CompanyPageStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 )
 
 func NewCompanyPage(
 	storage CompanyPageStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *CompanyPage {
 	return &CompanyPage{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -33,7 +32,7 @@ func (uc *CompanyPage) GetItemByName(ctx context.Context, rewriteName string) (*
 	item, err := uc.storage.FetchByRewriteName(ctx, rewriteName)
 
 	if err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, rewriteName)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, rewriteName)
 	}
 
 	return item, nil

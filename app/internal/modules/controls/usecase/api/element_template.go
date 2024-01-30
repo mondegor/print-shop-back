@@ -6,19 +6,19 @@ import (
 	usecase_shared "print-shop-back/internal/modules/controls/usecase/shared"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 const (
-	APINameElementTemplate = "Controls.ElementTemplateAPI"
+	elementTemplateAPIName = "Controls.ElementTemplateAPI"
 )
 
 type (
 	ElementTemplate struct {
 		storage       ElementTemplateStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 
 	ElementTemplateAPI interface {
@@ -32,11 +32,11 @@ type (
 
 func NewElementTemplate(
 	storage ElementTemplateStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *ElementTemplate {
 	return &ElementTemplate{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -50,21 +50,21 @@ func (uc *ElementTemplate) GetHead(ctx context.Context, id mrtype.KeyInt32) (*en
 	item, err := uc.storage.FetchHead(ctx, id)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return nil, usecase_shared.FactoryErrElementTemplateNotFound.New(id)
 		}
 
-		return nil, uc.serviceHelper.WrapErrorFailed(err, APINameElementTemplate)
+		return nil, uc.usecaseHelper.WrapErrorFailed(err, elementTemplateAPIName)
 	}
 
 	return item, nil
 }
 
 func (uc *ElementTemplate) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrctx.Logger(ctx).Debug(
-		"%s: cmd=%s, data=%s",
-		APINameElementTemplate,
-		command,
-		data,
-	)
+	mrlog.Ctx(ctx).
+		Debug().
+		Str("storage", elementTemplateAPIName).
+		Str("cmd", command).
+		Any("data", data).
+		Send()
 }

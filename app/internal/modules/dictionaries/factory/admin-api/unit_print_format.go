@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/dictionaries"
 	http_v1 "print-shop-back/internal/modules/dictionaries/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitPrintFormat(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitPrintFormat(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPrintFormat(opts); err != nil {
+	if c, err := newUnitPrintFormat(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,14 +26,14 @@ func createUnitPrintFormat(opts *factory.Options) ([]mrserver.HttpController, er
 	return list, nil
 }
 
-func newUnitPrintFormat(opts *factory.Options) (*http_v1.PrintFormat, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.PrintFormat{})
+func newUnitPrintFormat(ctx context.Context, opts factory.Options) (*http_v1.PrintFormat, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.PrintFormat{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(entity.PrintFormat{})
+	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.PrintFormat{})
 
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func newUnitPrintFormat(opts *factory.Options) (*http_v1.PrintFormat, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 		mrsql.NewBuilderUpdateWithMeta(
@@ -50,7 +51,7 @@ func newUnitPrintFormat(opts *factory.Options) (*http_v1.PrintFormat, error) {
 			mrpostgres.NewSqlBuilderSet(),
 		),
 	)
-	service := usecase.NewPrintFormat(storage, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPrintFormat(
 		opts.RequestParser,
 		opts.ResponseSender,

@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/catalog"
 	"print-shop-back/internal/modules/catalog/factory"
 
@@ -8,32 +9,32 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(opts.Logger, module.Name)
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitBoxName)
+	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrfactory.InfoCreateUnit(ctx, module.UnitBoxName)
 
-	if l, err := createUnitBox(opts); err != nil {
+	if l, err := createUnitBox(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitBoxPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitBoxPermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitLaminateName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitLaminateName)
 
-	if l, err := createUnitLaminate(opts); err != nil {
+	if l, err := createUnitLaminate(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitLaminatePermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitLaminatePermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitPaperName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitPaperName)
 
-	if l, err := createUnitPaper(opts); err != nil {
+	if l, err := createUnitPaper(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitPaperPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitPaperPermission)...)
 	}
 
 	return list, nil

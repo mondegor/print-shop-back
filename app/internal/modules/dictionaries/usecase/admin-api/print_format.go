@@ -7,28 +7,29 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrsender"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	PrintFormat struct {
 		storage       PrintFormatStorage
-		eventBox      mrcore.EventBox
-		serviceHelper *mrtool.ServiceHelper
+		eventEmitter  mrsender.EventEmitter
+		usecaseHelper *mrcore.UsecaseHelper
 		statusFlow    mrenum.StatusFlow
 	}
 )
 
 func NewPrintFormat(
 	storage PrintFormatStorage,
-	eventBox mrcore.EventBox,
-	serviceHelper *mrtool.ServiceHelper,
+	eventEmitter mrsender.EventEmitter,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *PrintFormat {
 	return &PrintFormat{
 		storage:       storage,
-		eventBox:      eventBox,
-		serviceHelper: serviceHelper,
+		eventEmitter:  eventEmitter,
+		usecaseHelper: usecaseHelper,
 		statusFlow:    mrenum.ItemStatusFlow,
 	}
 }
@@ -38,7 +39,7 @@ func (uc *PrintFormat) GetList(ctx context.Context, params entity.PrintFormatPar
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
 	if total < 1 {
@@ -48,7 +49,7 @@ func (uc *PrintFormat) GetList(ctx context.Context, params entity.PrintFormatPar
 	items, err := uc.storage.Fetch(ctx, fetchParams)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
 	return items, total, nil
@@ -64,7 +65,7 @@ func (uc *PrintFormat) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity
 	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
 	}
 
 	return item, nil
@@ -74,10 +75,10 @@ func (uc *PrintFormat) Create(ctx context.Context, item *entity.PrintFormat) err
 	item.Status = mrenum.ItemStatusDraft
 
 	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
 
 	return nil
 }
@@ -92,20 +93,20 @@ func (uc *PrintFormat) Store(ctx context.Context, item *entity.PrintFormat) erro
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, item.ID)
 	}
 
 	version, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
 
 	return nil
 }
@@ -122,7 +123,7 @@ func (uc *PrintFormat) ChangeStatus(ctx context.Context, item *entity.PrintForma
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
 	if err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -136,14 +137,14 @@ func (uc *PrintFormat) ChangeStatus(ctx context.Context, item *entity.PrintForma
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
 
 	return nil
 }
@@ -154,19 +155,19 @@ func (uc *PrintFormat) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	}
 
 	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
 
 	return nil
 }
 
-func (uc *PrintFormat) eventBoxEmitEntity(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventBox.Emit(
-		"%s::%s: %s",
-		entity.ModelNamePrintFormat,
+func (uc *PrintFormat) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
+	uc.eventEmitter.EmitWithSource(
+		ctx,
 		eventName,
+		entity.ModelNamePrintFormat,
 		data,
 	)
 }

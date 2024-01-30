@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/dictionaries"
 	http_v1 "print-shop-back/internal/modules/dictionaries/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitPaperFacture(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitPaperFacture(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPaperFacture(opts); err != nil {
+	if c, err := newUnitPaperFacture(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,8 +26,8 @@ func createUnitPaperFacture(opts *factory.Options) ([]mrserver.HttpController, e
 	return list, nil
 }
 
-func newUnitPaperFacture(opts *factory.Options) (*http_v1.PaperFacture, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.PaperFacture{})
+func newUnitPaperFacture(ctx context.Context, opts factory.Options) (*http_v1.PaperFacture, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.PaperFacture{})
 
 	if err != nil {
 		return nil, err
@@ -36,11 +37,11 @@ func newUnitPaperFacture(opts *factory.Options) (*http_v1.PaperFacture, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 	)
-	service := usecase.NewPaperFacture(storage, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPaperFacture(
 		opts.RequestParser,
 		opts.ResponseSender,

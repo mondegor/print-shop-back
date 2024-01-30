@@ -6,27 +6,28 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-webcore/mrlock"
+	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrresponse"
-	"github.com/mondegor/go-webcore/mrtool"
 )
 
 type (
 	Options struct {
-		Logger          mrcore.Logger
-		EventBox        mrcore.EventBox
-		ServiceHelper   *mrtool.ServiceHelper
+		EventEmitter    mrsender.EventEmitter
+		UsecaseHelper   *mrcore.UsecaseHelper
 		PostgresAdapter *mrpostgres.ConnAdapter
-		Locker          mrcore.Locker
-		RequestParsers  *RequestParsers
+		Locker          mrlock.Locker
+		RequestParsers  RequestParsers
 		ResponseSender  *mrresponse.Sender
 
-		UnitCompanyPage *UnitCompanyPageOptions
+		UnitCompanyPage UnitCompanyPageOptions
 	}
 
 	UnitCompanyPageOptions struct {
 		LogoFileAPI    mrstorage.FileProviderAPI
-		LogoURLBuilder mrcore.BuilderPath
+		LogoURLBuilder mrlib.BuilderPath
 	}
 
 	RequestParsers struct {

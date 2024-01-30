@@ -3,61 +3,33 @@ package factory
 import (
 	"print-shop-back/config"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-webcore/mrlog/mrzerolog"
 )
 
-func NewLogger(cfg *config.Config) (*mrcore.LoggerAdapter, error) {
-	mrcore.SetDebug(cfg.Debugging.Debug)
-
-	mrerr.SetCallerOptions(
-		mrerr.CallerDeep(cfg.Debugging.ErrorCaller.Deep),
-		mrerr.CallerUseShortPath(cfg.Debugging.ErrorCaller.UseShortPath),
-	)
-
-	prefix := cfg.Log.Prefix
-
-	if prefix != "" {
-		prefix = "[" + prefix + "] "
-	}
-
-	logger, err := mrcore.NewLogger(
-		mrcore.LoggerOptions{
-			Prefix: prefix,
-			Level:  cfg.Log.Level,
-			CallerOptions: []mrerr.CallerOption{
-				mrerr.CallerDeep(cfg.Log.LogCaller.Deep),
-				mrerr.CallerUseShortPath(cfg.Log.LogCaller.UseShortPath),
-			},
-			CallerEnabledFunc: func(err error) bool {
-				if appErr, ok := err.(*mrerr.AppError); ok {
-					return appErr.Kind() == mrerr.ErrorKindUser
-				}
-
-				return true
-			},
-		},
-	)
+func NewLogger(cfg config.Config) (*mrzerolog.LoggerAdapter, error) {
+	level, err := mrlog.ParseLevel(cfg.Log.Level)
 
 	if err != nil {
 		return nil, err
 	}
 
-	mrcore.SetDefaultLogger(logger)
+	if cfg.Log.TimestampFormat != "" {
+		cfg.Log.TimestampFormat, err = mrlog.ParseDateTimeFormat(cfg.Log.TimestampFormat)
 
-	logger.Info("%s, version: %s", cfg.AppName, cfg.AppVersion)
+		if err != nil {
+			return nil, err
+		}
 
-	if cfg.AppInfo != "" {
-		logger.Info(cfg.AppInfo)
+		mrzerolog.SetDateTimeFormat(cfg.Log.TimestampFormat)
 	}
 
-	if mrcore.Debug() {
-		logger.Info("DEBUG MODE: ON")
-	}
-
-	logger.Info("LOG LEVEL: %s", cfg.Log.Level)
-	logger.Info("CONFIG PATH: %s", cfg.ConfigPath)
-	logger.Info("APP PATH: %s", cfg.AppPath)
-
-	return logger, nil
+	return mrzerolog.New(
+		mrlog.Options{
+			Level:           level,
+			JsonFormat:      cfg.Log.JsonFormat,
+			TimestampFormat: cfg.Log.TimestampFormat,
+			ConsoleColor:    cfg.Log.ConsoleColor,
+		},
+	), nil
 }

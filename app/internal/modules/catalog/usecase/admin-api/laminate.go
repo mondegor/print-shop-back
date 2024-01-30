@@ -9,7 +9,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
@@ -17,8 +17,8 @@ type (
 	Laminate struct {
 		storage         LaminateStorage
 		laminateTypeAPI dictionaries.LaminateTypeAPI
-		eventBox        mrcore.EventBox
-		serviceHelper   *mrtool.ServiceHelper
+		eventEmitter    mrsender.EventEmitter
+		usecaseHelper   *mrcore.UsecaseHelper
 		statusFlow      mrenum.StatusFlow
 	}
 )
@@ -26,14 +26,14 @@ type (
 func NewLaminate(
 	storage LaminateStorage,
 	laminateTypeAPI dictionaries.LaminateTypeAPI,
-	eventBox mrcore.EventBox,
-	serviceHelper *mrtool.ServiceHelper,
+	eventEmitter mrsender.EventEmitter,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *Laminate {
 	return &Laminate{
 		storage:         storage,
 		laminateTypeAPI: laminateTypeAPI,
-		eventBox:        eventBox,
-		serviceHelper:   serviceHelper,
+		eventEmitter:    eventEmitter,
+		usecaseHelper:   usecaseHelper,
 		statusFlow:      mrenum.ItemStatusFlow,
 	}
 }
@@ -43,7 +43,7 @@ func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
 	if total < 1 {
@@ -53,7 +53,7 @@ func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (
 	items, err := uc.storage.Fetch(ctx, fetchParams)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
 	return items, total, nil
@@ -69,7 +69,7 @@ func (uc *Laminate) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.La
 	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, id)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, id)
 	}
 
 	return item, nil
@@ -83,10 +83,10 @@ func (uc *Laminate) Create(ctx context.Context, item *entity.Laminate) error {
 	item.Status = mrenum.ItemStatusDraft
 
 	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
 
 	return nil
 }
@@ -101,7 +101,7 @@ func (uc *Laminate) Store(ctx context.Context, item *entity.Laminate) error {
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
 	}
 
 	if err := uc.checkItem(ctx, item); err != nil {
@@ -111,14 +111,14 @@ func (uc *Laminate) Store(ctx context.Context, item *entity.Laminate) error {
 	version, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
 
 	return nil
 }
@@ -135,7 +135,7 @@ func (uc *Laminate) ChangeStatus(ctx context.Context, item *entity.Laminate) err
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
 	if err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -149,14 +149,14 @@ func (uc *Laminate) ChangeStatus(ctx context.Context, item *entity.Laminate) err
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
 
 	return nil
 }
@@ -167,10 +167,10 @@ func (uc *Laminate) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	}
 
 	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, id)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, id)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
 
 	return nil
 }
@@ -193,11 +193,11 @@ func (uc *Laminate) checkArticle(ctx context.Context, item *entity.Laminate) err
 	id, err := uc.storage.FetchIdByArticle(ctx, item.Article)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return nil
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminate)
 	}
 
 	if item.ID != id {
@@ -207,11 +207,11 @@ func (uc *Laminate) checkArticle(ctx context.Context, item *entity.Laminate) err
 	return nil
 }
 
-func (uc *Laminate) eventBoxEmitEntity(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventBox.Emit(
-		"%s::%s: %s",
-		entity.ModelNameLaminate,
+func (uc *Laminate) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
+	uc.eventEmitter.EmitWithSource(
+		ctx,
 		eventName,
+		entity.ModelNameLaminate,
 		data,
 	)
 }

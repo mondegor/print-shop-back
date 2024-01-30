@@ -5,13 +5,13 @@ import (
 	"print-shop-back/config"
 
 	"github.com/mondegor/go-storage/mrredis"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 )
 
-func NewRedis(cfg *config.Config, logger mrcore.Logger) (*mrredis.ConnAdapter, error) {
-	logger.Info("Create and init redis connection")
+func NewRedis(ctx context.Context, cfg config.Config) (*mrredis.ConnAdapter, error) {
+	mrlog.Ctx(ctx).Info().Msg("Create and init redis connection")
 
-	opt := mrredis.Options{
+	opts := mrredis.Options{
 		Host:        cfg.Redis.Host,
 		Port:        cfg.Redis.Port,
 		Password:    cfg.Redis.Password,
@@ -20,9 +20,9 @@ func NewRedis(cfg *config.Config, logger mrcore.Logger) (*mrredis.ConnAdapter, e
 
 	conn := mrredis.New()
 
-	if err := conn.Connect(opt); err != nil {
+	if err := conn.Connect(ctx, opts); err != nil {
 		return nil, err
 	}
 
-	return conn, conn.Ping(context.Background())
+	return conn, conn.Ping(ctx)
 }

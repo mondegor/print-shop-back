@@ -5,15 +5,17 @@ import (
 	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	PaperColor struct {
 		storage       PaperColorStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 
 	PaperColorStorage interface {
@@ -23,11 +25,11 @@ type (
 
 func NewPaperColor(
 	storage PaperColorStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *PaperColor {
 	return &PaperColor{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -39,20 +41,21 @@ func (uc *PaperColor) CheckingAvailability(ctx context.Context, id mrtype.KeyInt
 	}
 
 	if err := uc.storage.IsExists(ctx, id); err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPaperColorNotFound.New(id)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, "Dictionaries.PaperColorAPI")
+		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PaperColorAPIName)
 	}
 
 	return nil
 }
 
 func (uc *PaperColor) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrctx.Logger(ctx).Debug(
-		"Dictionaries.PaperColorAPI: cmd=%s, data=%s",
-		command,
-		data,
-	)
+	mrlog.Ctx(ctx).
+		Debug().
+		Str("storage", dictionaries.PaperColorAPIName).
+		Str("cmd", command).
+		Any("data", data).
+		Send()
 }

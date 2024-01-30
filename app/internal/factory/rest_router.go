@@ -1,17 +1,18 @@
 package factory
 
 import (
+	"context"
 	"print-shop-back/config"
 
 	"github.com/mondegor/go-sysmess/mrlang"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjulienrouter"
 	"github.com/mondegor/go-webcore/mrserver/mrrscors"
 )
 
-func NewHttpRouter(cfg *config.Config, logger mrcore.Logger, translator *mrlang.Translator) (*mrjulienrouter.RouterAdapter, error) {
-	logger.Info("Create and init http router")
+func NewRestRouter(ctx context.Context, cfg config.Config, translator *mrlang.Translator) (*mrjulienrouter.RouterAdapter, error) {
+	logger := mrlog.Ctx(ctx)
 
 	corsOptions := mrrscors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,
@@ -19,25 +20,25 @@ func NewHttpRouter(cfg *config.Config, logger mrcore.Logger, translator *mrlang.
 		AllowedHeaders:   cfg.Cors.AllowedHeaders,
 		ExposedHeaders:   cfg.Cors.ExposedHeaders,
 		AllowCredentials: cfg.Cors.AllowCredentials,
-		Logger:           logger,
+		Logger:           logger.With().Str("middleware", "cors").Logger(),
 	}
 
-	errorSender, err := NewErrorResponseSender(cfg, logger)
+	errorSender, err := NewErrorResponseSender(ctx, cfg)
 
 	if err != nil {
 		return nil, err
 	}
 
-	handler, err := mrserver.HandlerAdapter(errorSender)
+	handler, err := mrserver.NewMiddlewareHttpHandlerAdapter(errorSender)
 
 	if err != nil {
 		return nil, err
 	}
 
-	router := mrjulienrouter.New(logger, handler)
+	router := mrjulienrouter.New(logger.With().Str("router", "julienrouter").Logger(), handler)
 	router.RegisterMiddleware(
 		mrrscors.New(corsOptions),
-		mrserver.MiddlewareFirst(logger, translator),
+		mrserver.MiddlewareGeneral(translator),
 	)
 
 	return router, nil

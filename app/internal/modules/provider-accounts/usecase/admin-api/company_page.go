@@ -5,25 +5,25 @@ import (
 	entity "print-shop-back/internal/modules/provider-accounts/entity/admin-api"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrlib"
 )
 
 type (
 	CompanyPage struct {
 		storage       CompanyPageStorage
-		serviceHelper *mrtool.ServiceHelper
-		imgBaseURL    mrcore.BuilderPath
+		usecaseHelper *mrcore.UsecaseHelper
+		imgBaseURL    mrlib.BuilderPath
 	}
 )
 
 func NewCompanyPage(
 	storage CompanyPageStorage,
-	serviceHelper *mrtool.ServiceHelper,
-	imgBaseURL mrcore.BuilderPath,
+	usecaseHelper *mrcore.UsecaseHelper,
+	imgBaseURL mrlib.BuilderPath,
 ) *CompanyPage {
 	return &CompanyPage{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 		imgBaseURL:    imgBaseURL,
 	}
 }
@@ -33,7 +33,7 @@ func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPagePar
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
 	}
 
 	if total < 1 {
@@ -43,7 +43,7 @@ func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPagePar
 	items, err := uc.storage.Fetch(ctx, fetchParams)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
 	}
 
 	for i := range items {

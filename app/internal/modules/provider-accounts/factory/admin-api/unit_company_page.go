@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/provider-accounts"
 	http_v1 "print-shop-back/internal/modules/provider-accounts/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitCompanyPage(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitCompanyPage(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitCompanyPage(opts); err != nil {
+	if c, err := newUnitCompanyPage(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,8 +26,8 @@ func createUnitCompanyPage(opts *factory.Options) ([]mrserver.HttpController, er
 	return list, nil
 }
 
-func newUnitCompanyPage(opts *factory.Options) (*http_v1.CompanyPage, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.CompanyPage{})
+func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.CompanyPage, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.CompanyPage{})
 
 	if err != nil {
 		return nil, err
@@ -36,11 +37,11 @@ func newUnitCompanyPage(opts *factory.Options) (*http_v1.CompanyPage, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 	)
-	service := usecase.NewCompanyPage(storage, opts.ServiceHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	service := usecase.NewCompanyPage(storage, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := http_v1.NewCompanyPage(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

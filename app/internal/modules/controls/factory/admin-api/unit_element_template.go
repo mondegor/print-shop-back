@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/controls"
 	http_v1 "print-shop-back/internal/modules/controls/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitElementTemplate(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitElementTemplate(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitElementTemplate(opts); err != nil {
+	if c, err := newUnitElementTemplate(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,14 +26,14 @@ func createUnitElementTemplate(opts *factory.Options) ([]mrserver.HttpController
 	return list, nil
 }
 
-func newUnitElementTemplate(opts *factory.Options) (*http_v1.ElementTemplate, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.ElementTemplate{})
+func newUnitElementTemplate(ctx context.Context, opts factory.Options) (*http_v1.ElementTemplate, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.ElementTemplate{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(entity.ElementTemplate{})
+	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.ElementTemplate{})
 
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func newUnitElementTemplate(opts *factory.Options) (*http_v1.ElementTemplate, er
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 		mrsql.NewBuilderUpdateWithMeta(
@@ -50,7 +51,7 @@ func newUnitElementTemplate(opts *factory.Options) (*http_v1.ElementTemplate, er
 			mrpostgres.NewSqlBuilderSet(),
 		),
 	)
-	service := usecase.NewElementTemplate(storage, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewElementTemplate(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewElementTemplate(
 		opts.RequestParser,
 		opts.ResponseSender,

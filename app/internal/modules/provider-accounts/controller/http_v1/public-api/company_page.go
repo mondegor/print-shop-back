@@ -4,7 +4,7 @@ import (
 	"net/http"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/public-api"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
@@ -17,7 +17,7 @@ type (
 		parser     mrserver.RequestParserString
 		sender     mrserver.ResponseSender
 		service    usecase.CompanyPageService
-		imgBaseURL mrcore.BuilderPath
+		imgBaseURL mrlib.BuilderPath
 	}
 )
 
@@ -25,7 +25,7 @@ func NewCompanyPage(
 	parser mrserver.RequestParserString,
 	sender mrserver.ResponseSender,
 	service usecase.CompanyPageService,
-	imgBaseURL mrcore.BuilderPath,
+	imgBaseURL mrlib.BuilderPath,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:     parser,

@@ -1,10 +1,11 @@
 package factory
 
 import (
+	"context"
 	"print-shop-back/config"
 	"print-shop-back/internal/modules"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/mrjulienrouter"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
@@ -12,18 +13,18 @@ import (
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
 )
 
-func NewRequestParsers(cfg *config.Config, logger mrcore.Logger) (*modules.RequestParsers, error) {
-	logger.Info("Create and init base request parser")
+func CreateRequestParsers(ctx context.Context, cfg config.Config) (modules.RequestParsers, error) {
+	mrlog.Ctx(ctx).Info().Msg("Create and init base request parser")
 
-	validator, err := NewValidator(cfg, logger)
+	validator, err := NewValidator(ctx, cfg)
 
 	if err != nil {
-		return nil, err
+		return modules.RequestParsers{}, err
 	}
 
 	pathFunc := mrjulienrouter.PathParam
 
-	return &modules.RequestParsers{
+	return modules.RequestParsers{
 		// Bool:       mrparser.NewBool(),
 		// DateTime:   mrparser.NewDateTime(),
 		Int64:      mrparser.NewInt64(pathFunc),
@@ -38,8 +39,8 @@ func NewRequestParsers(cfg *config.Config, logger mrcore.Logger) (*modules.Reque
 	}, nil
 }
 
-func NewValidator(cfg *config.Config, logger mrcore.Logger) (*mrplayvalidator.ValidatorAdapter, error) {
-	logger.Info("Create and init data validator")
+func NewValidator(ctx context.Context, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
+	mrlog.Ctx(ctx).Info().Msg("Create and init data validator")
 
 	validator := mrplayvalidator.New()
 

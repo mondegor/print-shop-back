@@ -1,27 +1,27 @@
 package factory
 
 import (
+	"context"
 	"print-shop-back/internal/modules"
 	view_shared "print-shop-back/internal/modules/provider-accounts/controller/http_v1/shared/view"
 	"print-shop-back/internal/modules/provider-accounts/factory"
 )
 
-func NewProviderAccountsOptions(opts *modules.Options) (*factory.Options, error) {
+func NewProviderAccountsModuleOptions(ctx context.Context, opts modules.Options) (factory.Options, error) {
 	fileAPI, err := opts.FileProviderPool.Provider(
 		opts.Cfg.ModulesSettings.ProviderAccount.CompanyPageLogo.FileProvider,
 	)
 
 	if err != nil {
-		return nil, err
+		return factory.Options{}, err
 	}
 
-	return &factory.Options{
-		Logger:          opts.Logger,
-		EventBox:        opts.EventBox,
-		ServiceHelper:   opts.ServiceHelper,
+	return factory.Options{
+		EventEmitter:    opts.EventEmitter,
+		UsecaseHelper:   opts.UsecaseHelper,
 		PostgresAdapter: opts.PostgresAdapter,
 		Locker:          opts.Locker,
-		RequestParsers: &factory.RequestParsers{
+		RequestParsers: factory.RequestParsers{
 			String: opts.RequestParsers.String,
 			Image:  opts.RequestParsers.Image,
 			Parser: view_shared.NewParser(
@@ -35,7 +35,7 @@ func NewProviderAccountsOptions(opts *modules.Options) (*factory.Options, error)
 		},
 		ResponseSender: opts.ResponseSender,
 
-		UnitCompanyPage: &factory.UnitCompanyPageOptions{
+		UnitCompanyPage: factory.UnitCompanyPageOptions{
 			LogoFileAPI:    fileAPI,
 			LogoURLBuilder: NewBuilderImagesURL(opts.Cfg),
 		},

@@ -1,6 +1,6 @@
 App.Request.Header.CorrelationID:
   description: Уникальный идентификатор запроса
-  name: CorrelationID
+  name: X-Correlation-ID
   in: header
   required: false
   schema:

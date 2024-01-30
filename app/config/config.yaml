@@ -7,23 +7,25 @@ debugging:
     # root_path:
 
 logger:
-  # prefix: print-shop
-  level: debug # debug, info, warn, error
+  level: trace # debug, info, warn, error, fatal, trace
+  json_format: false
+  timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
+  console_color: true
   caller:
     deep: 3
-    use_short_path: true
+    # use_short_path: true
     # root_path:
 
-server:
-  read_timeout: 30s
-  write_timeout: 30s
-  shutdown_timeout: 30s
-
-listen:
-  type: port
-  sock_name: app.sock
-  bind_ip: 0.0.0.0
-  port: 8080
+servers:
+  rest_server:
+    read_timeout: 30s
+    write_timeout: 30s
+    shutdown_timeout: 60s
+    listen:
+      type: port
+      sock_name: app.sock
+      bind_ip: 0.0.0.0
+      port: 8080
 
 storage:
   type: postgres

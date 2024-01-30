@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/catalog"
 	http_v1 "print-shop-back/internal/modules/catalog/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/catalog/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitPaper(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitPaper(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPaper(opts); err != nil {
+	if c, err := newUnitPaper(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,14 +26,14 @@ func createUnitPaper(opts *factory.Options) ([]mrserver.HttpController, error) {
 	return list, nil
 }
 
-func newUnitPaper(opts *factory.Options) (*http_v1.Paper, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.Paper{})
+func newUnitPaper(ctx context.Context, opts factory.Options) (*http_v1.Paper, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.Paper{})
 
 	if err != nil {
 		return nil, err
 	}
 
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(entity.Paper{})
+	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.Paper{})
 
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func newUnitPaper(opts *factory.Options) (*http_v1.Paper, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 		mrsql.NewBuilderUpdateWithMeta(
@@ -50,7 +51,7 @@ func newUnitPaper(opts *factory.Options) (*http_v1.Paper, error) {
 			mrpostgres.NewSqlBuilderSet(),
 		),
 	)
-	service := usecase.NewPaper(storage, opts.PaperColorAPI, opts.PaperFactureAPI, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewPaper(storage, opts.PaperColorAPI, opts.PaperFactureAPI, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPaper(
 		opts.RequestParser,
 		opts.ResponseSender,

@@ -1,35 +1,36 @@
 package factory
 
 import (
+	"context"
 	"os"
 	"print-shop-back/config"
 
 	"github.com/mondegor/go-storage/mrfilestorage"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 )
 
-func NewFileSystem(cfg *config.Config, logger mrcore.Logger) *mrfilestorage.FileSystem {
-	logger.Info("Create and init file system")
+func NewFileSystem(ctx context.Context, cfg config.Config) *mrfilestorage.FileSystem {
+	mrlog.Ctx(ctx).Info().Msg("Create and init file system")
 
-	opt := mrfilestorage.Options{
+	opts := mrfilestorage.Options{
 		DirMode:    os.FileMode(cfg.FileSystem.DirMode),
 		CreateDirs: cfg.FileSystem.CreateDirs,
 	}
 
-	return mrfilestorage.New(opt)
+	return mrfilestorage.New(opts)
 }
 
 func RegisterFileImageStorage(
-	cfg *config.Config,
+	ctx context.Context,
+	cfg config.Config,
 	pool *mrstorage.FileProviderPool,
 	fs *mrfilestorage.FileSystem,
-	logger mrcore.Logger,
 ) error {
 	storage, err := newFileStorageProvider(
+		ctx,
 		fs,
 		cfg.FileProviders.ImageStorage.RootDir,
-		logger,
 	)
 
 	if err != nil {
@@ -40,11 +41,12 @@ func RegisterFileImageStorage(
 }
 
 func newFileStorageProvider(
+	ctx context.Context,
 	fs *mrfilestorage.FileSystem,
 	rootDir string,
-	logger mrcore.Logger,
 ) (*mrfilestorage.FileProvider, error) {
-	logger.Info("Create and init file provider with root dir '%s'", rootDir)
+	logger := mrlog.Ctx(ctx)
+	logger.Info().Msgf("Create and init file provider with root dir '%s'", rootDir)
 
 	created, err := fs.InitRootDir(rootDir)
 
@@ -53,9 +55,9 @@ func newFileStorageProvider(
 	}
 
 	if created {
-		mrcore.LogInfo("Root dir '%s' created", rootDir)
+		logger.Debug().Msgf("Root dir '%s' created", rootDir)
 	} else {
-		mrcore.LogInfo("Root dir '%s' exists, OK", rootDir)
+		logger.Debug().Msgf("Root dir '%s' exists, OK", rootDir)
 	}
 
 	return mrfilestorage.NewFileProvider(fs, rootDir), nil

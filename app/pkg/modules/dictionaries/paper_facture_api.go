@@ -6,6 +6,10 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
+const (
+	PaperFactureAPIName = "Dictionaries.PaperFactureAPI"
+)
+
 type (
 	PaperFactureAPI interface {
 		// CheckingAvailability - error: FactoryErrPaperFactureNotFound or Failed

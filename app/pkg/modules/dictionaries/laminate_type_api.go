@@ -6,6 +6,10 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
+const (
+	LaminateTypeAPIName = "Dictionaries.LaminateTypeAPI"
+)
+
 type (
 	LaminateTypeAPI interface {
 		// CheckingAvailability - error: FactoryErrLaminateTypeNotFound or Failed

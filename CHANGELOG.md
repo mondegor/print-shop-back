@@ -1,6 +1,30 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-01-30
+### Changed
+- Внедрён новый интерфейс логгера, добавлен режим трассировки запросов;
+- Для многих методов добавлен параметр `ctx context.Context`;
+- Заменён устаревший интерфейс `mrcore.EventBox` на `mrsender.EventEmitter`;
+- Переименован `ServiceHelper` -> `UsecaseHelper`;
+- Внедрены `mrlib.CallEachFunc`, `CloseFunc` для группового закрытия ресурсов;
+- Переименован `CorrelationID` на `X-Correlation-ID`;
+- Объекты конфигураций/опций теперь передаются по значению (`*Config` -> `Config`, *`Options` -> `Options`);
+- Внедрён `oklog/run` для управления одновременным запуском нескольких серверов (http, grpc)
+- Добавлены методы для создания и инициализации всех глобальных настроек приложения
+  (`CreateAppEnvironment`, `InitAppEnvironment`);
+- Теперь модули собираются в рамках отдельных серверов (см. `factory.NewRestServer`);
+- Изменены некоторые переменные окружения:
+    - удалён `APPX_LOG_PREFIX`;
+    - добавлен `APPX_LOG_TIMESTAMP=RFC3339|RFC3339Nano|DateTime|TimeOnly` (формат даты в логах);
+    - добавлен `APPX_LOG_JSON=true|false` (вывод логов в json формате);
+    - добавлен `APPX_LOG_COLOR=true|false` (использование цветного вывода логов в консоле);
+    - переименованы:
+        - `APPX_SERVICE_LISTEN_TYPE` -> `APPX_SERVER_LISTEN_TYPE`;
+        - `APPX_SERVICE_LISTEN_SOCK` -> `APPX_SERVER_LISTEN_SOCK`;
+        - `APPX_SERVICE_BIND` -> `APPX_SERVER_LISTEN_BIND`;
+        - `APPX_SERVICE_PORT` -> `APPX_SERVER_LISTEN_PORT`;
+
 ## 2024-01-25
 ### Added
 - Внедрены парсеры на основе интерфейсов `mrserver.RequestParserFile` и

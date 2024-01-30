@@ -9,7 +9,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
@@ -18,8 +18,8 @@ type (
 		storage         PaperStorage
 		paperColorAPI   catalog.PaperColorAPI
 		paperFactureAPI catalog.PaperFactureAPI
-		eventBox        mrcore.EventBox
-		serviceHelper   *mrtool.ServiceHelper
+		eventEmitter    mrsender.EventEmitter
+		usecaseHelper   *mrcore.UsecaseHelper
 		statusFlow      mrenum.StatusFlow
 	}
 )
@@ -28,15 +28,15 @@ func NewPaper(
 	storage PaperStorage,
 	paperColorAPI catalog.PaperColorAPI,
 	paperFactureAPI catalog.PaperFactureAPI,
-	eventBox mrcore.EventBox,
-	serviceHelper *mrtool.ServiceHelper,
+	eventEmitter mrsender.EventEmitter,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *Paper {
 	return &Paper{
 		storage:         storage,
 		paperColorAPI:   paperColorAPI,
 		paperFactureAPI: paperFactureAPI,
-		eventBox:        eventBox,
-		serviceHelper:   serviceHelper,
+		eventEmitter:    eventEmitter,
+		usecaseHelper:   usecaseHelper,
 		statusFlow:      mrenum.ItemStatusFlow,
 	}
 }
@@ -46,7 +46,7 @@ func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) ([]enti
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
 	if total < 1 {
@@ -56,7 +56,7 @@ func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) ([]enti
 	items, err := uc.storage.Fetch(ctx, fetchParams)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
 	return items, total, nil
@@ -72,7 +72,7 @@ func (uc *Paper) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Paper
 	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
 	}
 
 	return item, nil
@@ -86,10 +86,10 @@ func (uc *Paper) Create(ctx context.Context, item *entity.Paper) error {
 	item.Status = mrenum.ItemStatusDraft
 
 	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
 
 	return nil
 }
@@ -104,7 +104,7 @@ func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
 	}
 
 	if err := uc.checkItem(ctx, item); err != nil {
@@ -114,14 +114,14 @@ func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
 	version, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
 
 	return nil
 }
@@ -138,7 +138,7 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item *entity.Paper) error {
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
 	if err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -152,14 +152,14 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item *entity.Paper) error {
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
 
 	return nil
 }
@@ -170,10 +170,10 @@ func (uc *Paper) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	}
 
 	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
 
 	return nil
 }
@@ -202,11 +202,11 @@ func (uc *Paper) checkArticle(ctx context.Context, item *entity.Paper) error {
 	id, err := uc.storage.FetchIdByArticle(ctx, item.Article)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return nil
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
 	if item.ID != id {
@@ -216,11 +216,11 @@ func (uc *Paper) checkArticle(ctx context.Context, item *entity.Paper) error {
 	return nil
 }
 
-func (uc *Paper) eventBoxEmitEntity(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventBox.Emit(
-		"%s::%s: %s",
-		entity.ModelNamePaper,
+func (uc *Paper) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
+	uc.eventEmitter.EmitWithSource(
+		ctx,
 		eventName,
+		entity.ModelNamePaper,
 		data,
 	)
 }

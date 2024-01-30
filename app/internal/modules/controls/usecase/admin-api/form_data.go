@@ -8,28 +8,28 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	FormData struct {
 		storage       FormDataStorage
-		eventBox      mrcore.EventBox
-		serviceHelper *mrtool.ServiceHelper
+		eventEmitter  mrsender.EventEmitter
+		usecaseHelper *mrcore.UsecaseHelper
 		statusFlow    mrenum.StatusFlow
 	}
 )
 
 func NewFormData(
 	storage FormDataStorage,
-	eventBox mrcore.EventBox,
-	serviceHelper *mrtool.ServiceHelper,
+	eventEmitter mrsender.EventEmitter,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *FormData {
 	return &FormData{
 		storage:       storage,
-		eventBox:      eventBox,
-		serviceHelper: serviceHelper,
+		eventEmitter:  eventEmitter,
+		usecaseHelper: usecaseHelper,
 		statusFlow:    mrenum.ItemStatusFlow,
 	}
 }
@@ -39,7 +39,7 @@ func (uc *FormData) GetList(ctx context.Context, params entity.FormDataParams) (
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
 	if total < 1 {
@@ -49,7 +49,7 @@ func (uc *FormData) GetList(ctx context.Context, params entity.FormDataParams) (
 	items, err := uc.storage.Fetch(ctx, fetchParams)
 
 	if err != nil {
-		return nil, 0, uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return nil, 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
 	return items, total, nil
@@ -65,7 +65,7 @@ func (uc *FormData) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Fo
 	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, id)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, id)
 	}
 
 	return item, nil
@@ -77,11 +77,11 @@ func (uc *FormData) CheckingAvailability(ctx context.Context, id mrtype.KeyInt32
 	}
 
 	if err := uc.storage.IsExists(ctx, id); err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return usecase.FactoryErrFormDataNotFound.New(id)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
 	return nil
@@ -95,10 +95,10 @@ func (uc *FormData) Create(ctx context.Context, item *entity.FormData) error {
 	item.Status = mrenum.ItemStatusDraft
 
 	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
 
 	return nil
 }
@@ -113,7 +113,7 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, item.ID)
 	}
 
 	if err := uc.checkItem(ctx, item); err != nil {
@@ -123,14 +123,14 @@ func (uc *FormData) Store(ctx context.Context, item *entity.FormData) error {
 	version, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
 
 	return nil
 }
@@ -147,7 +147,7 @@ func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) err
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
 	if err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, item.ID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -161,14 +161,14 @@ func (uc *FormData) ChangeStatus(ctx context.Context, item *entity.FormData) err
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
 
 	return nil
 }
@@ -179,10 +179,10 @@ func (uc *FormData) Remove(ctx context.Context, id mrtype.KeyInt32) error {
 	}
 
 	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, id)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormData, id)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
 
 	return nil
 }
@@ -199,11 +199,11 @@ func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) e
 	id, err := uc.storage.FetchIdByName(ctx, item.ParamName)
 
 	if err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return nil
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, entity.ModelNameFormData)
+		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormData)
 	}
 
 	if item.ID != id {
@@ -213,11 +213,11 @@ func (uc *FormData) checkParamName(ctx context.Context, item *entity.FormData) e
 	return nil
 }
 
-func (uc *FormData) eventBoxEmitEntity(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventBox.Emit(
-		"%s::%s: %s",
-		entity.ModelNameFormData,
+func (uc *FormData) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
+	uc.eventEmitter.EmitWithSource(
+		ctx,
 		eventName,
+		entity.ModelNameFormData,
 		data,
 	)
 }

@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/file-station"
 	"print-shop-back/internal/modules/file-station/factory"
 
@@ -8,16 +9,16 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(opts.Logger, module.Name)
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitImageProxyName)
+	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrfactory.InfoCreateUnit(ctx, module.UnitImageProxyName)
 
-	if l, err := createUnitImageProxy(opts); err != nil {
+	if l, err := createUnitImageProxy(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitImageProxyPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitImageProxyPermission)...)
 	}
 
 	return list, nil

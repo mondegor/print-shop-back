@@ -6,6 +6,10 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
+const (
+	PrintFormatAPIName = "Dictionaries.PrintFormatAPI"
+)
+
 type (
 	PrintFormatAPI interface {
 		// CheckingAvailability - error: FactoryErrPrintFormatNotFound or Failed

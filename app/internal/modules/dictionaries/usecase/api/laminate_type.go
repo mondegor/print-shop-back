@@ -5,15 +5,17 @@ import (
 	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	LaminateType struct {
 		storage       LaminateTypeStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 
 	LaminateTypeStorage interface {
@@ -23,11 +25,11 @@ type (
 
 func NewLaminateType(
 	storage LaminateTypeStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *LaminateType {
 	return &LaminateType{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -39,20 +41,21 @@ func (uc *LaminateType) CheckingAvailability(ctx context.Context, id mrtype.KeyI
 	}
 
 	if err := uc.storage.IsExists(ctx, id); err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrLaminateTypeNotFound.New(id)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, "Dictionaries.LaminateTypeAPI")
+		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.LaminateTypeAPIName)
 	}
 
 	return nil
 }
 
 func (uc *LaminateType) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrctx.Logger(ctx).Debug(
-		"Dictionaries.LaminateTypeAPI: cmd=%s, data=%s",
-		command,
-		data,
-	)
+	mrlog.Ctx(ctx).
+		Debug().
+		Str("storage", dictionaries.LaminateTypeAPIName).
+		Str("cmd", command).
+		Any("data", data).
+		Send()
 }

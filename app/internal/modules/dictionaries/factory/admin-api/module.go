@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/dictionaries"
 	"print-shop-back/internal/modules/dictionaries/factory"
 
@@ -8,40 +9,40 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(opts.Logger, module.Name)
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitLaminateTypeName)
+	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrfactory.InfoCreateUnit(ctx, module.UnitLaminateTypeName)
 
-	if l, err := createUnitLaminateType(opts); err != nil {
+	if l, err := createUnitLaminateType(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitLaminateTypePermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitLaminateTypePermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitPaperColorName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitPaperColorName)
 
-	if l, err := createUnitPaperColor(opts); err != nil {
+	if l, err := createUnitPaperColor(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitPaperColorPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitPaperColorPermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitPaperFactureName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitPaperFactureName)
 
-	if l, err := createUnitPaperFacture(opts); err != nil {
+	if l, err := createUnitPaperFacture(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitPaperFacturePermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitPaperFacturePermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitPrintFormatName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitPrintFormatName)
 
-	if l, err := createUnitPrintFormat(opts); err != nil {
+	if l, err := createUnitPrintFormat(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitPrintFormatPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitPrintFormatPermission)...)
 	}
 
 	return list, nil

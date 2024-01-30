@@ -4,7 +4,7 @@ import (
 	"net/http"
 	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
 
-	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 )
@@ -60,7 +60,7 @@ func (p *Parser) FilterPublicStatusList(r *http.Request, key string) []entity_sh
 	)
 
 	if err != nil {
-		mrctx.Logger(r.Context()).Warn(err)
+		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
 	}
 
 	return items

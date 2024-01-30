@@ -5,12 +5,12 @@ import (
 	usecase_api "print-shop-back/internal/modules/dictionaries/usecase/api"
 
 	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
 )
 
-func NewPaperFacture(conn *mrpostgres.ConnAdapter, serviceHelper *mrtool.ServiceHelper) *usecase_api.PaperFacture {
+func NewPaperFacture(conn *mrpostgres.ConnAdapter, usecaseHelper *mrcore.UsecaseHelper) *usecase_api.PaperFacture {
 	return usecase_api.NewPaperFacture(
 		repository_api.NewPaperFacturePostgres(conn),
-		serviceHelper,
+		usecaseHelper,
 	)
 }

@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	"print-shop-back/internal/modules"
 
 	"github.com/mondegor/go-webcore/mrfactory"
@@ -18,8 +19,9 @@ const (
 	sectionPublicAPIRootPath = "/"
 )
 
-func NewAppSectionAdminAPI(opts *modules.Options) *mrperms.AppSection {
+func NewAppSectionAdminAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
+		ctx,
 		mrperms.AppSectionOptions{
 			Caption:      sectionAdminAPICaption,
 			RootPath:     sectionAdminAPIRootPath,
@@ -28,12 +30,12 @@ func NewAppSectionAdminAPI(opts *modules.Options) *mrperms.AppSection {
 			AuthAudience: opts.Cfg.AppSections.AdminAPI.Auth.Audience,
 		},
 		opts.AccessControl,
-		opts.Logger,
 	)
 }
 
-func NewAppSectionProviderAccountAPI(opts *modules.Options) *mrperms.AppSection {
+func NewAppSectionProviderAccountAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
+		ctx,
 		mrperms.AppSectionOptions{
 			Caption:      sectionProviderAccountAPICaption,
 			RootPath:     sectionProviderAccountAPIRootPath,
@@ -42,12 +44,12 @@ func NewAppSectionProviderAccountAPI(opts *modules.Options) *mrperms.AppSection 
 			AuthAudience: opts.Cfg.AppSections.ProviderAccountAPI.Auth.Audience,
 		},
 		opts.AccessControl,
-		opts.Logger,
 	)
 }
 
-func NewAppSectionPublicAPI(opts *modules.Options) *mrperms.AppSection {
+func NewAppSectionPublicAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
+		ctx,
 		mrperms.AppSectionOptions{
 			Caption:      sectionPublicAPICaption,
 			RootPath:     sectionPublicAPIRootPath,
@@ -56,6 +58,5 @@ func NewAppSectionPublicAPI(opts *modules.Options) *mrperms.AppSection {
 			AuthAudience: opts.Cfg.AppSections.PublicAPI.Auth.Audience,
 		},
 		opts.AccessControl,
-		opts.Logger,
 	)
 }

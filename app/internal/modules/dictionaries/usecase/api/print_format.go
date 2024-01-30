@@ -5,15 +5,17 @@ import (
 	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	PrintFormat struct {
 		storage       PrintFormatStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 
 	PrintFormatStorage interface {
@@ -23,11 +25,11 @@ type (
 
 func NewPrintFormat(
 	storage PrintFormatStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *PrintFormat {
 	return &PrintFormat{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -39,20 +41,21 @@ func (uc *PrintFormat) CheckingAvailability(ctx context.Context, id mrtype.KeyIn
 	}
 
 	if err := uc.storage.IsExists(ctx, id); err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPrintFormatNotFound.New(id)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, "Dictionaries.PrintFormatAPI")
+		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PrintFormatAPIName)
 	}
 
 	return nil
 }
 
 func (uc *PrintFormat) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrctx.Logger(ctx).Debug(
-		"Dictionaries.PrintFormatAPI: cmd=%s, data=%s",
-		command,
-		data,
-	)
+	mrlog.Ctx(ctx).
+		Debug().
+		Str("storage", dictionaries.PrintFormatAPIName).
+		Str("cmd", command).
+		Any("data", data).
+		Send()
 }

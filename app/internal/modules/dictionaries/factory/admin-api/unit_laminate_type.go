@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/dictionaries"
 	http_v1 "print-shop-back/internal/modules/dictionaries/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/entity/admin-api"
@@ -13,10 +14,10 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitLaminateType(opts *factory.Options) ([]mrserver.HttpController, error) {
+func createUnitLaminateType(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitLaminateType(opts); err != nil {
+	if c, err := newUnitLaminateType(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,8 +26,8 @@ func createUnitLaminateType(opts *factory.Options) ([]mrserver.HttpController, e
 	return list, nil
 }
 
-func newUnitLaminateType(opts *factory.Options) (*http_v1.LaminateType, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(entity.LaminateType{})
+func newUnitLaminateType(ctx context.Context, opts factory.Options) (*http_v1.LaminateType, error) {
+	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.LaminateType{})
 
 	if err != nil {
 		return nil, err
@@ -36,11 +37,11 @@ func newUnitLaminateType(opts *factory.Options) (*http_v1.LaminateType, error) {
 		opts.PostgresAdapter,
 		mrsql.NewBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
 		),
 	)
-	service := usecase.NewLaminateType(storage, opts.EventBox, opts.ServiceHelper)
+	service := usecase.NewLaminateType(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewLaminateType(
 		opts.RequestParser,
 		opts.ResponseSender,

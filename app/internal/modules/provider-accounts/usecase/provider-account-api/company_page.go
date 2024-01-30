@@ -8,30 +8,32 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-webcore/mrsender"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	CompanyPage struct {
 		storage       CompanyPageStorage
-		eventBox      mrcore.EventBox
-		serviceHelper *mrtool.ServiceHelper
-		imgBaseURL    mrcore.BuilderPath
+		eventEmitter  mrsender.EventEmitter
+		usecaseHelper *mrcore.UsecaseHelper
+		imgBaseURL    mrlib.BuilderPath
 		statusFlow    mrenum.StatusFlow
 	}
 )
 
 func NewCompanyPage(
 	storage CompanyPageStorage,
-	eventBox mrcore.EventBox,
-	serviceHelper *mrtool.ServiceHelper,
-	imgBaseURL mrcore.BuilderPath,
+	eventEmitter mrsender.EventEmitter,
+	usecaseHelper *mrcore.UsecaseHelper,
+	imgBaseURL mrlib.BuilderPath,
 ) *CompanyPage {
 	return &CompanyPage{
 		storage:       storage,
-		eventBox:      eventBox,
-		serviceHelper: serviceHelper,
+		eventEmitter:  eventEmitter,
+		usecaseHelper: usecaseHelper,
 		imgBaseURL:    imgBaseURL,
 		statusFlow:    entity_shared.PublicStatusFlow,
 	}
@@ -47,7 +49,7 @@ func (uc *CompanyPage) GetItem(ctx context.Context, accountID mrtype.KeyString) 
 	}
 
 	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)
 	}
 
 	item.LogoURL = uc.imgBaseURL.FullPath(item.LogoURL)
@@ -63,10 +65,10 @@ func (uc *CompanyPage) Store(ctx context.Context, item *entity.CompanyPage) erro
 	item.Status = entity_shared.PublicStatusDraft // only for insert
 
 	if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "Store", mrmsg.Data{"accountId": item.AccountID})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"accountId": item.AccountID})
 
 	return nil
 }
@@ -79,7 +81,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item *entity.CompanyPag
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
 
 	if err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
 	}
 
 	if currentStatus == item.Status {
@@ -91,19 +93,19 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item *entity.CompanyPag
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item); err != nil {
-		return uc.serviceHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
 	}
 
-	uc.eventBoxEmitEntity(ctx, "ChangeStatus", mrmsg.Data{"accountId": item.AccountID, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"accountId": item.AccountID, "status": item.Status})
 
 	return nil
 }
 
-func (uc *CompanyPage) eventBoxEmitEntity(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventBox.Emit(
-		"%s::%s: %s",
-		entity.ModelNameCompanyPage,
+func (uc *CompanyPage) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
+	uc.eventEmitter.EmitWithSource(
+		ctx,
 		eventName,
+		entity.ModelNameCompanyPage,
 		data,
 	)
 }

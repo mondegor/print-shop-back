@@ -1,20 +1,22 @@
 package factory
 
 import (
+	"context"
 	"net/http"
 	"print-shop-back/config"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-webcore/mrperms"
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func RegisterSystemHandlers(
-	cfg *config.Config,
-	logger mrcore.Logger,
+	ctx context.Context,
+	cfg config.Config,
 	router mrserver.HttpRouter,
-	section mrcore.AppSection,
+	section mrperms.AppSection,
 ) error {
-	logger.Info("Init system handlers in section %s", section.Caption())
+	mrlog.Ctx(ctx).Info().Msgf("Init system handlers in section %s", section.Caption())
 
 	router.HandlerFunc(http.MethodGet, section.Path("/"), mrserver.HandlerGetStatusOKAsJson())
 	router.HandlerFunc(http.MethodGet, section.Path("/health"), mrserver.HandlerGetHealth())

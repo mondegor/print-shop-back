@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"context"
 	module "print-shop-back/internal/modules/controls"
 	"print-shop-back/internal/modules/controls/factory"
 
@@ -8,32 +9,32 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func CreateModule(opts *factory.Options) ([]mrserver.HttpController, error) {
+func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(opts.Logger, module.Name)
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitElementTemplateName)
+	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrfactory.InfoCreateUnit(ctx, module.UnitElementTemplateName)
 
-	if l, err := createUnitElementTemplate(opts); err != nil {
+	if l, err := createUnitElementTemplate(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitElementTemplatePermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitElementTemplatePermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitFormDataName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitFormDataName)
 
-	if l, err := createUnitFormData(opts); err != nil {
+	if l, err := createUnitFormData(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitFormDataPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitFormDataPermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(opts.Logger, module.UnitFormElementName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitFormElementName)
 
-	if l, err := createUnitFormElement(opts); err != nil {
+	if l, err := createUnitFormElement(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(l, module.UnitFormElementPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitFormElementPermission)...)
 	}
 
 	return list, nil

@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 )
 
-func NewPostgres(cfg *config.Config, logger mrcore.Logger) (*mrpostgres.ConnAdapter, error) {
-	logger.Info("Create and init postgres connection")
+func NewPostgres(ctx context.Context, cfg config.Config) (*mrpostgres.ConnAdapter, error) {
+	mrlog.Ctx(ctx).Info().Msg("Create and init postgres connection")
 
-	opt := mrpostgres.Options{
+	opts := mrpostgres.Options{
 		Host:         cfg.Storage.Host,
 		Port:         cfg.Storage.Port,
 		Username:     cfg.Storage.Username,
@@ -25,9 +25,9 @@ func NewPostgres(cfg *config.Config, logger mrcore.Logger) (*mrpostgres.ConnAdap
 
 	conn := mrpostgres.New()
 
-	if err := conn.Connect(opt); err != nil {
+	if err := conn.Connect(ctx, opts); err != nil {
 		return nil, err
 	}
 
-	return conn, conn.Ping(context.Background())
+	return conn, conn.Ping(ctx)
 }

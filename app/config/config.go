@@ -10,7 +10,7 @@ import (
 
 const (
 	appName    = "Print Shop Service"
-	appVersion = "v0.9.0"
+	appVersion = "v0.10.0"
 )
 
 type (
@@ -23,8 +23,7 @@ type (
 		ConfigPath      string
 		Debugging       `yaml:"debugging"`
 		Log             `yaml:"logger"`
-		Server          `yaml:"server"`
-		Listen          `yaml:"listen"`
+		Servers         `yaml:"servers"`
 		Storage         `yaml:"storage"`
 		Redis           `yaml:"redis"`
 		FileSystem      `yaml:"file_system"`
@@ -48,9 +47,11 @@ type (
 	}
 
 	Log struct {
-		Prefix    string `yaml:"prefix" env:"APPX_LOG_PREFIX"`
-		Level     string `yaml:"level" env:"APPX_LOG_LEVEL"`
-		LogCaller `yaml:"caller"`
+		Level           string `yaml:"level" env:"APPX_LOG_LEVEL"`
+		TimestampFormat string `yaml:"timestamp_format" env:"APPX_LOG_TIMESTAMP"`
+		JsonFormat      bool   `yaml:"json_format" env:"APPX_LOG_JSON"`
+		ConsoleColor    bool   `yaml:"console_color" env:"APPX_LOG_COLOR"`
+		LogCaller       `yaml:"caller"`
 	}
 
 	LogCaller struct {
@@ -59,17 +60,18 @@ type (
 		RootPath     string `yaml:"root_path"`
 	}
 
-	Server struct {
-		ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_SERVER_READ_TIMEOUT"`
-		WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_SERVER_WRITE_TIMEOUT"`
-		ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_SERVER_SHUTDOWN_TIMEOUT"`
-	}
-
-	Listen struct {
-		Type     string `yaml:"type" env:"APPX_SERVICE_LISTEN_TYPE"`
-		SockName string `yaml:"sock_name" env:"APPX_SERVICE_LISTEN_SOCK"`
-		BindIP   string `yaml:"bind_ip" env:"APPX_SERVICE_BIND"`
-		Port     string `yaml:"port" env:"APPX_SERVICE_PORT"`
+	Servers struct {
+		RestServer struct {
+			ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_SERVER_READ_TIMEOUT"`
+			WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_SERVER_WRITE_TIMEOUT"`
+			ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_SERVER_SHUTDOWN_TIMEOUT"`
+			Listen          struct {
+				Type     string `yaml:"type" env:"APPX_SERVER_LISTEN_TYPE"`
+				SockName string `yaml:"sock_name" env:"APPX_SERVER_LISTEN_SOCK"`
+				BindIP   string `yaml:"bind_ip" env:"APPX_SERVER_LISTEN_BIND"`
+				Port     string `yaml:"port" env:"APPX_SERVER_LISTEN_PORT"`
+			} `yaml:"listen"`
+		} `yaml:"rest_server"`
 	}
 
 	Storage struct {
@@ -170,19 +172,19 @@ type (
 	}
 )
 
-func New(filePath string) (*Config, error) {
-	cfg := &Config{
+func Create(filePath string) (Config, error) {
+	cfg := Config{
 		AppName:    appName,
 		AppVersion: appVersion,
 		ConfigPath: filePath,
 	}
 
-	if err := cleanenv.ReadConfig(filePath, cfg); err != nil {
-		return nil, fmt.Errorf("error parsing config file '%s': %w", filePath, err)
+	if err := cleanenv.ReadConfig(filePath, &cfg); err != nil {
+		return Config{}, fmt.Errorf("error parsing config file '%s': %w", filePath, err)
 	}
 
-	if err := cleanenv.ReadEnv(cfg); err != nil {
-		return nil, fmt.Errorf("error reading ENV from config file '%s': %w", filePath, err)
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
+		return Config{}, fmt.Errorf("error reading ENV from config file '%s': %w", filePath, err)
 	}
 
 	cfg.AppPath = os.Args[0]

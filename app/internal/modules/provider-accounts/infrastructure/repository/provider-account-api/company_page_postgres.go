@@ -8,7 +8,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrlog"
 )
 
 type (
@@ -96,7 +96,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row *entity.C
 		}
 
 		if e != nil {
-			mrctx.Logger(ctx).Err(e)
+			mrlog.Ctx(ctx).Error().Caller().Err(e).Msg("defer func()")
 		}
 	}()
 

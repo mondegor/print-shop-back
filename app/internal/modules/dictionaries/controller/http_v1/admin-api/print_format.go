@@ -11,8 +11,9 @@ import (
 	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrctx"
+
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
@@ -122,7 +123,7 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 		http.StatusCreated,
 		view.SuccessCreatedItemResponse{
 			ItemID: fmt.Sprintf("%d", item.ID),
-			Message: mrctx.Locale(r.Context()).TranslateMessage(
+			Message: mrlang.Ctx(r.Context()).TranslateMessage(
 				"msgDictionariesPrintFormatSuccessCreated",
 				"entity has been success created",
 			),

@@ -5,7 +5,7 @@ import (
 	entity_shared "print-shop-back/internal/modules/controls/entity/shared"
 	usecase_shared "print-shop-back/internal/modules/controls/usecase/shared"
 
-	"github.com/mondegor/go-webcore/mrctx"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrreq"
@@ -73,7 +73,7 @@ func (p *Parser) FilterElementDetailingList(r *http.Request, key string) []entit
 	)
 
 	if err != nil {
-		mrctx.Logger(r.Context()).Warn(err)
+		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
 	}
 
 	return items

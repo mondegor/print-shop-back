@@ -5,15 +5,17 @@ import (
 	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrctx"
-	"github.com/mondegor/go-webcore/mrtool"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	PaperFacture struct {
 		storage       PaperFactureStorage
-		serviceHelper *mrtool.ServiceHelper
+		usecaseHelper *mrcore.UsecaseHelper
 	}
 
 	PaperFactureStorage interface {
@@ -23,11 +25,11 @@ type (
 
 func NewPaperFacture(
 	storage PaperFactureStorage,
-	serviceHelper *mrtool.ServiceHelper,
+	usecaseHelper *mrcore.UsecaseHelper,
 ) *PaperFacture {
 	return &PaperFacture{
 		storage:       storage,
-		serviceHelper: serviceHelper,
+		usecaseHelper: usecaseHelper,
 	}
 }
 
@@ -39,20 +41,21 @@ func (uc *PaperFacture) CheckingAvailability(ctx context.Context, id mrtype.KeyI
 	}
 
 	if err := uc.storage.IsExists(ctx, id); err != nil {
-		if uc.serviceHelper.IsNotFoundError(err) {
+		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPaperFactureNotFound.New(id)
 		}
 
-		return uc.serviceHelper.WrapErrorFailed(err, "Dictionaries.PaperFactureAPI")
+		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PaperFactureAPIName)
 	}
 
 	return nil
 }
 
 func (uc *PaperFacture) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrctx.Logger(ctx).Debug(
-		"Dictionaries.PaperFactureAPI: cmd=%s, data=%s",
-		command,
-		data,
-	)
+	mrlog.Ctx(ctx).
+		Debug().
+		Str("storage", dictionaries.PaperFactureAPIName).
+		Str("cmd", command).
+		Any("data", data).
+		Send()
 }

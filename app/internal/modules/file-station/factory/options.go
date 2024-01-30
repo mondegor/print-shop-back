@@ -5,17 +5,15 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrresponse"
-	"github.com/mondegor/go-webcore/mrtool"
 )
 
 type (
 	Options struct {
-		Logger         mrcore.Logger
-		ServiceHelper  *mrtool.ServiceHelper
+		UsecaseHelper  *mrcore.UsecaseHelper
 		RequestParser  *mrparser.String
 		ResponseSender *mrresponse.Sender
 
-		UnitImageProxy *UnitImageProxyOptions
+		UnitImageProxy UnitImageProxyOptions
 	}
 
 	UnitImageProxyOptions struct {
