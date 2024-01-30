@@ -9,7 +9,7 @@
 - Переименован `ServiceHelper` -> `UsecaseHelper`;
 - Внедрены `mrlib.CallEachFunc`, `CloseFunc` для группового закрытия ресурсов;
 - Переименован `CorrelationID` на `X-Correlation-ID`;
-- Объекты конфигураций/опций теперь передаются по значению (`*Config` -> `Config`, *`Options` -> `Options`);
+- Объекты конфигураций/опций теперь передаются по значению (`*Config` -> `Config`, `*Options` -> `Options`);
 - Внедрён `oklog/run` для управления одновременным запуском нескольких серверов (http, grpc)
 - Добавлены методы для создания и инициализации всех глобальных настроек приложения
   (`CreateAppEnvironment`, `InitAppEnvironment`);
