@@ -12,9 +12,9 @@ const (
 )
 
 type (
-	CompanyPage struct { // DB: ps_provider_accounts.companies_pages
+	CompanyPage struct { // DB: printdata_provider_accounts.companies_pages
 		AccountID mrtype.KeyString `json:"accountId"`                            // account_id
-		UpdatedAt *time.Time       `json:"updatedAt,omitempty" sort:"updatedAt"` // datetime_updated
+		UpdatedAt *time.Time       `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
 		RewriteName string `json:"rewriteName" sort:"rewriteName"`   // rewrite_name
 		PageHead    string `json:"pageHead" sort:"pageHead,default"` // page_head

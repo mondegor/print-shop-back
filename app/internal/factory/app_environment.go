@@ -4,7 +4,12 @@ import (
 	"context"
 	"log"
 	"print-shop-back/config"
-	"print-shop-back/internal/modules"
+	"print-shop-back/internal"
+	factory_catalog "print-shop-back/internal/factory/modules/catalog"
+	factory_controls "print-shop-back/internal/factory/modules/controls"
+	factory_dictionaries "print-shop-back/internal/factory/modules/dictionaries"
+	factory_filestation "print-shop-back/internal/factory/modules/file-station"
+	factory_provideraccounts "print-shop-back/internal/factory/modules/provider-accounts"
 
 	"github.com/mondegor/go-storage/mrredislock"
 	"github.com/mondegor/go-sysmess/mrerr"
@@ -14,7 +19,7 @@ import (
 	"github.com/mondegor/go-webcore/mrlog"
 )
 
-func CreateAppEnvironment(configPath, logLevel string) (context.Context, modules.Options) {
+func CreateAppEnvironment(configPath, logLevel string) (context.Context, app.Options) {
 	cfg, err := config.Create(configPath)
 
 	if err != nil {
@@ -58,7 +63,7 @@ func CreateAppEnvironment(configPath, logLevel string) (context.Context, modules
 	logger.Debug().Msgf("APP PATH: %s", cfg.AppPath)
 
 	ctx := mrlog.WithContext(context.Background(), logger)
-	opts := modules.Options{
+	opts := app.Options{
 		Cfg:          cfg,
 		EventEmitter: logger,
 	}
@@ -66,7 +71,7 @@ func CreateAppEnvironment(configPath, logLevel string) (context.Context, modules
 	return ctx, opts
 }
 
-func InitAppEnvironment(ctx context.Context, opts modules.Options) (modules.Options, error) {
+func InitAppEnvironment(ctx context.Context, opts app.Options) (app.Options, error) {
 	var err error
 
 	// init shared options
@@ -106,43 +111,65 @@ func InitAppEnvironment(ctx context.Context, opts modules.Options) (modules.Opti
 		return opts, err
 	}
 
+	opts.ImageURLBuilder = NewBuilderImagesURL(opts.Cfg)
+
 	// Shared APIs init section (!!! only after init opts)
-	if opts.DictionariesLaminateTypeAPI, err = NewDictionariesLaminateTypeAPI(ctx, opts); err != nil {
+	if opts.DictionariesLaminateTypeAPI, err = factory_dictionaries.NewLaminateTypeAPI(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.DictionariesPaperColorAPI, err = NewDictionariesPaperColorAPI(ctx, opts); err != nil {
+	if opts.DictionariesPaperColorAPI, err = factory_dictionaries.NewPaperColorAPI(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.DictionariesPaperFactureAPI, err = NewDictionariesPaperFactureAPI(ctx, opts); err != nil {
+	if opts.DictionariesPaperFactureAPI, err = factory_dictionaries.NewPaperFactureAPI(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.DictionariesPrintFormatAPI, err = NewDictionariesPrintFormatAPI(ctx, opts); err != nil {
+	if opts.DictionariesPrintFormatAPI, err = factory_dictionaries.NewPrintFormatAPI(ctx, opts); err != nil {
 		return opts, err
 	}
 
 	opts.OrdererAPI = NewOrdererAPI(ctx, opts)
 
 	// Shared module's options (!!! only after init APIs)
-	if opts.CatalogModule, err = NewCatalogModuleOptions(ctx, opts); err != nil {
+	if opts.CatalogBoxModule, err = factory_catalog.NewBoxModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.ControlsModule, err = NewControlsModuleOptions(ctx, opts); err != nil {
+	if opts.CatalogLaminateModule, err = factory_catalog.NewLaminateModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.DictionariesModule, err = NewDictionariesModuleOptions(ctx, opts); err != nil {
+	if opts.CatalogPaperModule, err = factory_catalog.NewPaperModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.FileStationModule, err = NewFileStationModuleOptions(ctx, opts); err != nil {
+	if opts.ControlsModule, err = factory_controls.NewModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 
-	if opts.ProviderAccountsModule, err = NewProviderAccountsModuleOptions(ctx, opts); err != nil {
+	if opts.DictionariesLaminateTypeModule, err = factory_dictionaries.NewLaminateTypeModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.DictionariesPaperColorModule, err = factory_dictionaries.NewPaperColorModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.DictionariesPaperFactureModule, err = factory_dictionaries.NewPaperFactureModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.DictionariesPrintFormatModule, err = factory_dictionaries.NewPrintFormatModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.FileStationModule, err = factory_filestation.NewModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.ProviderAccountsModule, err = factory_provideraccounts.NewModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 

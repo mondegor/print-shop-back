@@ -2,7 +2,7 @@ package factory
 
 import (
 	"context"
-	"print-shop-back/internal/modules"
+	"print-shop-back/internal"
 
 	"github.com/mondegor/go-webcore/mrfactory"
 	"github.com/mondegor/go-webcore/mrperms"
@@ -19,7 +19,7 @@ const (
 	sectionPublicAPIRootPath = "/"
 )
 
-func NewAppSectionAdminAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
+func NewAppSectionAdminAPI(ctx context.Context, opts app.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
 		ctx,
 		mrperms.AppSectionOptions{
@@ -33,7 +33,7 @@ func NewAppSectionAdminAPI(ctx context.Context, opts modules.Options) mrperms.Ap
 	)
 }
 
-func NewAppSectionProviderAccountAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
+func NewAppSectionProviderAccountAPI(ctx context.Context, opts app.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
 		ctx,
 		mrperms.AppSectionOptions{
@@ -47,7 +47,7 @@ func NewAppSectionProviderAccountAPI(ctx context.Context, opts modules.Options) 
 	)
 }
 
-func NewAppSectionPublicAPI(ctx context.Context, opts modules.Options) mrperms.AppSection {
+func NewAppSectionPublicAPI(ctx context.Context, opts app.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
 		ctx,
 		mrperms.AppSectionOptions{

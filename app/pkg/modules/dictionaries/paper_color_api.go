@@ -3,6 +3,7 @@ package dictionaries
 import (
 	"context"
 
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
@@ -15,4 +16,9 @@ type (
 		// CheckingAvailability - error: FactoryErrPaperColorNotFound or Failed
 		CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error
 	}
+)
+
+var (
+	FactoryErrPaperColorNotFound = mrerr.NewFactory(
+		"errDictionariesPaperColorNotFound", mrerr.ErrorKindUser, "paper color with ID={{ .id }} not found")
 )

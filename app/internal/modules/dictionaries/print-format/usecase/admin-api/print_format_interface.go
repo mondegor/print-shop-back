@@ -1,0 +1,34 @@
+package usecase
+
+import (
+	"context"
+	entity "print-shop-back/internal/modules/dictionaries/print-format/entity/admin-api"
+
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-webcore/mrtype"
+)
+
+type (
+	PrintFormatService interface {
+		GetList(ctx context.Context, params entity.PrintFormatParams) ([]entity.PrintFormat, int64, error)
+		GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.PrintFormat, error)
+		Create(ctx context.Context, item *entity.PrintFormat) error
+		Store(ctx context.Context, item *entity.PrintFormat) error
+		ChangeStatus(ctx context.Context, item *entity.PrintFormat) error
+		Remove(ctx context.Context, id mrtype.KeyInt32) error
+	}
+
+	PrintFormatStorage interface {
+		NewFetchParams(params entity.PrintFormatParams) mrstorage.SqlSelectParams
+		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.PrintFormat, error)
+		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
+		LoadOne(ctx context.Context, row *entity.PrintFormat) error
+		FetchStatus(ctx context.Context, row *entity.PrintFormat) (mrenum.ItemStatus, error)
+		IsExists(ctx context.Context, id mrtype.KeyInt32) error
+		Insert(ctx context.Context, row *entity.PrintFormat) error
+		Update(ctx context.Context, row *entity.PrintFormat) (int32, error)
+		UpdateStatus(ctx context.Context, row *entity.PrintFormat) (int32, error)
+		Delete(ctx context.Context, id mrtype.KeyInt32) error
+	}
+)

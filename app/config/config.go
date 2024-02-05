@@ -10,7 +10,7 @@ import (
 
 const (
 	appName    = "Print Shop Service"
-	appVersion = "v0.10.0"
+	appVersion = "v0.11.0"
 )
 
 type (

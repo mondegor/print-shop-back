@@ -49,7 +49,7 @@ func (re *CompanyPageLogoPostgres) UpdateMeta(ctx context.Context, accountID mrt
         UPDATE
             ` + module.UnitCompanyPageDBSchema + `.companies_pages
         SET
-            datetime_updated = NOW(),
+            updated_at = NOW(),
             logo_meta = $2
         WHERE
             account_id = $1;`

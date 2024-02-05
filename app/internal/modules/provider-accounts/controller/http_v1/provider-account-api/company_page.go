@@ -2,7 +2,6 @@ package http_v1
 
 import (
 	"net/http"
-	"print-shop-back/internal/modules/provider-accounts/controller/http_v1/provider-account-api/view"
 	view_shared "print-shop-back/internal/modules/provider-accounts/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/provider-account-api"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/provider-account-api"
@@ -13,8 +12,8 @@ import (
 const (
 	tmpAccountID = "b8a75cd5-ddd1-46ab-be84-406e669cbfa9"
 
-	companyPageItemURL         = "/v1/account/company-page"
-	companyPageChangeStatusURL = "/v1/account/company-page/status"
+	companyPageItemURL             = "/v1/account/company-page"
+	companyPageItemChangeStatusURL = "/v1/account/company-page/status"
 )
 
 type (
@@ -42,7 +41,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 		{http.MethodGet, companyPageItemURL, "", ht.Get},
 		{http.MethodPut, companyPageItemURL, "", ht.Store},
 
-		{http.MethodPut, companyPageChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPut, companyPageItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -57,7 +56,7 @@ func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
-	request := view.StoreCompanyPageRequest{}
+	request := StoreCompanyPageRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -78,7 +77,7 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangePublicStatusRequest{}
+	request := ChangePublicStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

@@ -2,10 +2,15 @@ package factory
 
 import (
 	"context"
-	"print-shop-back/internal/modules"
-	factory_catalog_adm "print-shop-back/internal/modules/catalog/factory/admin-api"
+	"print-shop-back/internal"
+	factory_catalog_box_adm "print-shop-back/internal/modules/catalog/box/factory/admin-api"
+	factory_catalog_laminate_adm "print-shop-back/internal/modules/catalog/laminate/factory/admin-api"
+	factory_catalog_paper_adm "print-shop-back/internal/modules/catalog/paper/factory/admin-api"
 	factory_controls_adm "print-shop-back/internal/modules/controls/factory/admin-api"
-	factory_dictionaries_adm "print-shop-back/internal/modules/dictionaries/factory/admin-api"
+	factory_dictionaries_laminatetype_adm "print-shop-back/internal/modules/dictionaries/laminate-type/factory/admin-api"
+	factory_dictionaries_papercolor_adm "print-shop-back/internal/modules/dictionaries/paper-color/factory/admin-api"
+	factory_dictionaries_paperfacture_adm "print-shop-back/internal/modules/dictionaries/paper-facture/factory/admin-api"
+	factory_dictionaries_printformat_adm "print-shop-back/internal/modules/dictionaries/print-format/factory/admin-api"
 	factory_filestation_pub "print-shop-back/internal/modules/file-station/factory/public-api"
 	factory_provider_accounts_adm "print-shop-back/internal/modules/provider-accounts/factory/admin-api"
 	factory_provider_accounts_pacc "print-shop-back/internal/modules/provider-accounts/factory/provider-account-api"
@@ -21,7 +26,7 @@ const (
 	restServerCaption = "RestServer"
 )
 
-func NewRestServer(ctx context.Context, opts modules.Options) (*mrserver.ServerAdapter, error) {
+func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapter, error) {
 	mrlog.Ctx(ctx).Info().Msgf("Create and init '%s'", restServerCaption)
 
 	router, err := NewRestRouter(ctx, opts.Cfg, opts.Translator)
@@ -37,7 +42,23 @@ func NewRestServer(ctx context.Context, opts modules.Options) (*mrserver.ServerA
 		return nil, err
 	}
 
-	if controllers, err := factory_catalog_adm.CreateModule(ctx, opts.CatalogModule); err != nil {
+	if controllers, err := factory_catalog_box_adm.CreateModule(ctx, opts.CatalogBoxModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_catalog_laminate_adm.CreateModule(ctx, opts.CatalogLaminateModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_catalog_paper_adm.CreateModule(ctx, opts.CatalogPaperModule); err != nil {
 		return nil, err
 	} else {
 		router.Register(
@@ -53,7 +74,31 @@ func NewRestServer(ctx context.Context, opts modules.Options) (*mrserver.ServerA
 		)
 	}
 
-	if controllers, err := factory_dictionaries_adm.CreateModule(ctx, opts.DictionariesModule); err != nil {
+	if controllers, err := factory_dictionaries_laminatetype_adm.CreateModule(ctx, opts.DictionariesLaminateTypeModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_dictionaries_papercolor_adm.CreateModule(ctx, opts.DictionariesPaperColorModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_dictionaries_paperfacture_adm.CreateModule(ctx, opts.DictionariesPaperFactureModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_dictionaries_printformat_adm.CreateModule(ctx, opts.DictionariesPrintFormatModule); err != nil {
 		return nil, err
 	} else {
 		router.Register(

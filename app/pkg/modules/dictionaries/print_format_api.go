@@ -3,6 +3,7 @@ package dictionaries
 import (
 	"context"
 
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
@@ -15,4 +16,9 @@ type (
 		// CheckingAvailability - error: FactoryErrPrintFormatNotFound or Failed
 		CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error
 	}
+)
+
+var (
+	FactoryErrPrintFormatNotFound = mrerr.NewFactory(
+		"errDictionariesPrintFormatNotFound", mrerr.ErrorKindUser, "print format with ID={{ .id }} not found")
 )

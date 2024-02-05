@@ -13,9 +13,9 @@ const (
 )
 
 type (
-	CompanyPage struct { // DB: ps_provider_accounts.companies_pages
+	CompanyPage struct { // DB: printdata_provider_accounts.companies_pages
 		AccountID mrtype.KeyString // account_id
-		UpdatedAt time.Time        `json:"updatedAt"` // datetime_updated
+		UpdatedAt time.Time        `json:"updatedAt"` // updated_at
 
 		RewriteName string `json:"rewriteName"`       // rewrite_name
 		PageHead    string `json:"pageHead"`          // page_head

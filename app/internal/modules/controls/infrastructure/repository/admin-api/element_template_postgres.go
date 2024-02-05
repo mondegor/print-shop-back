@@ -61,8 +61,8 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
         SELECT
             template_id,
             tag_version,
-            datetime_created as createdAt,
-			datetime_updated as updatedAt,
+            created_at as createdAt,
+			updated_at as updatedAt,
             param_name as paramName,
             template_caption as caption,
             element_type,
@@ -144,8 +144,8 @@ func (re *ElementTemplatePostgres) LoadOne(ctx context.Context, row *entity.Elem
 	sql := `
         SELECT
             tag_version,
-            datetime_created,
-			datetime_updated,
+            created_at,
+			updated_at,
             param_name,
             template_caption,
             element_type,
@@ -274,7 +274,7 @@ func (re *ElementTemplatePostgres) Update(ctx context.Context, row *entity.Eleme
             ` + module.UnitElementTemplateDBSchema + `.element_templates
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             ` + setStr + `
         WHERE
             template_id = $1 AND tag_version = $2 AND template_status <> $3
@@ -300,7 +300,7 @@ func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row *entity
             ` + module.UnitElementTemplateDBSchema + `.element_templates
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             template_status = $4
         WHERE
             template_id = $1 AND tag_version = $2 AND template_status <> $3
@@ -329,7 +329,7 @@ func (re *ElementTemplatePostgres) Delete(ctx context.Context, id mrtype.KeyInt3
             ` + module.UnitElementTemplateDBSchema + `.element_templates
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             param_name = NULL,
             template_status = $2
         WHERE

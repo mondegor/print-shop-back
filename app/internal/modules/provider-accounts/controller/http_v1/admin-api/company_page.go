@@ -3,7 +3,6 @@ package http_v1
 import (
 	"net/http"
 	module "print-shop-back/internal/modules/provider-accounts"
-	"print-shop-back/internal/modules/provider-accounts/controller/http_v1/admin-api/view"
 	view_shared "print-shop-back/internal/modules/provider-accounts/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/admin-api"
 	usecase "print-shop-back/internal/modules/provider-accounts/usecase/admin-api"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	companyPageURL = "/v1/provider-accounts/companies-pages"
+	companyPageListURL = "/v1/provider-accounts/companies-pages"
 )
 
 type (
@@ -41,7 +40,7 @@ func NewCompanyPage(
 
 func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{http.MethodGet, companyPageURL, "", ht.GetList},
+		{http.MethodGet, companyPageListURL, "", ht.GetList},
 	}
 }
 
@@ -55,7 +54,7 @@ func (ht *CompanyPage) GetList(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusOK,
-		view.CompanyPageListResponse{
+		CompanyPageListResponse{
 			Items: items,
 			Total: totalItems,
 		},

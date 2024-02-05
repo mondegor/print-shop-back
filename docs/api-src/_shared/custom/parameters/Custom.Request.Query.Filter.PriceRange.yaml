@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.PriceMin:
+  description: Минимальная цена (10^2)
+  name: price-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100g/m2
+
+Custom.Request.Query.Filter.PriceMax:
+  description: Максимальная цена (10^2)
+  name: price-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 100000 # 100g/m2

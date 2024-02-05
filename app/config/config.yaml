@@ -75,13 +75,13 @@ translation:
   dictionaries:
     dir_path: "./translate/dict"
     list:
-      - catalog/box
-      - catalog/laminate
-      - catalog/paper
-      - dictionaries/laminate-type
-      - dictionaries/paper-color
-      - dictionaries/paper-facture
-      - dictionaries/print-format
+      - catalog/boxes
+      - catalog/laminates
+      - catalog/papers
+      - dictionaries/laminate-types
+      - dictionaries/paper-colors
+      - dictionaries/paper-factures
+      - dictionaries/print-formats
 
 app_sections:
   admin_api:

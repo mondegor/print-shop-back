@@ -61,8 +61,8 @@ func (re *FormDataPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelec
         SELECT
             form_id,
             tag_version,
-            datetime_created as createdAt,
-			datetime_updated as updatedAt,
+            created_at as createdAt,
+			updated_at as updatedAt,
             param_name as paramName,
             form_caption as caption,
             form_detailing,
@@ -140,8 +140,8 @@ func (re *FormDataPostgres) LoadOne(ctx context.Context, row *entity.FormData) e
 	sql := `
         SELECT
             tag_version,
-            datetime_created,
-			datetime_updated,
+            created_at,
+			updated_at,
             param_name,
             form_caption,
             form_detailing,
@@ -288,7 +288,7 @@ func (re *FormDataPostgres) Update(ctx context.Context, row *entity.FormData) (i
             ` + module.UnitFormDataDBSchema + `.forms
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             ` + setStr + `
         WHERE
             form_id = $1 AND tag_version = $2 AND form_status <> $3
@@ -314,7 +314,7 @@ func (re *FormDataPostgres) UpdateStatus(ctx context.Context, row *entity.FormDa
             ` + module.UnitFormDataDBSchema + `.forms
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             form_status = $4
         WHERE
             form_id = $1 AND tag_version = $2 AND form_status <> $3
@@ -343,7 +343,7 @@ func (re *FormDataPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) erro
             ` + module.UnitFormDataDBSchema + `.forms
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             param_name = NULL,
             form_status = $2
         WHERE

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
-	"print-shop-back/internal/modules/controls/controller/http_v1/admin-api/view"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	usecase "print-shop-back/internal/modules/controls/usecase/admin-api"
@@ -20,9 +19,9 @@ import (
 )
 
 const (
-	formElementURL     = "/v1/controls/form-elements"
-	formElementItemURL = "/v1/controls/form-elements/:id"
-	formElementMoveURL = "/v1/controls/form-elements/:id/move"
+	formElementListURL     = "/v1/controls/form-elements"
+	formElementItemURL     = "/v1/controls/form-elements/:id"
+	formElementItemMoveURL = "/v1/controls/form-elements/:id/move"
 )
 
 type (
@@ -50,14 +49,14 @@ func NewFormElement(
 
 func (ht *FormElement) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{http.MethodGet, formElementURL, "", ht.GetList},
-		{http.MethodPost, formElementURL, "", ht.Create},
+		{http.MethodGet, formElementListURL, "", ht.GetList},
+		{http.MethodPost, formElementListURL, "", ht.Create},
 
 		{http.MethodGet, formElementItemURL, "", ht.Get},
 		{http.MethodPut, formElementItemURL, "", ht.Store},
 		{http.MethodDelete, formElementItemURL, "", ht.Remove},
 
-		{http.MethodPatch, formElementMoveURL, "", ht.Move},
+		{http.MethodPatch, formElementItemMoveURL, "", ht.Move},
 	}
 }
 
@@ -77,7 +76,7 @@ func (ht *FormElement) GetList(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusOK,
-		view.FormElementListResponse{
+		FormElementListResponse{
 			Items: items,
 			Total: totalItems,
 		},
@@ -107,7 +106,7 @@ func (ht *FormElement) Get(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
-	request := view.CreateFormElementRequest{}
+	request := CreateFormElementRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -128,7 +127,7 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		SuccessCreatedItemResponse{
 			ItemID: fmt.Sprintf("%d", item.ID),
 			Message: mrlang.Ctx(r.Context()).TranslateMessage(
 				"msgControlsFormElementSuccessCreated",
@@ -139,7 +138,7 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
-	request := view.StoreFormElementRequest{}
+	request := StoreFormElementRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -169,7 +168,7 @@ func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
-	request := view.MoveFormElementRequest{}
+	request := MoveFormElementRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

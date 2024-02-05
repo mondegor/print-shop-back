@@ -12,11 +12,11 @@ const (
 )
 
 type (
-	FormElement struct { // DB: ps_controls.form_elements
+	FormElement struct { // DB: printdata_controls.form_elements
 		ID         mrtype.KeyInt32 `json:"id"`                                   // element_id
 		TagVersion int32           `json:"version"`                              // tag_version
-		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // datetime_created
-		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // datetime_updated
+		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
+		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
 		FormID     mrtype.KeyInt32 `json:"formId"` // form_id
 		ParamName  string          `json:"paramName" sort:"paramName" upd:"param_name"`

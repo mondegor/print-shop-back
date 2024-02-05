@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
-	"print-shop-back/internal/modules/controls/controller/http_v1/admin-api/view"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	usecase "print-shop-back/internal/modules/controls/usecase/admin-api"
@@ -19,10 +18,10 @@ import (
 )
 
 const (
-	formDataURL             = "/v1/controls/forms"
-	formDataItemURL         = "/v1/controls/forms/:id"
-	formDataChangeStatusURL = "/v1/controls/forms/:id/status"
-	formDataCompileURL      = "/v1/controls/forms/:id/compile"
+	formDataListURL             = "/v1/controls/forms"
+	formDataItemURL             = "/v1/controls/forms/:id"
+	formDataItemChangeStatusURL = "/v1/controls/forms/:id/status"
+	formDataItemCompileURL      = "/v1/controls/forms/:id/compile"
 )
 
 type (
@@ -53,16 +52,16 @@ func NewFormData(
 
 func (ht *FormData) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{http.MethodGet, formDataURL, "", ht.GetList},
-		{http.MethodPost, formDataURL, "", ht.Create},
+		{http.MethodGet, formDataListURL, "", ht.GetList},
+		{http.MethodPost, formDataListURL, "", ht.Create},
 
 		{http.MethodGet, formDataItemURL, "", ht.Get},
 		{http.MethodPut, formDataItemURL, "", ht.Store},
 		{http.MethodDelete, formDataItemURL, "", ht.Remove},
 
-		{http.MethodPut, formDataChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPut, formDataItemChangeStatusURL, "", ht.ChangeStatus},
 
-		{http.MethodPatch, formDataCompileURL, "", ht.Compile},
+		{http.MethodPatch, formDataItemCompileURL, "", ht.Compile},
 	}
 }
 
@@ -76,7 +75,7 @@ func (ht *FormData) GetList(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusOK,
-		view.FormDataListResponse{
+		FormDataListResponse{
 			Items: items,
 			Total: totalItems,
 		},
@@ -106,7 +105,7 @@ func (ht *FormData) Get(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormData) Create(w http.ResponseWriter, r *http.Request) error {
-	request := view.CreateFormDataRequest{}
+	request := CreateFormDataRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -125,7 +124,7 @@ func (ht *FormData) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		SuccessCreatedItemResponse{
 			ItemID: fmt.Sprintf("%d", item.ID),
 			Message: mrlang.Ctx(r.Context()).TranslateMessage(
 				"msgControlsFormDataSuccessCreated",
@@ -136,7 +135,7 @@ func (ht *FormData) Create(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormData) Store(w http.ResponseWriter, r *http.Request) error {
-	request := view.StoreFormDataRequest{}
+	request := StoreFormDataRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -158,7 +157,7 @@ func (ht *FormData) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormData) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	request := ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

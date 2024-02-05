@@ -53,7 +53,7 @@ func (re *CompanyPagePostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
 	sql := `
         SELECT
             account_id,
-            datetime_updated as updatedAt,
+            updated_at as updatedAt,
             rewrite_name as rewriteName,
             page_head as pageHead,
             COALESCE(logo_meta ->> 'path', '') as logo_url,

@@ -28,7 +28,7 @@ func NewCompanyPagePostgres(
 func (re *CompanyPagePostgres) LoadOne(ctx context.Context, row *entity.CompanyPage) error {
 	sql := `
         SELECT
-            datetime_updated,
+            updated_at,
             rewrite_name,
             page_head,
             COALESCE(logo_meta ->> 'path', '') as logo_url,
@@ -156,7 +156,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row *entity.C
         UPDATE
             ` + module.UnitCompanyPageDBSchema + `.companies_pages
         SET
-            datetime_updated = NOW(),
+            updated_at = NOW(),
             rewrite_name = $2,
             page_head = $3,
             site_url = $4
@@ -181,7 +181,7 @@ func (re *CompanyPagePostgres) UpdateStatus(ctx context.Context, row *entity.Com
         UPDATE
             ` + module.UnitCompanyPageDBSchema + `.companies_pages
         SET
-            datetime_updated = NOW(),
+            updated_at = NOW(),
             page_status = $2
         WHERE
             account_id = $1;`

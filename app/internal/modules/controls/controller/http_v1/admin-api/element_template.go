@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
-	"print-shop-back/internal/modules/controls/controller/http_v1/admin-api/view"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	usecase "print-shop-back/internal/modules/controls/usecase/admin-api"
@@ -19,9 +18,9 @@ import (
 )
 
 const (
-	elementTemplateURL             = "/v1/controls/element-templates"
-	elementTemplateItemURL         = "/v1/controls/element-templates/:id"
-	elementTemplateChangeStatusURL = "/v1/controls/element-templates/:id/status"
+	elementListTemplateURL             = "/v1/controls/element-templates"
+	elementTemplateItemURL             = "/v1/controls/element-templates/:id"
+	elementTemplateItemChangeStatusURL = "/v1/controls/element-templates/:id/status"
 )
 
 type (
@@ -49,14 +48,14 @@ func NewElementTemplate(
 
 func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{http.MethodGet, elementTemplateURL, "", ht.GetList},
-		{http.MethodPost, elementTemplateURL, "", ht.Create},
+		{http.MethodGet, elementListTemplateURL, "", ht.GetList},
+		{http.MethodPost, elementListTemplateURL, "", ht.Create},
 
 		{http.MethodGet, elementTemplateItemURL, "", ht.Get},
 		{http.MethodPut, elementTemplateItemURL, "", ht.Store},
 		{http.MethodDelete, elementTemplateItemURL, "", ht.Remove},
 
-		{http.MethodPut, elementTemplateChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPut, elementTemplateItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -70,7 +69,7 @@ func (ht *ElementTemplate) GetList(w http.ResponseWriter, r *http.Request) error
 	return ht.sender.Send(
 		w,
 		http.StatusOK,
-		view.ElementTemplateListResponse{
+		ElementTemplateListResponse{
 			Items: items,
 			Total: totalItems,
 		},
@@ -100,7 +99,7 @@ func (ht *ElementTemplate) Get(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
-	request := view.CreateElementTemplateRequest{}
+	request := CreateElementTemplateRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -121,7 +120,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		SuccessCreatedItemResponse{
 			ItemID: fmt.Sprintf("%d", item.ID),
 			Message: mrlang.Ctx(r.Context()).TranslateMessage(
 				"msgControlsElementTemplateSuccessCreated",
@@ -132,7 +131,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 }
 
 func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
-	request := view.StoreElementTemplateRequest{}
+	request := StoreElementTemplateRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err
@@ -156,7 +155,7 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	request := ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

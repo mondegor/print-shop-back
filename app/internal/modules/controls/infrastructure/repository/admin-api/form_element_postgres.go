@@ -73,8 +73,8 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
         SELECT
             fe.element_id,
             fe.tag_version,
-            fe.datetime_created as createdAt,
-			fe.datetime_updated as updatedAt,
+            fe.created_at as createdAt,
+			fe.updated_at as updatedAt,
 			fe.form_id,
             fe.param_name as paramName,
             fe.element_caption as caption,
@@ -168,8 +168,8 @@ func (re *FormElementPostgres) LoadOne(ctx context.Context, row *entity.FormElem
 	sql := `
         SELECT
             fe.tag_version,
-            fe.datetime_created,
-			fe.datetime_updated,
+            fe.created_at,
+			fe.updated_at,
 			fe.form_id,
             fe.param_name,
             fe.element_caption,
@@ -305,7 +305,7 @@ func (re *FormElementPostgres) Update(ctx context.Context, row *entity.FormEleme
             ` + module.UnitFormElementsDBSchema + `.form_elements
         SET
             tag_version = tag_version + 1,
-			datetime_updated = NOW(),
+			updated_at = NOW(),
             ` + setStr + `
         WHERE
             element_id = $1 AND tag_version = $2

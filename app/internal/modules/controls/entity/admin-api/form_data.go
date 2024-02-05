@@ -13,11 +13,11 @@ const (
 )
 
 type (
-	FormData struct { // DB: ps_controls.forms
+	FormData struct { // DB: printdata_controls.forms
 		ID         mrtype.KeyInt32 `json:"id"`                                   // form_id
 		TagVersion int32           `json:"version"`                              // tag_version
-		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // datetime_created
-		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // datetime_updated
+		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
+		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
 		ParamName string                         `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption   string                         `json:"caption" sort:"caption,default" upd:"form_caption"`

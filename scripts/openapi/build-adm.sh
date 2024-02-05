@@ -80,6 +80,7 @@ mrcmd_func_openapi_build_adm() {
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DepthRange.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ElementDetailing.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LengthRange.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 

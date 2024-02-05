@@ -3,7 +3,7 @@ package factory
 import (
 	"context"
 	"print-shop-back/config"
-	"print-shop-back/internal/modules"
+	"print-shop-back/internal"
 
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
@@ -13,18 +13,18 @@ import (
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
 )
 
-func CreateRequestParsers(ctx context.Context, cfg config.Config) (modules.RequestParsers, error) {
+func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestParsers, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init base request parser")
 
 	validator, err := NewValidator(ctx, cfg)
 
 	if err != nil {
-		return modules.RequestParsers{}, err
+		return app.RequestParsers{}, err
 	}
 
 	pathFunc := mrjulienrouter.PathParam
 
-	return modules.RequestParsers{
+	return app.RequestParsers{
 		// Bool:       mrparser.NewBool(),
 		// DateTime:   mrparser.NewDateTime(),
 		Int64:      mrparser.NewInt64(pathFunc),

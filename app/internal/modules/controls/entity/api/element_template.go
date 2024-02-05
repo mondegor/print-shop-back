@@ -5,7 +5,7 @@ import (
 )
 
 type (
-	ElementTemplateHead struct { // DB: ps_controls.element_templates
+	ElementTemplateHead struct { // DB: printdata_controls.element_templates
 		ID        mrtype.KeyInt32
 		ParamName string
 		Caption   string

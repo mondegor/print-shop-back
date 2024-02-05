@@ -13,11 +13,11 @@ const (
 )
 
 type (
-	ElementTemplate struct { // DB: ps_controls.element_templates
+	ElementTemplate struct { // DB: printdata_controls.element_templates
 		ID         mrtype.KeyInt32 `json:"id"`                                   // template_id
 		TagVersion int32           `json:"version"`                              // tag_version
-		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // datetime_created
-		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // datetime_updated
+		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
+		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
 		ParamName string                         `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption   string                         `json:"caption" sort:"caption,default" upd:"template_caption"`
