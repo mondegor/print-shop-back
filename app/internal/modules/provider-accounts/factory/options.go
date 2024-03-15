@@ -23,6 +23,9 @@ type (
 		ResponseSender  *mrresponse.Sender
 
 		UnitCompanyPage UnitCompanyPageOptions
+
+		PageSizeMax     uint64
+		PageSizeDefault uint64
 	}
 
 	UnitCompanyPageOptions struct {

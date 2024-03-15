@@ -28,7 +28,7 @@ type (
 	Laminate struct {
 		parser     view_shared.RequestParser
 		sender     mrserver.ResponseSender
-		service    usecase.LaminateService
+		useCase    usecase.LaminateUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -36,13 +36,13 @@ type (
 func NewLaminate(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.LaminateService,
+	useCase usecase.LaminateUseCase,
 	listSorter mrview.ListSorter,
 ) *Laminate {
 	return &Laminate{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		listSorter: listSorter,
 	}
 }
@@ -61,7 +61,7 @@ func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *Laminate) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+	items, totalItems, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
 
 	if err != nil {
 		return err
@@ -92,7 +92,7 @@ func (ht *Laminate) listParams(r *http.Request) entity.LaminateParams {
 }
 
 func (ht *Laminate) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
+	item, err := ht.useCase.GetItem(r.Context(), ht.getItemID(r))
 
 	if err != nil {
 		return ht.wrapError(err, r)
@@ -117,21 +117,21 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 		Thickness: request.Thickness,
 	}
 
-	if err := ht.service.Create(r.Context(), &item); err != nil {
+	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
+	} else {
+		return ht.sender.Send(
+			w,
+			http.StatusCreated,
+			SuccessCreatedItemResponse{
+				ItemID: strconv.Itoa(int(itemID)),
+				Message: mrlang.Ctx(r.Context()).TranslateMessage(
+					"msgCatalogLaminateSuccessCreated",
+					"entity has been success created",
+				),
+			},
+		)
 	}
-
-	return ht.sender.Send(
-		w,
-		http.StatusCreated,
-		SuccessCreatedItemResponse{
-			ItemID: strconv.Itoa(int(item.ID)),
-			Message: mrlang.Ctx(r.Context()).TranslateMessage(
-				"msgCatalogLaminateSuccessCreated",
-				"entity has been success created",
-			),
-		},
-	)
 }
 
 func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
@@ -152,7 +152,7 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 		Thickness:  request.Thickness,
 	}
 
-	if err := ht.service.Store(r.Context(), &item); err != nil {
+	if err := ht.useCase.Store(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -172,7 +172,7 @@ func (ht *Laminate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
 		Status:     request.Status,
 	}
 
-	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -180,7 +180,7 @@ func (ht *Laminate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *Laminate) Remove(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+	if err := ht.useCase.Remove(r.Context(), ht.getItemID(r)); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -196,15 +196,15 @@ func (ht *Laminate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Laminate) wrapError(err error, r *http.Request) error {
-	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityNotFound.Is(err) {
 		return usecase_shared.FactoryErrLaminateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("version", err)
 	}
 
-	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
+	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

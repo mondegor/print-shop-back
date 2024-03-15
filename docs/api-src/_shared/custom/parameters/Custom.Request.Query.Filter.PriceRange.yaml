@@ -6,7 +6,7 @@ Custom.Request.Query.Filter.PriceMin:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100g/m2
+  example: 100000 # 100 coins
 
 Custom.Request.Query.Filter.PriceMax:
   description: Максимальная цена (10^2)
@@ -16,4 +16,4 @@ Custom.Request.Query.Filter.PriceMax:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100g/m2
+  example: 100000 # 100 coins

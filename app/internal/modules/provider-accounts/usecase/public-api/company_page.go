@@ -26,7 +26,7 @@ func NewCompanyPage(
 
 func (uc *CompanyPage) GetItemByName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error) {
 	if rewriteName == "" {
-		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
+		return nil, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	item, err := uc.storage.FetchByRewriteName(ctx, rewriteName)

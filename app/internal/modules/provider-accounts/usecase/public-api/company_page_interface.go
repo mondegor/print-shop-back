@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	CompanyPageService interface {
+	CompanyPageUseCase interface {
 		GetItemByName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error)
 	}
 

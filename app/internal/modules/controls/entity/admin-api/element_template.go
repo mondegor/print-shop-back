@@ -13,7 +13,7 @@ const (
 )
 
 type (
-	ElementTemplate struct { // DB: printdata_controls.element_templates
+	ElementTemplate struct { // DB: printshop_controls.element_templates
 		ID         mrtype.KeyInt32 `json:"id"`                                   // template_id
 		TagVersion int32           `json:"version"`                              // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at

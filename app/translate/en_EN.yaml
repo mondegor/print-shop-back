@@ -25,7 +25,7 @@ errors:
   errHttpRequestParseData:
     reason: "Request body is not valid"
 
-  errServiceTemporarilyUnavailable:
+  errUseCaseTemporarilyUnavailable:
     reason: "The system is temporarily unable to process your request. Please try again later"
 
   # Ошибки генерируемые валидатором.

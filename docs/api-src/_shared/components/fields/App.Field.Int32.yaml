@@ -1,0 +1,5 @@
+App.Field.Int32:
+  description: Целое 32-ти разрядное число
+  type: integer
+  format: int32
+  example: 2147483647

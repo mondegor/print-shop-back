@@ -140,7 +140,7 @@ func (re *ElementTemplatePostgres) FetchTotal(ctx context.Context, where mrstora
 	return totalRow, err
 }
 
-func (re *ElementTemplatePostgres) LoadOne(ctx context.Context, row *entity.ElementTemplate) error {
+func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.ElementTemplate, error) {
 	sql := `
         SELECT
             tag_version,
@@ -158,10 +158,12 @@ func (re *ElementTemplatePostgres) LoadOne(ctx context.Context, row *entity.Elem
             template_id = $1 AND template_status <> $2
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.ElementTemplate{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -174,9 +176,11 @@ func (re *ElementTemplatePostgres) LoadOne(ctx context.Context, row *entity.Elem
 		&row.Body,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, row *entity.ElementTemplate) (mrenum.ItemStatus, error) {
+func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, row entity.ElementTemplate) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             template_status
@@ -202,10 +206,10 @@ func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, row *entity.
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *ElementTemplatePostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *ElementTemplatePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         SELECT
-            1
+            template_id
         FROM
             ` + module.UnitElementTemplateDBSchema + `.element_templates
         WHERE
@@ -215,14 +219,14 @@ func (re *ElementTemplatePostgres) IsExists(ctx context.Context, id mrtype.KeyIn
 	return re.client.QueryRow(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&id,
+		&rowID,
 	)
 }
 
-func (re *ElementTemplatePostgres) Insert(ctx context.Context, row *entity.ElementTemplate) error {
+func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.ElementTemplate) (mrtype.KeyInt32, error) {
 	sql := `
         INSERT INTO ` + module.UnitElementTemplateDBSchema + `.element_templates
             (
@@ -251,10 +255,10 @@ func (re *ElementTemplatePostgres) Insert(ctx context.Context, row *entity.Eleme
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *ElementTemplatePostgres) Update(ctx context.Context, row *entity.ElementTemplate) (int32, error) {
+func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.ElementTemplate) (int32, error) {
 	set, err := re.sqlUpdate.SetFromEntity(row)
 
 	if err != nil || set.Empty() {
@@ -294,7 +298,7 @@ func (re *ElementTemplatePostgres) Update(ctx context.Context, row *entity.Eleme
 	return tagVersion, err
 }
 
-func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row *entity.ElementTemplate) (int32, error) {
+func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row entity.ElementTemplate) (int32, error) {
 	sql := `
         UPDATE
             ` + module.UnitElementTemplateDBSchema + `.element_templates
@@ -323,7 +327,7 @@ func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row *entity
 	return tagVersion, err
 }
 
-func (re *ElementTemplatePostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *ElementTemplatePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         UPDATE
             ` + module.UnitElementTemplateDBSchema + `.element_templates
@@ -338,7 +342,7 @@ func (re *ElementTemplatePostgres) Delete(ctx context.Context, id mrtype.KeyInt3
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

@@ -1,9 +1,9 @@
 App.Request.Header.CorrelationID:
-  description: Уникальный идентификатор запроса
-  name: X-Correlation-ID
+  description: Уникальный идентификатор клиента
+  name: X-Correlation-Id
   in: header
   required: false
   schema:
     type: string
     format: uuid
-  example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+  example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"

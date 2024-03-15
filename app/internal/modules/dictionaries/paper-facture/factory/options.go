@@ -22,6 +22,9 @@ type (
 		UnitPaperColor         UnitPaperColorOptions
 		UnitPaperFacture       UnitPaperFactureOptions
 		UnitPrintFormatFacture UnitPrintFormatOptions
+
+		PageSizeMax     uint64
+		PageSizeDefault uint64
 	}
 
 	UnitLaminateTypeOptions struct {
@@ -39,4 +42,7 @@ type (
 	UnitPrintFormatOptions struct {
 		Dictionary *mrlang.MultiLangDictionary
 	}
+
+	PageSizeMax     uint64
+	PageSizeDefault uint64
 )

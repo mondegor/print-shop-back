@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/controls"
 	http_v1 "print-shop-back/internal/modules/controls/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	"print-shop-back/internal/modules/controls/factory"
@@ -41,21 +40,22 @@ func newUnitElementTemplate(ctx context.Context, opts factory.Options) (*http_v1
 
 	storage := repository.NewElementTemplatePostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
-		mrsql.NewBuilderUpdateWithMeta(
+		mrpostgres.NewSqlBuilderUpdateWithMeta(
 			entityMetaUpdate,
 			mrpostgres.NewSqlBuilderSet(),
+			nil,
 		),
 	)
-	service := usecase.NewElementTemplate(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewElementTemplate(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewElementTemplate(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

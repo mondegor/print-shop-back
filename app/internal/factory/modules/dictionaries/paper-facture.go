@@ -26,7 +26,8 @@ func NewPaperFactureModuleOptions(ctx context.Context, opts app.Options) (factor
 			opts.RequestParsers.Int64,
 			opts.RequestParsers.ItemStatus,
 			opts.RequestParsers.KeyInt32,
-			opts.RequestParsers.SortPage,
+			opts.RequestParsers.ListSorter,
+			opts.RequestParsers.ListPager,
 			opts.RequestParsers.String,
 			opts.RequestParsers.Validator,
 		),
@@ -35,6 +36,9 @@ func NewPaperFactureModuleOptions(ctx context.Context, opts app.Options) (factor
 		UnitPaperFacture: factory.UnitPaperFactureOptions{
 			Dictionary: paperFactureDictionary,
 		},
+
+		PageSizeMax:     opts.Cfg.General.PageSizeMax,
+		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
 	}, nil
 }
 

@@ -6,7 +6,7 @@ Custom.Request.Query.Filter.WidthMin:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100mm
+  example: 100000 # 100 mm
 
 Custom.Request.Query.Filter.WidthMax:
   description: Максимальная ширина (µm)
@@ -16,4 +16,4 @@ Custom.Request.Query.Filter.WidthMax:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100mm
+  example: 100000 # 100 mm

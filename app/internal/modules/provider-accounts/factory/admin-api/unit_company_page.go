@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/provider-accounts"
 	http_v1 "print-shop-back/internal/modules/provider-accounts/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/admin-api"
 	"print-shop-back/internal/modules/provider-accounts/factory"
@@ -35,17 +34,17 @@ func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.Com
 
 	storage := repository.NewCompanyPagePostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
 	)
-	service := usecase.NewCompanyPage(storage, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := http_v1.NewCompanyPage(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

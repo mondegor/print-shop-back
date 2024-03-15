@@ -19,7 +19,7 @@ type (
 	}
 
 	PaperColorStorage interface {
-		IsExists(ctx context.Context, id mrtype.KeyInt32) error
+		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
 	}
 )
 
@@ -33,16 +33,16 @@ func NewPaperColor(
 	}
 }
 
-func (uc *PaperColor) CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error {
-	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": id})
+func (uc *PaperColor) CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error {
+	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
-	if id < 1 {
-		return dictionaries.FactoryErrPaperColorNotFound.New(id)
+	if itemID < 1 {
+		return dictionaries.FactoryErrPaperColorNotFound.New(itemID)
 	}
 
-	if err := uc.storage.IsExists(ctx, id); err != nil {
+	if err := uc.storage.IsExists(ctx, itemID); err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return dictionaries.FactoryErrPaperColorNotFound.New(id)
+			return dictionaries.FactoryErrPaperColorNotFound.New(itemID)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PaperColorAPIName)

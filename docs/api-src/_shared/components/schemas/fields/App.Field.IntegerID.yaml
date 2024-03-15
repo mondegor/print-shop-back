@@ -1,5 +1,0 @@
-App.Field.IntegerID:
-  description: Идентификатор записи
-  type: integer
-  minimum: 1
-  example: 1000

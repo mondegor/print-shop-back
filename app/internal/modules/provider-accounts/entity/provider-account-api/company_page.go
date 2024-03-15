@@ -13,7 +13,7 @@ const (
 )
 
 type (
-	CompanyPage struct { // DB: printdata_provider_accounts.companies_pages
+	CompanyPage struct { // DB: printshop_provider_accounts.companies_pages
 		AccountID mrtype.KeyString // account_id
 		UpdatedAt time.Time        `json:"updatedAt"` // updated_at
 

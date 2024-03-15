@@ -128,7 +128,7 @@ func (re *PaperColorPostgres) FetchTotal(ctx context.Context, where mrstorage.Sq
 	return totalRow, err
 }
 
-func (re *PaperColorPostgres) LoadOne(ctx context.Context, row *entity.PaperColor) error {
+func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperColor, error) {
 	sql := `
         SELECT
             tag_version,
@@ -142,10 +142,12 @@ func (re *PaperColorPostgres) LoadOne(ctx context.Context, row *entity.PaperColo
             color_id = $1 AND color_status <> $2
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.PaperColor{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -154,9 +156,11 @@ func (re *PaperColorPostgres) LoadOne(ctx context.Context, row *entity.PaperColo
 		&row.Caption,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *PaperColorPostgres) FetchStatus(ctx context.Context, row *entity.PaperColor) (mrenum.ItemStatus, error) {
+func (re *PaperColorPostgres) FetchStatus(ctx context.Context, row entity.PaperColor) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             color_status
@@ -182,11 +186,11 @@ func (re *PaperColorPostgres) FetchStatus(ctx context.Context, row *entity.Paper
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperColorPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.PaperColorIsExistsPostgres(ctx, re.client, id)
+func (re *PaperColorPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.PaperColorIsExistsPostgres(ctx, re.client, rowID)
 }
 
-func (re *PaperColorPostgres) Insert(ctx context.Context, row *entity.PaperColor) error {
+func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor) (mrtype.KeyInt32, error) {
 	sql := `
         INSERT INTO ` + module.DBSchema + `.paper_colors
             (
@@ -207,10 +211,10 @@ func (re *PaperColorPostgres) Insert(ctx context.Context, row *entity.PaperColor
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *PaperColorPostgres) Update(ctx context.Context, row *entity.PaperColor) (int32, error) {
+func (re *PaperColorPostgres) Update(ctx context.Context, row entity.PaperColor) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_colors
@@ -239,7 +243,7 @@ func (re *PaperColorPostgres) Update(ctx context.Context, row *entity.PaperColor
 	return tagVersion, err
 }
 
-func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row *entity.PaperColor) (int32, error) {
+func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row entity.PaperColor) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_colors
@@ -268,7 +272,7 @@ func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row *entity.Pape
 	return tagVersion, err
 }
 
-func (re *PaperColorPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *PaperColorPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_colors
@@ -282,7 +286,7 @@ func (re *PaperColorPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) er
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

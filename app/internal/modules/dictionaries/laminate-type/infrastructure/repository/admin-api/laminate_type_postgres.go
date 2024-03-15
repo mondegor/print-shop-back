@@ -128,7 +128,7 @@ func (re *LaminateTypePostgres) FetchTotal(ctx context.Context, where mrstorage.
 	return totalRow, err
 }
 
-func (re *LaminateTypePostgres) LoadOne(ctx context.Context, row *entity.LaminateType) error {
+func (re *LaminateTypePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.LaminateType, error) {
 	sql := `
         SELECT
             tag_version,
@@ -142,10 +142,12 @@ func (re *LaminateTypePostgres) LoadOne(ctx context.Context, row *entity.Laminat
             type_id = $1 AND type_status <> $2
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.LaminateType{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -154,9 +156,11 @@ func (re *LaminateTypePostgres) LoadOne(ctx context.Context, row *entity.Laminat
 		&row.Caption,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *LaminateTypePostgres) FetchStatus(ctx context.Context, row *entity.LaminateType) (mrenum.ItemStatus, error) {
+func (re *LaminateTypePostgres) FetchStatus(ctx context.Context, row entity.LaminateType) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             type_status
@@ -182,11 +186,11 @@ func (re *LaminateTypePostgres) FetchStatus(ctx context.Context, row *entity.Lam
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *LaminateTypePostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.LaminateTypeIsExistsPostgres(ctx, re.client, id)
+func (re *LaminateTypePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.LaminateTypeIsExistsPostgres(ctx, re.client, rowID)
 }
 
-func (re *LaminateTypePostgres) Insert(ctx context.Context, row *entity.LaminateType) error {
+func (re *LaminateTypePostgres) Insert(ctx context.Context, row entity.LaminateType) (mrtype.KeyInt32, error) {
 	sql := `
         INSERT INTO ` + module.DBSchema + `.laminate_types
             (
@@ -207,10 +211,10 @@ func (re *LaminateTypePostgres) Insert(ctx context.Context, row *entity.Laminate
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *LaminateTypePostgres) Update(ctx context.Context, row *entity.LaminateType) (int32, error) {
+func (re *LaminateTypePostgres) Update(ctx context.Context, row entity.LaminateType) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.laminate_types
@@ -239,7 +243,7 @@ func (re *LaminateTypePostgres) Update(ctx context.Context, row *entity.Laminate
 	return tagVersion, err
 }
 
-func (re *LaminateTypePostgres) UpdateStatus(ctx context.Context, row *entity.LaminateType) (int32, error) {
+func (re *LaminateTypePostgres) UpdateStatus(ctx context.Context, row entity.LaminateType) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.laminate_types
@@ -268,7 +272,7 @@ func (re *LaminateTypePostgres) UpdateStatus(ctx context.Context, row *entity.La
 	return tagVersion, err
 }
 
-func (re *LaminateTypePostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *LaminateTypePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.laminate_types
@@ -282,7 +286,7 @@ func (re *LaminateTypePostgres) Delete(ctx context.Context, id mrtype.KeyInt32) 
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	CompanyPageService interface {
+	CompanyPageUseCase interface {
 		GetList(ctx context.Context, params entity.CompanyPageParams) ([]entity.CompanyPage, int64, error)
 	}
 

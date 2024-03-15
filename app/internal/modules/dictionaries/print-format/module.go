@@ -4,5 +4,5 @@ const (
 	Name = "Dictionaries.PrintFormat"
 
 	Permission = "modDictionariesPrintFormat"
-	DBSchema   = "printdata_dictionaries"
+	DBSchema   = "printshop_dictionaries"
 )

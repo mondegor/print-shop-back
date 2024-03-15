@@ -28,7 +28,8 @@ func NewModuleOptions(ctx context.Context, opts app.Options) (factory.Options, e
 				opts.RequestParsers.Int64,
 				opts.RequestParsers.ItemStatus,
 				opts.RequestParsers.KeyInt32,
-				opts.RequestParsers.SortPage,
+				opts.RequestParsers.ListSorter,
+				opts.RequestParsers.ListPager,
 				opts.RequestParsers.String,
 				opts.RequestParsers.Validator,
 			),
@@ -39,5 +40,8 @@ func NewModuleOptions(ctx context.Context, opts app.Options) (factory.Options, e
 			LogoFileAPI:    fileAPI,
 			LogoURLBuilder: opts.ImageURLBuilder,
 		},
+
+		PageSizeMax:     opts.Cfg.General.PageSizeMax,
+		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
 	}, nil
 }

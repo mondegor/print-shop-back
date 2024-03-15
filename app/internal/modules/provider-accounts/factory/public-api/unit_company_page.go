@@ -24,11 +24,11 @@ func createUnitCompanyPage(ctx context.Context, opts factory.Options) ([]mrserve
 
 func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.CompanyPage, error) {
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
-	service := usecase.NewCompanyPage(storage, opts.UsecaseHelper)
+	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper)
 	controller := http_v1.NewCompanyPage(
 		opts.RequestParsers.String,
 		opts.ResponseSender,
-		service,
+		useCase,
 		opts.UnitCompanyPage.LogoURLBuilder,
 	)
 

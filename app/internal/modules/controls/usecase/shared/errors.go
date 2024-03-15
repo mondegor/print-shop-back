@@ -6,11 +6,11 @@ var (
 	FactoryErrElementTemplateNotFound = NewFactory(
 		"errControlsElementTemplateNotFound", ErrorKindUser, "element template with ID={{ .id }} not found")
 
-	FactoryErrFormDataNotFound = NewFactory(
-		"errControlsFormDataNotFound", ErrorKindUser, "form with ID={{ .id }} not found")
+	FactoryErrSubmitFormNotFound = NewFactory(
+		"errControlsSubmitFormNotFound", ErrorKindUser, "form with ID={{ .id }} not found")
 
-	FactoryErrFormDataParamNameAlreadyExists = NewFactory(
-		"errControlsFormDataParamNameAlreadyExists", ErrorKindUser, "param name '{{ .name }}' already exists")
+	FactoryErrSubmitFormParamNameAlreadyExists = NewFactory(
+		"errControlsSubmitFormParamNameAlreadyExists", ErrorKindUser, "param name '{{ .name }}' already exists")
 
 	FactoryErrFormElementNotFound = NewFactory(
 		"errControlsFormElementNotFound", ErrorKindUser, "form element with ID={{ .id }} not found")

@@ -24,6 +24,6 @@ func NewPaperColorPostgres(
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperColorPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.PaperColorIsExistsPostgres(ctx, re.client, id)
+func (re *PaperColorPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.PaperColorIsExistsPostgres(ctx, re.client, rowID)
 }

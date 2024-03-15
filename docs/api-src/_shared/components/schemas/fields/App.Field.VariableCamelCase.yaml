@@ -1,7 +1,0 @@
-App.Field.VariableCamelCase:
-  description: Переменная (camelCase)
-  type: string
-  pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
-  minLength: 2
-  maxLength: 32
-  example: "goodVar001"

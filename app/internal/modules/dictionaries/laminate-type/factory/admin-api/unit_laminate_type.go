@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/dictionaries/laminate-type"
 	http_v1 "print-shop-back/internal/modules/dictionaries/laminate-type/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/laminate-type/entity/admin-api"
 	"print-shop-back/internal/modules/dictionaries/laminate-type/factory"
@@ -35,17 +34,17 @@ func newUnitLaminateType(ctx context.Context, opts factory.Options) (*http_v1.La
 
 	storage := repository.NewLaminateTypePostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
 	)
-	service := usecase.NewLaminateType(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewLaminateType(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewLaminateType(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

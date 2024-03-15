@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/dictionaries/paper-facture"
 	http_v1 "print-shop-back/internal/modules/dictionaries/paper-facture/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/paper-facture/entity/admin-api"
 	"print-shop-back/internal/modules/dictionaries/paper-facture/factory"
@@ -35,17 +34,17 @@ func newUnitPaperFacture(ctx context.Context, opts factory.Options) (*http_v1.Pa
 
 	storage := repository.NewPaperFacturePostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
 	)
-	service := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPaperFacture(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

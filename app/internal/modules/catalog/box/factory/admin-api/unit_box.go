@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/catalog/box"
 	http_v1 "print-shop-back/internal/modules/catalog/box/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/catalog/box/entity/admin-api"
 	"print-shop-back/internal/modules/catalog/box/factory"
@@ -41,21 +40,22 @@ func newUnitBox(ctx context.Context, opts factory.Options) (*http_v1.Box, error)
 
 	storage := repository.NewBoxPostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
-		mrsql.NewBuilderUpdateWithMeta(
+		mrpostgres.NewSqlBuilderUpdateWithMeta(
 			entityMetaUpdate,
 			mrpostgres.NewSqlBuilderSet(),
+			nil,
 		),
 	)
-	service := usecase.NewBox(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewBox(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewBox(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

@@ -142,7 +142,7 @@ func (re *BoxPostgres) FetchTotal(ctx context.Context, where mrstorage.SqlBuilde
 	return totalRow, err
 }
 
-func (re *BoxPostgres) LoadOne(ctx context.Context, row *entity.Box) error {
+func (re *BoxPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.Box, error) {
 	sql := `
 		SELECT
 			tag_version,
@@ -160,10 +160,12 @@ func (re *BoxPostgres) LoadOne(ctx context.Context, row *entity.Box) error {
 			box_id = $1 AND box_status <> $2
 		LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.Box{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -176,6 +178,8 @@ func (re *BoxPostgres) LoadOne(ctx context.Context, row *entity.Box) error {
 		&row.Depth,
 		&row.Status,
 	)
+
+	return row, err
 }
 
 func (re *BoxPostgres) FetchIdByArticle(ctx context.Context, article string) (mrtype.KeyInt32, error) {
@@ -188,20 +192,20 @@ func (re *BoxPostgres) FetchIdByArticle(ctx context.Context, article string) (mr
 			box_article = $1
 		LIMIT 1;`
 
-	var id mrtype.KeyInt32
+	var rowID mrtype.KeyInt32
 
 	err := re.client.QueryRow(
 		ctx,
 		sql,
 		article,
 	).Scan(
-		&id,
+		&rowID,
 	)
 
-	return id, err
+	return rowID, err
 }
 
-func (re *BoxPostgres) FetchStatus(ctx context.Context, row *entity.Box) (mrenum.ItemStatus, error) {
+func (re *BoxPostgres) FetchStatus(ctx context.Context, row entity.Box) (mrenum.ItemStatus, error) {
 	sql := `
 		SELECT
 			box_status
@@ -227,10 +231,10 @@ func (re *BoxPostgres) FetchStatus(ctx context.Context, row *entity.Box) (mrenum
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *BoxPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *BoxPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
 		SELECT
-			1
+			box_id
 		FROM
 			` + module.DBSchema + `.boxes
 		WHERE
@@ -240,14 +244,14 @@ func (re *BoxPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
 	return re.client.QueryRow(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&id,
+		&rowID,
 	)
 }
 
-func (re *BoxPostgres) Insert(ctx context.Context, row *entity.Box) error {
+func (re *BoxPostgres) Insert(ctx context.Context, row entity.Box) (mrtype.KeyInt32, error) {
 	sql := `
 		INSERT INTO ` + module.DBSchema + `.boxes
 			(
@@ -276,10 +280,10 @@ func (re *BoxPostgres) Insert(ctx context.Context, row *entity.Box) error {
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *BoxPostgres) Update(ctx context.Context, row *entity.Box) (int32, error) {
+func (re *BoxPostgres) Update(ctx context.Context, row entity.Box) (int32, error) {
 	set, err := re.sqlUpdate.SetFromEntity(row)
 
 	if err != nil || set.Empty() {
@@ -319,7 +323,7 @@ func (re *BoxPostgres) Update(ctx context.Context, row *entity.Box) (int32, erro
 	return tagVersion, err
 }
 
-func (re *BoxPostgres) UpdateStatus(ctx context.Context, row *entity.Box) (int32, error) {
+func (re *BoxPostgres) UpdateStatus(ctx context.Context, row entity.Box) (int32, error) {
 	sql := `
 		UPDATE
 			` + module.DBSchema + `.boxes
@@ -348,7 +352,7 @@ func (re *BoxPostgres) UpdateStatus(ctx context.Context, row *entity.Box) (int32
 	return tagVersion, err
 }
 
-func (re *BoxPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *BoxPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
 		UPDATE
 			` + module.DBSchema + `.boxes
@@ -363,7 +367,7 @@ func (re *BoxPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

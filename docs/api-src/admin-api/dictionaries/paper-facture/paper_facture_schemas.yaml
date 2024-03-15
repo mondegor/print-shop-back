@@ -1,0 +1,67 @@
+Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture:
+  description: DTO добавления нового фактуры бумаги
+  type: object
+  required:
+    - caption
+  properties:
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Гладкая"
+
+Dictionaries.PaperFactures.AdminAPI.Request.Model.StorePaperFacture:
+  description: DTO сохранения фактуры бумаги
+  type: object
+  required:
+    - version
+    - caption
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Гладкая"
+
+Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList:
+  description: DTO - список фактур бумаги
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture:
+  description: DTO - фактура бумаги
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - caption
+    - status
+  properties:
+    id: # factureId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Гладкая"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

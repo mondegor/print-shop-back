@@ -55,41 +55,40 @@ func (uc *LaminateType) GetList(ctx context.Context, params entity.LaminateTypeP
 	return items, total, nil
 }
 
-func (uc *LaminateType) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.LaminateType, error) {
-	if id < 1 {
-		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *LaminateType) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.LaminateType, error) {
+	if itemID < 1 {
+		return entity.LaminateType{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	item := &entity.LaminateType{
-		ID: id,
-	}
+	item, err := uc.storage.FetchOne(ctx, itemID)
 
-	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminateType, id)
+	if err != nil {
+		return entity.LaminateType{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminateType, itemID)
 	}
 
 	return item, nil
 }
 
-func (uc *LaminateType) Create(ctx context.Context, item *entity.LaminateType) error {
+func (uc *LaminateType) Create(ctx context.Context, item entity.LaminateType) (mrtype.KeyInt32, error) {
 	item.Status = mrenum.ItemStatusDraft
+	itemID, err := uc.storage.Insert(ctx, item)
 
-	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
+	if err != nil {
+		return 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
 
-	return nil
+	return itemID, nil
 }
 
-func (uc *LaminateType) Store(ctx context.Context, item *entity.LaminateType) error {
+func (uc *LaminateType) Store(ctx context.Context, item entity.LaminateType) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
@@ -100,7 +99,7 @@ func (uc *LaminateType) Store(ctx context.Context, item *entity.LaminateType) er
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
@@ -111,13 +110,13 @@ func (uc *LaminateType) Store(ctx context.Context, item *entity.LaminateType) er
 	return nil
 }
 
-func (uc *LaminateType) ChangeStatus(ctx context.Context, item *entity.LaminateType) error {
+func (uc *LaminateType) ChangeStatus(ctx context.Context, item entity.LaminateType) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -131,14 +130,14 @@ func (uc *LaminateType) ChangeStatus(ctx context.Context, item *entity.LaminateT
 	}
 
 	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.FactoryErrServiceSwitchStatusRejected.New(currentStatus, item.Status)
+		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
@@ -149,16 +148,16 @@ func (uc *LaminateType) ChangeStatus(ctx context.Context, item *entity.LaminateT
 	return nil
 }
 
-func (uc *LaminateType) Remove(ctx context.Context, id mrtype.KeyInt32) error {
-	if id < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *LaminateType) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
+	if itemID < 1 {
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminateType, id)
+	if err := uc.storage.Delete(ctx, itemID); err != nil {
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminateType, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
 }

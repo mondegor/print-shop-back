@@ -35,7 +35,7 @@ func NewFormElementPostgres(
 
 func (re *FormElementPostgres) GetMetaData(formID mrtype.KeyInt32) mrorderer.EntityMeta {
 	return mrorderer.NewEntityMeta(
-		module.UnitFormElementsDBSchema+".form_elements",
+		module.UnitFormElementsDBSchema+".submit_form_elements",
 		"element_id",
 		re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(
@@ -84,7 +84,7 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
             et.element_detailing,
             et.element_body
         FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements fe
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements fe
         JOIN
             ` + module.UnitElementTemplateDBSchema + `.element_templates et
         ON
@@ -143,7 +143,7 @@ func (re *FormElementPostgres) FetchTotal(ctx context.Context, where mrstorage.S
         SELECT
             COUNT(*)
         FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements fe
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements fe
         JOIN
             ` + module.UnitElementTemplateDBSchema + `.element_templates et
         ON
@@ -164,7 +164,7 @@ func (re *FormElementPostgres) FetchTotal(ctx context.Context, where mrstorage.S
 	return totalRow, err
 }
 
-func (re *FormElementPostgres) LoadOne(ctx context.Context, row *entity.FormElement) error {
+func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.FormElement, error) {
 	sql := `
         SELECT
             fe.tag_version,
@@ -179,7 +179,7 @@ func (re *FormElementPostgres) LoadOne(ctx context.Context, row *entity.FormElem
             et.element_detailing,
             et.element_body
         FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements fe
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements fe
         JOIN
             ` + module.UnitElementTemplateDBSchema + `.element_templates et
         ON
@@ -188,10 +188,12 @@ func (re *FormElementPostgres) LoadOne(ctx context.Context, row *entity.FormElem
             fe.element_id = $1
         LIMIT 1;`
 
+	row := entity.FormElement{ID: rowID}
+
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 	).Scan(
 		&row.TagVersion,
 		&row.CreatedAt,
@@ -206,7 +208,7 @@ func (re *FormElementPostgres) LoadOne(ctx context.Context, row *entity.FormElem
 		&row.Body,
 	)
 
-	return err
+	return row, err
 }
 
 func (re *FormElementPostgres) FetchIdByName(ctx context.Context, formID mrtype.KeyInt32, paramName string) (mrtype.KeyInt32, error) {
@@ -214,12 +216,12 @@ func (re *FormElementPostgres) FetchIdByName(ctx context.Context, formID mrtype.
         SELECT
             element_id
         FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements
         WHERE
             form_id = $1 AND param_name = $2
         LIMIT 1;`
 
-	var id mrtype.KeyInt32
+	var rowID mrtype.KeyInt32
 
 	err := re.client.QueryRow(
 		ctx,
@@ -227,20 +229,20 @@ func (re *FormElementPostgres) FetchIdByName(ctx context.Context, formID mrtype.
 		formID,
 		paramName,
 	).Scan(
-		&id,
+		&rowID,
 	)
 
-	return id, err
+	return rowID, err
 }
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *FormElementPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *FormElementPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         SELECT
-            1
+            element_id
         FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements
         WHERE
             element_id = $1
         LIMIT 1;`
@@ -248,15 +250,15 @@ func (re *FormElementPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32)
 	return re.client.QueryRow(
 		ctx,
 		sql,
-		id,
+		rowID,
 	).Scan(
-		&id,
+		&rowID,
 	)
 }
 
-func (re *FormElementPostgres) Insert(ctx context.Context, row *entity.FormElement) error {
+func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElement) (mrtype.KeyInt32, error) {
 	sql := `
-        INSERT INTO ` + module.UnitFormElementsDBSchema + `.form_elements
+        INSERT INTO ` + module.UnitFormElementsDBSchema + `.submit_form_elements
             (
                 form_id,
                 param_name,
@@ -281,10 +283,10 @@ func (re *FormElementPostgres) Insert(ctx context.Context, row *entity.FormEleme
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *FormElementPostgres) Update(ctx context.Context, row *entity.FormElement) (int32, error) {
+func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElement) (int32, error) {
 	set, err := re.sqlUpdate.SetFromEntityWith(row, func(s mrstorage.SqlBuilderSet) mrstorage.SqlBuilderPartFunc {
 		return s.Field("element_required", row.Required)
 	})
@@ -302,7 +304,7 @@ func (re *FormElementPostgres) Update(ctx context.Context, row *entity.FormEleme
 
 	sql := `
         UPDATE
-            ` + module.UnitFormElementsDBSchema + `.form_elements
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -325,16 +327,16 @@ func (re *FormElementPostgres) Update(ctx context.Context, row *entity.FormEleme
 	return tagVersion, err
 }
 
-func (re *FormElementPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *FormElementPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         DELETE FROM
-            ` + module.UnitFormElementsDBSchema + `.form_elements
+            ` + module.UnitFormElementsDBSchema + `.submit_form_elements
         WHERE
             element_id = $1;`
 
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 	)
 }

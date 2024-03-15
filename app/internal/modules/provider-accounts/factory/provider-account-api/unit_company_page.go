@@ -31,11 +31,11 @@ func createUnitCompanyPage(ctx context.Context, opts factory.Options) ([]mrserve
 
 func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.CompanyPage, error) {
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
-	service := usecase.NewCompanyPage(storage, opts.EventEmitter, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(storage, opts.EventEmitter, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := http_v1.NewCompanyPage(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,
-		service,
+		useCase,
 	)
 
 	return controller, nil
@@ -43,7 +43,7 @@ func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.Com
 
 func newUnitCompanyPageLogo(ctx context.Context, opts factory.Options) (*http_v1.CompanyPageLogo, error) {
 	storage := repository.NewCompanyPageLogoPostgres(opts.PostgresAdapter)
-	service := usecase.NewCompanyPageLogo(
+	useCase := usecase.NewCompanyPageLogo(
 		storage,
 		opts.UnitCompanyPage.LogoFileAPI,
 		opts.Locker,
@@ -53,7 +53,7 @@ func newUnitCompanyPageLogo(ctx context.Context, opts factory.Options) (*http_v1
 	controller := http_v1.NewCompanyPageLogo(
 		opts.RequestParsers.Image,
 		mrresponse.NewFileSender(opts.ResponseSender),
-		service,
+		useCase,
 	)
 
 	return controller, nil

@@ -3,6 +3,7 @@ package factory
 import (
 	"print-shop-back/config"
 
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrlog/mrzerolog"
 )
@@ -30,6 +31,16 @@ func NewLogger(cfg config.Config) (*mrzerolog.LoggerAdapter, error) {
 			JsonFormat:      cfg.Log.JsonFormat,
 			TimestampFormat: cfg.Log.TimestampFormat,
 			ConsoleColor:    cfg.Log.ConsoleColor,
+
+			// only if log level: Error, Fatal
+			IsAutoCallerOnFunc: func(err error) bool {
+				if appErr, ok := err.(*mrerr.AppError); ok {
+					return appErr.Kind() == mrerr.ErrorKindUser ||
+						appErr.Kind() == mrerr.ErrorKindInternalNotice
+				}
+
+				return true
+			},
 		},
 	), nil
 }

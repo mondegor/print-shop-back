@@ -1,13 +1,13 @@
 package http_v1
 
 import (
-	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	usecase "print-shop-back/internal/modules/controls/usecase/admin-api"
 	usecase_shared "print-shop-back/internal/modules/controls/usecase/shared"
+	"strconv"
 
 	"github.com/mondegor/go-components/mrorderer"
 	"github.com/mondegor/go-sysmess/mrerr"
@@ -19,16 +19,16 @@ import (
 )
 
 const (
-	formElementListURL     = "/v1/controls/form-elements"
-	formElementItemURL     = "/v1/controls/form-elements/:id"
-	formElementItemMoveURL = "/v1/controls/form-elements/:id/move"
+	formElementListURL     = "/v1/controls/submit-form-elements"
+	formElementItemURL     = "/v1/controls/submit-form-elements/:id"
+	formElementItemMoveURL = "/v1/controls/submit-form-elements/:id/move"
 )
 
 type (
 	FormElement struct {
 		parser     view_shared.RequestParser
 		sender     mrserver.ResponseSender
-		service    usecase.FormElementService
+		useCase    usecase.FormElementUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -36,13 +36,13 @@ type (
 func NewFormElement(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.FormElementService,
+	useCase usecase.FormElementUseCase,
 	listSorter mrview.ListSorter,
 ) *FormElement {
 	return &FormElement{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		listSorter: listSorter,
 	}
 }
@@ -61,13 +61,13 @@ func (ht *FormElement) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *FormElement) GetList(w http.ResponseWriter, r *http.Request) error {
-	formID, err := ht.parser.FormDataID(r)
+	formID, err := ht.parser.SubmitFormID(r)
 
 	if err != nil {
 		return err
 	}
 
-	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r, formID))
+	items, totalItems, err := ht.useCase.GetList(r.Context(), ht.listParams(r, formID))
 
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (ht *FormElement) listParams(r *http.Request, formID mrtype.KeyInt32) entit
 }
 
 func (ht *FormElement) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
+	item, err := ht.useCase.GetItem(r.Context(), ht.getItemID(r))
 
 	if err != nil {
 		return ht.wrapError(err, r)
@@ -120,21 +120,21 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 		Required:   request.Required,
 	}
 
-	if err := ht.service.Create(r.Context(), &item); err != nil {
+	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
+	} else {
+		return ht.sender.Send(
+			w,
+			http.StatusCreated,
+			SuccessCreatedItemResponse{
+				ItemID: strconv.Itoa(int(itemID)),
+				Message: mrlang.Ctx(r.Context()).TranslateMessage(
+					"msgControlsFormElementSuccessCreated",
+					"entity has been success created",
+				),
+			},
+		)
 	}
-
-	return ht.sender.Send(
-		w,
-		http.StatusCreated,
-		SuccessCreatedItemResponse{
-			ItemID: fmt.Sprintf("%d", item.ID),
-			Message: mrlang.Ctx(r.Context()).TranslateMessage(
-				"msgControlsFormElementSuccessCreated",
-				"entity has been success created",
-			),
-		},
-	)
 }
 
 func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
@@ -152,7 +152,7 @@ func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
 		Required:   request.Required,
 	}
 
-	if err := ht.service.Store(r.Context(), &item); err != nil {
+	if err := ht.useCase.Store(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -160,7 +160,7 @@ func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+	if err := ht.useCase.Remove(r.Context(), ht.getItemID(r)); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -174,7 +174,7 @@ func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	if err := ht.service.MoveAfterID(r.Context(), ht.getItemID(r), request.AfterNodeID); err != nil {
+	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), request.AfterNodeID); err != nil {
 		return ht.wrapErrorNode(r, err)
 	}
 
@@ -190,15 +190,15 @@ func (ht *FormElement) getRawItemID(r *http.Request) string {
 }
 
 func (ht *FormElement) wrapError(err error, r *http.Request) error {
-	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityNotFound.Is(err) {
 		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if usecase_shared.FactoryErrFormDataNotFound.Is(err) {
+	if usecase_shared.FactoryErrSubmitFormNotFound.Is(err) {
 		return mrerr.NewCustomError("formId", err)
 	}
 
-	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("version", err)
 	}
 
@@ -214,7 +214,7 @@ func (ht *FormElement) wrapError(err error, r *http.Request) error {
 }
 
 func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
-	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityNotFound.Is(err) {
 		return usecase_shared.FactoryErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

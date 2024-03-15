@@ -8,6 +8,7 @@ import (
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjulienrouter"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 	"github.com/mondegor/go-webcore/mrserver/mrrscors"
 )
 
@@ -35,7 +36,12 @@ func NewRestRouter(ctx context.Context, cfg config.Config, translator *mrlang.Tr
 		return nil, err
 	}
 
-	router := mrjulienrouter.New(logger.With().Str("router", "julienrouter").Logger(), handler)
+	router := mrjulienrouter.New(
+		logger.With().Str("router", "julienrouter").Logger(),
+		handler,
+		mrresponse.HandlerGetNotFoundAsJson(),
+		mrresponse.HandlerGetMethodNotAllowedAsJson(),
+	)
 	router.RegisterMiddleware(
 		mrrscors.New(corsOptions),
 		mrserver.MiddlewareGeneral(translator),

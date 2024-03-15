@@ -48,11 +48,11 @@ func NewCompanyPageLogo(
 
 func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID mrtype.KeyString, image mrtype.Image) error {
 	if accountID == "" {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if image.OriginalName == "" || image.Size == 0 {
-		return mrcore.FactoryErrServiceInvalidFile.New()
+		return mrcore.FactoryErrUseCaseInvalidFile.New()
 	}
 
 	newLogoPath, err := uc.getLogoPath(accountID, image.OriginalName)
@@ -101,7 +101,7 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID mrtype.KeySt
 
 func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID mrtype.KeyString) error {
 	if accountID == "" {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID))
@@ -152,7 +152,7 @@ func (uc *CompanyPageLogo) removeLogoFile(ctx context.Context, filePath string, 
 	}
 
 	if err := uc.fileAPI.Remove(ctx, filePath); err != nil {
-		mrlog.Ctx(ctx).Error().Caller().Err(err).Msg("fileAPI.Remove()")
+		mrlog.Ctx(ctx).Error().Err(err).Msg("fileAPI.Remove()")
 	}
 }
 

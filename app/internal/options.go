@@ -72,7 +72,8 @@ type (
 		Int64      *mrparser.Int64
 		ItemStatus *mrparser.ItemStatus
 		KeyInt32   *mrparser.KeyInt32
-		SortPage   *mrparser.SortPage
+		ListSorter *mrparser.ListSorter
+		ListPager  *mrparser.ListPager
 		String     *mrparser.String
 		// UUID       *mrparser.UUID
 		Validator *mrparser.Validator

@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/dictionaries/print-format"
 	http_v1 "print-shop-back/internal/modules/dictionaries/print-format/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/print-format/entity/admin-api"
 	"print-shop-back/internal/modules/dictionaries/print-format/factory"
@@ -41,21 +40,22 @@ func newUnitPrintFormat(ctx context.Context, opts factory.Options) (*http_v1.Pri
 
 	storage := repository.NewPrintFormatPostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
-		mrsql.NewBuilderUpdateWithMeta(
+		mrpostgres.NewSqlBuilderUpdateWithMeta(
 			entityMetaUpdate,
 			mrpostgres.NewSqlBuilderSet(),
+			nil,
 		),
 	)
-	service := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPrintFormat(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

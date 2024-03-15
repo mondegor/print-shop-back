@@ -4,5 +4,5 @@ const (
 	Name = "Dictionaries.PaperColor"
 
 	Permission = "modDictionariesPaperColor"
-	DBSchema   = "printdata_dictionaries"
+	DBSchema   = "printshop_dictionaries"
 )

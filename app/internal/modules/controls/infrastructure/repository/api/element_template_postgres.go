@@ -24,7 +24,7 @@ func NewElementTemplatePostgres(
 	}
 }
 
-func (re *ElementTemplatePostgres) FetchHead(ctx context.Context, id mrtype.KeyInt32) (*entity.ElementTemplateHead, error) {
+func (re *ElementTemplatePostgres) FetchHead(ctx context.Context, rowID mrtype.KeyInt32) (entity.ElementTemplateHead, error) {
 	sql := `
         SELECT
             param_name,
@@ -35,21 +35,17 @@ func (re *ElementTemplatePostgres) FetchHead(ctx context.Context, id mrtype.KeyI
             template_id = $1 AND template_status = $2
         LIMIT 1;`
 
-	row := entity.ElementTemplateHead{ID: id}
+	row := entity.ElementTemplateHead{ID: rowID}
 
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusEnabled,
 	).Scan(
 		&row.ParamName,
 		&row.Caption,
 	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &row, nil
+	return row, err
 }

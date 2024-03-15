@@ -39,7 +39,6 @@ function mrcmd_plugins_openapi_method_exec() {
       mrcmd openapi build-adm-all
       mrcmd openapi build-pacc-all
       mrcmd openapi build-pub-all
-      mrcmd openapi build-system
       ;;
 
     build-adm-all)
@@ -47,7 +46,7 @@ function mrcmd_plugins_openapi_method_exec() {
       mrcmd openapi build-adm-catalog
       mrcmd openapi build-adm-dictionaries
       mrcmd openapi build-adm-controls
-      mrcmd openapi build-adm-provider-accounts
+      mrcmd openapi build-adm-prv-accounts
       ;;
 
     build-pacc-all)
@@ -56,6 +55,7 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-pub-all)
       mrcmd openapi build-pub
+      mrcmd openapi build-pub-file-station
       ;;
 
     build-adm)
@@ -77,7 +77,7 @@ function mrcmd_plugins_openapi_method_exec() {
       fileNamePostfix="controls"
       ;;
 
-    build-adm-provider-accounts)
+    build-adm-prv-accounts)
       sectionName="admin-api"
       fileNamePostfix="provider-accounts"
       ;;
@@ -90,8 +90,9 @@ function mrcmd_plugins_openapi_method_exec() {
       sectionName="public-api"
       ;;
 
-    build-system)
-      sectionName="system"
+    build-pub-file-station)
+      sectionName="public-api"
+      fileNamePostfix="file-station"
       ;;
 
     *)
@@ -116,12 +117,14 @@ function mrcmd_plugins_openapi_method_exec() {
 function mrcmd_plugins_openapi_method_help() {
   #markup:"|-|-|---------|-------|-------|---------------------------------------|"
   echo -e "${CC_YELLOW}Commands:${CC_END}"
-  echo -e "    build-all         Builds all API docs"
-  echo -e "    build-adm-all     Builds all admin API docs"
-  echo -e "    build-pacc-all    Builds all provider accounts API docs"
-  echo -e "    build-pub-all     Builds all public API docs"
-  echo -e "    build-adm         Builds only admin API docs"
-  echo -e "    build-pacc        Builds only provider accounts API docs"
-  echo -e "    build-pub         Builds only public API docs"
-  echo -e "    build-system      Builds only system API docs"
+  echo -e "    build-all                 Builds all API docs"
+  echo -e "    build-adm-all             Builds all admin API docs"
+  echo -e "    build-adm                 Builds only full admin API docs"
+  echo -e "    build-adm-catalog         Builds admin Catalog API docs"
+  echo -e "    build-adm-dictionaries    Builds admin Dictionaries API docs"
+  echo -e "    build-adm-prv-accounts    Builds admin Provider accounts API docs"
+  echo -e "    build-pacc-all            Builds all provider accounts API docs"
+  echo -e "    build-pacc                Builds only full provider accounts API docs"
+  echo -e "    build-pub-all             Builds all public API docs"
+  echo -e "    build-pub                 Builds only full public API docs"
 }

@@ -22,11 +22,11 @@ type (
 	}
 
 	ElementTemplateAPI interface {
-		GetHead(ctx context.Context, id mrtype.KeyInt32) (*entity_api.ElementTemplateHead, error)
+		GetHead(ctx context.Context, itemID mrtype.KeyInt32) (entity_api.ElementTemplateHead, error)
 	}
 
 	ElementTemplateStorage interface {
-		FetchHead(ctx context.Context, id mrtype.KeyInt32) (*entity_api.ElementTemplateHead, error)
+		FetchHead(ctx context.Context, rowID mrtype.KeyInt32) (entity_api.ElementTemplateHead, error)
 	}
 )
 
@@ -40,21 +40,21 @@ func NewElementTemplate(
 	}
 }
 
-func (uc *ElementTemplate) GetHead(ctx context.Context, id mrtype.KeyInt32) (*entity_api.ElementTemplateHead, error) {
-	uc.debugCmd(ctx, "GetHead", mrmsg.Data{"id": id})
+func (uc *ElementTemplate) GetHead(ctx context.Context, itemID mrtype.KeyInt32) (entity_api.ElementTemplateHead, error) {
+	uc.debugCmd(ctx, "GetHead", mrmsg.Data{"id": itemID})
 
-	if id < 1 {
-		return nil, usecase_shared.FactoryErrElementTemplateNotFound.New(id)
+	if itemID < 1 {
+		return entity_api.ElementTemplateHead{}, usecase_shared.FactoryErrElementTemplateNotFound.New(itemID)
 	}
 
-	item, err := uc.storage.FetchHead(ctx, id)
+	item, err := uc.storage.FetchHead(ctx, itemID)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return nil, usecase_shared.FactoryErrElementTemplateNotFound.New(id)
+			return entity_api.ElementTemplateHead{}, usecase_shared.FactoryErrElementTemplateNotFound.New(itemID)
 		}
 
-		return nil, uc.usecaseHelper.WrapErrorFailed(err, elementTemplateAPIName)
+		return entity_api.ElementTemplateHead{}, uc.usecaseHelper.WrapErrorFailed(err, elementTemplateAPIName)
 	}
 
 	return item, nil

@@ -20,19 +20,19 @@ type (
 	CompanyPage struct {
 		parser  view_shared.RequestParser
 		sender  mrserver.ResponseSender
-		service usecase.CompanyPageService
+		useCase usecase.CompanyPageUseCase
 	}
 )
 
 func NewCompanyPage(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.CompanyPageService,
+	useCase usecase.CompanyPageUseCase,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:  parser,
 		sender:  sender,
-		service: service,
+		useCase: useCase,
 	}
 }
 
@@ -46,7 +46,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItem(r.Context(), tmpAccountID)
+	item, err := ht.useCase.GetItem(r.Context(), tmpAccountID)
 
 	if err != nil {
 		return ht.wrapError(err, r)
@@ -69,7 +69,7 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 		SiteURL:     request.SiteURL,
 	}
 
-	if err := ht.service.Store(r.Context(), &item); err != nil {
+	if err := ht.useCase.Store(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -88,7 +88,7 @@ func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) erro
 		Status:    request.Status,
 	}
 
-	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 

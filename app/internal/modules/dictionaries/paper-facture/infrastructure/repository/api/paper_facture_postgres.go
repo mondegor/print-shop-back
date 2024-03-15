@@ -24,6 +24,6 @@ func NewPaperFacturePostgres(
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperFacturePostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.PaperFactureIsExistsPostgres(ctx, re.client, id)
+func (re *PaperFacturePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.PaperFactureIsExistsPostgres(ctx, re.client, rowID)
 }

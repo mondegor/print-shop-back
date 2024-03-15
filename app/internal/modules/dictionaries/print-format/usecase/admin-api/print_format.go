@@ -55,41 +55,40 @@ func (uc *PrintFormat) GetList(ctx context.Context, params entity.PrintFormatPar
 	return items, total, nil
 }
 
-func (uc *PrintFormat) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.PrintFormat, error) {
-	if id < 1 {
-		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *PrintFormat) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.PrintFormat, error) {
+	if itemID < 1 {
+		return entity.PrintFormat{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	item := &entity.PrintFormat{
-		ID: id,
-	}
+	item, err := uc.storage.FetchOne(ctx, itemID)
 
-	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
+	if err != nil {
+		return entity.PrintFormat{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, itemID)
 	}
 
 	return item, nil
 }
 
-func (uc *PrintFormat) Create(ctx context.Context, item *entity.PrintFormat) error {
+func (uc *PrintFormat) Create(ctx context.Context, item entity.PrintFormat) (mrtype.KeyInt32, error) {
 	item.Status = mrenum.ItemStatusDraft
+	itemID, err := uc.storage.Insert(ctx, item)
 
-	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
+	if err != nil {
+		return 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
 
-	return nil
+	return itemID, err
 }
 
-func (uc *PrintFormat) Store(ctx context.Context, item *entity.PrintFormat) error {
+func (uc *PrintFormat) Store(ctx context.Context, item entity.PrintFormat) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
@@ -100,7 +99,7 @@ func (uc *PrintFormat) Store(ctx context.Context, item *entity.PrintFormat) erro
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
@@ -111,13 +110,13 @@ func (uc *PrintFormat) Store(ctx context.Context, item *entity.PrintFormat) erro
 	return nil
 }
 
-func (uc *PrintFormat) ChangeStatus(ctx context.Context, item *entity.PrintFormat) error {
+func (uc *PrintFormat) ChangeStatus(ctx context.Context, item entity.PrintFormat) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -131,14 +130,14 @@ func (uc *PrintFormat) ChangeStatus(ctx context.Context, item *entity.PrintForma
 	}
 
 	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.FactoryErrServiceSwitchStatusRejected.New(currentStatus, item.Status)
+		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePrintFormat)
@@ -149,16 +148,16 @@ func (uc *PrintFormat) ChangeStatus(ctx context.Context, item *entity.PrintForma
 	return nil
 }
 
-func (uc *PrintFormat) Remove(ctx context.Context, id mrtype.KeyInt32) error {
-	if id < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *PrintFormat) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
+	if itemID < 1 {
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, id)
+	if err := uc.storage.Delete(ctx, itemID); err != nil {
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePrintFormat, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
 }

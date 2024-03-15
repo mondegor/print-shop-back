@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	CompanyPageLogoService interface {
+	CompanyPageLogoUseCase interface {
 		StoreFile(ctx context.Context, accountID mrtype.KeyString, image mrtype.Image) error
 		RemoveFile(ctx context.Context, accountID mrtype.KeyString) error
 	}

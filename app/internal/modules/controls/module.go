@@ -5,13 +5,13 @@ const (
 
 	UnitElementTemplateName       = Name + ".ElementTemplate"
 	UnitElementTemplatePermission = "modControlsElementTemplate"
-	UnitElementTemplateDBSchema   = "printdata_controls"
+	UnitElementTemplateDBSchema   = "printshop_controls"
 
-	UnitFormDataName       = Name + ".FormData"
-	UnitFormDataPermission = "modControlsFormData"
-	UnitFormDataDBSchema   = "printdata_controls"
+	UnitSubmitFormName       = Name + ".SubmitForm"
+	UnitSubmitFormPermission = "modControlsSubmitForm"
+	UnitSubmitFormDBSchema   = "printshop_controls"
 
 	UnitFormElementName       = Name + ".FormElement"
 	UnitFormElementPermission = "modControlsFormElement"
-	UnitFormElementsDBSchema  = "printdata_controls"
+	UnitFormElementsDBSchema  = "printshop_controls"
 )

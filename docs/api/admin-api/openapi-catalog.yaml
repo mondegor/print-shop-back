@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.0.1
+  version: 0.12.0
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -16,11 +16,13 @@ info:
     #### Ограничения полей
     - required - поле обязательно для заполнения;
     - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
     - gte=N - числовое поле должно быть равно или более N;
     - lte=N - числовое поле должно быть равно или менее N;
     - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
     - pattern=P - поле должно соответствовать регулярному выражению P;
 
     #### Ошибки
@@ -32,23 +34,37 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: Catalog.Boxes
+  - name: Catalog.Box
     description: Private API Catalog boxes
 
-  - name: Catalog.Laminates
+  - name: Catalog.Laminate
     description: Private API Catalog laminates
 
-  - name: Catalog.Papers
+  - name: Catalog.Paper
     description: Private API Catalog papers
 
 paths:
   /v1/catalog/boxes:
     get:
       summary: Метод получения списка коробок
-      description: Метод предназначен для получения списка всех коробок, сохраненных в БД
-      operationId: getBoxes
+      description: |-
+        Метод предназначен для получения списка всех коробок, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getBoxList
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -89,13 +105,14 @@ paths:
         Метод предназначен для создания информации о новой коробке в БД
 
         **Ограничения и ошибки полей:**
-        - Article: required,min=3,max=32,pattern=article
+        - Article: required,unique,min=3,max=32,pattern=article
         - Caption: required,max=64
         - Length: required,gte=1,lte=10000000
         - Depth: required,gte=1,lte=10000000
+
       operationId: createBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -133,7 +150,7 @@ paths:
       description: Метод предназначен для получения информации о коробке из БД
       operationId: getBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -166,13 +183,14 @@ paths:
 
         **Ограничения и ошибки полей:**
         - Version: required,gte=1
-        - Article: omitempty,min=3,max=32,pattern=article
+        - Article: omitempty,unique,min=3,max=32,pattern=article
         - Caption: omitempty,max=64
         - Length: omitempty,gte=1,lte=10000000
         - Depth: omitempty,gte=1,lte=10000000
+
       operationId: storeBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -208,7 +226,7 @@ paths:
       description: Метод предназначен для удаления информации о коробке из БД
       operationId: removeBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -239,9 +257,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeBoxStatus
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -275,10 +294,24 @@ paths:
   /v1/catalog/laminates:
     get:
       summary: Метод получения списка ламината
-      description: Метод предназначен для получения списка всего ламината, сохраненного в БД
-      operationId: getLaminates
+      description: |-
+        Метод предназначен для получения списка всего ламината, сохраненного в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getLaminateList
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -318,9 +351,12 @@ paths:
         Метод предназначен для создания информации о новом ламинате в БД
 
         **Ограничения и ошибки полей:**
+        - Article: required,unique,min=3,max=32,pattern=article
+        - Caption: required,max=64
+
       operationId: createLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -365,7 +401,7 @@ paths:
       description: Метод предназначен для получения информации о ламинате из БД
       operationId: getLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -397,9 +433,11 @@ paths:
         Метод предназначен для сохранения информации о ламинате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -442,7 +480,7 @@ paths:
       description: Метод предназначен для удаления информации о ламинате из БД
       operationId: removeLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -473,9 +511,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeLaminateStatus
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -511,10 +550,24 @@ paths:
   /v1/catalog/papers:
     get:
       summary: Метод получения списка бумаги
-      description: Метод предназначен для получения списка всей бумаги, сохраненных в БД
-      operationId: getPapers
+      description: |-
+        Метод предназначен для получения списка всей бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperList
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -557,9 +610,12 @@ paths:
         Метод предназначен для создания информации о новой бумаге в БД
 
         **Ограничения и ошибки полей:**
+        - Article: required,unique,min=3,max=32,pattern=article
+        - Caption: required,max=64
+
       operationId: createPaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -605,7 +661,7 @@ paths:
       description: Метод предназначен для получения информации о бумаге из БД
       operationId: getPaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -637,9 +693,11 @@ paths:
         Метод предназначен для сохранения информации о бумаге в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -683,7 +741,7 @@ paths:
       description: Метод предназначен для удаления информации о бумаге из БД
       operationId: removePaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -714,9 +772,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperStatus
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -759,18 +818,18 @@ components:
       required: false
       schema:
         type: string
-        default: "ru"
+        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор запроса
-      name: CorrelationID
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
       in: header
       required: false
       schema:
         type: string
         format: uuid
-      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка
@@ -850,7 +909,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.DensityMax:
       description: Максимальная плотность (g/m2)
@@ -860,7 +919,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.DepthMin:
       description: Минимальная глубина (µm)
@@ -870,7 +929,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.DepthMax:
       description: Максимальная глубина (µm)
@@ -880,7 +939,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMin:
       description: Минимальная длина (µm)
@@ -890,7 +949,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMax:
       description: Максимальная длина (µm)
@@ -900,7 +959,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WeightMin:
       description: Минимальный вес (g/m2)
@@ -910,7 +969,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.WeightMax:
       description: Максимальный вес (g/m2)
@@ -920,7 +979,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.WidthMin:
       description: Минимальная ширина (µm)
@@ -930,7 +989,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WidthMax:
       description: Максимальная ширина (µm)
@@ -940,7 +999,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Catalog.Boxes.AdminAPI.Request.Path.BoxID:
       description: Идентификатор коробки
@@ -1014,9 +1073,11 @@ components:
       example: "ENABLED"
 
     App.Field.Article:
-      description: Уникальный артикул записи (любые буквы без пробелов)
+      description: |
+        Уникальный артикул записи (любые буквы без пробелов)
+        - pattern: ^S+$
       type: string
-      pattern: "^S+$"
+      # pattern: "^S+$"
       minLength: 2
       maxLength: 64
       example: "item-FLEX-92744"
@@ -1027,24 +1088,17 @@ components:
       maxLength: 128
       example: "Название"
 
-    App.Field.Date.CreatedAt:
+    App.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
       example: "2023-01-01T12:00:00.000+02:00"
 
-    App.Field.Date.UpdatedAt:
+    App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      nullable: true
       example: "2023-01-01T12:00:00.000+02:00"
-
-    App.Field.IntegerID:
-      description: Идентификатор записи
-      type: integer
-      minimum: 1
-      example: 1000
 
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
@@ -1058,13 +1112,13 @@ components:
       minimum: 1
       example: 5
 
-    App.Measure.GramPerMeter2:
+    App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
       type: integer
       maxLength: 10
       example: 100000 # 100g/m2
 
-    App.Measure.Micrometer:
+    App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
       type: integer
       maxLength: 10
@@ -1149,9 +1203,8 @@ components:
       properties:
         id:
           description: Идентификатор созданной записи
-          type: integer
-          minimum: 1
-          example: 1000
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
         message:
           type: string
           example: "Запись была успешно создана"
@@ -1166,6 +1219,48 @@ components:
         - SAME
         - DIFFERENT
       example: "SAME"
+
+    Custom.Field.Dictionaries.Catalog.BoxID:
+      description: Идентификатор коробки
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Catalog.LaminateID:
+      description: Идентификатор ламината
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Catalog.PaperID:
+      description: Идентификатор бумаги
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.ColorID:
+      description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.FactureID:
+      description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.LaminateTypeID:
+      description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
 
     Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
       description: DTO добавления новой упаковочной коробки
@@ -1185,11 +1280,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       description: DTO сохранения упаковочной коробки
@@ -1207,11 +1302,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Boxes.AdminAPI.Response.Model.BoxList:
       description: DTO - список упаковочных коробок
@@ -1243,13 +1338,13 @@ components:
         - status
       properties:
         id: # boxId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.BoxID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -1258,11 +1353,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -1285,15 +1380,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
       description: DTO сохранения ламината
@@ -1311,15 +1404,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
       description: DTO - список ламината
@@ -1352,13 +1443,13 @@ components:
         - status
       properties:
         id: # laminateId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -1367,15 +1458,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -1401,21 +1490,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -1435,21 +1520,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -1487,13 +1568,13 @@ components:
         - status
       properties:
         id: # paperId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -1502,21 +1583,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
         status:
@@ -1560,6 +1637,7 @@ components:
 
   securitySchemes:
     bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
       type: http
       scheme: bearer
       bearerFormat: JWT

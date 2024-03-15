@@ -1,0 +1,9 @@
+App.Request.Header.IdempotencyKey:
+  description: Уникальный идентификатор запроса
+  name: X-Idempotency-Key
+  in: header
+  required: true
+  schema:
+    type: string
+    format: uuid
+  example: "00435777-0dd7-4adc-9e2a-4a6d8110b554"

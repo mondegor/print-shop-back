@@ -8,6 +8,7 @@ import (
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrperms"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
 
 func RegisterSystemHandlers(
@@ -19,10 +20,10 @@ func RegisterSystemHandlers(
 	mrlog.Ctx(ctx).Info().Msgf("Init system handlers in section %s", section.Caption())
 
 	router.HandlerFunc(http.MethodGet, section.Path("/"), mrserver.HandlerGetStatusOKAsJson())
-	router.HandlerFunc(http.MethodGet, section.Path("/health"), mrserver.HandlerGetHealth())
+	router.HandlerFunc(http.MethodGet, section.Path("/v1/health"), mrserver.HandlerGetHealth())
 
-	serviceInfoFunc, err := mrserver.HandlerGetServiceInfoAsJson(
-		mrserver.ConfigServiceInfo{
+	systemInfoFunc, err := mrresponse.HandlerGetSystemInfoAsJson(
+		mrresponse.SystemInfoConfig{
 			Name:      cfg.AppName,
 			Version:   cfg.AppVersion,
 			StartedAt: cfg.AppStartedAt,
@@ -33,7 +34,7 @@ func RegisterSystemHandlers(
 		return err
 	}
 
-	router.HandlerFunc(http.MethodGet, section.Path("/service-info"), serviceInfoFunc)
+	router.HandlerFunc(http.MethodGet, section.Path("/v1/system-info"), systemInfoFunc)
 
 	return nil
 }

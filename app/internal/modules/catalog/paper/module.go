@@ -4,5 +4,5 @@ const (
 	Name = "Catalog.Paper"
 
 	Permission = "modCatalogPaper"
-	DBSchema   = "printdata_catalog"
+	DBSchema   = "printshop_catalog"
 )

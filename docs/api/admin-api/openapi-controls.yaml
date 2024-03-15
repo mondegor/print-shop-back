@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.0.1
+  version: 0.12.0
   title: Private API print-shop управления пользовательскими интерфейсами
   license:
     name: Apache-2.0
@@ -16,11 +16,13 @@ info:
     #### Ограничения полей
     - required - поле обязательно для заполнения;
     - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
     - gte=N - числовое поле должно быть равно или более N;
     - lte=N - числовое поле должно быть равно или менее N;
     - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
     - pattern=P - поле должно соответствовать регулярному выражению P;
 
     #### Ошибки
@@ -32,23 +34,33 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: Controls.ElementTemplates
-    description: Private API Form field templates
+  - name: Controls.ElementTemplate
+    description: Private API Control element templates
 
-  - name: Controls.Forms
-    description: Private API Forms
-
-  - name: Controls.FormElements
-    description: Private API Form elements
+  - name: Controls.SubmitForm
+    description: Private API Control submit forms
 
 paths:
   /v1/controls/element-templates:
     get:
       summary: Метод получения списка шаблонов элементов формы
-      description: Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
-      operationId: getElementTemplates
+      description: |-
+        Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getElementTemplateList
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -70,7 +82,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
+                  $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -84,9 +96,11 @@ paths:
         Метод предназначен для создания информации о новом шаблоне элемента формы в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -100,7 +114,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
 
       responses:
         "201":
@@ -134,7 +148,7 @@ paths:
       description: Метод предназначен для получения информации о шаблоне элемента формы из БД
       operationId: getElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -142,7 +156,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       responses:
         "200":
@@ -150,7 +164,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+                $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -166,9 +180,11 @@ paths:
         Метод предназначен для сохранения информации о шаблоне элемента формы в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -176,14 +192,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
 
       responses:
         "204":
@@ -214,7 +230,7 @@ paths:
       description: Метод предназначен для удаления информации о шаблоне элемента формы из БД
       operationId: removeElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -222,7 +238,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       responses:
         "204":
@@ -245,9 +261,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeElementTemplatestatus
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -255,7 +272,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
         required: true
@@ -280,13 +297,26 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms:
+  /v1/controls/submit-forms:
     get:
       summary: Метод получения списка форм
-      description: Метод предназначен для получения списка всех форм, сохраненных в БД
-      operationId: getForms
+      description: |-
+        Метод предназначен для получения списка всех форм, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getSubmitFormList
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -308,7 +338,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.FormList"
+                  $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -322,9 +352,11 @@ paths:
         Метод предназначен для создания информации о новой форме в БД
 
         **Ограничения и ошибки полей:**
-      operationId: createForm
+        - Caption: required,max=64
+
+      operationId: createSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -338,7 +370,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.CreateForm"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Request.Model.CreateForm"
 
       responses:
         "201":
@@ -362,13 +394,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms/{formId}:
+  /v1/controls/submit-forms/{formId}:
     get:
       summary: Метод получения формы
       description: Метод предназначен для получения формы из БД
-      operationId: getForm
+      operationId: getSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -376,7 +408,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
         "200":
@@ -384,7 +416,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+                $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -400,9 +432,11 @@ paths:
         Метод предназначен для сохранения информации о форме в БД
 
         **Ограничения и ошибки полей:**
-      operationId: storeForm
+        - Caption: required,max=64
+
+      operationId: storeSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -410,14 +444,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.StoreForm"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Request.Model.StoreForm"
 
       responses:
         "204":
@@ -442,9 +476,9 @@ paths:
     delete:
       summary: Метод удаления формы
       description: Метод предназначен для удаления информации о форме из БД
-      operationId: removeForm
+      operationId: removeSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -452,7 +486,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
         "204":
@@ -466,7 +500,7 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms/{formId}/status:
+  /v1/controls/submit-forms/{formId}/status:
     put:
       summary: Метод изменения статуса формы
       description: |-
@@ -475,9 +509,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
-      operationId: changeFormStatus
+
+      operationId: changeSubmitFormStatus
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -485,7 +520,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
         required: true
@@ -510,13 +545,26 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements:
+  /v1/controls/submit-form-elements:
     get:
       summary: Метод получения списка элементов формы
-      description: Метод предназначен для получения списка всех элементов формы, сохраненных в БД
-      operationId: getFormElements
+      description: |-
+        Метод предназначен для получения списка всех элементов формы, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getSubmitFormElementList
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -524,7 +572,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Query.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Query.FormID"
 
       responses:
         "200":
@@ -532,7 +580,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElementList"
+                  $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElementList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -548,9 +596,11 @@ paths:
         Метод предназначен для создания информации о новом элементе формы в БД
 
         **Ограничения и ошибки полей:**
-      operationId: createFormElement
+        - Caption: required,max=64
+
+      operationId: createSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -564,7 +614,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.CreateFormElement"
+              $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Request.Model.CreateFormElement"
 
       responses:
         "201":
@@ -588,13 +638,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements/{elementId}:
+  /v1/controls/submit-form-elements/{elementId}:
     get:
       summary: Метод получения элемента формы по его идентификатору
       description: Метод предназначен для получения информации об элементе формы из БД
-      operationId: getFormElement
+      operationId: getSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -602,7 +652,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       responses:
         "200":
@@ -610,7 +660,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+                $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElement"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -626,9 +676,11 @@ paths:
         Метод предназначен для сохранения информации об элементе формы в БД
 
         **Ограничения и ошибки полей:**
-      operationId: storeFormElement
+        - Caption: required,max=64
+
+      operationId: storeSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -636,14 +688,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.StoreFormElement"
+              $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement"
 
       responses:
         "204":
@@ -668,9 +720,9 @@ paths:
     delete:
       summary: Метод удаления элемента формы
       description: Метод предназначен для удаления информации об элементе формы из БД
-      operationId: removeFormElement
+      operationId: removeSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -678,7 +730,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       responses:
         "204":
@@ -692,13 +744,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements/{elementId}/move:
+  /v1/controls/submit-form-elements/{elementId}/move:
     patch:
       summary: Метод перемещения элемента формы
       description: Метод предназначен для изменения позиции элемента формы в списке элементов в БД
-      operationId: moveFormElement
+      operationId: moveSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -706,7 +758,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       requestBody:
         required: true
@@ -740,18 +792,18 @@ components:
       required: false
       schema:
         type: string
-        default: "ru"
+        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор запроса
-      name: CorrelationID
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
       in: header
       required: false
       schema:
         type: string
         format: uuid
-      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка
@@ -833,7 +885,7 @@ components:
         default: "NORMAL"
       example: "NORMAL,EXTENDED"
 
-    Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID:
+    Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID:
       description: Идентификатор шаблона элемента
       name: templateId
       in: path
@@ -843,7 +895,7 @@ components:
         minimum: 1
       example: 1000
 
-    Controls.Forms.AdminAPI.Request.Path.FormID:
+    Controls.SubmitForms.AdminAPI.Request.Path.FormID:
       description: Идентификатор формы
       name: formId
       in: path
@@ -853,20 +905,20 @@ components:
         minimum: 1
       example: 1000
 
-    Controls.FormElements.AdminAPI.Request.Path.ElementID:
-      description: Идентификатор поля формы
-      name: elementId
-      in: path
-      required: true
-      schema:
-        type: integer
-        minimum: 1
-      example: 1000
-
-    Controls.FormElements.AdminAPI.Request.Query.FormID:
+    Controls.SubmitForm.AdminAPI.Request.Query.FormID:
       description: Идентификатор формы
       name: formId
       in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.SubmitForm.AdminAPI.Request.Path.ElementID:
+      description: Идентификатор поля формы
+      name: elementId
+      in: path
       required: true
       schema:
         type: integer
@@ -893,24 +945,17 @@ components:
       maxLength: 128
       example: "Название"
 
-    App.Field.Date.CreatedAt:
+    App.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
       example: "2023-01-01T12:00:00.000+02:00"
 
-    App.Field.Date.UpdatedAt:
+    App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      nullable: true
       example: "2023-01-01T12:00:00.000+02:00"
-
-    App.Field.IntegerID:
-      description: Идентификатор записи
-      type: integer
-      minimum: 1
-      example: 1000
 
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
@@ -1016,9 +1061,8 @@ components:
       properties:
         id:
           description: Идентификатор созданной записи
-          type: integer
-          minimum: 1
-          example: 1000
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
         message:
           type: string
           example: "Запись была успешно создана"
@@ -1045,7 +1089,28 @@ components:
         - ELEMENT_LIST
       example: "ELEMENT_LIST"
 
-    Custom.Request.Query.Field.ParamName:
+    Custom.Field.Dictionaries.Controls.ElementID:
+      description: Идентификатор элемента формы
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Controls.FormID:
+      description: Идентификатор формы
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Controls.TemplateID:
+      description: Идентификатор шаблона элемента формы (/v1/controls/element-templates)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.ParamName:
       description: Уникальное имя формы/элемента формы
       type: string
       pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
@@ -1053,7 +1118,7 @@ components:
       maxLength: 32
       example: "ParamName"
 
-    Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
       description: DTO добавления нового шаблона элемента
       type: object
       required:
@@ -1064,7 +1129,7 @@ components:
         - elementBody
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1078,7 +1143,7 @@ components:
           type: string
           example: "{\"json\": \"object\"}"
 
-    Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
       description: DTO сохранения шаблона элемента
       type: object
       required:
@@ -1087,7 +1152,7 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1101,7 +1166,7 @@ components:
           type: string
           example: "{\"json\": \"object\"}"
 
-    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList:
+    Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
       description: DTO - список шаблонов элементов
       type: object
       required:
@@ -1112,26 +1177,26 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+            $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
       description: |-
         DTO - шаблон элемента формы пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       type: object
       properties:
         id: # templateId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1147,7 +1212,7 @@ components:
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
-    Controls.Forms.AdminAPI.Request.Model.CreateForm:
+    Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
       description: DTO добавления новой формы
       type: object
       required:
@@ -1156,7 +1221,7 @@ components:
         - formDetailing
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1164,7 +1229,7 @@ components:
         formDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
-    Controls.Forms.AdminAPI.Request.Model.StoreForm:
+    Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
       description: DTO сохранения формы
       type: object
       required:
@@ -1173,7 +1238,7 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1181,7 +1246,7 @@ components:
         formDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
-    Controls.Forms.AdminAPI.Response.Model.FormList:
+    Controls.SubmitForms.AdminAPI.Response.Model.FormList:
       description: DTO - список форм
       type: object
       required:
@@ -1192,11 +1257,11 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Controls.Forms.AdminAPI.Response.Model.Form:
+    Controls.SubmitForms.AdminAPI.Response.Model.Form:
       description: |-
         DTO - форма пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
@@ -1212,15 +1277,15 @@ components:
         - status
       properties:
         id: # formId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1235,28 +1300,26 @@ components:
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
-    Controls.FormElements.AdminAPI.Request.Model.CreateFormElement:
+    Controls.SubmitForm.AdminAPI.Request.Model.CreateFormElement:
       description: DTO сохранения элемента формы
       type: object
       required:
         - templateId
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - example: "Процесс печати"
         templateId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор шаблона элемента (/v1/controls/element-templates)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
         elementRequired:
           description: Обязательность заполнения элемента в форме
           type: boolean
           example: true
 
-    Controls.FormElements.AdminAPI.Request.Model.StoreFormElement:
+    Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement:
       description: DTO сохранения элемента формы
       type: object
       required:
@@ -1265,9 +1328,9 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         formId:
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1277,28 +1340,28 @@ components:
           type: boolean
           example: true
 
-    Controls.FormElements.AdminAPI.Response.Model.FormElementList:
+    Controls.SubmitForm.AdminAPI.Response.Model.FormElementList:
       description: DTO - список элементов формы
       type: array
       items:
-        $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+        $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElement"
 
-    Controls.FormElements.AdminAPI.Response.Model.FormElement:
+    Controls.SubmitForm.AdminAPI.Response.Model.FormElement:
       description: |-
         DTO - элемент формы пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       type: object
       properties:
         id: # elementId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.ElementID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1355,6 +1418,7 @@ components:
 
   securitySchemes:
     bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
       type: http
       scheme: bearer
       bearerFormat: JWT

@@ -16,7 +16,7 @@ type (
 	CompanyPage struct {
 		parser     mrserver.RequestParserString
 		sender     mrserver.ResponseSender
-		service    usecase.CompanyPageService
+		useCase    usecase.CompanyPageUseCase
 		imgBaseURL mrlib.BuilderPath
 	}
 )
@@ -24,13 +24,13 @@ type (
 func NewCompanyPage(
 	parser mrserver.RequestParserString,
 	sender mrserver.ResponseSender,
-	service usecase.CompanyPageService,
+	useCase usecase.CompanyPageUseCase,
 	imgBaseURL mrlib.BuilderPath,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		imgBaseURL: imgBaseURL,
 	}
 }
@@ -42,7 +42,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItemByName(r.Context(), ht.parser.PathParamString(r, "rewriteName"))
+	item, err := ht.useCase.GetItemByName(r.Context(), ht.parser.PathParamString(r, "rewriteName"))
 
 	if err != nil {
 		return err

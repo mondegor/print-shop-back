@@ -1,0 +1,257 @@
+/v1/dictionaries/print-formats:
+  get:
+    summary: Метод получения списка печатных форматов
+    description: |-
+      Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - caption;
+
+      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - caption,default,asc;
+      - createdAt;
+      - updatedAt;
+
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
+    operationId: getPrintFormatList
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список печатных форматов
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления нового печатного формата
+    description: |-
+      Метод предназначен для создания информации о новом печатном формате в БД
+
+      **Ограничения и ошибки полей:**
+      - Caption: required,max=64
+
+    operationId: createPrintFormat
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat"
+
+    responses:
+      "201":
+        description: Информация о печатном формате успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+      "400":
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 64 символов
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/print-formats/{formatId}:
+  get:
+    summary: Метод получения печатного формата
+    description: |-
+      Метод предназначен для получения информации о печатном формате из БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - caption;
+
+      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - caption,default,asc;
+      - createdAt;
+      - updatedAt;
+
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
+    operationId: getPrintFormat
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+    responses:
+      "200":
+        description: Получена информация о печатном формате
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  put:
+    summary: Метод сохранения печатного формата
+    description: |-
+      Метод предназначен для сохранения информации о печатном формате в БД
+
+      **Ограничения и ошибки полей:**
+      - Caption: required,max=64
+
+    operationId: storePrintFormat
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat"
+
+    responses:
+      "204":
+        description: Информация о печатном формате успешно сохранена
+      "400":
+        # Заголовок записи не может быть пустым
+        # Заголовок записи не может быть более 64 символов
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления печатного формата
+    description: Метод предназначен для удаления информации о печатном формате из БД
+    operationId: removePrintFormat
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+    responses:
+      "204":
+        description: Информация о печатном формате успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/print-formats/{formatId}/status:
+  put:
+    summary: Метод изменения статуса печатного формата
+    description: |-
+      Метод предназначен для изменения статуса печатного формата в БД
+
+      **Ограничения и ошибки полей:**
+      - version: required,gte=1 | ErrVersionInvalid
+      - status: required,enum | ErrSwitchStatusRejected
+
+    operationId: changePrintFormatStatus
+    tags:
+      - Dictionaries.PrintFormat
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+    responses:
+      "204":
+        description: Статус печатного формата успешно изменён
+      "400":
+        # Указанный статус содержит недопустимое значение
+        # В данный статус переключение невозможно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

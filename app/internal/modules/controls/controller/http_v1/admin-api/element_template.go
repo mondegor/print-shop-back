@@ -1,13 +1,13 @@
 package http_v1
 
 import (
-	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 	usecase "print-shop-back/internal/modules/controls/usecase/admin-api"
 	usecase_shared "print-shop-back/internal/modules/controls/usecase/shared"
+	"strconv"
 
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlang"
@@ -27,7 +27,7 @@ type (
 	ElementTemplate struct {
 		parser     view_shared.RequestParser
 		sender     mrserver.ResponseSender
-		service    usecase.ElementTemplateService
+		useCase    usecase.ElementTemplateUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -35,13 +35,13 @@ type (
 func NewElementTemplate(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.ElementTemplateService,
+	useCase usecase.ElementTemplateUseCase,
 	listSorter mrview.ListSorter,
 ) *ElementTemplate {
 	return &ElementTemplate{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		listSorter: listSorter,
 	}
 }
@@ -60,7 +60,7 @@ func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *ElementTemplate) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+	items, totalItems, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
 
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func (ht *ElementTemplate) listParams(r *http.Request) entity.ElementTemplatePar
 }
 
 func (ht *ElementTemplate) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
+	item, err := ht.useCase.GetItem(r.Context(), ht.getItemID(r))
 
 	if err != nil {
 		return ht.wrapError(err, r)
@@ -113,21 +113,21 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 		Body:      request.Body,
 	}
 
-	if err := ht.service.Create(r.Context(), &item); err != nil {
+	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
+	} else {
+		return ht.sender.Send(
+			w,
+			http.StatusCreated,
+			SuccessCreatedItemResponse{
+				ItemID: strconv.Itoa(int(itemID)),
+				Message: mrlang.Ctx(r.Context()).TranslateMessage(
+					"msgControlsElementTemplateSuccessCreated",
+					"entity has been success created",
+				),
+			},
+		)
 	}
-
-	return ht.sender.Send(
-		w,
-		http.StatusCreated,
-		SuccessCreatedItemResponse{
-			ItemID: fmt.Sprintf("%d", item.ID),
-			Message: mrlang.Ctx(r.Context()).TranslateMessage(
-				"msgControlsElementTemplateSuccessCreated",
-				"entity has been success created",
-			),
-		},
-	)
 }
 
 func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
@@ -147,7 +147,7 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 		Body:       request.Body,
 	}
 
-	if err := ht.service.Store(r.Context(), &item); err != nil {
+	if err := ht.useCase.Store(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -167,7 +167,7 @@ func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) 
 		Status:     request.Status,
 	}
 
-	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -175,7 +175,7 @@ func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) 
 }
 
 func (ht *ElementTemplate) Remove(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+	if err := ht.useCase.Remove(r.Context(), ht.getItemID(r)); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -191,15 +191,15 @@ func (ht *ElementTemplate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
-	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityNotFound.Is(err) {
 		return usecase_shared.FactoryErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("version", err)
 	}
 
-	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
+	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

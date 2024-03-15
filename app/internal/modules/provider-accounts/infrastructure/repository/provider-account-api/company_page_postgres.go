@@ -9,6 +9,7 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
@@ -25,13 +26,13 @@ func NewCompanyPagePostgres(
 	}
 }
 
-func (re *CompanyPagePostgres) LoadOne(ctx context.Context, row *entity.CompanyPage) error {
+func (re *CompanyPagePostgres) FetchOne(ctx context.Context, accountID mrtype.KeyString) (entity.CompanyPage, error) {
 	sql := `
         SELECT
             updated_at,
             rewrite_name,
             page_head,
-            COALESCE(logo_meta ->> 'path', '') as logo_url,
+            COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url,
             page_status
         FROM
@@ -40,10 +41,12 @@ func (re *CompanyPagePostgres) LoadOne(ctx context.Context, row *entity.CompanyP
             account_id = $1
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.CompanyPage{AccountID: accountID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.AccountID,
+		accountID,
 	).Scan(
 		&row.UpdatedAt,
 		&row.RewriteName,
@@ -52,9 +55,11 @@ func (re *CompanyPagePostgres) LoadOne(ctx context.Context, row *entity.CompanyP
 		&row.SiteURL,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row *entity.CompanyPage) (entity_shared.PublicStatus, error) {
+func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.CompanyPage) (entity_shared.PublicStatus, error) {
 	sql := `
         SELECT
             page_status
@@ -79,7 +84,7 @@ func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row *entity.Comp
 
 // InsertOrUpdate
 // WARNING: row.Status uses only for insert
-func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row *entity.CompanyPage) error {
+func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.CompanyPage) error {
 	tx, err := re.client.Begin(ctx)
 
 	if err != nil {
@@ -96,7 +101,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row *entity.C
 		}
 
 		if e != nil {
-			mrlog.Ctx(ctx).Error().Caller().Err(e).Msg("defer func()")
+			mrlog.Ctx(ctx).Error().Err(e).Msg("defer func()")
 		}
 	}()
 
@@ -176,7 +181,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row *entity.C
 	return err
 }
 
-func (re *CompanyPagePostgres) UpdateStatus(ctx context.Context, row *entity.CompanyPage) error {
+func (re *CompanyPagePostgres) UpdateStatus(ctx context.Context, row entity.CompanyPage) error {
 	sql := `
         UPDATE
             ` + module.UnitCompanyPageDBSchema + `.companies_pages

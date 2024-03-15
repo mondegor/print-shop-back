@@ -9,16 +9,16 @@ import (
 )
 
 type (
-	CompanyPageService interface {
-		GetItem(ctx context.Context, accountID mrtype.KeyString) (*entity.CompanyPage, error)
-		Store(ctx context.Context, item *entity.CompanyPage) error
-		ChangeStatus(ctx context.Context, item *entity.CompanyPage) error
+	CompanyPageUseCase interface {
+		GetItem(ctx context.Context, accountID mrtype.KeyString) (entity.CompanyPage, error)
+		Store(ctx context.Context, item entity.CompanyPage) error
+		ChangeStatus(ctx context.Context, item entity.CompanyPage) error
 	}
 
 	CompanyPageStorage interface {
-		LoadOne(ctx context.Context, row *entity.CompanyPage) error
-		FetchStatus(ctx context.Context, row *entity.CompanyPage) (entity_shared.PublicStatus, error)
-		InsertOrUpdate(ctx context.Context, row *entity.CompanyPage) error
-		UpdateStatus(ctx context.Context, row *entity.CompanyPage) error
+		FetchOne(ctx context.Context, accountID mrtype.KeyString) (entity.CompanyPage, error)
+		FetchStatus(ctx context.Context, row entity.CompanyPage) (entity_shared.PublicStatus, error)
+		InsertOrUpdate(ctx context.Context, row entity.CompanyPage) error
+		UpdateStatus(ctx context.Context, row entity.CompanyPage) error
 	}
 )

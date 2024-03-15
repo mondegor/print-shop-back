@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/catalog/paper"
 	http_v1 "print-shop-back/internal/modules/catalog/paper/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/catalog/paper/entity/admin-api"
 	"print-shop-back/internal/modules/catalog/paper/factory"
@@ -41,21 +40,22 @@ func newUnitPaper(ctx context.Context, opts factory.Options) (*http_v1.Paper, er
 
 	storage := repository.NewPaperPostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
-		mrsql.NewBuilderUpdateWithMeta(
+		mrpostgres.NewSqlBuilderUpdateWithMeta(
 			entityMetaUpdate,
 			mrpostgres.NewSqlBuilderSet(),
+			nil,
 		),
 	)
-	service := usecase.NewPaper(storage, opts.PaperColorAPI, opts.PaperFactureAPI, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPaper(storage, opts.PaperColorAPI, opts.PaperFactureAPI, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPaper(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

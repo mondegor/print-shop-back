@@ -4,5 +4,5 @@ const (
 	Name = "Catalog.Box"
 
 	Permission = "modCatalogBox"
-	DBSchema   = "printdata_catalog"
+	DBSchema   = "printshop_catalog"
 )

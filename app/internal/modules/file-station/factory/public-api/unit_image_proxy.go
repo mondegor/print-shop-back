@@ -23,11 +23,11 @@ func createUnitImageProxy(ctx context.Context, opts factory.Options) ([]mrserver
 }
 
 func newUnitImageProxy(ctx context.Context, opts factory.Options) (*http_v1.ImageProxy, error) {
-	service := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.UsecaseHelper)
+	useCase := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.UsecaseHelper)
 	controller := http_v1.NewImageProxy(
 		opts.RequestParser,
 		mrresponse.NewFileSender(opts.ResponseSender),
-		service,
+		useCase,
 		opts.UnitImageProxy.BaseURL,
 	)
 

@@ -3,20 +3,22 @@ mrcmd_func_openapi_build_adm() {
   local sectionDir="${1:?}" # sample: .../admin-api, .../public-api
   local sharedDir="${2:?}" # sample: .../_shared
 
-  local boxesDir="${sectionDir}/catalog/boxes"
-  local laminatesDir="${sectionDir}/catalog/laminates"
-  local papersDir="${sectionDir}/catalog/papers"
+  local catalogDir="${sectionDir}/catalog"
+  local boxDir="${catalogDir}/box"
+  local laminateDir="${catalogDir}/laminate"
+  local paperDir="${catalogDir}/paper"
 
-  local elementTemplatesDir="${sectionDir}/controls/element-templates"
-  local formsDir="${sectionDir}/controls/forms"
-  local formElementsDir="${sectionDir}/controls/form-elements"
+  local controlsDir="${sectionDir}/controls"
+  local elementTemplateDir="${controlsDir}/element-template"
+  local submitFormDir="${controlsDir}/submit-form"
 
-  local laminateTypesDir="${sectionDir}/dictionaries/laminate-types"
-  local paperColorsDir="${sectionDir}/dictionaries/paper-colors"
-  local paperFacturesDir="${sectionDir}/dictionaries/paper-factures"
-  local printFormatsDir="${sectionDir}/dictionaries/print-formats"
+  local dictionariesDir="${sectionDir}/dictionaries"
+  local laminateTypeDir="${dictionariesDir}/laminate-type"
+  local paperColorDir="${dictionariesDir}/paper-color"
+  local paperFactureDir="${dictionariesDir}/paper-facture"
+  local printFormatDir="${dictionariesDir}/print-format"
 
-  local companyPagesDir="${sectionDir}/provider-accounts/company-pages"
+  local companyPageDir="${sectionDir}/provider-accounts/company-page"
 
   # OPENAPI_VERSION="3.0.3"
 
@@ -30,37 +32,40 @@ mrcmd_func_openapi_build_adm() {
   )
 
   OPENAPI_TAGS=(
-    "${boxesDir}/tags.yaml"
-    "${laminatesDir}/tags.yaml"
-    "${papersDir}/tags.yaml"
+    "${sharedDir}/system/tags.yaml"
 
-    "${laminateTypesDir}/tags.yaml"
-    "${paperColorsDir}/tags.yaml"
-    "${paperFacturesDir}/tags.yaml"
-    "${printFormatsDir}/tags.yaml"
+    "${boxDir}/tags.yaml"
+    "${laminateDir}/tags.yaml"
+    "${paperDir}/tags.yaml"
 
-    "${elementTemplatesDir}/tags.yaml"
-    "${formsDir}/tags.yaml"
-    "${formElementsDir}/tags.yaml"
+    "${laminateTypeDir}/tags.yaml"
+    "${paperColorDir}/tags.yaml"
+    "${paperFactureDir}/tags.yaml"
+    "${printFormatDir}/tags.yaml"
 
-    "${companyPagesDir}/tags.yaml"
+    "${elementTemplateDir}/tags.yaml"
+    "${submitFormDir}/tags.yaml"
+
+    "${companyPageDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
-    "${boxesDir}/paths.yaml"
-    "${laminatesDir}/paths.yaml"
-    "${papersDir}/paths.yaml"
+    "${sharedDir}/system/paths.yaml"
 
-    "${laminateTypesDir}/paths.yaml"
-    "${paperColorsDir}/paths.yaml"
-    "${paperFacturesDir}/paths.yaml"
-    "${printFormatsDir}/paths.yaml"
+    "${boxDir}/box_paths.yaml"
+    "${laminateDir}/laminate_paths.yaml"
+    "${paperDir}/paper_paths.yaml"
 
-    "${elementTemplatesDir}/paths.yaml"
-    "${formsDir}/paths.yaml"
-    "${formElementsDir}/paths.yaml"
+    "${laminateTypeDir}/laminate_type_paths.yaml"
+    "${paperColorDir}/paper_color_paths.yaml"
+    "${paperFactureDir}/paper_facture_paths.yaml"
+    "${printFormatDir}/print_format_paths.yaml"
 
-    "${companyPagesDir}/paths.yaml"
+    "${elementTemplateDir}/element_template_paths.yaml"
+    "${submitFormDir}/submit_form_paths.yaml"
+    "${submitFormDir}/element_paths.yaml"
+
+    "${companyPageDir}/company_page_paths.yaml"
   )
 
 #  OPENAPI_COMPONENTS_HEADERS=(
@@ -84,103 +89,101 @@ mrcmd_func_openapi_build_adm() {
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
-    "${boxesDir}/components-parameters.yaml"
-    "${laminatesDir}/components-parameters.yaml"
-    "${papersDir}/components-parameters.yaml"
+    "${boxDir}/box_parameters.yaml"
+    "${laminateDir}/laminate_parameters.yaml"
+    "${paperDir}/paper_parameters.yaml"
 
-    "${laminateTypesDir}/components-parameters.yaml"
-    "${paperColorsDir}/components-parameters.yaml"
-    "${paperFacturesDir}/components-parameters.yaml"
-    "${printFormatsDir}/components-parameters.yaml"
+    "${laminateTypeDir}/laminate_type_parameters.yaml"
+    "${paperColorDir}/paper_color_parameters.yaml"
+    "${paperFactureDir}/paper_facture_parameters.yaml"
+    "${printFormatDir}/print_format_parameters.yaml"
 
-    "${elementTemplatesDir}/components-parameters.yaml"
-    "${formsDir}/components-parameters.yaml"
-    "${formElementsDir}/components-parameters.yaml"
+    "${elementTemplateDir}/element_template_parameters.yaml"
+    "${submitFormDir}/submit_form_parameters.yaml"
+    "${submitFormDir}/element_parameters.yaml"
 
-    "${companyPagesDir}/components-parameters.yaml"
+    "${companyPageDir}/company_page_parameters.yaml"
   )
 
   OPENAPI_COMPONENTS_SCHEMAS=(
-    # "${sharedDir}/components/schemas/enums/App.Enum.Address.HouseType.yaml"
-    # "${sharedDir}/components/schemas/enums/App.Enum.DeliveryMethod.yaml"
-    # "${sharedDir}/components/schemas/enums/App.Enum.Gender.yaml"
-    "${sharedDir}/components/schemas/enums/App.Enum.Status.yaml"
+    # "${sharedDir}/components/enums/App.Enum.Address.HouseType.yaml"
+    # "${sharedDir}/components/enums/App.Enum.DeliveryMethod.yaml"
+    # "${sharedDir}/components/enums/App.Enum.Gender.yaml"
+    "${sharedDir}/components/enums/App.Enum.Status.yaml"
 
-    "${sharedDir}/components/schemas/fields/App.Field.Article.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Boolean.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.Caption.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.Date.CreatedAt.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.Date.UpdatedAt.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Date.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Datetime.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Email.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.GEO.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.ImageURL.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.IntegerID.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.ListPager.Total.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Phone.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.StringID.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.TagVersion.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Timezone.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.UUID.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.VariableCamelCase.yaml"
+    "${sharedDir}/components/fields/App.Field.Article.yaml"
+    # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
+    "${sharedDir}/components/fields/App.Field.Caption.yaml"
+    "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
+    "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
+    # "${sharedDir}/components/fields/App.Field.Date.yaml"
+    # "${sharedDir}/components/fields/App.Field.DateTime.yaml"
+    # "${sharedDir}/components/fields/App.Field.Email.yaml"
+    # "${sharedDir}/components/fields/App.Field.GEO.yaml"
+    # "${sharedDir}/components/fields/App.Field.ImageURL.yaml"
+    # "${sharedDir}/components/fields/App.Field.Int16.yaml"
+    # "${sharedDir}/components/fields/App.Field.Int32.yaml"
+    "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
+    # "${sharedDir}/components/fields/App.Field.Phone.yaml"
+    # "${sharedDir}/components/fields/App.Field.StringID.yaml"
+    "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
+    # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
+    # "${sharedDir}/components/fields/App.Field.UUID.yaml"
+    # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
-    # "${sharedDir}/components/schemas/measures/App.Measure.Gram.yaml"
-    "${sharedDir}/components/schemas/measures/App.Measure.GramPerMeter2.yaml"
-    "${sharedDir}/components/schemas/measures/App.Measure.Micrometer.yaml"
-    # "${sharedDir}/components/schemas/measures/App.Measure.Price.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
-    # "${sharedDir}/components/schemas/App.Request.Model.ChangeFlag.yaml"
-    "${sharedDir}/components/schemas/App.Request.Model.ChangeStatus.yaml"
-    "${sharedDir}/components/schemas/App.Request.Model.MoveItem.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.BinaryFile.yaml"
-    "${sharedDir}/components/schemas/App.Response.Model.Error.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.FileInfo.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.ImageInfo.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.Success.yaml"
-    "${sharedDir}/components/schemas/App.Response.Model.SuccessCreatedItem.yaml"
+    # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
+    "${sharedDir}/components/models/App.Request.Model.ChangeStatus.yaml"
+    "${sharedDir}/components/models/App.Request.Model.MoveItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.BinaryFile.yaml"
+    "${sharedDir}/components/models/App.Response.Model.Error.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.FileInfo.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
+    "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
 
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
     "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
 
-    "${sharedDir}/custom/fields/Custom.Request.Query.Field.ParamName.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.PaperID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.ColorID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.FactureID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.ParamName.yaml"
 
-    "${boxesDir}/components-schemas.yaml"
-    "${laminatesDir}/components-schemas.yaml"
-    "${papersDir}/components-schemas.yaml"
+    "${sharedDir}/system/schemas.yaml"
 
-    "${laminateTypesDir}/components-schemas.yaml"
-    "${paperColorsDir}/components-schemas.yaml"
-    "${paperFacturesDir}/components-schemas.yaml"
-    "${printFormatsDir}/components-schemas.yaml"
+    "${boxDir}/box_schemas.yaml"
+    "${laminateDir}/laminate_schemas.yaml"
+    "${paperDir}/paper_schemas.yaml"
 
-    "${elementTemplatesDir}/components-schemas.yaml"
-    "${formsDir}/components-schemas.yaml"
-    "${formElementsDir}/components-schemas.yaml"
+    "${laminateTypeDir}/laminate_type_schemas.yaml"
+    "${paperColorDir}/paper_color_schemas.yaml"
+    "${paperFactureDir}/paper_facture_schemas.yaml"
+    "${printFormatDir}/print_format_schemas.yaml"
 
-    "${companyPagesDir}/components-schemas.yaml"
+    "${elementTemplateDir}/element_template_schemas.yaml"
+    "${submitFormDir}/submit_form_schemas.yaml"
+    "${submitFormDir}/element_schemas.yaml"
+
+    "${companyPageDir}/company_page_schemas.yaml"
   )
 
   OPENAPI_COMPONENTS_RESPONSES=(
     "${sharedDir}/components/responses/App.ResponseJson.Errors.yaml"
     "${sharedDir}/components/responses/App.ResponseJson.ErrorsAuth.yaml"
-
-    "${boxesDir}/components-responses.yaml"
-    "${laminatesDir}/components-responses.yaml"
-    "${papersDir}/components-responses.yaml"
-
-    "${laminateTypesDir}/components-responses.yaml"
-    "${paperColorsDir}/components-responses.yaml"
-    "${paperFacturesDir}/components-responses.yaml"
-    "${printFormatsDir}/components-responses.yaml"
-
-    "${elementTemplatesDir}/components-responses.yaml"
-    "${formsDir}/components-responses.yaml"
-    "${formElementsDir}/components-responses.yaml"
-
-    "${companyPagesDir}/components-responses.yaml"
   )
 
   OPENAPI_SECURITY_SCHEMES=(

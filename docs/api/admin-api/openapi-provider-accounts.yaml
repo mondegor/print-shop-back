@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.0.1
+  version: 0.12.0
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0
@@ -16,11 +16,13 @@ info:
     #### Ограничения полей
     - required - поле обязательно для заполнения;
     - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
     - gte=N - числовое поле должно быть равно или более N;
     - lte=N - числовое поле должно быть равно или менее N;
     - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
     - pattern=P - поле должно соответствовать регулярному выражению P;
 
     #### Ошибки
@@ -32,17 +34,30 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: CompaniesPages
+  - name: CompanyPage
     description: Private API Companies' pages
 
 paths:
   /v1/provider-accounts/companies-pages:
     get:
       summary: Метод получения списка страниц компаний
-      description: Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
-      operationId: getCompanyPages
+      description: |-
+        Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getCompanyPageList
       tags:
-        - CompaniesPages
+        - CompanyPage
 
       security:
         - bearerAuth: []
@@ -78,18 +93,18 @@ components:
       required: false
       schema:
         type: string
-        default: "ru"
+        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор запроса
-      name: CorrelationID
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
       in: header
       required: false
       schema:
         type: string
         format: uuid
-      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка
@@ -307,6 +322,7 @@ components:
 
   securitySchemes:
     bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
       type: http
       scheme: bearer
       bearerFormat: JWT

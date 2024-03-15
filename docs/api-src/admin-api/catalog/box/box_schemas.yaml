@@ -1,0 +1,98 @@
+Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
+  description: DTO добавления новой упаковочной коробки
+  type: object
+  required:
+    - article
+    - caption
+    - length
+    - width
+    - depth
+  properties:
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "СДЭК"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    depth:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
+  description: DTO сохранения упаковочной коробки
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "СДЭК"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    depth:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+Catalog.Boxes.AdminAPI.Response.Model.BoxList:
+  description: DTO - список упаковочных коробок
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Boxes.AdminAPI.Response.Model.Box"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Catalog.Boxes.AdminAPI.Response.Model.Box:
+  description: DTO - упаковочная коробка
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - article
+    - caption
+    - length
+    - width
+    - depth
+    - status
+  properties:
+    id: # boxId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.BoxID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "СДЭК"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    depth:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

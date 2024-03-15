@@ -138,7 +138,7 @@ func (re *PrintFormatPostgres) FetchTotal(ctx context.Context, where mrstorage.S
 	return totalRow, err
 }
 
-func (re *PrintFormatPostgres) LoadOne(ctx context.Context, row *entity.PrintFormat) error {
+func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PrintFormat, error) {
 	sql := `
         SELECT
             tag_version,
@@ -154,10 +154,12 @@ func (re *PrintFormatPostgres) LoadOne(ctx context.Context, row *entity.PrintFor
             format_id = $1 AND format_status <> $2
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.PrintFormat{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -168,9 +170,11 @@ func (re *PrintFormatPostgres) LoadOne(ctx context.Context, row *entity.PrintFor
 		&row.Width,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, row *entity.PrintFormat) (mrenum.ItemStatus, error) {
+func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, row entity.PrintFormat) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             format_status
@@ -196,11 +200,11 @@ func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, row *entity.Prin
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PrintFormatPostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.PrintFormatIsExistsPostgres(ctx, re.client, id)
+func (re *PrintFormatPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.PrintFormatIsExistsPostgres(ctx, re.client, rowID)
 }
 
-func (re *PrintFormatPostgres) Insert(ctx context.Context, row *entity.PrintFormat) error {
+func (re *PrintFormatPostgres) Insert(ctx context.Context, row entity.PrintFormat) (mrtype.KeyInt32, error) {
 	sql := `
         INSERT INTO ` + module.DBSchema + `.print_formats
             (
@@ -225,10 +229,10 @@ func (re *PrintFormatPostgres) Insert(ctx context.Context, row *entity.PrintForm
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *PrintFormatPostgres) Update(ctx context.Context, row *entity.PrintFormat) (int32, error) {
+func (re *PrintFormatPostgres) Update(ctx context.Context, row entity.PrintFormat) (int32, error) {
 	set, err := re.sqlUpdate.SetFromEntity(row)
 
 	if err != nil || set.Empty() {
@@ -268,7 +272,7 @@ func (re *PrintFormatPostgres) Update(ctx context.Context, row *entity.PrintForm
 	return tagVersion, err
 }
 
-func (re *PrintFormatPostgres) UpdateStatus(ctx context.Context, row *entity.PrintFormat) (int32, error) {
+func (re *PrintFormatPostgres) UpdateStatus(ctx context.Context, row entity.PrintFormat) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.print_formats
@@ -297,7 +301,7 @@ func (re *PrintFormatPostgres) UpdateStatus(ctx context.Context, row *entity.Pri
 	return tagVersion, err
 }
 
-func (re *PrintFormatPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *PrintFormatPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.print_formats
@@ -311,7 +315,7 @@ func (re *PrintFormatPostgres) Delete(ctx context.Context, id mrtype.KeyInt32) e
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

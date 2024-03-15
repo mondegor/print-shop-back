@@ -39,17 +39,15 @@ func NewCompanyPage(
 	}
 }
 
-func (uc *CompanyPage) GetItem(ctx context.Context, accountID mrtype.KeyString) (*entity.CompanyPage, error) {
+func (uc *CompanyPage) GetItem(ctx context.Context, accountID mrtype.KeyString) (entity.CompanyPage, error) {
 	if accountID == "" {
-		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
+		return entity.CompanyPage{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	item := &entity.CompanyPage{
-		AccountID: accountID,
-	}
+	item, err := uc.storage.FetchOne(ctx, accountID)
 
-	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)
+	if err != nil {
+		return entity.CompanyPage{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)
 	}
 
 	item.LogoURL = uc.imgBaseURL.FullPath(item.LogoURL)
@@ -57,9 +55,9 @@ func (uc *CompanyPage) GetItem(ctx context.Context, accountID mrtype.KeyString) 
 	return item, nil
 }
 
-func (uc *CompanyPage) Store(ctx context.Context, item *entity.CompanyPage) error {
+func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == "" {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	item.Status = entity_shared.PublicStatusDraft // only for insert
@@ -73,9 +71,9 @@ func (uc *CompanyPage) Store(ctx context.Context, item *entity.CompanyPage) erro
 	return nil
 }
 
-func (uc *CompanyPage) ChangeStatus(ctx context.Context, item *entity.CompanyPage) error {
+func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == "" {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -89,7 +87,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item *entity.CompanyPag
 	}
 
 	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.FactoryErrServiceSwitchStatusRejected.New(currentStatus, item.Status)
+		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item); err != nil {

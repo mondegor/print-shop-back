@@ -10,7 +10,7 @@ import (
 
 const (
 	appName    = "Print Shop Service"
-	appVersion = "v0.11.0"
+	appVersion = "v0.12.0"
 )
 
 type (
@@ -51,13 +51,6 @@ type (
 		TimestampFormat string `yaml:"timestamp_format" env:"APPX_LOG_TIMESTAMP"`
 		JsonFormat      bool   `yaml:"json_format" env:"APPX_LOG_JSON"`
 		ConsoleColor    bool   `yaml:"console_color" env:"APPX_LOG_COLOR"`
-		LogCaller       `yaml:"caller"`
-	}
-
-	LogCaller struct {
-		Deep         int    `yaml:"deep" env:"APPX_LOG_CALLER_DEEP"`
-		UseShortPath bool   `yaml:"use_short_path" env:"APPX_LOG_CALLER_USE_SHORT_PATH"`
-		RootPath     string `yaml:"root_path"`
 	}
 
 	Servers struct {
@@ -157,6 +150,10 @@ type (
 	}
 
 	ModulesSettings struct {
+		General struct {
+			PageSizeMax     uint64 `yaml:"page_size_max"`
+			PageSizeDefault uint64 `yaml:"page_size_default"`
+		} `yaml:"general"`
 		ProviderAccount struct {
 			CompanyPageLogo struct {
 				FileProvider string `yaml:"file_provider"` // FileProviders.ImageStorage

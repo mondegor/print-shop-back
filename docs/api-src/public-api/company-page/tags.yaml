@@ -1,2 +1,2 @@
-- name: CompaniesPages
-  description: Public API Companies Pages
+- name: CompanyPage
+  description: Public API Companies' pages

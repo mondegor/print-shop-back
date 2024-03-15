@@ -14,7 +14,7 @@ const (
 type (
 	PaperColorAPI interface {
 		// CheckingAvailability - error: FactoryErrPaperColorNotFound or Failed
-		CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error
+		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
 

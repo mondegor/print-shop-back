@@ -6,7 +6,7 @@ Custom.Request.Query.Filter.DensityMin:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100g/m2
+  example: 100000 # 100 g/m2
 
 Custom.Request.Query.Filter.DensityMax:
   description: Максимальная плотность (g/m2)
@@ -16,4 +16,4 @@ Custom.Request.Query.Filter.DensityMax:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100g/m2
+  example: 100000 # 100 g/m2

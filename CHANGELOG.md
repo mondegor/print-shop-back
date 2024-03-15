@@ -1,6 +1,33 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-03-15
+### Changed
+- Рефакторинг кода:
+    - переименование `FactoryErrService*` -> `FactoryErrUseCase*`, `errService*` -> `errUseCase*`;
+    - переименование интерфейсов `*Service` -> `*UseCase`;
+    - замена методов `LoadOne` на `FetchOne`;
+    - методы `Create`, `Insert` теперь возвращают ID записи;
+    - схема БД переименована `gscatalog` -> `sample_catalog`;
+- Вся мета информация об изображениях стала необязательной (`imageUrl`, и т.д.);
+- Настройки `PageSizeMax` и `PageSizeDefault` вынесены в общие настройки модулей `ModulesSettings.General`;
+- Парсер `SortPage` разделён на два: `ListSorter`, `ListPager`;
+- Удалены неиспользуемые параметры запросов в каждом из модулей, отсортированы по алфавиту оставшиеся;
+- В логгер добавлена поддержка `IsAutoCallerOnFunc`;
+
+
+- Рефакторинг API документации:
+    - Добавлены компоненты:
+        - `App.Response.Model.BinaryAnyFile`;
+        - `App.Response.Model.BinaryImage`;
+        - `App.Response.Model.BinaryMedia`;
+        - `App.Response.Model.JsonFile`;
+        - `App.Response.Model.SuccessModifyItem`;
+        - `App.Response.Model.TextFile.yaml`;
+    - Доработка описания фильтрации, сортировки при получении списков записей;
+    - Доработка описания ограничений при добавлении/обновлении записей;
+    - Для всех модулей поля-идентификаторы описаны как отдельные сущности;
+
 ## 2024-02-05
 ### Changed
 - Переименованы:

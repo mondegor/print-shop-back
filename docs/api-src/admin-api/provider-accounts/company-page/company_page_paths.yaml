@@ -1,0 +1,44 @@
+/v1/provider-accounts/companies-pages:
+  get:
+    summary: Метод получения списка страниц компаний
+    description: |-
+      Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - caption;
+
+      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - caption,default,asc;
+      - createdAt;
+      - updatedAt;
+
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
+    operationId: getCompanyPageList
+    tags:
+      - CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses"
+
+    responses:
+      "200":
+        description: Получен список страниц компаний всех аккаунтов
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

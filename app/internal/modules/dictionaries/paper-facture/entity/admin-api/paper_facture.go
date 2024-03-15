@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	PaperFacture struct { // DB: printdata_dictionaries.paper_factures
+	PaperFacture struct { // DB: printshop_dictionaries.paper_factures
 		ID         mrtype.KeyInt32 `json:"id"`                                   // facture_id
 		TagVersion int32           `json:"version"`                              // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at

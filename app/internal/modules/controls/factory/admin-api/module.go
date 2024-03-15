@@ -21,12 +21,12 @@ func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpCon
 		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitElementTemplatePermission)...)
 	}
 
-	mrfactory.InfoCreateUnit(ctx, module.UnitFormDataName)
+	mrfactory.InfoCreateUnit(ctx, module.UnitSubmitFormName)
 
-	if l, err := createUnitFormData(ctx, opts); err != nil {
+	if l, err := createUnitSubmitForm(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitFormDataPermission)...)
+		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitSubmitFormPermission)...)
 	}
 
 	mrfactory.InfoCreateUnit(ctx, module.UnitFormElementName)

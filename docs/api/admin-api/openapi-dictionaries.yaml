@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.0.1
+  version: 0.12.0
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -16,11 +16,13 @@ info:
     #### Ограничения полей
     - required - поле обязательно для заполнения;
     - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
     - gte=N - числовое поле должно быть равно или более N;
     - lte=N - числовое поле должно быть равно или менее N;
     - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
     - pattern=P - поле должно соответствовать регулярному выражению P;
 
     #### Ошибки
@@ -32,26 +34,39 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: Dictionaries.LaminateTypes
+  - name: Dictionaries.LaminateType
     description: Private API Dictionary laminate types
 
-  - name: Dictionaries.PaperColors
+  - name: Dictionaries.PaperColor
     description: Private API Dictionary paper colors
 
-  - name: Dictionaries.PaperFactures
+  - name: Dictionaries.PaperFacture
     description: Private API Dictionary paper factures
 
-  - name: Dictionaries.PrintFormats
+  - name: Dictionaries.PrintFormat
     description: Private API Dictionary print formats
 
 paths:
   /v1/dictionaries/laminate-types:
     get:
       summary: Метод получения списка типов ламината
-      description: Метод предназначен для получения списка всех типов ламината, сохраненных в БД
-      operationId: getLaminateTypes
+      description: |-
+        Метод предназначен для получения списка всех типов ламината, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getLaminateTypeList
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -88,9 +103,11 @@ paths:
         Метод предназначен для создания информации о новом типе ламината в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -130,7 +147,7 @@ paths:
       description: Метод предназначен для получения информации о типе ламината из БД
       operationId: getLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -162,9 +179,11 @@ paths:
         Метод предназначен для сохранения информации о типе ламината в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -202,7 +221,7 @@ paths:
       description: Метод предназначен для удаления информации о типе ламината из БД
       operationId: removeLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -233,9 +252,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeLaminateTypeStatus
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -271,10 +291,23 @@ paths:
   /v1/dictionaries/paper-colors:
     get:
       summary: Метод получения списка цветов бумаги
-      description: Метод предназначен для получения списка всех цветов бумаги, сохраненных в БД
-      operationId: getPaperColors
+      description: |-
+        Метод предназначен для получения списка всех цветов бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperColorList
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -311,9 +344,11 @@ paths:
         Метод предназначен для создания информации о новом цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -350,10 +385,23 @@ paths:
   /v1/dictionaries/paper-colors/{colorId}:
     get:
       summary: Метод получения цвета бумаги
-      description: Метод предназначен для получения информации о цвете бумаги из БД
+      description: |-
+        Метод предназначен для получения информации о цвете бумаги из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -385,9 +433,11 @@ paths:
         Метод предназначен для сохранения информации о цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -425,7 +475,7 @@ paths:
       description: Метод предназначен для удаления информации о цвете бумаги из БД
       operationId: removePaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -456,9 +506,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperColorStatus
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -494,10 +545,23 @@ paths:
   /v1/dictionaries/paper-factures:
     get:
       summary: Метод получения списка фактуры бумаги
-      description: Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
-      operationId: getPaperFactures
+      description: |-
+        Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperFactureList
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -534,9 +598,11 @@ paths:
         Метод предназначен для создания информации о новой фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -573,10 +639,23 @@ paths:
   /v1/dictionaries/paper-factures/{factureId}:
     get:
       summary: Метод получения фактуры бумаги
-      description: Метод предназначен для получения информации о фактуре бумаги из БД
+      description: |-
+        Метод предназначен для получения информации о фактуре бумаги из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -608,9 +687,11 @@ paths:
         Метод предназначен для сохранения информации о фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -648,7 +729,7 @@ paths:
       description: Метод предназначен для удаления информации о фактуре бумаги из БД
       operationId: removePaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -679,9 +760,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperFactureStatus
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -717,10 +799,23 @@ paths:
   /v1/dictionaries/print-formats:
     get:
       summary: Метод получения списка печатных форматов
-      description: Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
-      operationId: getPrintFormats
+      description: |-
+        Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPrintFormatList
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -761,9 +856,11 @@ paths:
         Метод предназначен для создания информации о новом печатном формате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -800,10 +897,23 @@ paths:
   /v1/dictionaries/print-formats/{formatId}:
     get:
       summary: Метод получения печатного формата
-      description: Метод предназначен для получения информации о печатном формате из БД
+      description: |-
+        Метод предназначен для получения информации о печатном формате из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -835,9 +945,11 @@ paths:
         Метод предназначен для сохранения информации о печатном формате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -875,7 +987,7 @@ paths:
       description: Метод предназначен для удаления информации о печатном формате из БД
       operationId: removePrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -906,9 +1018,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePrintFormatStatus
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -951,18 +1064,18 @@ components:
       required: false
       schema:
         type: string
-        default: "ru"
+        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор запроса
-      name: CorrelationID
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
       in: header
       required: false
       schema:
         type: string
         format: uuid
-      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка
@@ -1042,7 +1155,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMax:
       description: Максимальная длина (µm)
@@ -1052,7 +1165,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WidthMin:
       description: Минимальная ширина (µm)
@@ -1062,7 +1175,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WidthMax:
       description: Максимальная ширина (µm)
@@ -1072,7 +1185,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID:
       description: Идентификатор типа ламината
@@ -1134,24 +1247,17 @@ components:
       maxLength: 128
       example: "Название"
 
-    App.Field.Date.CreatedAt:
+    App.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
       example: "2023-01-01T12:00:00.000+02:00"
 
-    App.Field.Date.UpdatedAt:
+    App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      nullable: true
       example: "2023-01-01T12:00:00.000+02:00"
-
-    App.Field.IntegerID:
-      description: Идентификатор записи
-      type: integer
-      minimum: 1
-      example: 1000
 
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
@@ -1165,7 +1271,7 @@ components:
       minimum: 1
       example: 5
 
-    App.Measure.Micrometer:
+    App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
       type: integer
       maxLength: 10
@@ -1250,12 +1356,39 @@ components:
       properties:
         id:
           description: Идентификатор созданной записи
-          type: integer
-          minimum: 1
-          example: 1000
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
         message:
           type: string
           example: "Запись была успешно создана"
+
+    Custom.Field.Dictionaries.ColorID:
+      description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.FactureID:
+      description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.LaminateTypeID:
+      description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PrintFormatID:
+      description: Идентификатор печатного формата
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
 
     Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType:
       description: DTO добавления нового типа ламината
@@ -1310,13 +1443,13 @@ components:
         - status
       properties:
         id: # typeId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1378,13 +1511,13 @@ components:
         - status
       properties:
         id: # colorId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1446,13 +1579,13 @@ components:
         - status
       properties:
         id: # factureId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1475,9 +1608,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
       description: DTO сохранения печатного формата
@@ -1493,9 +1626,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
       description: DTO - список печатных форматов
@@ -1525,22 +1658,22 @@ components:
         - status
       properties:
         id: # formatId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -1582,6 +1715,7 @@ components:
 
   securitySchemes:
     bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
       type: http
       scheme: bearer
       bearerFormat: JWT

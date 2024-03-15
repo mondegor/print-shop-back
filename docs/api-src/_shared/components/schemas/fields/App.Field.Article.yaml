@@ -1,7 +1,0 @@
-App.Field.Article:
-  description: Уникальный артикул записи (любые буквы без пробелов)
-  type: string
-  pattern: "^S+$"
-  minLength: 2
-  maxLength: 64
-  example: "item-FLEX-92744"

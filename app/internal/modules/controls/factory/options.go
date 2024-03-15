@@ -24,6 +24,9 @@ type (
 		OrdererAPI         mrorderer.API
 
 		UnitElementTemplate UnitElementTemplateOptions
+
+		PageSizeMax     uint64
+		PageSizeDefault uint64
 	}
 
 	UnitElementTemplateOptions struct {

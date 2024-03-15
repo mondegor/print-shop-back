@@ -13,7 +13,7 @@ const (
 )
 
 type (
-	PrintFormat struct { // DB: printdata_dictionaries.print_format
+	PrintFormat struct { // DB: printshop_dictionaries.print_format
 		ID         mrtype.KeyInt32 `json:"id"`                                   // format_id
 		TagVersion int32           `json:"version"`                              // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at

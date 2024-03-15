@@ -24,6 +24,6 @@ func NewLaminateTypePostgres(
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *LaminateTypePostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.LaminateTypeIsExistsPostgres(ctx, re.client, id)
+func (re *LaminateTypePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.LaminateTypeIsExistsPostgres(ctx, re.client, rowID)
 }

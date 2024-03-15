@@ -1,0 +1,6 @@
+Custom.Field.Dictionaries.Catalog.BoxID:
+  description: Идентификатор коробки
+  type: integer
+  format: int32
+  minimum: 1
+  example: 2

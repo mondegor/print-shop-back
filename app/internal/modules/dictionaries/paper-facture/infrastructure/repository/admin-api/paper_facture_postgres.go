@@ -128,7 +128,7 @@ func (re *PaperFacturePostgres) FetchTotal(ctx context.Context, where mrstorage.
 	return totalRow, err
 }
 
-func (re *PaperFacturePostgres) LoadOne(ctx context.Context, row *entity.PaperFacture) error {
+func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperFacture, error) {
 	sql := `
         SELECT
             tag_version,
@@ -142,10 +142,12 @@ func (re *PaperFacturePostgres) LoadOne(ctx context.Context, row *entity.PaperFa
             facture_id = $1 AND facture_status <> $2
         LIMIT 1;`
 
-	return re.client.QueryRow(
+	row := entity.PaperFacture{ID: rowID}
+
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
@@ -154,9 +156,11 @@ func (re *PaperFacturePostgres) LoadOne(ctx context.Context, row *entity.PaperFa
 		&row.Caption,
 		&row.Status,
 	)
+
+	return row, err
 }
 
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, row *entity.PaperFacture) (mrenum.ItemStatus, error) {
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, row entity.PaperFacture) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             facture_status
@@ -182,11 +186,11 @@ func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, row *entity.Pap
 
 // IsExists
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperFacturePostgres) IsExists(ctx context.Context, id mrtype.KeyInt32) error {
-	return repository_shared.PaperFactureIsExistsPostgres(ctx, re.client, id)
+func (re *PaperFacturePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+	return repository_shared.PaperFactureIsExistsPostgres(ctx, re.client, rowID)
 }
 
-func (re *PaperFacturePostgres) Insert(ctx context.Context, row *entity.PaperFacture) error {
+func (re *PaperFacturePostgres) Insert(ctx context.Context, row entity.PaperFacture) (mrtype.KeyInt32, error) {
 	sql := `
         INSERT INTO ` + module.DBSchema + `.paper_factures
             (
@@ -207,10 +211,10 @@ func (re *PaperFacturePostgres) Insert(ctx context.Context, row *entity.PaperFac
 		&row.ID,
 	)
 
-	return err
+	return row.ID, err
 }
 
-func (re *PaperFacturePostgres) Update(ctx context.Context, row *entity.PaperFacture) (int32, error) {
+func (re *PaperFacturePostgres) Update(ctx context.Context, row entity.PaperFacture) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_factures
@@ -239,7 +243,7 @@ func (re *PaperFacturePostgres) Update(ctx context.Context, row *entity.PaperFac
 	return tagVersion, err
 }
 
-func (re *PaperFacturePostgres) UpdateStatus(ctx context.Context, row *entity.PaperFacture) (int32, error) {
+func (re *PaperFacturePostgres) UpdateStatus(ctx context.Context, row entity.PaperFacture) (int32, error) {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_factures
@@ -268,7 +272,7 @@ func (re *PaperFacturePostgres) UpdateStatus(ctx context.Context, row *entity.Pa
 	return tagVersion, err
 }
 
-func (re *PaperFacturePostgres) Delete(ctx context.Context, id mrtype.KeyInt32) error {
+func (re *PaperFacturePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         UPDATE
             ` + module.DBSchema + `.paper_factures
@@ -282,7 +286,7 @@ func (re *PaperFacturePostgres) Delete(ctx context.Context, id mrtype.KeyInt32) 
 	return re.client.Exec(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	)
 }

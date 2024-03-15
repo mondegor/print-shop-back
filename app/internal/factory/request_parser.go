@@ -30,8 +30,14 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		Int64:      mrparser.NewInt64(pathFunc),
 		ItemStatus: mrparser.NewItemStatus(),
 		KeyInt32:   mrparser.NewKeyInt32(pathFunc),
-		SortPage:   mrparser.NewSortPage(),
-		String:     mrparser.NewString(pathFunc),
+		ListSorter: mrparser.NewListSorter(mrparser.ListSorterOptions{}),
+		ListPager: mrparser.NewListPager(
+			mrparser.ListPagerOptions{
+				PageSizeMax:     cfg.General.PageSizeMax,
+				PageSizeDefault: cfg.General.PageSizeDefault,
+			},
+		),
+		String: mrparser.NewString(pathFunc),
 		// UUID:       mrparser.NewUUID(pathFunc),
 		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
 		// File:       mrparser.NewFile(),

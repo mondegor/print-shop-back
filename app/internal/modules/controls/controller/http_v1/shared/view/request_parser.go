@@ -17,11 +17,12 @@ type (
 		mrserver.RequestParserInt64
 		mrserver.RequestParserItemStatus
 		mrserver.RequestParserKeyInt32
-		mrserver.RequestParserSortPage
+		mrserver.RequestParserListSorter
+		mrserver.RequestParserListPager
 		mrserver.RequestParserString
 		mrserver.RequestParserValidate
 
-		FormDataID(r *http.Request) (mrtype.KeyInt32, error)
+		SubmitFormID(r *http.Request) (mrtype.KeyInt32, error)
 		FilterElementDetailingList(r *http.Request, key string) []entity_shared.ElementDetailing
 	}
 
@@ -29,7 +30,8 @@ type (
 		*mrparser.Int64
 		*mrparser.ItemStatus
 		*mrparser.KeyInt32
-		*mrparser.SortPage
+		*mrparser.ListSorter
+		*mrparser.ListPager
 		*mrparser.String
 		*mrparser.Validator
 	}
@@ -39,25 +41,27 @@ func NewParser(
 	p1 *mrparser.Int64,
 	p2 *mrparser.ItemStatus,
 	p3 *mrparser.KeyInt32,
-	p4 *mrparser.SortPage,
-	p5 *mrparser.String,
-	p6 *mrparser.Validator,
+	p4 *mrparser.ListSorter,
+	p5 *mrparser.ListPager,
+	p6 *mrparser.String,
+	p7 *mrparser.Validator,
 ) *Parser {
 	return &Parser{
 		Int64:      p1,
 		ItemStatus: p2,
 		KeyInt32:   p3,
-		SortPage:   p4,
-		String:     p5,
-		Validator:  p6,
+		ListSorter: p4,
+		ListPager:  p5,
+		String:     p6,
+		Validator:  p7,
 	}
 }
 
-func (p *Parser) FormDataID(r *http.Request) (mrtype.KeyInt32, error) {
+func (p *Parser) SubmitFormID(r *http.Request) (mrtype.KeyInt32, error) {
 	value, err := mrreq.ParseInt64(r, "formId", true)
 
 	if err != nil {
-		return 0, usecase_shared.FactoryErrFormDataNotFound.Wrap(err, p.RawParamString(r, "formId"))
+		return 0, usecase_shared.FactoryErrSubmitFormNotFound.Wrap(err, p.RawParamString(r, "formId"))
 	}
 
 	return mrtype.KeyInt32(value), nil

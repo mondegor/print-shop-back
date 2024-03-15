@@ -2,7 +2,6 @@ package factory
 
 import (
 	"context"
-	module "print-shop-back/internal/modules/dictionaries/paper-color"
 	http_v1 "print-shop-back/internal/modules/dictionaries/paper-color/controller/http_v1/admin-api"
 	entity "print-shop-back/internal/modules/dictionaries/paper-color/entity/admin-api"
 	"print-shop-back/internal/modules/dictionaries/paper-color/factory"
@@ -35,17 +34,17 @@ func newUnitPaperColor(ctx context.Context, opts factory.Options) (*http_v1.Pape
 
 	storage := repository.NewPaperColorPostgres(
 		opts.PostgresAdapter,
-		mrsql.NewBuilderSelect(
+		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
-			mrpostgres.NewSqlBuilderOrderByWithDefaultSort(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSqlBuilderPager(module.PageSizeMax),
+			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
+			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
 		),
 	)
-	service := usecase.NewPaperColor(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPaperColor(storage, opts.EventEmitter, opts.UsecaseHelper)
 	controller := http_v1.NewPaperColor(
 		opts.RequestParser,
 		opts.ResponseSender,
-		service,
+		useCase,
 		metaOrderBy,
 	)
 

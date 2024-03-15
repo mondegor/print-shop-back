@@ -26,6 +26,9 @@ type (
 		UnitBox      UnitBoxOptions
 		UnitLaminate UnitLaminateOptions
 		UnitPaper    UnitPaperOptions
+
+		PageSizeMax     uint64
+		PageSizeDefault uint64
 	}
 
 	UnitBoxOptions struct {

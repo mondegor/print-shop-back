@@ -1,0 +1,41 @@
+App.Response.Model.FileInfo:
+  description: DTO - информация о файле
+  type: object
+  required:
+    - url
+    - size
+  properties:
+    contentType:
+      description: Тип файла
+      type: string
+      maxLength: 64
+      example: "application/zip"
+#    originalName:
+#      description: Оригинальное название файла
+#      type: string
+#      maxLength: 128
+#      example: "file-original-name.zip"
+#    name:
+#      description: Название файла
+#      type: string
+#      maxLength: 128
+#      example: "file-name.zip"
+    url:
+      description: URL файла
+      type: string
+      maxLength: 128
+      example: "http://localhost/path/file-name.zip"
+    size:
+      description: Размер файла в байтах
+      type: integer
+      example: 7
+    createdAt:
+      description: Дата и время создания файла (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"
+    updatedAt:
+      description: Дата и время последней модификации файла (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"

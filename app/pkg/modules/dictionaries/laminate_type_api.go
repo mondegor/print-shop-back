@@ -14,7 +14,7 @@ const (
 type (
 	LaminateTypeAPI interface {
 		// CheckingAvailability - error: FactoryErrLaminateTypeNotFound or Failed
-		CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error
+		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
 

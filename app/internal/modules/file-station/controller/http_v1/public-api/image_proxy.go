@@ -13,7 +13,7 @@ type (
 	ImageProxy struct {
 		parser    mrserver.RequestParserString
 		sender    mrserver.FileResponseSender
-		service   usecase.FileProviderAdapterService
+		useCase   usecase.FileProviderAdapterUseCase
 		imagesURL string
 	}
 )
@@ -21,13 +21,13 @@ type (
 func NewImageProxy(
 	parser mrserver.RequestParserString,
 	sender mrserver.FileResponseSender,
-	service usecase.FileProviderAdapterService,
+	useCase usecase.FileProviderAdapterUseCase,
 	basePath string, // :TODO: to URL
 ) *ImageProxy {
 	return &ImageProxy{
 		parser:    parser,
 		sender:    sender,
-		service:   service,
+		useCase:   useCase,
 		imagesURL: fmt.Sprintf("/%s/*path", strings.Trim(basePath, "/")),
 	}
 }
@@ -39,7 +39,7 @@ func (ht *ImageProxy) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *ImageProxy) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.Get(r.Context(), ht.parser.PathParamString(r, "path"))
+	item, err := ht.useCase.Get(r.Context(), ht.parser.PathParamString(r, "path"))
 
 	if err != nil {
 		return err
@@ -47,5 +47,5 @@ func (ht *ImageProxy) Get(w http.ResponseWriter, r *http.Request) error {
 
 	defer item.Body.Close()
 
-	return ht.sender.SendFile(w, item.FileInfo, "", item.Body)
+	return ht.sender.SendFile(r.Context(), w, item)
 }

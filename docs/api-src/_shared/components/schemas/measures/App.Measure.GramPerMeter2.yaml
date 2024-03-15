@@ -1,5 +1,0 @@
-App.Measure.GramPerMeter2:
-  description: Поверхностная плотность (g/m2)
-  type: integer
-  maxLength: 10
-  example: 100000 # 100g/m2

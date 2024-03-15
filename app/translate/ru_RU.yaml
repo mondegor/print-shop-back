@@ -25,7 +25,7 @@ errors:
   errHttpRequestParseData:
     reason: "Тело запроса невалидное (проверьте: параметры запроса, правильность формата json и соответствующих ему типов)"
 
-  errServiceTemporarilyUnavailable:
+  errUseCaseTemporarilyUnavailable:
     reason: "Система временно не может обработать ваш запрос. Пожалуйста, повторите запрос позже"
 
   # Ошибки генерируемые валидатором.

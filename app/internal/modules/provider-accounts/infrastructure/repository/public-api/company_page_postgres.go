@@ -27,7 +27,7 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 	sql := `
         SELECT
             page_head,
-            COALESCE(logo_meta ->> 'path', '') as logo_url,
+            COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url
         FROM
             ` + module.UnitCompanyPageDBSchema + `.companies_pages

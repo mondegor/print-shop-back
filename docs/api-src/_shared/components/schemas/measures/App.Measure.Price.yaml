@@ -1,6 +1,0 @@
-App.Measure.Price:
-  description: Цена изделия (10^2)
-  type: integer # Money
-  maxLength: 12
-  minimum: 0
-  example: 8234500 # 82345 coins

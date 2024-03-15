@@ -4,5 +4,5 @@ const (
 	Name = "Dictionaries.PaperFacture"
 
 	Permission = "modDictionariesPaperFacture"
-	DBSchema   = "printdata_dictionaries"
+	DBSchema   = "printshop_dictionaries"
 )

@@ -5,6 +5,6 @@ const (
 
 	UnitCompanyPageName       = Name + ".CompanyPage"
 	UnitCompanyPagePermission = "modProviderAccountsCompanyPage"
-	UnitCompanyPageDBSchema   = "printdata_provider_accounts"
+	UnitCompanyPageDBSchema   = "printshop_provider_accounts"
 	UnitCompanyPageLogoDir    = "provider-account/companies-logo"
 )

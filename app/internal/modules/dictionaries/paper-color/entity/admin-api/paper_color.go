@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	PaperColor struct { // DB: printdata_dictionaries.paper_colors
+	PaperColor struct { // DB: printshop_dictionaries.paper_colors
 		ID         mrtype.KeyInt32 `json:"id"`                                   // color_id
 		TagVersion int32           `json:"version"`                              // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at

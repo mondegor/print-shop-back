@@ -1,0 +1,5 @@
+App.Response.Model.BinaryMedia:
+  description: Бинарный файл одного из типов - JPEG, PNG, MPG, MP4
+  type: string
+  format: binary
+  maxLength: 104857600 # 100Mb

@@ -1,0 +1,5 @@
+App.Field.FileURL:
+  description: URL к файлу записи
+  type: string
+  maxLength: 255
+  example: "http://localhost/path/item-name.zip"

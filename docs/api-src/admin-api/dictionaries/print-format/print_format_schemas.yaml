@@ -1,0 +1,82 @@
+Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
+  description: DTO добавления нового печатного формата
+  type: object
+  required:
+    - caption
+    - length
+    - width
+  properties:
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "A4 (210 x 297 mm)"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
+  description: DTO сохранения печатного формата
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "A4 (210 x 297 mm)"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
+  description: DTO - список печатных форматов
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
+  description: DTO - печатный формат
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - caption
+    - length
+    - width
+    - status
+  properties:
+    id: # formatId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "A4 (210 x 297 mm)"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

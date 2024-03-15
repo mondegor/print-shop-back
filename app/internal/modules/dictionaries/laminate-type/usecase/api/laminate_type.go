@@ -19,7 +19,7 @@ type (
 	}
 
 	LaminateTypeStorage interface {
-		IsExists(ctx context.Context, id mrtype.KeyInt32) error
+		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
 	}
 )
 
@@ -33,16 +33,16 @@ func NewLaminateType(
 	}
 }
 
-func (uc *LaminateType) CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error {
-	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": id})
+func (uc *LaminateType) CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error {
+	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
-	if id < 1 {
-		return dictionaries.FactoryErrLaminateTypeNotFound.New(id)
+	if itemID < 1 {
+		return dictionaries.FactoryErrLaminateTypeNotFound.New(itemID)
 	}
 
-	if err := uc.storage.IsExists(ctx, id); err != nil {
+	if err := uc.storage.IsExists(ctx, itemID); err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return dictionaries.FactoryErrLaminateTypeNotFound.New(id)
+			return dictionaries.FactoryErrLaminateTypeNotFound.New(itemID)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.LaminateTypeAPIName)

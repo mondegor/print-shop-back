@@ -10,7 +10,8 @@ type (
 		mrserver.RequestParserInt64
 		mrserver.RequestParserItemStatus
 		mrserver.RequestParserKeyInt32
-		mrserver.RequestParserSortPage
+		mrserver.RequestParserListSorter
+		mrserver.RequestParserListPager
 		mrserver.RequestParserString
 		mrserver.RequestParserValidate
 	}
@@ -19,7 +20,8 @@ type (
 		*mrparser.Int64
 		*mrparser.ItemStatus
 		*mrparser.KeyInt32
-		*mrparser.SortPage
+		*mrparser.ListSorter
+		*mrparser.ListPager
 		*mrparser.String
 		*mrparser.Validator
 	}
@@ -29,16 +31,18 @@ func NewParser(
 	p1 *mrparser.Int64,
 	p2 *mrparser.ItemStatus,
 	p3 *mrparser.KeyInt32,
-	p4 *mrparser.SortPage,
-	p5 *mrparser.String,
-	p6 *mrparser.Validator,
+	p4 *mrparser.ListSorter,
+	p5 *mrparser.ListPager,
+	p6 *mrparser.String,
+	p7 *mrparser.Validator,
 ) *Parser {
 	return &Parser{
 		Int64:      p1,
 		ItemStatus: p2,
 		KeyInt32:   p3,
-		SortPage:   p4,
-		String:     p5,
-		Validator:  p6,
+		ListSorter: p4,
+		ListPager:  p5,
+		String:     p6,
+		Validator:  p7,
 	}
 }

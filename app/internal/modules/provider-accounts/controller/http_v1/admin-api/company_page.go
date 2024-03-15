@@ -19,7 +19,7 @@ type (
 	CompanyPage struct {
 		parser     view_shared.RequestParser
 		sender     mrserver.ResponseSender
-		service    usecase.CompanyPageService
+		useCase    usecase.CompanyPageUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -27,13 +27,13 @@ type (
 func NewCompanyPage(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.CompanyPageService,
+	useCase usecase.CompanyPageUseCase,
 	listSorter mrview.ListSorter,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		listSorter: listSorter,
 	}
 }
@@ -45,7 +45,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *CompanyPage) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+	items, totalItems, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
 
 	if err != nil {
 		return err

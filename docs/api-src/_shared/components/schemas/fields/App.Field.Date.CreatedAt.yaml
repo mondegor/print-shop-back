@@ -1,5 +1,0 @@
-App.Field.Date.CreatedAt:
-  description: Дата и время создания записи (UTC)
-  type: string
-  format: date-time
-  example: "2023-01-01T12:00:00.000+02:00"

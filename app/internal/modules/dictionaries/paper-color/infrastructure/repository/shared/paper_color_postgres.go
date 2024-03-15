@@ -11,7 +11,7 @@ import (
 
 // PaperColorIsExistsPostgres
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func PaperColorIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, id mrtype.KeyInt32) error {
+func PaperColorIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) error {
 	sql := `
         SELECT
             1
@@ -24,9 +24,9 @@ func PaperColorIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, id m
 	return conn.QueryRow(
 		ctx,
 		sql,
-		id,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&id,
+		&rowID,
 	)
 }

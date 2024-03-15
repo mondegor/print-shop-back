@@ -31,7 +31,7 @@ func (uc *FileProviderAdapter) Get(ctx context.Context, filePath string) (mrtype
 	filePath = strings.TrimLeft(filePath, "/")
 
 	if filePath == "" {
-		return mrtype.File{}, mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrtype.File{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	file, err := uc.fileAPI.Download(ctx, filePath)

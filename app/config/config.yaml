@@ -11,10 +11,6 @@ logger:
   json_format: false
   timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
   console_color: true
-  caller:
-    deep: 3
-    # use_short_path: true
-    # root_path:
 
 servers:
   rest_server:
@@ -64,7 +60,11 @@ cors:
     - DELETE
   allowed_headers:
     - Content-Type
-  # exposed_headers:
+    - Authorization
+    - X-Correlation-Id
+    - X-Idempotency-Key
+  exposed_headers:
+    - X-Correlation-Id
   allow_credentials: true
 
 translation:
@@ -127,6 +127,9 @@ access_control:
     - modProviderAccountsCompanyPage
 
 modules_settings:
+  general:
+    page_size_max: 1000
+    page_size_default: 50
   provider_account:
     company_page_logo:
       file_provider: imageStorage # file_providers.image_storage

@@ -1,0 +1,67 @@
+Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor:
+  description: DTO добавления нового цвета бумаги
+  type: object
+  required:
+    - caption
+  properties:
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Белый"
+
+Dictionaries.PaperColors.AdminAPI.Request.Model.StorePaperColor:
+  description: DTO сохранения цвета бумаги
+  type: object
+  required:
+    - version
+    - caption
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Белый"
+
+Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList:
+  description: DTO - список цветов бумаги
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
+  description: DTO - цвет бумаги
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - caption
+    - status
+  properties:
+    id: # colorId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Белый"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

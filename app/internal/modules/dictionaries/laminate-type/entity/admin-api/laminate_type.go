@@ -12,7 +12,7 @@ const (
 )
 
 type (
-	LaminateType struct { // DB: printdata_dictionaries.laminate_types
+	LaminateType struct { // DB: printshop_dictionaries.laminate_types
 		ID         mrtype.KeyInt32 `json:"id"`                                   // type_id
 		TagVersion int32           `json:"version"`                              // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at

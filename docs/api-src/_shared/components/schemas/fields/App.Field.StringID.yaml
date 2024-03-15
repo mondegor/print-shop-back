@@ -1,6 +1,0 @@
-App.Field.StringID:
-  description: Идентификатор записи
-  type: string
-  minLength: 1
-  maxLength: 64
-  example: "unique-id"

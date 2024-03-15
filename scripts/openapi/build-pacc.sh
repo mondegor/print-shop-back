@@ -17,11 +17,15 @@ mrcmd_func_openapi_build_pacc() {
   )
 
   OPENAPI_TAGS=(
+    "${sharedDir}/system/tags.yaml"
+
     "${companyPageDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
-    "${companyPageDir}/paths.yaml"
+    "${sharedDir}/system/paths.yaml"
+
+    "${companyPageDir}/company_page_paths.yaml"
   )
 
 #  OPENAPI_COMPONENTS_HEADERS=(
@@ -45,64 +49,75 @@ mrcmd_func_openapi_build_pacc() {
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
-    "${companyPageDir}/components-parameters.yaml"
+    "${companyPageDir}/company_page_parameters.yaml"
   )
 
   OPENAPI_COMPONENTS_SCHEMAS=(
-    # "${sharedDir}/components/schemas/enums/App.Enum.Address.HouseType.yaml"
-    # "${sharedDir}/components/schemas/enums/App.Enum.DeliveryMethod.yaml"
-    # "${sharedDir}/components/schemas/enums/App.Enum.Gender.yaml"
-    # "${sharedDir}/components/schemas/enums/App.Enum.Status.yaml"
+    # "${sharedDir}/components/enums/App.Enum.Address.HouseType.yaml"
+    # "${sharedDir}/components/enums/App.Enum.DeliveryMethod.yaml"
+    # "${sharedDir}/components/enums/App.Enum.Gender.yaml"
+    # "${sharedDir}/components/enums/App.Enum.Status.yaml"
 
-    # "${sharedDir}/components/schemas/fields/App.Field.Article.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Boolean.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Caption.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Date.CreatedAt.yaml"
-    "${sharedDir}/components/schemas/fields/App.Field.Date.UpdatedAt.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Date.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Datetime.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Email.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.GEO.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.ImageURL.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.IntegerID.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.ListPager.Total.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Phone.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.StringID.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.TagVersion.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.Timezone.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.UUID.yaml"
-    # "${sharedDir}/components/schemas/fields/App.Field.VariableCamelCase.yaml"
+    # "${sharedDir}/components/fields/App.Field.Article.yaml"
+    # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
+    # "${sharedDir}/components/fields/App.Field.Caption.yaml"
+    # "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
+    "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
+    # "${sharedDir}/components/fields/App.Field.Date.yaml"
+    # "${sharedDir}/components/fields/App.Field.DateTime.yaml"
+    # "${sharedDir}/components/fields/App.Field.Email.yaml"
+    # "${sharedDir}/components/fields/App.Field.GEO.yaml"
+    # "${sharedDir}/components/fields/App.Field.ImageURL.yaml"
+    # "${sharedDir}/components/fields/App.Field.Int16.yaml"
+    # "${sharedDir}/components/fields/App.Field.Int32.yaml"
+    # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
+    # "${sharedDir}/components/fields/App.Field.Phone.yaml"
+    # "${sharedDir}/components/fields/App.Field.StringID.yaml"
+    # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
+    # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
+    # "${sharedDir}/components/fields/App.Field.UUID.yaml"
+    # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
-    # "${sharedDir}/components/schemas/measures/App.Measure.Gram.yaml"
-    # "${sharedDir}/components/schemas/measures/App.Measure.GramPerMeter2.yaml"
-    # "${sharedDir}/components/schemas/measures/App.Measure.Micrometer.yaml"
-    # "${sharedDir}/components/schemas/measures/App.Measure.Price.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
-    # "${sharedDir}/components/schemas/App.Request.Model.ChangeFlag.yaml"
-    # "${sharedDir}/components/schemas/App.Request.Model.ChangeStatus.yaml"
-    # "${sharedDir}/components/schemas/App.Request.Model.MoveItem.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.BinaryFile.yaml"
-    "${sharedDir}/components/schemas/App.Response.Model.Error.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.FileInfo.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.ImageInfo.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.Success.yaml"
-    # "${sharedDir}/components/schemas/App.Response.Model.SuccessCreatedItem.yaml"
+    # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
+    # "${sharedDir}/components/models/App.Request.Model.ChangeStatus.yaml"
+    # "${sharedDir}/components/models/App.Request.Model.MoveItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.BinaryFile.yaml"
+    "${sharedDir}/components/models/App.Response.Model.Error.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.FileInfo.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
 
     "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
 
-    # "${sharedDir}/custom/fields/Custom.Request.Query.Field.ParamName.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Catalog.PaperID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.ColorID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.FactureID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.ParamName.yaml"
 
-    "${companyPageDir}/components-schemas.yaml"
+    "${sharedDir}/system/schemas.yaml"
+
+    "${companyPageDir}/company_page_schemas.yaml"
   )
 
   OPENAPI_COMPONENTS_RESPONSES=(
     "${sharedDir}/components/responses/App.ResponseJson.Errors.yaml"
     "${sharedDir}/components/responses/App.ResponseJson.ErrorsAuth.yaml"
-
-    "${companyPageDir}/components-responses.yaml"
   )
 
   OPENAPI_SECURITY_SCHEMES=(

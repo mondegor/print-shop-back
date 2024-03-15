@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	FileProviderAdapterService interface {
+	FileProviderAdapterUseCase interface {
 		Get(ctx context.Context, filePath string) (mrtype.File, error)
 	}
 )

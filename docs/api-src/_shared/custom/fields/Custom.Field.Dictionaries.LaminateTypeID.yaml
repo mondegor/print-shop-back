@@ -1,0 +1,6 @@
+Custom.Field.Dictionaries.LaminateTypeID:
+  description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+  type: integer
+  format: int32
+  minimum: 1
+  example: 2

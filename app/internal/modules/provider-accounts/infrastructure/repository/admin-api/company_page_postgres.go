@@ -56,7 +56,7 @@ func (re *CompanyPagePostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
             updated_at as updatedAt,
             rewrite_name as rewriteName,
             page_head as pageHead,
-            COALESCE(logo_meta ->> 'path', '') as logo_url,
+            COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url as siteUrl,
             page_status
         FROM

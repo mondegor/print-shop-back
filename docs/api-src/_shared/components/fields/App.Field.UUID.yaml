@@ -1,0 +1,5 @@
+App.Field.UUID:
+  description: Идентификатор записи
+  type: string
+  format: uuid
+  example: "2d292cea-4e69-4bc2-8d61-2c705aefd26e"

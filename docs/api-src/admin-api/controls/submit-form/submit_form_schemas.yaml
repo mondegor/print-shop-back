@@ -1,0 +1,87 @@
+Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
+  description: DTO добавления новой формы
+  type: object
+  required:
+    - paramName
+    - caption
+    - formDetailing
+  properties:
+    paramName:
+      $ref: "#/components/schemas/Custom.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Листовая продукция"
+    formDetailing:
+      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+
+Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
+  description: DTO сохранения формы
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    paramName:
+      $ref: "#/components/schemas/Custom.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Листовая продукция"
+    formDetailing:
+      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+
+Controls.SubmitForms.AdminAPI.Response.Model.FormList:
+  description: DTO - список форм
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Controls.SubmitForms.AdminAPI.Response.Model.Form:
+  description: |-
+    DTO - форма пользовательского интерфейса
+    Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - paramName
+    - caption
+    - formDetailing
+    - formBody
+    - status
+  properties:
+    id: # formId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    paramName:
+      $ref: "#/components/schemas/Custom.Field.ParamName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Листовая продукция"
+    formDetailing:
+      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+    formBody:
+      description: Json объект формы соответсвущего спецификации
+      type: string
+      maxLength: 65536 # 64Kb
+      example: "{\"json\": \"object\"}"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

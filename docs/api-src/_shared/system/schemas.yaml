@@ -1,0 +1,45 @@
+App.System.Response.Model.SystemInfo:
+  description: DTO - системная информация о запущеном приложении
+  type: object
+  required:
+    - name
+    - version
+    - hostName
+    - isDebug
+    - logLevel
+    - startedAt
+  properties:
+    name:
+      description: Название приложения
+      type: string
+      maxLength: 64
+      example: "Sample App"
+    version:
+      description: Версия приложения
+      type: string
+      maxLength: 16
+      example: "v0.1.0"
+    hostName:
+      description: Название хоста, на котором запущено приложение
+      type: string
+      maxLength: 64
+      example: "host-name"
+    isDebug:
+      description: Статус режима отладки
+      type: boolean
+      example: true
+    logLevel:
+      type: string
+      enum:
+        - DEBUG
+        - INFO
+        - WARN
+        - ERROR
+        - FATAL
+        - TRACE
+      example: "ERROR"
+    startedAt:
+      description: Время запуска приложения (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"

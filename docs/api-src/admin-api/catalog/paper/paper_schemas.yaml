@@ -1,0 +1,130 @@
+Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
+  description: DTO добавления новой бумаги
+  type: object
+  required:
+    - article
+    - caption
+    - colorId
+    - factureId
+    - length
+    - width
+    - density
+    - thickness
+    - sides
+  properties:
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Мелованная"
+    colorId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+    factureId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    density:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    sides:
+      $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+Catalog.Papers.AdminAPI.Request.Model.StorePaper:
+  description: DTO сохранения бумаги
+  type: object
+  required:
+    - version
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Мелованная"
+    colorId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+    factureId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    density:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    sides:
+      $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+Catalog.Papers.AdminAPI.Response.Model.PaperList:
+  description: DTO - список бумаги
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.Paper"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Catalog.Papers.AdminAPI.Response.Model.Paper:
+  description: DTO - бумага
+  type: object
+  required:
+    - id
+    - version
+    - createdAt
+    - article
+    - caption
+    - colorId
+    - factureId
+    - length
+    - width
+    - density
+    - thickness
+    - sides
+    - status
+  properties:
+    id: # paperId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
+    version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Мелованная"
+    colorId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+    factureId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    density:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    sides:
+      $ref: "#/components/schemas/Custom.Enum.PaperSides"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"

@@ -17,19 +17,19 @@ type (
 	CompanyPageLogo struct {
 		parser  mrserver.RequestParserImage
 		sender  mrserver.ResponseSender
-		service usecase.CompanyPageLogoService
+		useCase usecase.CompanyPageLogoUseCase
 	}
 )
 
 func NewCompanyPageLogo(
 	parser mrserver.RequestParserImage,
 	sender mrserver.ResponseSender,
-	service usecase.CompanyPageLogoService,
+	useCase usecase.CompanyPageLogoUseCase,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		parser:  parser,
 		sender:  sender,
-		service: service,
+		useCase: useCase,
 	}
 }
 
@@ -49,7 +49,7 @@ func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) er
 
 	defer file.Body.Close()
 
-	if err = ht.service.StoreFile(r.Context(), tmpAccountID, file); err != nil {
+	if err = ht.useCase.StoreFile(r.Context(), tmpAccountID, file); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -57,7 +57,7 @@ func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) er
 }
 
 func (ht *CompanyPageLogo) RemoveLogo(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.service.RemoveFile(r.Context(), tmpAccountID); err != nil {
+	if err := ht.useCase.RemoveFile(r.Context(), tmpAccountID); err != nil {
 		return err
 	}
 

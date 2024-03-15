@@ -6,7 +6,7 @@ Custom.Request.Query.Filter.DepthMin:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100mm
+  example: 100000 # 100 mm
 
 Custom.Request.Query.Filter.DepthMax:
   description: Максимальная глубина (µm)
@@ -16,4 +16,4 @@ Custom.Request.Query.Filter.DepthMax:
   schema:
     type: integer
     maxLength: 10
-  example: 100000 # 100mm
+  example: 100000 # 100 mm

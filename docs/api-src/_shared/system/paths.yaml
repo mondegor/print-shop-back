@@ -1,0 +1,31 @@
+/v1/health:
+  get:
+    summary: Метод получения ответа приложения
+    description: Метод предназначен для проверки, что приложение запущено и отвечает
+    operationId: getHealthResponse
+    tags:
+      - System
+
+    responses:
+      "200":
+        description: Возвращён ответ приложения 200 OK
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/system-info:
+  get:
+    summary: Метод получения системной информации приложения
+    description: Метод предназначен для получения системной информации о запущеном приложении
+    operationId: getSystemInfo
+    tags:
+      - System
+
+    responses:
+      "200":
+        description: Получена системная информация о приложении
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

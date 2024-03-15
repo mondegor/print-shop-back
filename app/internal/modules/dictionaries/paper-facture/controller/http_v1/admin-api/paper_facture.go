@@ -1,13 +1,13 @@
 package http_v1
 
 import (
-	"fmt"
 	"net/http"
 	module "print-shop-back/internal/modules/dictionaries/paper-facture"
 	view_shared "print-shop-back/internal/modules/dictionaries/paper-facture/controller/http_v1/shared/view"
 	entity "print-shop-back/internal/modules/dictionaries/paper-facture/entity/admin-api"
 	usecase "print-shop-back/internal/modules/dictionaries/paper-facture/usecase/admin-api"
 	"print-shop-back/pkg/modules/dictionaries"
+	"strconv"
 
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlang"
@@ -27,7 +27,7 @@ type (
 	PaperFacture struct {
 		parser     view_shared.RequestParser
 		sender     mrserver.ResponseSender
-		service    usecase.PaperFactureService
+		useCase    usecase.PaperFactureUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -35,13 +35,13 @@ type (
 func NewPaperFacture(
 	parser view_shared.RequestParser,
 	sender mrserver.ResponseSender,
-	service usecase.PaperFactureService,
+	useCase usecase.PaperFactureUseCase,
 	listSorter mrview.ListSorter,
 ) *PaperFacture {
 	return &PaperFacture{
 		parser:     parser,
 		sender:     sender,
-		service:    service,
+		useCase:    useCase,
 		listSorter: listSorter,
 	}
 }
@@ -60,7 +60,7 @@ func (ht *PaperFacture) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *PaperFacture) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, totalItems, err := ht.service.GetList(r.Context(), ht.listParams(r))
+	items, totalItems, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
 
 	if err != nil {
 		return err
@@ -88,7 +88,7 @@ func (ht *PaperFacture) listParams(r *http.Request) entity.PaperFactureParams {
 }
 
 func (ht *PaperFacture) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.service.GetItem(r.Context(), ht.getItemID(r))
+	item, err := ht.useCase.GetItem(r.Context(), ht.getItemID(r))
 
 	if err != nil {
 		return ht.wrapError(err, r)
@@ -108,21 +108,21 @@ func (ht *PaperFacture) Create(w http.ResponseWriter, r *http.Request) error {
 		Caption: request.Caption,
 	}
 
-	if err := ht.service.Create(r.Context(), &item); err != nil {
+	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
+	} else {
+		return ht.sender.Send(
+			w,
+			http.StatusCreated,
+			SuccessCreatedItemResponse{
+				ItemID: strconv.Itoa(int(itemID)),
+				Message: mrlang.Ctx(r.Context()).TranslateMessage(
+					"msgDictionariesPaperFactureSuccessCreated",
+					"entity has been success created",
+				),
+			},
+		)
 	}
-
-	return ht.sender.Send(
-		w,
-		http.StatusCreated,
-		SuccessCreatedItemResponse{
-			ItemID: fmt.Sprintf("%d", item.ID),
-			Message: mrlang.Ctx(r.Context()).TranslateMessage(
-				"msgDictionariesPaperFactureSuccessCreated",
-				"entity has been success created",
-			),
-		},
-	)
 }
 
 func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
@@ -138,7 +138,7 @@ func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
 		Caption:    request.Caption,
 	}
 
-	if err := ht.service.Store(r.Context(), &item); err != nil {
+	if err := ht.useCase.Store(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -158,7 +158,7 @@ func (ht *PaperFacture) ChangeStatus(w http.ResponseWriter, r *http.Request) err
 		Status:     request.Status,
 	}
 
-	if err := ht.service.ChangeStatus(r.Context(), &item); err != nil {
+	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -166,7 +166,7 @@ func (ht *PaperFacture) ChangeStatus(w http.ResponseWriter, r *http.Request) err
 }
 
 func (ht *PaperFacture) Remove(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.service.Remove(r.Context(), ht.getItemID(r)); err != nil {
+	if err := ht.useCase.Remove(r.Context(), ht.getItemID(r)); err != nil {
 		return err
 	}
 
@@ -182,15 +182,15 @@ func (ht *PaperFacture) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PaperFacture) wrapError(err error, r *http.Request) error {
-	if mrcore.FactoryErrServiceEntityNotFound.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityNotFound.Is(err) {
 		return dictionaries.FactoryErrPaperFactureNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.FactoryErrServiceEntityVersionInvalid.Is(err) {
+	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("version", err)
 	}
 
-	if mrcore.FactoryErrServiceSwitchStatusRejected.Is(err) {
+	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

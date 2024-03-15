@@ -1,0 +1,6 @@
+Custom.Field.Dictionaries.Catalog.PaperID:
+  description: Идентификатор бумаги
+  type: integer
+  format: int32
+  minimum: 1
+  example: 2

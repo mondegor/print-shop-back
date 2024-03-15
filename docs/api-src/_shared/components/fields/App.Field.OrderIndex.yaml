@@ -1,0 +1,5 @@
+App.Field.OrderIndex:
+  description: Порядок следования записи
+  type: integer
+  minimum: 0
+  example: 50

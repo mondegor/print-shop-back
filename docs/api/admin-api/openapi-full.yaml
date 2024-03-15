@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.0.1
+  version: 0.12.0
   title: Private API print-shop
   license:
     name: Apache-2.0
@@ -16,11 +16,13 @@ info:
     #### Ограничения полей
     - required - поле обязательно для заполнения;
     - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
     - gte=N - числовое поле должно быть равно или более N;
     - lte=N - числовое поле должно быть равно или менее N;
     - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
     - pattern=P - поле должно соответствовать регулярному выражению P;
 
     #### Ошибки
@@ -32,47 +34,93 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: Catalog.Boxes
+  - name: System
+    description: API System Methods
+
+  - name: Catalog.Box
     description: Private API Catalog boxes
 
-  - name: Catalog.Laminates
+  - name: Catalog.Laminate
     description: Private API Catalog laminates
 
-  - name: Catalog.Papers
+  - name: Catalog.Paper
     description: Private API Catalog papers
 
-  - name: Dictionaries.LaminateTypes
+  - name: Dictionaries.LaminateType
     description: Private API Dictionary laminate types
 
-  - name: Dictionaries.PaperColors
+  - name: Dictionaries.PaperColor
     description: Private API Dictionary paper colors
 
-  - name: Dictionaries.PaperFactures
+  - name: Dictionaries.PaperFacture
     description: Private API Dictionary paper factures
 
-  - name: Dictionaries.PrintFormats
+  - name: Dictionaries.PrintFormat
     description: Private API Dictionary print formats
 
-  - name: Controls.ElementTemplates
-    description: Private API Form field templates
+  - name: Controls.ElementTemplate
+    description: Private API Control element templates
 
-  - name: Controls.Forms
-    description: Private API Forms
+  - name: Controls.SubmitForm
+    description: Private API Control submit forms
 
-  - name: Controls.FormElements
-    description: Private API Form elements
-
-  - name: CompaniesPages
+  - name: CompanyPage
     description: Private API Companies' pages
 
 paths:
+  /v1/health:
+    get:
+      summary: Метод получения ответа приложения
+      description: Метод предназначен для проверки, что приложение запущено и отвечает
+      operationId: getHealthResponse
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Возвращён ответ приложения 200 OK
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/system-info:
+    get:
+      summary: Метод получения системной информации приложения
+      description: Метод предназначен для получения системной информации о запущеном приложении
+      operationId: getSystemInfo
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Получена системная информация о приложении
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
   /v1/catalog/boxes:
     get:
       summary: Метод получения списка коробок
-      description: Метод предназначен для получения списка всех коробок, сохраненных в БД
-      operationId: getBoxes
+      description: |-
+        Метод предназначен для получения списка всех коробок, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getBoxList
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -113,13 +161,14 @@ paths:
         Метод предназначен для создания информации о новой коробке в БД
 
         **Ограничения и ошибки полей:**
-        - Article: required,min=3,max=32,pattern=article
+        - Article: required,unique,min=3,max=32,pattern=article
         - Caption: required,max=64
         - Length: required,gte=1,lte=10000000
         - Depth: required,gte=1,lte=10000000
+
       operationId: createBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -157,7 +206,7 @@ paths:
       description: Метод предназначен для получения информации о коробке из БД
       operationId: getBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -190,13 +239,14 @@ paths:
 
         **Ограничения и ошибки полей:**
         - Version: required,gte=1
-        - Article: omitempty,min=3,max=32,pattern=article
+        - Article: omitempty,unique,min=3,max=32,pattern=article
         - Caption: omitempty,max=64
         - Length: omitempty,gte=1,lte=10000000
         - Depth: omitempty,gte=1,lte=10000000
+
       operationId: storeBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -232,7 +282,7 @@ paths:
       description: Метод предназначен для удаления информации о коробке из БД
       operationId: removeBox
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -263,9 +313,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeBoxStatus
       tags:
-        - Catalog.Boxes
+        - Catalog.Box
 
       security:
         - bearerAuth: []
@@ -299,10 +350,24 @@ paths:
   /v1/catalog/laminates:
     get:
       summary: Метод получения списка ламината
-      description: Метод предназначен для получения списка всего ламината, сохраненного в БД
-      operationId: getLaminates
+      description: |-
+        Метод предназначен для получения списка всего ламината, сохраненного в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getLaminateList
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -342,9 +407,12 @@ paths:
         Метод предназначен для создания информации о новом ламинате в БД
 
         **Ограничения и ошибки полей:**
+        - Article: required,unique,min=3,max=32,pattern=article
+        - Caption: required,max=64
+
       operationId: createLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -389,7 +457,7 @@ paths:
       description: Метод предназначен для получения информации о ламинате из БД
       operationId: getLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -421,9 +489,11 @@ paths:
         Метод предназначен для сохранения информации о ламинате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -466,7 +536,7 @@ paths:
       description: Метод предназначен для удаления информации о ламинате из БД
       operationId: removeLaminate
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -497,9 +567,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeLaminateStatus
       tags:
-        - Catalog.Laminates
+        - Catalog.Laminate
 
       security:
         - bearerAuth: []
@@ -535,10 +606,24 @@ paths:
   /v1/catalog/papers:
     get:
       summary: Метод получения списка бумаги
-      description: Метод предназначен для получения списка всей бумаги, сохраненных в БД
-      operationId: getPapers
+      description: |-
+        Метод предназначен для получения списка всей бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - article;
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperList
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -581,9 +666,12 @@ paths:
         Метод предназначен для создания информации о новой бумаге в БД
 
         **Ограничения и ошибки полей:**
+        - Article: required,unique,min=3,max=32,pattern=article
+        - Caption: required,max=64
+
       operationId: createPaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -629,7 +717,7 @@ paths:
       description: Метод предназначен для получения информации о бумаге из БД
       operationId: getPaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -661,9 +749,11 @@ paths:
         Метод предназначен для сохранения информации о бумаге в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -707,7 +797,7 @@ paths:
       description: Метод предназначен для удаления информации о бумаге из БД
       operationId: removePaper
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -738,9 +828,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperStatus
       tags:
-        - Catalog.Papers
+        - Catalog.Paper
 
       security:
         - bearerAuth: []
@@ -776,10 +867,23 @@ paths:
   /v1/dictionaries/laminate-types:
     get:
       summary: Метод получения списка типов ламината
-      description: Метод предназначен для получения списка всех типов ламината, сохраненных в БД
-      operationId: getLaminateTypes
+      description: |-
+        Метод предназначен для получения списка всех типов ламината, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getLaminateTypeList
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -816,9 +920,11 @@ paths:
         Метод предназначен для создания информации о новом типе ламината в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -858,7 +964,7 @@ paths:
       description: Метод предназначен для получения информации о типе ламината из БД
       operationId: getLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -890,9 +996,11 @@ paths:
         Метод предназначен для сохранения информации о типе ламината в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -930,7 +1038,7 @@ paths:
       description: Метод предназначен для удаления информации о типе ламината из БД
       operationId: removeLaminateType
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -961,9 +1069,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeLaminateTypeStatus
       tags:
-        - Dictionaries.LaminateTypes
+        - Dictionaries.LaminateType
 
       security:
         - bearerAuth: []
@@ -999,10 +1108,23 @@ paths:
   /v1/dictionaries/paper-colors:
     get:
       summary: Метод получения списка цветов бумаги
-      description: Метод предназначен для получения списка всех цветов бумаги, сохраненных в БД
-      operationId: getPaperColors
+      description: |-
+        Метод предназначен для получения списка всех цветов бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperColorList
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1039,9 +1161,11 @@ paths:
         Метод предназначен для создания информации о новом цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1078,10 +1202,23 @@ paths:
   /v1/dictionaries/paper-colors/{colorId}:
     get:
       summary: Метод получения цвета бумаги
-      description: Метод предназначен для получения информации о цвете бумаги из БД
+      description: |-
+        Метод предназначен для получения информации о цвете бумаги из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1113,9 +1250,11 @@ paths:
         Метод предназначен для сохранения информации о цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1153,7 +1292,7 @@ paths:
       description: Метод предназначен для удаления информации о цвете бумаги из БД
       operationId: removePaperColor
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1184,9 +1323,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperColorStatus
       tags:
-        - Dictionaries.PaperColors
+        - Dictionaries.PaperColor
 
       security:
         - bearerAuth: []
@@ -1222,10 +1362,23 @@ paths:
   /v1/dictionaries/paper-factures:
     get:
       summary: Метод получения списка фактуры бумаги
-      description: Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
-      operationId: getPaperFactures
+      description: |-
+        Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPaperFactureList
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1262,9 +1415,11 @@ paths:
         Метод предназначен для создания информации о новой фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1301,10 +1456,23 @@ paths:
   /v1/dictionaries/paper-factures/{factureId}:
     get:
       summary: Метод получения фактуры бумаги
-      description: Метод предназначен для получения информации о фактуре бумаги из БД
+      description: |-
+        Метод предназначен для получения информации о фактуре бумаги из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1336,9 +1504,11 @@ paths:
         Метод предназначен для сохранения информации о фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1376,7 +1546,7 @@ paths:
       description: Метод предназначен для удаления информации о фактуре бумаги из БД
       operationId: removePaperFacture
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1407,9 +1577,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePaperFactureStatus
       tags:
-        - Dictionaries.PaperFactures
+        - Dictionaries.PaperFacture
 
       security:
         - bearerAuth: []
@@ -1445,10 +1616,23 @@ paths:
   /v1/dictionaries/print-formats:
     get:
       summary: Метод получения списка печатных форматов
-      description: Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
-      operationId: getPrintFormats
+      description: |-
+        Метод предназначен для получения списка всех печатных форматов, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getPrintFormatList
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1489,9 +1673,11 @@ paths:
         Метод предназначен для создания информации о новом печатном формате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createPrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1528,10 +1714,23 @@ paths:
   /v1/dictionaries/print-formats/{formatId}:
     get:
       summary: Метод получения печатного формата
-      description: Метод предназначен для получения информации о печатном формате из БД
+      description: |-
+        Метод предназначен для получения информации о печатном формате из БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
       operationId: getPrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1563,9 +1762,11 @@ paths:
         Метод предназначен для сохранения информации о печатном формате в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storePrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1603,7 +1804,7 @@ paths:
       description: Метод предназначен для удаления информации о печатном формате из БД
       operationId: removePrintFormat
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1634,9 +1835,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changePrintFormatStatus
       tags:
-        - Dictionaries.PrintFormats
+        - Dictionaries.PrintFormat
 
       security:
         - bearerAuth: []
@@ -1672,10 +1874,23 @@ paths:
   /v1/controls/element-templates:
     get:
       summary: Метод получения списка шаблонов элементов формы
-      description: Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
-      operationId: getElementTemplates
+      description: |-
+        Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getElementTemplateList
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1697,7 +1912,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
+                  $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1711,9 +1926,11 @@ paths:
         Метод предназначен для создания информации о новом шаблоне элемента формы в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: createElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1727,7 +1944,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
 
       responses:
         "201":
@@ -1761,7 +1978,7 @@ paths:
       description: Метод предназначен для получения информации о шаблоне элемента формы из БД
       operationId: getElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1769,7 +1986,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       responses:
         "200":
@@ -1777,7 +1994,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+                $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1793,9 +2010,11 @@ paths:
         Метод предназначен для сохранения информации о шаблоне элемента формы в БД
 
         **Ограничения и ошибки полей:**
+        - Caption: required,max=64
+
       operationId: storeElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1803,14 +2022,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
 
       responses:
         "204":
@@ -1841,7 +2060,7 @@ paths:
       description: Метод предназначен для удаления информации о шаблоне элемента формы из БД
       operationId: removeElementTemplate
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1849,7 +2068,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       responses:
         "204":
@@ -1872,9 +2091,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
+
       operationId: changeElementTemplatestatus
       tags:
-        - Controls.ElementTemplates
+        - Controls.ElementTemplate
 
       security:
         - bearerAuth: []
@@ -1882,7 +2102,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
         required: true
@@ -1907,13 +2127,26 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms:
+  /v1/controls/submit-forms:
     get:
       summary: Метод получения списка форм
-      description: Метод предназначен для получения списка всех форм, сохраненных в БД
-      operationId: getForms
+      description: |-
+        Метод предназначен для получения списка всех форм, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getSubmitFormList
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -1935,7 +2168,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.FormList"
+                  $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1949,9 +2182,11 @@ paths:
         Метод предназначен для создания информации о новой форме в БД
 
         **Ограничения и ошибки полей:**
-      operationId: createForm
+        - Caption: required,max=64
+
+      operationId: createSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -1965,7 +2200,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.CreateForm"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Request.Model.CreateForm"
 
       responses:
         "201":
@@ -1989,13 +2224,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms/{formId}:
+  /v1/controls/submit-forms/{formId}:
     get:
       summary: Метод получения формы
       description: Метод предназначен для получения формы из БД
-      operationId: getForm
+      operationId: getSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2003,7 +2238,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
         "200":
@@ -2011,7 +2246,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+                $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -2027,9 +2262,11 @@ paths:
         Метод предназначен для сохранения информации о форме в БД
 
         **Ограничения и ошибки полей:**
-      operationId: storeForm
+        - Caption: required,max=64
+
+      operationId: storeSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2037,14 +2274,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.Forms.AdminAPI.Request.Model.StoreForm"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Request.Model.StoreForm"
 
       responses:
         "204":
@@ -2069,9 +2306,9 @@ paths:
     delete:
       summary: Метод удаления формы
       description: Метод предназначен для удаления информации о форме из БД
-      operationId: removeForm
+      operationId: removeSubmitForm
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2079,7 +2316,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
         "204":
@@ -2093,7 +2330,7 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/forms/{formId}/status:
+  /v1/controls/submit-forms/{formId}/status:
     put:
       summary: Метод изменения статуса формы
       description: |-
@@ -2102,9 +2339,10 @@ paths:
         **Ограничения и ошибки полей:**
         - version: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
-      operationId: changeFormStatus
+
+      operationId: changeSubmitFormStatus
       tags:
-        - Controls.Forms
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2112,7 +2350,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.Forms.AdminAPI.Request.Path.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
         required: true
@@ -2137,13 +2375,26 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements:
+  /v1/controls/submit-form-elements:
     get:
       summary: Метод получения списка элементов формы
-      description: Метод предназначен для получения списка всех элементов формы, сохраненных в БД
-      operationId: getFormElements
+      description: |-
+        Метод предназначен для получения списка всех элементов формы, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getSubmitFormElementList
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2151,7 +2402,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Query.FormID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Query.FormID"
 
       responses:
         "200":
@@ -2159,7 +2410,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElementList"
+                  $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElementList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -2175,9 +2426,11 @@ paths:
         Метод предназначен для создания информации о новом элементе формы в БД
 
         **Ограничения и ошибки полей:**
-      operationId: createFormElement
+        - Caption: required,max=64
+
+      operationId: createSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2191,7 +2444,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.CreateFormElement"
+              $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Request.Model.CreateFormElement"
 
       responses:
         "201":
@@ -2215,13 +2468,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements/{elementId}:
+  /v1/controls/submit-form-elements/{elementId}:
     get:
       summary: Метод получения элемента формы по его идентификатору
       description: Метод предназначен для получения информации об элементе формы из БД
-      operationId: getFormElement
+      operationId: getSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2229,7 +2482,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       responses:
         "200":
@@ -2237,7 +2490,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+                $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElement"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -2253,9 +2506,11 @@ paths:
         Метод предназначен для сохранения информации об элементе формы в БД
 
         **Ограничения и ошибки полей:**
-      operationId: storeFormElement
+        - Caption: required,max=64
+
+      operationId: storeSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2263,14 +2518,14 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Request.Model.StoreFormElement"
+              $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement"
 
       responses:
         "204":
@@ -2295,9 +2550,9 @@ paths:
     delete:
       summary: Метод удаления элемента формы
       description: Метод предназначен для удаления информации об элементе формы из БД
-      operationId: removeFormElement
+      operationId: removeSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2305,7 +2560,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       responses:
         "204":
@@ -2319,13 +2574,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/form-elements/{elementId}/move:
+  /v1/controls/submit-form-elements/{elementId}/move:
     patch:
       summary: Метод перемещения элемента формы
       description: Метод предназначен для изменения позиции элемента формы в списке элементов в БД
-      operationId: moveFormElement
+      operationId: moveSubmitFormElement
       tags:
-        - Controls.FormElements
+        - Controls.SubmitForm
 
       security:
         - bearerAuth: []
@@ -2333,7 +2588,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.FormElements.AdminAPI.Request.Path.ElementID"
+        - $ref: "#/components/parameters/Controls.SubmitForm.AdminAPI.Request.Path.ElementID"
 
       requestBody:
         required: true
@@ -2360,10 +2615,23 @@ paths:
   /v1/provider-accounts/companies-pages:
     get:
       summary: Метод получения списка страниц компаний
-      description: Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
-      operationId: getCompanyPages
+      description: |-
+        Метод предназначен для получения списка страниц компаний всех аккаунтов, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getCompanyPageList
       tags:
-        - CompaniesPages
+        - CompanyPage
 
       security:
         - bearerAuth: []
@@ -2399,18 +2667,18 @@ components:
       required: false
       schema:
         type: string
-        default: "ru"
+        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор запроса
-      name: CorrelationID
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
       in: header
       required: false
       schema:
         type: string
         format: uuid
-      example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка
@@ -2490,7 +2758,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.DensityMax:
       description: Максимальная плотность (g/m2)
@@ -2500,7 +2768,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.DepthMin:
       description: Минимальная глубина (µm)
@@ -2510,7 +2778,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.DepthMax:
       description: Максимальная глубина (µm)
@@ -2520,7 +2788,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.ElementDetailing:
       description: Список типов детализации через "," (см. Custom.Enum.FormElementDetailing)
@@ -2540,7 +2808,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMax:
       description: Максимальная длина (µm)
@@ -2550,7 +2818,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WeightMin:
       description: Минимальный вес (g/m2)
@@ -2560,7 +2828,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.WeightMax:
       description: Максимальный вес (g/m2)
@@ -2570,7 +2838,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100g/m2
+      example: 100000 # 100 g/m2
 
     Custom.Request.Query.Filter.WidthMin:
       description: Минимальная ширина (µm)
@@ -2580,7 +2848,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Custom.Request.Query.Filter.WidthMax:
       description: Максимальная ширина (µm)
@@ -2590,7 +2858,7 @@ components:
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100mm
+      example: 100000 # 100 mm
 
     Catalog.Boxes.AdminAPI.Request.Path.BoxID:
       description: Идентификатор коробки
@@ -2689,7 +2957,7 @@ components:
         minimum: 1
       example: 1000
 
-    Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID:
+    Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID:
       description: Идентификатор шаблона элемента
       name: templateId
       in: path
@@ -2699,7 +2967,7 @@ components:
         minimum: 1
       example: 1000
 
-    Controls.Forms.AdminAPI.Request.Path.FormID:
+    Controls.SubmitForms.AdminAPI.Request.Path.FormID:
       description: Идентификатор формы
       name: formId
       in: path
@@ -2709,20 +2977,20 @@ components:
         minimum: 1
       example: 1000
 
-    Controls.FormElements.AdminAPI.Request.Path.ElementID:
-      description: Идентификатор поля формы
-      name: elementId
-      in: path
-      required: true
-      schema:
-        type: integer
-        minimum: 1
-      example: 1000
-
-    Controls.FormElements.AdminAPI.Request.Query.FormID:
+    Controls.SubmitForm.AdminAPI.Request.Query.FormID:
       description: Идентификатор формы
       name: formId
       in: query
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+      example: 1000
+
+    Controls.SubmitForm.AdminAPI.Request.Path.ElementID:
+      description: Идентификатор поля формы
+      name: elementId
+      in: path
       required: true
       schema:
         type: integer
@@ -2753,9 +3021,11 @@ components:
       example: "ENABLED"
 
     App.Field.Article:
-      description: Уникальный артикул записи (любые буквы без пробелов)
+      description: |
+        Уникальный артикул записи (любые буквы без пробелов)
+        - pattern: ^S+$
       type: string
-      pattern: "^S+$"
+      # pattern: "^S+$"
       minLength: 2
       maxLength: 64
       example: "item-FLEX-92744"
@@ -2766,24 +3036,17 @@ components:
       maxLength: 128
       example: "Название"
 
-    App.Field.Date.CreatedAt:
+    App.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
       example: "2023-01-01T12:00:00.000+02:00"
 
-    App.Field.Date.UpdatedAt:
+    App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      nullable: true
       example: "2023-01-01T12:00:00.000+02:00"
-
-    App.Field.IntegerID:
-      description: Идентификатор записи
-      type: integer
-      minimum: 1
-      example: 1000
 
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
@@ -2797,13 +3060,13 @@ components:
       minimum: 1
       example: 5
 
-    App.Measure.GramPerMeter2:
+    App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
       type: integer
       maxLength: 10
       example: 100000 # 100g/m2
 
-    App.Measure.Micrometer:
+    App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
       type: integer
       maxLength: 10
@@ -2901,9 +3164,8 @@ components:
       properties:
         id:
           description: Идентификатор созданной записи
-          type: integer
-          minimum: 1
-          example: 1000
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
         message:
           type: string
           example: "Запись была успешно создана"
@@ -2941,13 +3203,129 @@ components:
         - DIFFERENT
       example: "SAME"
 
-    Custom.Request.Query.Field.ParamName:
+    Custom.Field.Dictionaries.Catalog.BoxID:
+      description: Идентификатор коробки
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Catalog.LaminateID:
+      description: Идентификатор ламината
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Catalog.PaperID:
+      description: Идентификатор бумаги
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Controls.ElementID:
+      description: Идентификатор элемента формы
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Controls.FormID:
+      description: Идентификатор формы
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.Controls.TemplateID:
+      description: Идентификатор шаблона элемента формы (/v1/controls/element-templates)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.ColorID:
+      description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.FactureID:
+      description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.LaminateTypeID:
+      description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PrintFormatID:
+      description: Идентификатор печатного формата
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.ParamName:
       description: Уникальное имя формы/элемента формы
       type: string
       pattern: "^[a-zA-Z][a-zA-Z0-9]+$"
       minLength: 4
       maxLength: 32
       example: "ParamName"
+
+    App.System.Response.Model.SystemInfo:
+      description: DTO - системная информация о запущеном приложении
+      type: object
+      required:
+        - name
+        - version
+        - hostName
+        - isDebug
+        - logLevel
+        - startedAt
+      properties:
+        name:
+          description: Название приложения
+          type: string
+          maxLength: 64
+          example: "Sample App"
+        version:
+          description: Версия приложения
+          type: string
+          maxLength: 16
+          example: "v0.1.0"
+        hostName:
+          description: Название хоста, на котором запущено приложение
+          type: string
+          maxLength: 64
+          example: "host-name"
+        isDebug:
+          description: Статус режима отладки
+          type: boolean
+          example: true
+        logLevel:
+          type: string
+          enum:
+            - DEBUG
+            - INFO
+            - WARN
+            - ERROR
+            - FATAL
+            - TRACE
+          example: "ERROR"
+        startedAt:
+          description: Время запуска приложения (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+02:00"
 
     Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
       description: DTO добавления новой упаковочной коробки
@@ -2967,11 +3345,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       description: DTO сохранения упаковочной коробки
@@ -2989,11 +3367,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Boxes.AdminAPI.Response.Model.BoxList:
       description: DTO - список упаковочных коробок
@@ -3025,13 +3403,13 @@ components:
         - status
       properties:
         id: # boxId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.BoxID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3040,11 +3418,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         depth:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -3067,15 +3445,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
       description: DTO сохранения ламината
@@ -3093,15 +3469,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
       description: DTO - список ламината
@@ -3134,13 +3508,13 @@ components:
         - status
       properties:
         id: # laminateId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3149,15 +3523,13 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор типа ламинации (/v1/dictionaries/laminate-types)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -3183,21 +3555,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -3217,21 +3585,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -3269,13 +3633,13 @@ components:
         - status
       properties:
         id: # paperId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3284,21 +3648,17 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор цвета бумаги (/v1/dictionaries/paper-colors)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         factureId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор фактуры бумаги (/v1/dictionaries/paper-factures)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
-          $ref: "#/components/schemas/App.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         thickness:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
         status:
@@ -3357,13 +3717,13 @@ components:
         - status
       properties:
         id: # typeId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3425,13 +3785,13 @@ components:
         - status
       properties:
         id: # colorId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3493,13 +3853,13 @@ components:
         - status
       properties:
         id: # factureId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3522,9 +3882,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
       description: DTO сохранения печатного формата
@@ -3540,9 +3900,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
       description: DTO - список печатных форматов
@@ -3572,26 +3932,26 @@ components:
         - status
       properties:
         id: # formatId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         length:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
-    Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
       description: DTO добавления нового шаблона элемента
       type: object
       required:
@@ -3602,7 +3962,7 @@ components:
         - elementBody
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3616,7 +3976,7 @@ components:
           type: string
           example: "{\"json\": \"object\"}"
 
-    Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
       description: DTO сохранения шаблона элемента
       type: object
       required:
@@ -3625,7 +3985,7 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3639,7 +3999,7 @@ components:
           type: string
           example: "{\"json\": \"object\"}"
 
-    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList:
+    Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
       description: DTO - список шаблонов элементов
       type: object
       required:
@@ -3650,26 +4010,26 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
+            $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
+    Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
       description: |-
         DTO - шаблон элемента формы пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       type: object
       properties:
         id: # templateId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3685,7 +4045,7 @@ components:
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
-    Controls.Forms.AdminAPI.Request.Model.CreateForm:
+    Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
       description: DTO добавления новой формы
       type: object
       required:
@@ -3694,7 +4054,7 @@ components:
         - formDetailing
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3702,7 +4062,7 @@ components:
         formDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
-    Controls.Forms.AdminAPI.Request.Model.StoreForm:
+    Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
       description: DTO сохранения формы
       type: object
       required:
@@ -3711,7 +4071,7 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3719,7 +4079,7 @@ components:
         formDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
-    Controls.Forms.AdminAPI.Response.Model.FormList:
+    Controls.SubmitForms.AdminAPI.Response.Model.FormList:
       description: DTO - список форм
       type: object
       required:
@@ -3730,11 +4090,11 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Controls.Forms.AdminAPI.Response.Model.Form"
+            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Controls.Forms.AdminAPI.Response.Model.Form:
+    Controls.SubmitForms.AdminAPI.Response.Model.Form:
       description: |-
         DTO - форма пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
@@ -3750,15 +4110,15 @@ components:
         - status
       properties:
         id: # formId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3773,28 +4133,26 @@ components:
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
-    Controls.FormElements.AdminAPI.Request.Model.CreateFormElement:
+    Controls.SubmitForm.AdminAPI.Request.Model.CreateFormElement:
       description: DTO сохранения элемента формы
       type: object
       required:
         - templateId
       properties:
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - example: "Процесс печати"
         templateId:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.IntegerID"
-            - description: Идентификатор шаблона элемента (/v1/controls/element-templates)
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
         elementRequired:
           description: Обязательность заполнения элемента в форме
           type: boolean
           example: true
 
-    Controls.FormElements.AdminAPI.Request.Model.StoreFormElement:
+    Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement:
       description: DTO сохранения элемента формы
       type: object
       required:
@@ -3803,9 +4161,9 @@ components:
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         formId:
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3815,28 +4173,28 @@ components:
           type: boolean
           example: true
 
-    Controls.FormElements.AdminAPI.Response.Model.FormElementList:
+    Controls.SubmitForm.AdminAPI.Response.Model.FormElementList:
       description: DTO - список элементов формы
       type: array
       items:
-        $ref: "#/components/schemas/Controls.FormElements.AdminAPI.Response.Model.FormElement"
+        $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElement"
 
-    Controls.FormElements.AdminAPI.Response.Model.FormElement:
+    Controls.SubmitForm.AdminAPI.Response.Model.FormElement:
       description: |-
         DTO - элемент формы пользовательского интерфейса
         Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
       type: object
       properties:
         id: # elementId
-          $ref: "#/components/schemas/App.Field.IntegerID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.ElementID"
         version:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
-          $ref: "#/components/schemas/App.Field.Date.CreatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updatedAt:
-          $ref: "#/components/schemas/App.Field.Date.UpdatedAt"
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
-          $ref: "#/components/schemas/Custom.Request.Query.Field.ParamName"
+          $ref: "#/components/schemas/Custom.Field.ParamName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3938,6 +4296,7 @@ components:
 
   securitySchemes:
     bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
       type: http
       scheme: bearer
       bearerFormat: JWT

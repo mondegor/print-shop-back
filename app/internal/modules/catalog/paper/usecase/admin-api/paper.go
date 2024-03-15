@@ -62,52 +62,51 @@ func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) ([]enti
 	return items, total, nil
 }
 
-func (uc *Paper) GetItem(ctx context.Context, id mrtype.KeyInt32) (*entity.Paper, error) {
-	if id < 1 {
-		return nil, mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *Paper) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.Paper, error) {
+	if itemID < 1 {
+		return entity.Paper{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	item := &entity.Paper{
-		ID: id,
-	}
+	item, err := uc.storage.FetchOne(ctx, itemID)
 
-	if err := uc.storage.LoadOne(ctx, item); err != nil {
-		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
+	if err != nil {
+		return entity.Paper{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, itemID)
 	}
 
 	return item, nil
 }
 
-func (uc *Paper) Create(ctx context.Context, item *entity.Paper) error {
-	if err := uc.checkItem(ctx, item); err != nil {
-		return err
+func (uc *Paper) Create(ctx context.Context, item entity.Paper) (mrtype.KeyInt32, error) {
+	if err := uc.checkItem(ctx, &item); err != nil {
+		return 0, err
 	}
 
 	item.Status = mrenum.ItemStatusDraft
+	itemID, err := uc.storage.Insert(ctx, item)
 
-	if err := uc.storage.Insert(ctx, item); err != nil {
-		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
+	if err != nil {
+		return 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": item.ID})
+	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
 
-	return nil
+	return itemID, nil
 }
 
-func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
+func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
 	}
 
-	if err := uc.checkItem(ctx, item); err != nil {
+	if err := uc.checkItem(ctx, &item); err != nil {
 		return err
 	}
 
@@ -115,7 +114,7 @@ func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
@@ -126,13 +125,13 @@ func (uc *Paper) Store(ctx context.Context, item *entity.Paper) error {
 	return nil
 }
 
-func (uc *Paper) ChangeStatus(ctx context.Context, item *entity.Paper) error {
+func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 	if item.ID < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion < 1 {
-		return mrcore.FactoryErrServiceEntityVersionInvalid.New()
+		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item)
@@ -146,14 +145,14 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item *entity.Paper) error {
 	}
 
 	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.FactoryErrServiceSwitchStatusRejected.New(currentStatus, item.Status)
+		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	version, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
-			return mrcore.FactoryErrServiceEntityVersionInvalid.Wrap(err)
+			return mrcore.FactoryErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNamePaper)
@@ -164,16 +163,16 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item *entity.Paper) error {
 	return nil
 }
 
-func (uc *Paper) Remove(ctx context.Context, id mrtype.KeyInt32) error {
-	if id < 1 {
-		return mrcore.FactoryErrServiceEntityNotFound.New()
+func (uc *Paper) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
+	if itemID < 1 {
+		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	if err := uc.storage.Delete(ctx, id); err != nil {
-		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, id)
+	if err := uc.storage.Delete(ctx, itemID); err != nil {
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": id})
+	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
 }

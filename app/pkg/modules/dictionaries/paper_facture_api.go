@@ -14,7 +14,7 @@ const (
 type (
 	PaperFactureAPI interface {
 		// CheckingAvailability - error: FactoryErrPaperFactureNotFound or Failed
-		CheckingAvailability(ctx context.Context, id mrtype.KeyInt32) error
+		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
 
