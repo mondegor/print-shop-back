@@ -216,7 +216,7 @@
       Метод предназначен для изменения статуса ламината в БД
 
       **Ограничения и ошибки полей:**
-      - version: required,gte=1 | ErrVersionInvalid
+      - tagVersion: required,gte=1 | ErrVersionInvalid
       - status: required,enum | ErrSwitchStatusRejected
 
     operationId: changeLaminateStatus

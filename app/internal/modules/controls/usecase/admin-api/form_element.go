@@ -129,7 +129,7 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 		return err
 	}
 
-	version, err := uc.storage.Update(ctx, item)
+	tagVersion, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -139,7 +139,7 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameFormElement)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }

@@ -7,7 +7,7 @@ import (
 
 type (
 	ChangeItemStatusRequest struct {
-		TagVersion int32             `json:"version" validate:"required,gte=1"`
+		TagVersion int32             `json:"tagVersion" validate:"required,gte=1"`
 		Status     mrenum.ItemStatus `json:"status" validate:"required"`
 	}
 

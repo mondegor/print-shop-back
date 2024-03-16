@@ -8,10 +8,10 @@ App.Request.Model.ChangeStatus:
     - DISABLED -> ENABLED;
   type: object
   required:
-    - version
+    - tagVersion
     - status
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     status:
       $ref: "#/components/schemas/App.Enum.Status"

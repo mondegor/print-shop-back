@@ -17,10 +17,10 @@
         content:
           image/png:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.BinaryFile"
+              $ref: "#/components/schemas/App.Response.Model.BinaryImage"
           image/jpeg:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.BinaryFile"
+              $ref: "#/components/schemas/App.Response.Model.BinaryImage"
       "404":
         $ref: "#/components/responses/App.ResponseJson.Error404"
       "500":

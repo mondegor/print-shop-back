@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.0
+  version: 0.12.1
   title: Private API print-shop управления пользовательскими интерфейсами
   license:
     name: Apache-2.0
@@ -48,9 +48,11 @@ paths:
         Метод предназначен для получения списка всех шаблонов элементов формы, сохраненных в БД
 
         Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - paramName;
         - caption;
 
         Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - paramName;
         - caption,default,asc;
         - createdAt;
         - updatedAt;
@@ -93,10 +95,14 @@ paths:
     post:
       summary: Метод добавления нового шаблона элемента формы
       description: |-
-        Метод предназначен для создания информации о новом шаблоне элемента формы в БД
+        Метод предназначен для создания шаблона элемента в БД, который используется в форме
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - template.paramName: required,unique,min=4,max=32,pattern=variable
+        - template.caption: required,max=64
+        - template.elementType: required (Custom.Enum.FormElementType)
+        - template.elementDetailing: required (Custom.Enum.FormElementDetailing)
+        - attachment: required,size=1Mb; ext=[.json]
 
       operationId: createElementTemplate
       tags:
@@ -112,9 +118,9 @@ paths:
       requestBody:
         required: true
         content:
-          application/json;charset=UTF-8:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachment"
 
       responses:
         "201":
@@ -124,16 +130,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
         "400":
-          # Название переменной записи не может быть пустым
-          # Указанное название записи уже существует
-          # Название переменной записи не может быть более 32 символов
-          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
-          # Тип поля формы содержит недопустимое значение
-          # Содержание шаблона поля формы не может быть пустым
-          # Содержание шаблона поля формы не может быть более 65536 символов
-          # Содержание шаблона поля формы некорректно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -177,10 +173,12 @@ paths:
     put:
       summary: Метод сохранения шаблона элемента формы
       description: |-
-        Метод предназначен для сохранения информации о шаблоне элемента формы в БД
+        Метод предназначен для сохранения шаблона элемента формы в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - template.paramName: unique,min=4,max=32,pattern=variable
+        - template.caption: max=64
+        - attachment: size=1Mb; ext=[.json]
 
       operationId: storeElementTemplate
       tags:
@@ -197,24 +195,14 @@ paths:
       requestBody:
         required: true
         content:
-          application/json;charset=UTF-8:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachment"
 
       responses:
         "204":
           description: Информация о шаблоне элемента формы успешно сохранена
         "400":
-          # Название переменной записи не может быть пустым
-          # Указанное название записи уже существует
-          # Название переменной записи не может быть более 32 символов
-          # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 128 символов
-          # Тип поля формы содержит недопустимое значение
-          # Содержание шаблона поля формы не может быть пустым
-          # Содержание шаблона поля формы не может быть более 65536 символов
-          # Содержание шаблона поля формы некорректно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -259,7 +247,7 @@ paths:
         Метод предназначен для изменения статуса шаблона элемента формы в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changeElementTemplatestatus
@@ -285,9 +273,39 @@ paths:
         "204":
           description: Статус шаблона элемента формы успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/element-templates/{templateId}/json:
+    get:
+      summary: Метод получения json файла шаблона
+      description: Метод предназначен для получения json файла шаблона из БД
+      operationId: getElementTemplateFile
+      tags:
+        - Controls.ElementTemplate
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+
+      responses:
+        "200":
+          description: Json файл получен
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.JsonFile"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -507,7 +525,7 @@ paths:
         Метод предназначен для изменения статуса формы в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changeSubmitFormStatus
@@ -979,10 +997,10 @@ components:
         - DISABLED -> ENABLED;
       type: object
       required:
-        - version
+        - tagVersion
         - status
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
@@ -999,6 +1017,12 @@ components:
             При afterId = 0 запись вставляется в начало списка.
           type: integer
           example: 7
+
+    App.Response.Model.BinaryImage:
+      description: Бинарный файл одного из типов - JPEG, PNG
+      type: string
+      format: binary
+      maxLength: 1048576 # 1Mb
 
     App.Response.Model.ErrorList:
       description: DTO списка пользовательских ошибок 400
@@ -1052,6 +1076,11 @@ components:
           description: Идентификатор конкретного возникновения ошибки
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.Response.Model.JsonFile:
+      description: Файл типа - JSON
+      type: string
+      maxLength: 1048576 # 1Mb
 
     App.Response.Model.SuccessCreatedItem:
       description: DTO результата создания записи
@@ -1118,15 +1147,26 @@ components:
       maxLength: 32
       example: "ParamName"
 
+    Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
+      description: DTO добавления нового json шаблона элемента (multipart)
+      type: object
+      required:
+        - elementTemplate
+        - attachment
+      properties:
+        elementTemplate:
+          $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
+        attachment:
+          $ref: "#/components/schemas/App.Response.Model.JsonFile"
+
     Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
-      description: DTO добавления нового шаблона элемента
+      description: DTO мета данных json шаблона элемента
       type: object
       required:
         - paramName
         - caption
         - elementType
         - elementDetailing
-        - elementBody
       properties:
         paramName:
           $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -1138,18 +1178,26 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementType"
         elementDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-        elementBody:
-          description: Json объект шаблона соответсвущего спецификации
-          type: string
-          example: "{\"json\": \"object\"}"
+
+    Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachment:
+      description: DTO сохранения json шаблона элемента (multipart)
+      type: object
+      required:
+        - elementTemplate
+        - attachment
+      properties:
+        elementTemplate:
+          $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
+        attachment:
+          $ref: "#/components/schemas/App.Response.Model.JsonFile"
 
     Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
       description: DTO сохранения шаблона элемента
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
           $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -1157,14 +1205,6 @@ components:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - example: "Шаблон процесса печати"
-        elementType:
-          $ref: "#/components/schemas/Custom.Enum.FormElementType"
-        elementDetailing:
-          $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-        elementBody:
-          description: Json объект шаблона соответсвущего спецификации
-          type: string
-          example: "{\"json\": \"object\"}"
 
     Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
       description: DTO - список шаблонов элементов
@@ -1189,7 +1229,7 @@ components:
       properties:
         id: # templateId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1205,10 +1245,6 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementType"
         elementDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-        elementBody:
-          description: Json объект шаблона соответсвущего спецификации
-          type: string
-          example: "{\"json\": \"object\"}"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
 
@@ -1233,9 +1269,9 @@ components:
       description: DTO сохранения формы
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         paramName:
           $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -1268,7 +1304,7 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - paramName
         - caption
@@ -1278,7 +1314,7 @@ components:
       properties:
         id: # formId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1293,7 +1329,7 @@ components:
         formDetailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
         formBody:
-          description: Json объект формы соответсвущего спецификации
+          description: Json объект формы соответствущего спецификации
           type: string
           maxLength: 65536 # 64Kb
           example: "{\"json\": \"object\"}"
@@ -1323,9 +1359,9 @@ components:
       description: DTO сохранения элемента формы
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         formId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
@@ -1354,7 +1390,7 @@ components:
       properties:
         id: # elementId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.ElementID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

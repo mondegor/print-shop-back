@@ -29,9 +29,9 @@ Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
   description: DTO сохранения ламината
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     article:
       $ref: "#/components/schemas/App.Field.Article"
@@ -69,7 +69,7 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
   type: object
   required:
     - id
-    - version
+    - tagVersion
     - createdAt
     - article
     - caption
@@ -81,7 +81,7 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
   properties:
     id: # laminateId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

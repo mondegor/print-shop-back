@@ -15,12 +15,12 @@ type (
 	}
 
 	StoreBoxRequest struct {
-		Version int32              `json:"version" validate:"required,gte=1"`
-		Article string             `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
-		Caption string             `json:"caption" validate:"omitempty,max=64"`
-		Length  measure.Micrometer `json:"length" validate:"omitempty,gte=1,lte=10000000"`
-		Width   measure.Micrometer `json:"width" validate:"omitempty,gte=1,lte=10000000"`
-		Depth   measure.Micrometer `json:"depth" validate:"omitempty,gte=1,lte=10000000"`
+		TagVersion int32              `json:"tagVersion" validate:"required,gte=1"`
+		Article    string             `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
+		Caption    string             `json:"caption" validate:"omitempty,max=64"`
+		Length     measure.Micrometer `json:"length" validate:"omitempty,gte=1,lte=10000000"`
+		Width      measure.Micrometer `json:"width" validate:"omitempty,gte=1,lte=10000000"`
+		Depth      measure.Micrometer `json:"depth" validate:"omitempty,gte=1,lte=10000000"`
 	}
 
 	BoxListResponse struct {

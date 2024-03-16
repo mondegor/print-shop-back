@@ -77,7 +77,7 @@ type (
 		String     *mrparser.String
 		// UUID       *mrparser.UUID
 		Validator *mrparser.Validator
-		// File       *mrparser.Image
-		Image *mrparser.Image
+		FileJson  *mrparser.File
+		Image     *mrparser.Image
 	}
 )

@@ -199,7 +199,7 @@ func (ht *FormElement) wrapError(err error, r *http.Request) error {
 	}
 
 	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("version", err)
+		return mrerr.NewCustomError("tagVersion", err)
 	}
 
 	if usecase_shared.FactoryErrFormElementParamNameAlreadyExists.Is(err) {

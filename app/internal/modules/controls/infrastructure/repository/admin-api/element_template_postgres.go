@@ -67,7 +67,6 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
             template_caption as caption,
             element_type,
             element_detailing,
-            element_body,
             template_status
         FROM
             ` + module.UnitElementTemplateDBSchema + `.element_templates
@@ -102,7 +101,6 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
 			&row.Caption,
 			&row.Type,
 			&row.Detailing,
-			&row.Body,
 			&row.Status,
 		)
 

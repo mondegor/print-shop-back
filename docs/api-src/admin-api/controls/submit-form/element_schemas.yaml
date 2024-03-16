@@ -21,9 +21,9 @@ Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement:
   description: DTO сохранения элемента формы
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     formId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
@@ -52,7 +52,7 @@ Controls.SubmitForm.AdminAPI.Response.Model.FormElement:
   properties:
     id: # elementId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.ElementID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

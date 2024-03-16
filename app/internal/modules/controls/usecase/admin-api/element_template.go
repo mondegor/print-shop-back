@@ -1,7 +1,10 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	module "print-shop-back/internal/modules/controls"
 	entity "print-shop-back/internal/modules/controls/entity/admin-api"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -65,7 +68,35 @@ func (uc *ElementTemplate) GetItem(ctx context.Context, itemID mrtype.KeyInt32) 
 		return entity.ElementTemplate{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, itemID)
 	}
 
+	// :TODO: можно оптимизировать удалив body
+	item.Body = []byte{}
+
 	return item, nil
+}
+
+func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID mrtype.KeyInt32, pretty bool) ([]byte, error) {
+	if itemID < 1 {
+		return []byte{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
+	}
+
+	// :TODO: можно оптимизировать получая только body
+	item, err := uc.storage.FetchOne(ctx, itemID)
+
+	if err != nil {
+		return []byte{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, itemID)
+	}
+
+	if pretty {
+		var prettyJSON bytes.Buffer
+
+		if err = json.Indent(&prettyJSON, item.Body, "", module.JsonPrettyIndent); err != nil {
+			return []byte{}, uc.usecaseHelper.WrapErrorEntityFailed(err, entity.ModelNameElementTemplate, itemID)
+		}
+
+		return prettyJSON.Bytes(), nil
+	}
+
+	return item.Body, nil
 }
 
 func (uc *ElementTemplate) Create(ctx context.Context, item entity.ElementTemplate) (mrtype.KeyInt32, error) {
@@ -94,7 +125,7 @@ func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplat
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, item.ID)
 	}
 
-	version, err := uc.storage.Update(ctx, item)
+	tagVersion, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -104,7 +135,7 @@ func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplat
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -132,7 +163,7 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
-	version, err := uc.storage.UpdateStatus(ctx, item)
+	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -142,7 +173,7 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }

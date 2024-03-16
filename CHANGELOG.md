@@ -1,6 +1,12 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-03-16
+### Changed
+- Все поля БД типа `timestamp` теперь с `with time zone`;
+- Заменено `version` -> `tagVersion`;
+- Доработан модуль ElementTemplate и его API, добавлена поддержка получения json файла;
+
 ## 2024-03-15
 ### Changed
 - Рефакторинг кода:

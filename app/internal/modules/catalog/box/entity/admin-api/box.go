@@ -15,7 +15,7 @@ const (
 type (
 	Box struct { // DB: printshop_catalog.boxes
 		ID         mrtype.KeyInt32 `json:"id"`                                   // box_id
-		TagVersion int32           `json:"version"`                              // tag_version
+		TagVersion int32           `json:"tagVersion"`                           // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
 		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 

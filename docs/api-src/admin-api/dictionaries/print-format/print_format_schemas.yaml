@@ -20,9 +20,9 @@ Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
   description: DTO сохранения печатного формата
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     caption:
       allOf:
@@ -54,7 +54,7 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
   type: object
   required:
     - id
-    - version
+    - tagVersion
     - createdAt
     - caption
     - length
@@ -63,7 +63,7 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
   properties:
     id: # formatId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

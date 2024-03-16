@@ -40,7 +40,15 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		String: mrparser.NewString(pathFunc),
 		// UUID:       mrparser.NewUUID(pathFunc),
 		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
-		// File:       mrparser.NewFile(),
+		FileJson: mrparser.NewFile(
+			mrparser.FileOptions{
+				AllowedExts:             []string{".json"},
+				MinSize:                 512,
+				MaxSize:                 1024 * 1024,
+				MaxFiles:                4,
+				CheckRequestContentType: true,
+			},
+		),
 		Image: mrparser.NewImage(mrparser.ImageOptions{}),
 	}, nil
 }

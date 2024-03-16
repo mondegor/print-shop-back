@@ -8,8 +8,8 @@ type (
 	}
 
 	StoreLaminateTypeRequest struct {
-		Version int32  `json:"version" validate:"required,gte=1"`
-		Caption string `json:"caption" validate:"required,max=64"`
+		TagVersion int32  `json:"tagVersion" validate:"required,gte=1"`
+		Caption    string `json:"caption" validate:"required,max=64"`
 	}
 
 	LaminateTypeListResponse struct {

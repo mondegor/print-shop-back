@@ -21,6 +21,7 @@ func NewModuleOptions(ctx context.Context, opts app.Options) (factory.Options, e
 			opts.RequestParsers.ListPager,
 			opts.RequestParsers.String,
 			opts.RequestParsers.Validator,
+			opts.RequestParsers.FileJson,
 		),
 		ResponseSender: opts.ResponseSender,
 

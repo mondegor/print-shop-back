@@ -14,10 +14,10 @@ Dictionaries.PaperColors.AdminAPI.Request.Model.StorePaperColor:
   description: DTO сохранения цвета бумаги
   type: object
   required:
-    - version
+    - tagVersion
     - caption
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     caption:
       allOf:
@@ -45,14 +45,14 @@ Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
   type: object
   required:
     - id
-    - version
+    - tagVersion
     - createdAt
     - caption
     - status
   properties:
     id: # colorId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

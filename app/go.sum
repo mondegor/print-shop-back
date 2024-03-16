@@ -56,8 +56,8 @@ github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWE
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 github.com/mondegor/go-components v0.5.0 h1:D18l4OLwQtb50Qi8lG6QeD93NQ9OB5Rn33gmQXismZs=
 github.com/mondegor/go-components v0.5.0/go.mod h1:8X+IvkPc/aEgqNXhU60A+HD9OdUTs0kmyEy6+7pPZeU=
-github.com/mondegor/go-storage v0.9.0 h1:DIshMbknsFf5jg0+WeFDP5M+Ef3629R4meHMQrvTkyU=
-github.com/mondegor/go-storage v0.9.0/go.mod h1:f+tvGlcehjVkTI2YAnPy83yCT84WZLHzKkgtStUeEXc=
+github.com/mondegor/go-storage v0.9.1 h1:/1Ofl+g8uFKOUb56i8ZJKcakDS7NhLd7VdpJNCJzN5M=
+github.com/mondegor/go-storage v0.9.1/go.mod h1:FVzoTkXXIZELfiLE6UqLpXQtVVJ3YUW8RjyOnQfpbFk=
 github.com/mondegor/go-sysmess v0.7.3 h1:smuipOfcCVnsU2/47zv++FTFSY6xE/ePMSUw41UZLRI=
 github.com/mondegor/go-sysmess v0.7.3/go.mod h1:2m5N56AJectptnLAigrLZwjvEQuzJ/a1G7fPqQwzk2c=
 github.com/mondegor/go-webcore v0.14.1 h1:xUqT8132L85AUxRQZk3qH93xwfHyvXPsNEgPLd3Ctl8=

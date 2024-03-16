@@ -103,7 +103,7 @@ func (uc *Box) Store(ctx context.Context, item entity.Box) error {
 		return err
 	}
 
-	version, err := uc.storage.Update(ctx, item)
+	tagVersion, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -113,7 +113,7 @@ func (uc *Box) Store(ctx context.Context, item entity.Box) error {
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameBox)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -141,7 +141,7 @@ func (uc *Box) ChangeStatus(ctx context.Context, item entity.Box) error {
 		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
-	version, err := uc.storage.UpdateStatus(ctx, item)
+	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -151,7 +151,7 @@ func (uc *Box) ChangeStatus(ctx context.Context, item entity.Box) error {
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameBox)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }

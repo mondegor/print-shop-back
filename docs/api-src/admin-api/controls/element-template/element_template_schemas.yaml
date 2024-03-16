@@ -1,12 +1,23 @@
+Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
+  description: DTO добавления нового json шаблона элемента (multipart)
+  type: object
+  required:
+    - elementTemplate
+    - attachment
+  properties:
+    elementTemplate:
+      $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
+    attachment:
+      $ref: "#/components/schemas/App.Response.Model.JsonFile"
+
 Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
-  description: DTO добавления нового шаблона элемента
+  description: DTO мета данных json шаблона элемента
   type: object
   required:
     - paramName
     - caption
     - elementType
     - elementDetailing
-    - elementBody
   properties:
     paramName:
       $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -18,18 +29,26 @@ Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
     elementDetailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-    elementBody:
-      description: Json объект шаблона соответсвущего спецификации
-      type: string
-      example: "{\"json\": \"object\"}"
+
+Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachment:
+  description: DTO сохранения json шаблона элемента (multipart)
+  type: object
+  required:
+    - elementTemplate
+    - attachment
+  properties:
+    elementTemplate:
+      $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
+    attachment:
+      $ref: "#/components/schemas/App.Response.Model.JsonFile"
 
 Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
   description: DTO сохранения шаблона элемента
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     paramName:
       $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -37,14 +56,6 @@ Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
         - example: "Шаблон процесса печати"
-    elementType:
-      $ref: "#/components/schemas/Custom.Enum.FormElementType"
-    elementDetailing:
-      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-    elementBody:
-      description: Json объект шаблона соответсвущего спецификации
-      type: string
-      example: "{\"json\": \"object\"}"
 
 Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
   description: DTO - список шаблонов элементов
@@ -69,7 +80,7 @@ Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
   properties:
     id: # templateId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -85,9 +96,5 @@ Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
     elementDetailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-    elementBody:
-      description: Json объект шаблона соответсвущего спецификации
-      type: string
-      example: "{\"json\": \"object\"}"
     status:
       $ref: "#/components/schemas/App.Enum.Status"

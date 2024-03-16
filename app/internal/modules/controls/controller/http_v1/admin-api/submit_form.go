@@ -211,7 +211,7 @@ func (ht *SubmitForm) wrapError(err error, r *http.Request) error {
 	}
 
 	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("version", err)
+		return mrerr.NewCustomError("tagVersion", err)
 	}
 
 	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {

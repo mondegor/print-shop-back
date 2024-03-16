@@ -19,9 +19,9 @@ Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
   description: DTO сохранения формы
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     paramName:
       $ref: "#/components/schemas/Custom.Field.ParamName"
@@ -54,7 +54,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
   type: object
   required:
     - id
-    - version
+    - tagVersion
     - createdAt
     - paramName
     - caption
@@ -64,7 +64,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
   properties:
     id: # formId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -79,7 +79,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
     formDetailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
     formBody:
-      description: Json объект формы соответсвущего спецификации
+      description: Json объект формы соответствущего спецификации
       type: string
       maxLength: 65536 # 64Kb
       example: "{\"json\": \"object\"}"

@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.0
+  version: 0.12.1
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0

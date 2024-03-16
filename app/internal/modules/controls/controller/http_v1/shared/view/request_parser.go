@@ -21,6 +21,8 @@ type (
 		mrserver.RequestParserListPager
 		mrserver.RequestParserString
 		mrserver.RequestParserValidate
+		mrserver.RequestParserFile
+		// mrserver.RequestParserImage
 
 		SubmitFormID(r *http.Request) (mrtype.KeyInt32, error)
 		FilterElementDetailingList(r *http.Request, key string) []entity_shared.ElementDetailing
@@ -34,6 +36,7 @@ type (
 		*mrparser.ListPager
 		*mrparser.String
 		*mrparser.Validator
+		*mrparser.File
 	}
 )
 
@@ -45,6 +48,7 @@ func NewParser(
 	p5 *mrparser.ListPager,
 	p6 *mrparser.String,
 	p7 *mrparser.Validator,
+	p8 *mrparser.File,
 ) *Parser {
 	return &Parser{
 		Int64:      p1,
@@ -54,6 +58,7 @@ func NewParser(
 		ListPager:  p5,
 		String:     p6,
 		Validator:  p7,
+		File:       p8,
 	}
 }
 

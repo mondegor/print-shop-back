@@ -18,13 +18,13 @@ type (
 	}
 
 	StoreLaminateRequest struct {
-		Version   int32                  `json:"version" validate:"required,gte=1"`
-		Article   string                 `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
-		Caption   string                 `json:"caption" validate:"omitempty,max=64"`
-		TypeID    mrtype.KeyInt32        `json:"typeId" validate:"omitempty,gte=1"`
-		Length    measure.Micrometer     `json:"length" validate:"omitempty,gte=1,lte=1000000000"`
-		Weight    measure.GramsPerMeter2 `json:"weight" validate:"omitempty,gte=1,lte=10000"`
-		Thickness measure.Micrometer     `json:"thickness" validate:"omitempty,gte=1,lte=1000000"`
+		TagVersion int32                  `json:"tagVersion" validate:"required,gte=1"`
+		Article    string                 `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
+		Caption    string                 `json:"caption" validate:"omitempty,max=64"`
+		TypeID     mrtype.KeyInt32        `json:"typeId" validate:"omitempty,gte=1"`
+		Length     measure.Micrometer     `json:"length" validate:"omitempty,gte=1,lte=1000000000"`
+		Weight     measure.GramsPerMeter2 `json:"weight" validate:"omitempty,gte=1,lte=10000"`
+		Thickness  measure.Micrometer     `json:"thickness" validate:"omitempty,gte=1,lte=1000000"`
 	}
 
 	LaminateListResponse struct {

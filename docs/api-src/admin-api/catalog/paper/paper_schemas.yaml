@@ -38,9 +38,9 @@ Catalog.Papers.AdminAPI.Request.Model.StorePaper:
   description: DTO сохранения бумаги
   type: object
   required:
-    - version
+    - tagVersion
   properties:
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     article:
       $ref: "#/components/schemas/App.Field.Article"
@@ -84,7 +84,7 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
   type: object
   required:
     - id
-    - version
+    - tagVersion
     - createdAt
     - article
     - caption
@@ -99,7 +99,7 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
   properties:
     id: # paperId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
-    version:
+    tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

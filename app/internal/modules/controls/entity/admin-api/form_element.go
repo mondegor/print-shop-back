@@ -14,7 +14,7 @@ const (
 type (
 	FormElement struct { // DB: printshop_controls.submit_form_elements
 		ID         mrtype.KeyInt32 `json:"id"`                                   // element_id
-		TagVersion int32           `json:"version"`                              // tag_version
+		TagVersion int32           `json:"tagVersion"`                           // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
 		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 

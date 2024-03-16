@@ -13,6 +13,7 @@ type (
 	ElementTemplateUseCase interface {
 		GetList(ctx context.Context, params entity.ElementTemplateParams) ([]entity.ElementTemplate, int64, error)
 		GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.ElementTemplate, error)
+		GetItemJson(ctx context.Context, itemID mrtype.KeyInt32, pretty bool) ([]byte, error)
 		Create(ctx context.Context, item entity.ElementTemplate) (mrtype.KeyInt32, error)
 		Store(ctx context.Context, item entity.ElementTemplate) error
 		ChangeStatus(ctx context.Context, item entity.ElementTemplate) error

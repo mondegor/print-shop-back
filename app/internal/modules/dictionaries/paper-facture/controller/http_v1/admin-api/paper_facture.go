@@ -134,7 +134,7 @@ func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
 
 	item := entity.PaperFacture{
 		ID:         ht.getItemID(r),
-		TagVersion: request.Version,
+		TagVersion: request.TagVersion,
 		Caption:    request.Caption,
 	}
 
@@ -187,7 +187,7 @@ func (ht *PaperFacture) wrapError(err error, r *http.Request) error {
 	}
 
 	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("version", err)
+		return mrerr.NewCustomError("tagVersion", err)
 	}
 
 	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {

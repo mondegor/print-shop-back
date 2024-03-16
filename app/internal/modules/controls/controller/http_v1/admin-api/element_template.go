@@ -1,6 +1,9 @@
 package http_v1
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"net/http"
 	module "print-shop-back/internal/modules/controls"
 	view_shared "print-shop-back/internal/modules/controls/controller/http_v1/shared/view"
@@ -13,6 +16,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
@@ -21,12 +25,13 @@ const (
 	elementListTemplateURL             = "/v1/controls/element-templates"
 	elementTemplateItemURL             = "/v1/controls/element-templates/:id"
 	elementTemplateItemChangeStatusURL = "/v1/controls/element-templates/:id/status"
+	elementTemplateItemJsonURL         = "/v1/controls/element-templates/:id/json"
 )
 
 type (
 	ElementTemplate struct {
 		parser     view_shared.RequestParser
-		sender     mrserver.ResponseSender
+		sender     mrserver.FileResponseSender
 		useCase    usecase.ElementTemplateUseCase
 		listSorter mrview.ListSorter
 	}
@@ -34,7 +39,7 @@ type (
 
 func NewElementTemplate(
 	parser view_shared.RequestParser,
-	sender mrserver.ResponseSender,
+	sender mrserver.FileResponseSender,
 	useCase usecase.ElementTemplateUseCase,
 	listSorter mrview.ListSorter,
 ) *ElementTemplate {
@@ -56,6 +61,8 @@ func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 		{http.MethodDelete, elementTemplateItemURL, "", ht.Remove},
 
 		{http.MethodPut, elementTemplateItemChangeStatusURL, "", ht.ChangeStatus},
+
+		{http.MethodGet, elementTemplateItemJsonURL, "", ht.GetJson},
 	}
 }
 
@@ -98,11 +105,40 @@ func (ht *ElementTemplate) Get(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(w, http.StatusOK, item)
 }
 
+func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error {
+	itemID := ht.getItemID(r)
+	body, err := ht.useCase.GetItemJson(r.Context(), itemID, true)
+
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.SendAttachmentFile(
+		r.Context(),
+		w,
+		mrtype.File{
+			FileInfo: mrtype.FileInfo{
+				ContentType:  "application/json",
+				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, itemID),
+				Size:         int64(len(body)),
+			},
+			Body: io.NopCloser(bytes.NewReader(body)),
+		},
+	)
+}
+
 func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
 	request := CreateElementTemplateRequest{}
+	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
 		return err
+	}
+
+	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
+
+	if err != nil {
+		return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
 	}
 
 	item := entity.ElementTemplate{
@@ -110,7 +146,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 		Caption:   request.Caption,
 		Type:      request.Type,
 		Detailing: request.Detailing,
-		Body:      request.Body,
+		Body:      file.Body,
 	}
 
 	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {
@@ -132,9 +168,21 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 
 func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 	request := StoreElementTemplateRequest{}
+	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
 		return err
+	}
+
+	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
+
+	if err != nil {
+		// указывать файл необязательно
+		if !mrcore.FactoryErrHttpFileUpload.Is(err) {
+			return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
+		}
+
+		file.Body = []byte{}
 	}
 
 	item := entity.ElementTemplate{
@@ -142,9 +190,7 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 		TagVersion: request.TagVersion,
 		ParamName:  request.ParamName,
 		Caption:    request.Caption,
-		Type:       request.Type,
-		Detailing:  request.Detailing,
-		Body:       request.Body,
+		Body:       file.Body,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -196,7 +242,7 @@ func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
 	}
 
 	if mrcore.FactoryErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("version", err)
+		return mrerr.NewCustomError("tagVersion", err)
 	}
 
 	if mrcore.FactoryErrUseCaseSwitchStatusRejected.Is(err) {

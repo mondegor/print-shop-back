@@ -13,10 +13,10 @@ type (
 	}
 
 	StorePrintFormatRequest struct {
-		Version int32              `json:"version" validate:"required,gte=1"`
-		Caption string             `json:"caption" validate:"omitempty,max=64"`
-		Length  measure.Micrometer `json:"length" validate:"omitempty,gte=1,lte=10000000"`
-		Width   measure.Micrometer `json:"width" validate:"omitempty,gte=1,lte=10000000"`
+		TagVersion int32              `json:"tagVersion" validate:"required,gte=1"`
+		Caption    string             `json:"caption" validate:"omitempty,max=64"`
+		Length     measure.Micrometer `json:"length" validate:"omitempty,gte=1,lte=10000000"`
+		Width      measure.Micrometer `json:"width" validate:"omitempty,gte=1,lte=10000000"`
 	}
 
 	PrintFormatListResponse struct {

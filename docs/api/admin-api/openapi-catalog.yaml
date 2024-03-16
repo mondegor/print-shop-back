@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.0
+  version: 0.12.1
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -255,7 +255,7 @@ paths:
         Метод предназначен для изменения статуса коробки в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changeBoxStatus
@@ -509,7 +509,7 @@ paths:
         Метод предназначен для изменения статуса ламината в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changeLaminateStatus
@@ -770,7 +770,7 @@ paths:
         Метод предназначен для изменения статуса бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changePaperStatus
@@ -1134,10 +1134,10 @@ components:
         - DISABLED -> ENABLED;
       type: object
       required:
-        - version
+        - tagVersion
         - status
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
@@ -1290,9 +1290,9 @@ components:
       description: DTO сохранения упаковочной коробки
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -1328,7 +1328,7 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - article
         - caption
@@ -1339,7 +1339,7 @@ components:
       properties:
         id: # boxId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.BoxID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1392,9 +1392,9 @@ components:
       description: DTO сохранения ламината
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -1432,7 +1432,7 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - article
         - caption
@@ -1444,7 +1444,7 @@ components:
       properties:
         id: # laminateId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1508,9 +1508,9 @@ components:
       description: DTO сохранения бумаги
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -1554,7 +1554,7 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - article
         - caption
@@ -1569,7 +1569,7 @@ components:
       properties:
         id: # paperId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

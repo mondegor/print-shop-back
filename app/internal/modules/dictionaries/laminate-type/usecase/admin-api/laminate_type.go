@@ -95,7 +95,7 @@ func (uc *LaminateType) Store(ctx context.Context, item entity.LaminateType) err
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminateType, item.ID)
 	}
 
-	version, err := uc.storage.Update(ctx, item)
+	tagVersion, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -105,7 +105,7 @@ func (uc *LaminateType) Store(ctx context.Context, item entity.LaminateType) err
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -133,7 +133,7 @@ func (uc *LaminateType) ChangeStatus(ctx context.Context, item entity.LaminateTy
 		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
-	version, err := uc.storage.UpdateStatus(ctx, item)
+	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -143,7 +143,7 @@ func (uc *LaminateType) ChangeStatus(ctx context.Context, item entity.LaminateTy
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameLaminateType)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }

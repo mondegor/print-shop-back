@@ -15,7 +15,7 @@ const (
 type (
 	ElementTemplate struct { // DB: printshop_controls.element_templates
 		ID         mrtype.KeyInt32 `json:"id"`                                   // template_id
-		TagVersion int32           `json:"version"`                              // tag_version
+		TagVersion int32           `json:"tagVersion"`                           // tag_version
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
 		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
@@ -23,7 +23,7 @@ type (
 		Caption   string                         `json:"caption" sort:"caption,default" upd:"template_caption"`
 		Type      entity_shared.ElementType      `json:"elementType" upd:"element_type"`
 		Detailing entity_shared.ElementDetailing `json:"elementDetailing" upd:"element_detailing"`
-		Body      string                         `json:"elementBody" upd:"element_body"`
+		Body      []byte                         `json:"elementBody,omitempty" upd:"element_body"`
 
 		Status mrenum.ItemStatus `json:"status"` // template_status
 	}

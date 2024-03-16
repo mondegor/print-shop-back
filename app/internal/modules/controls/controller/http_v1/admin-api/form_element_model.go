@@ -16,7 +16,7 @@ type (
 	}
 
 	StoreFormElementRequest struct {
-		TagVersion int32  `json:"version" validate:"required,gte=1"`
+		TagVersion int32  `json:"tagVersion" validate:"required,gte=1"`
 		ParamName  string `json:"paramName" validate:"omitempty,min=4,max=32,tag_variable"`
 		Caption    string `json:"caption" validate:"omitempty,max=64"`
 		Required   bool   `json:"fieldRequired"`

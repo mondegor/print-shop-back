@@ -119,7 +119,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 		return err
 	}
 
-	version, err := uc.storage.Update(ctx, item)
+	tagVersion, err := uc.storage.Update(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -129,7 +129,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": version})
+	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -157,7 +157,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return mrcore.FactoryErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
-	version, err := uc.storage.UpdateStatus(ctx, item)
+	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -167,7 +167,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": version, "status": item.Status})
+	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }

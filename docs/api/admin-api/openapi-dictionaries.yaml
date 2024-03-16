@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.0
+  version: 0.12.1
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -250,7 +250,7 @@ paths:
         Метод предназначен для изменения статуса типа ламината в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changeLaminateTypeStatus
@@ -504,7 +504,7 @@ paths:
         Метод предназначен для изменения статуса цвета бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changePaperColorStatus
@@ -758,7 +758,7 @@ paths:
         Метод предназначен для изменения статуса фактуры бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changePaperFactureStatus
@@ -1016,7 +1016,7 @@ paths:
         Метод предназначен для изменения статуса печатного формата в БД
 
         **Ограничения и ошибки полей:**
-        - version: required,gte=1 | ErrVersionInvalid
+        - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
       operationId: changePrintFormatStatus
@@ -1287,10 +1287,10 @@ components:
         - DISABLED -> ENABLED;
       type: object
       required:
-        - version
+        - tagVersion
         - status
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
@@ -1406,10 +1406,10 @@ components:
       description: DTO сохранения типа ламината
       type: object
       required:
-        - version
+        - tagVersion
         - caption
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
           allOf:
@@ -1437,14 +1437,14 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - caption
         - status
       properties:
         id: # typeId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1474,10 +1474,10 @@ components:
       description: DTO сохранения цвета бумаги
       type: object
       required:
-        - version
+        - tagVersion
         - caption
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
           allOf:
@@ -1505,14 +1505,14 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - caption
         - status
       properties:
         id: # colorId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1542,10 +1542,10 @@ components:
       description: DTO сохранения фактуры бумаги
       type: object
       required:
-        - version
+        - tagVersion
         - caption
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
           allOf:
@@ -1573,14 +1573,14 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - caption
         - status
       properties:
         id: # factureId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
@@ -1616,9 +1616,9 @@ components:
       description: DTO сохранения печатного формата
       type: object
       required:
-        - version
+        - tagVersion
       properties:
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
           allOf:
@@ -1650,7 +1650,7 @@ components:
       type: object
       required:
         - id
-        - version
+        - tagVersion
         - createdAt
         - caption
         - length
@@ -1659,7 +1659,7 @@ components:
       properties:
         id: # formatId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
-        version:
+        tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
