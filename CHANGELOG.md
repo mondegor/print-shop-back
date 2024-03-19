@@ -18,6 +18,9 @@
     - идентификатор SubmitForm был заменён с int на uuid;
     - добавлена таблица `submit_forms_compiled` для хранения собранных форм в json формате;
     - добавлен `ActivityStatus`;
+    - `FormElement.Required` теперь является необязательным;
+    - при создании модуля добавлены дополнительные опции и функции
+      `initUnitSubmitFormEnvironment`, `initUnitFormElementEnvironment` чтобы избежать дублирования ресурсов;
 - Переименованы методы:
     - `NewFetchParams -> NewSelectParams`;
     - `GetMetaData -> NewOrderMeta`;

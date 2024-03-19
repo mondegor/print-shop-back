@@ -24,7 +24,7 @@ type (
 		Caption         string          `json:"caption" upd:"element_caption"`
 		TemplateID      mrtype.KeyInt32 `json:"templateId"`      // template_id
 		TemplateVersion int32           `json:"templateVersion"` // template_version
-		Required        bool            `json:"elementRequired"`
+		Required        *bool           `json:"elementRequired" upd:"element_required"`
 
 		Type      enums.ElementType      `json:"elementType"` // element_templates::element_type
 		Detailing enums.ElementDetailing `json:"detailing"`   // element_templates::element_detailing

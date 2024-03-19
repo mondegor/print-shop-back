@@ -13,7 +13,31 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitFormElement(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
+func initUnitFormElementEnvironment(ctx context.Context, opts factory.Options) (formElementOptions, error) {
+	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.FormElement{})
+
+	if err != nil {
+		return formElementOptions{}, err
+	}
+
+	storage := repository.NewFormElementPostgres(
+		opts.PostgresAdapter,
+		mrpostgres.NewSqlBuilderSelectCondition(
+			mrpostgres.NewSqlBuilderWhere(),
+		),
+		mrpostgres.NewSqlBuilderUpdateWithMeta(
+			entityMetaUpdate,
+			mrpostgres.NewSqlBuilderSet(),
+			nil,
+		),
+	)
+
+	return formElementOptions{
+		storage: storage,
+	}, nil
+}
+
+func createUnitFormElement(ctx context.Context, opts moduleOptions) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
 	if c, err := newUnitFormElement(ctx, opts); err != nil {
@@ -25,22 +49,10 @@ func createUnitFormElement(ctx context.Context, opts factory.Options) ([]mrserve
 	return list, nil
 }
 
-func newUnitFormElement(ctx context.Context, opts factory.Options) (*http_v1.FormElement, error) {
-	_, storageForm, err := newUnitSubmitFormStorage(ctx, opts)
-
-	if err != nil {
-		return nil, err
-	}
-
-	storage, err := newUnitFormElementStorage(ctx, opts)
-
-	if err != nil {
-		return nil, err
-	}
-
+func newUnitFormElement(ctx context.Context, opts moduleOptions) (*http_v1.FormElement, error) {
 	useCase := usecase.NewFormElement(
-		storage,
-		storageForm,
+		opts.formElement.storage,
+		opts.submitForm.storage,
 		opts.ElementTemplateAPI,
 		opts.OrdererAPI,
 		opts.EventEmitter,
@@ -53,24 +65,4 @@ func newUnitFormElement(ctx context.Context, opts factory.Options) (*http_v1.For
 	)
 
 	return controller, nil
-}
-
-func newUnitFormElementStorage(ctx context.Context, opts factory.Options) (*repository.FormElementPostgres, error) {
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.FormElement{})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return repository.NewFormElementPostgres(
-		opts.PostgresAdapter,
-		mrpostgres.NewSqlBuilderSelectCondition(
-			mrpostgres.NewSqlBuilderWhere(),
-		),
-		mrpostgres.NewSqlBuilderUpdateWithMeta(
-			entityMetaUpdate,
-			mrpostgres.NewSqlBuilderSet(),
-			nil,
-		),
-	), nil
 }

@@ -5,10 +5,10 @@ go 1.21
 require (
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mondegor/go-components v0.6.0
-	github.com/mondegor/go-storage v0.10.0
-	github.com/mondegor/go-sysmess v0.8.0
-	github.com/mondegor/go-webcore v0.15.0
+	github.com/mondegor/go-components v0.6.1
+	github.com/mondegor/go-storage v0.10.1
+	github.com/mondegor/go-sysmess v0.8.2
+	github.com/mondegor/go-webcore v0.15.2
 	github.com/oklog/run v1.1.0
 )
 

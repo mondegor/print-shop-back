@@ -76,7 +76,7 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 		TemplateID: request.TemplateID,
 		ParamName:  request.ParamName,
 		Caption:    request.Caption,
-		Required:   request.Required,
+		Required:   mrtype.BoolPointer(request.Required),
 	}
 
 	if itemID, err := ht.useCase.Create(r.Context(), item); err != nil {

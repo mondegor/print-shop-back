@@ -13,61 +13,20 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 )
 
-func createUnitSubmitForm(ctx context.Context, opts factory.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitSubmitForm(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitSubmitForm(ctx context.Context, opts factory.Options) (*http_v1.SubmitForm, error) {
-	storageElement, err := newUnitFormElementStorage(ctx, opts)
-
-	if err != nil {
-		return nil, err
-	}
-
-	metaOrderBy, storage, err := newUnitSubmitFormStorage(ctx, opts)
-
-	if err != nil {
-		return nil, err
-	}
-
-	useCase := usecase.NewSubmitForm(
-		storage,
-		storageElement,
-		opts.EventEmitter,
-		opts.UsecaseHelper,
-	)
-	controller := http_v1.NewSubmitForm(
-		opts.RequestParser,
-		opts.ResponseSender,
-		useCase,
-		metaOrderBy,
-	)
-
-	return controller, nil
-}
-
-func newUnitSubmitFormStorage(ctx context.Context, opts factory.Options) (*mrsql.EntityMetaOrderBy, *repository.SubmitFormPostgres, error) {
+func initUnitSubmitFormEnvironment(ctx context.Context, opts factory.Options) (submitFormOptions, error) {
 	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.SubmitForm{})
 
 	if err != nil {
-		return nil, nil, err
+		return submitFormOptions{}, err
 	}
 
 	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.SubmitForm{})
 
 	if err != nil {
-		return nil, nil, err
+		return submitFormOptions{}, err
 	}
 
-	return metaOrderBy, repository.NewSubmitFormPostgres(
+	storage := repository.NewSubmitFormPostgres(
 		opts.PostgresAdapter,
 		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
@@ -79,5 +38,39 @@ func newUnitSubmitFormStorage(ctx context.Context, opts factory.Options) (*mrsql
 			mrpostgres.NewSqlBuilderSet(),
 			nil,
 		),
-	), nil
+	)
+
+	return submitFormOptions{
+		metaOrderBy: metaOrderBy,
+		storage:     storage,
+	}, nil
+}
+
+func createUnitSubmitForm(ctx context.Context, opts moduleOptions) ([]mrserver.HttpController, error) {
+	var list []mrserver.HttpController
+
+	if c, err := newUnitSubmitForm(ctx, opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, c)
+	}
+
+	return list, nil
+}
+
+func newUnitSubmitForm(ctx context.Context, opts moduleOptions) (*http_v1.SubmitForm, error) {
+	useCase := usecase.NewSubmitForm(
+		opts.submitForm.storage,
+		opts.formElement.storage,
+		opts.EventEmitter,
+		opts.UsecaseHelper,
+	)
+	controller := http_v1.NewSubmitForm(
+		opts.RequestParser,
+		opts.ResponseSender,
+		useCase,
+		opts.submitForm.metaOrderBy,
+	)
+
+	return controller, nil
 }

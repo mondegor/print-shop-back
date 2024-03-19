@@ -239,11 +239,9 @@ func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElemen
 }
 
 func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElement) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntityWith(row, func(s mrstorage.SqlBuilderSet) mrstorage.SqlBuilderPartFunc {
-		return s.Field("element_required", row.Required)
-	})
+	set, err := re.sqlUpdate.SetFromEntity(row)
 
-	if err != nil {
+	if err != nil || set.Empty() {
 		return 0, err
 	}
 
