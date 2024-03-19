@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.1
+  version: v0.2.1
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -39,6 +39,9 @@ tags:
 
   - name: CompanyPage
     description: Public API Companies' pages
+
+  - name: Controls.SubmitForm
+    description: Public API Controls submit forms
 
   - name: FileStation
     description: Public API Files and images
@@ -96,6 +99,86 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/CompanyPage.PublicAPI.Response.Model.CompanyPage"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/submit-forms:
+    get:
+      summary: Метод получения списка форм
+      description: |-
+        Метод предназначен для получения списка всех форм, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - caption;
+
+        Возможные значения `App.Request.Query.ListSorter.SortField`:
+        - caption,default,asc;
+        - createdAt;
+        - updatedAt;
+
+        Возможные значения `App.Request.Query.ListPager.PageSize`:
+        - от 1 до 1000 (default: 50)
+
+      operationId: getSubmitFormList
+      tags:
+        - Controls.SubmitForm
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+      responses:
+        "200":
+          description: Получен список форм
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                  $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.FormList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/controls/submit-forms/{paramName}:
+    get:
+      summary: Метод получения формы
+      description: Метод предназначен для получения формы из БД
+      operationId: getSubmitForm
+      tags:
+        - Controls.SubmitForm
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Controls.SubmitForms.PublicAPI.Request.Path.FormParamName"
+
+      responses:
+        "200":
+          description: Получена информация о форме
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
         "404":
           $ref: "#/components/responses/App.ResponseJson.Error404"
         "500":
@@ -163,6 +246,15 @@ components:
         maxLength: 64
       example: "printrobot"
 
+    Controls.SubmitForms.PublicAPI.Request.Path.FormParamName:
+      description: Идентификатор формы
+      name: paramName
+      in: path
+      required: true
+      schema:
+        type: string
+      example: "form-name"
+
     FileStation.PublicAPI.Request.Path.FilePath:
       description: Относительный путь к файлу
       name: filePath
@@ -175,6 +267,16 @@ components:
       example: "category/item-name.jpg"
 
   schemas:
+    App.Field.RewriteName:
+      description: |
+        Человеко понятный URL
+        - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
+      type: string
+      # pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
+      minLength: 4
+      maxLength: 32
+      example: "rewrite-name"
+
     App.Response.Model.BinaryImage:
       description: Бинарный файл одного из типов - JPEG, PNG
       type: string
@@ -299,6 +401,24 @@ components:
           type: string
           maxLength: 256
           example: "https://site.localhost/"
+
+    Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm:
+      description: |-
+        DTO - собранная форма пользовательского интерфейса
+      type: object
+      required:
+        - id
+        - paramName
+        - caption
+      properties:
+        id: # formId
+          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+        paramName:
+          $ref: "#/components/schemas/App.Field.VariableCamelCase"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - example: "Листовая продукция"
 
   responses:
     App.ResponseJson.Error400:

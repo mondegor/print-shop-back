@@ -29,7 +29,7 @@ func NewLaminateTypePostgres(
 	}
 }
 
-func (re *LaminateTypePostgres) NewFetchParams(params entity.LaminateTypeParams) mrstorage.SqlSelectParams {
+func (re *LaminateTypePostgres) NewSelectParams(params entity.LaminateTypeParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(

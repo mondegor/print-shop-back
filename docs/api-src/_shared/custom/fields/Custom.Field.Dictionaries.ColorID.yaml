@@ -1,6 +1,0 @@
-Custom.Field.Dictionaries.ColorID:
-  description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
-  type: integer
-  format: int32
-  minimum: 1
-  example: 2

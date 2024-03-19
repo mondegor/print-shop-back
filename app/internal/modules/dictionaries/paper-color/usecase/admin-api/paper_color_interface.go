@@ -20,7 +20,7 @@ type (
 	}
 
 	PaperColorStorage interface {
-		NewFetchParams(params entity.PaperColorParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.PaperColorParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.PaperColor, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperColor, error)

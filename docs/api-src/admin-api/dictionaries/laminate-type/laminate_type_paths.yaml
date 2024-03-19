@@ -54,7 +54,7 @@
       Метод предназначен для создания информации о новом типе ламината в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: createLaminateType
     tags:
@@ -80,10 +80,8 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -130,7 +128,7 @@
       Метод предназначен для сохранения информации о типе ламината в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: storeLaminateType
     tags:
@@ -155,8 +153,6 @@
       "204":
         description: Информация о типе ламината успешно сохранена
       "400":
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -195,7 +191,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/dictionaries/laminate-types/{typeId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса типа ламината
     description: |-
       Метод предназначен для изменения статуса типа ламината в БД
@@ -227,8 +223,6 @@
       "204":
         description: Статус типа ламината успешно изменён
       "400":
-        # Указанный статус содержит недопустимое значение
-        # В данный статус переключение невозможно
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"

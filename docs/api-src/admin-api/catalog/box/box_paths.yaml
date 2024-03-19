@@ -60,7 +60,7 @@
 
       **Ограничения и ошибки полей:**
       - Article: required,unique,min=3,max=32,pattern=article
-      - Caption: required,max=64
+      - caption: required,max=64
       - Length: required,gte=1,lte=10000000
       - Depth: required,gte=1,lte=10000000
 
@@ -88,7 +88,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
@@ -138,7 +138,7 @@
       **Ограничения и ошибки полей:**
       - Version: required,gte=1
       - Article: omitempty,unique,min=3,max=32,pattern=article
-      - Caption: omitempty,max=64
+      - caption: omitempty,max=64
       - Length: omitempty,gte=1,lte=10000000
       - Depth: omitempty,gte=1,lte=10000000
 
@@ -203,7 +203,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/catalog/boxes/{boxId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса коробки
     description: |-
       Метод предназначен для изменения статуса коробки в БД

@@ -5,6 +5,9 @@ mrcmd_func_openapi_build_pub() {
 
   local companyPageDir="${sectionDir}/company-page"
 
+  local controlsDir="${sectionDir}/controls"
+  local submitFormDir="${controlsDir}/submit-form"
+
   local fileStationDir="${sectionDir}/file-station"
 
   # OPENAPI_VERSION="3.0.3"
@@ -22,6 +25,7 @@ mrcmd_func_openapi_build_pub() {
     "${sharedDir}/system/tags.yaml"
 
     "${companyPageDir}/tags.yaml"
+    "${submitFormDir}/tags.yaml"
     "${fileStationDir}/tags.yaml"
   )
 
@@ -29,6 +33,7 @@ mrcmd_func_openapi_build_pub() {
     "${sharedDir}/system/paths.yaml"
 
     "${companyPageDir}/company_page_paths.yaml"
+    "${submitFormDir}/submit_form_paths.yaml"
     "${fileStationDir}/paths.yaml"
   )
 
@@ -54,6 +59,7 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
     "${companyPageDir}/company_page_parameters.yaml"
+    "${submitFormDir}/submit_form_parameters.yaml"
     "${fileStationDir}/parameters.yaml"
   )
 
@@ -77,6 +83,7 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/fields/App.Field.Int32.yaml"
     # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
+    "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
     # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
@@ -100,11 +107,13 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemInt32.yaml"
 
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
 
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
@@ -112,15 +121,15 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.ColorID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.FactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.ParamName.yaml"
 
     "${sharedDir}/system/schemas.yaml"
 
     "${companyPageDir}/company_page_schemas.yaml"
+    "${submitFormDir}/submit_form_schemas.yaml"
     "${fileStationDir}/schemas.yaml"
   )
 

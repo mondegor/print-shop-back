@@ -17,10 +17,6 @@ type (
 		storage       PaperColorStorage
 		usecaseHelper *mrcore.UsecaseHelper
 	}
-
-	PaperColorStorage interface {
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
-	}
 )
 
 func NewPaperColor(
@@ -37,7 +33,7 @@ func (uc *PaperColor) CheckingAvailability(ctx context.Context, itemID mrtype.Ke
 	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
 	if itemID < 1 {
-		return dictionaries.FactoryErrPaperColorNotFound.New(itemID)
+		return dictionaries.FactoryErrPaperColorRequired.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, itemID); err != nil {

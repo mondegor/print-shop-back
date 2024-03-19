@@ -5,9 +5,13 @@
       Метод предназначен для получения списка всех форм, сохраненных в БД
 
       Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - rewriteName;
+      - paramName;
       - caption;
 
       Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - rewriteName;
+      - paramName;
       - caption,default,asc;
       - createdAt;
       - updatedAt;
@@ -53,7 +57,10 @@
       Метод предназначен для создания информации о новой форме в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - rewriteName: required,unique,min=4,max=32,pattern=rewrite_name
+      - paramName: required,unique,min=4,max=32,pattern=variable
+      - caption: required,max=128
+      - detailing: required (Custom.Enum.FormElementDetailing)
 
     operationId: createSubmitForm
     tags:
@@ -79,14 +86,8 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
-        # Название переменной записи не может быть пустым
-        # Указанное название записи уже существует
-        # Название переменной записи не может быть более 32 символов
-        # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 128 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -117,7 +118,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -127,13 +128,16 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  put:
+  patch:
     summary: Метод сохранения формы
     description: |-
       Метод предназначен для сохранения информации о форме в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - tagVersion: required,gte=1 | ErrVersionInvalid
+      - rewriteName: omitempty,unique,min=4,max=32,pattern=rewrite_name
+      - paramName: omitempty,unique,min=4,max=32,pattern=variable
+      - caption: omitempty,max=128
 
     operationId: storeSubmitForm
     tags:
@@ -158,12 +162,6 @@
       "204":
         description: Информация о форме успешно сохранена
       "400":
-        # Название переменной записи не может быть пустым
-        # Указанное название записи уже существует
-        # Название переменной записи не может быть более 32 символов
-        # Название переменной записи должны соответствовать следующему шаблону "[a-zA-Z][a-zA-Z0-9]+"
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 128 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -202,7 +200,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/controls/submit-forms/{formId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса формы
     description: |-
       Метод предназначен для изменения статуса формы в БД
@@ -234,9 +232,105 @@
       "204":
         description: Статус формы успешно изменён
       "400":
-        # Указанный статус содержит недопустимое значение
-        # В данный статус переключение невозможно
         $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/submit-forms/{formId}/compile:
+  post:
+    summary: Метод компиляции формы в json файл
+    description: |-
+      Метод предназначен для компиляции формы и её элеменов
+      в готовый json файл для его использования в тестовой среде
+
+    operationId: buildSubmitFormForTest
+    tags:
+      - Controls.SubmitForm
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
+
+    responses:
+      "204":
+        description: json файл успешно собран и переведён в статус тестирования
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/submit-forms/{formId}/publish:
+  patch:
+    summary: Метод публикации собранного json файла
+    description: |-
+      Метод предназначен для публикации собранной формы, которая находится на этапе тестирования
+
+      **Ограничения и ошибки полей:**
+      - запись может быть только переключена из TESTING -> PUBLISHED,
+        если указанная запись не в статусе TESTING, то формируется 400 ошибка;
+
+    operationId: publishSubmitForm
+    tags:
+      - Controls.SubmitForm
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
+
+    responses:
+      "204":
+        description: Статус json файла успешно установлен в режим публикации
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/submit-forms/{formId}/{version}/json:
+  get:
+    summary: Метод получения json файла формы
+    description: Метод предназначен для получения json файла откомпилированной формы из БД
+    operationId: getCompiledSubmitForm
+    tags:
+      - Controls.SubmitForm
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
+      - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormVersion"
+
+    responses:
+      "200":
+        description: Json файл формы получен
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.JsonFile"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":

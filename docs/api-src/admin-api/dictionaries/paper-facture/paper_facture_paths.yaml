@@ -54,7 +54,7 @@
       Метод предназначен для создания информации о новой фактуре бумаги в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: createPaperFacture
     tags:
@@ -80,10 +80,8 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -143,7 +141,7 @@
       Метод предназначен для сохранения информации о фактуре бумаги в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: storePaperFacture
     tags:
@@ -168,8 +166,6 @@
       "204":
         description: Информация о фактуре бумаги успешно сохранена
       "400":
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -208,7 +204,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/dictionaries/paper-factures/{factureId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса фактуры бумаги
     description: |-
       Метод предназначен для изменения статуса фактуры бумаги в БД
@@ -240,8 +236,6 @@
       "204":
         description: Статус фактуры бумаги успешно изменён
       "400":
-        # Указанный статус содержит недопустимое значение
-        # В данный статус переключение невозможно
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"

@@ -27,7 +27,7 @@ func NewCompanyPagePostgres(
 	}
 }
 
-func (re *CompanyPagePostgres) NewFetchParams(params entity.CompanyPageParams) mrstorage.SqlSelectParams {
+func (re *CompanyPagePostgres) NewSelectParams(params entity.CompanyPageParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(

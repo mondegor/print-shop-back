@@ -6,7 +6,8 @@ import (
 	factory_catalog_box "print-shop-back/internal/modules/catalog/box/factory"
 	factory_catalog_laminate "print-shop-back/internal/modules/catalog/laminate/factory"
 	factory_catalog_paper "print-shop-back/internal/modules/catalog/paper/factory"
-	factory_controls "print-shop-back/internal/modules/controls/factory"
+	factory_controls_elementtemplate "print-shop-back/internal/modules/controls/element-template/factory"
+	factory_controls_submitform "print-shop-back/internal/modules/controls/submit-form/factory"
 	factory_dictionaries_laminatetype "print-shop-back/internal/modules/dictionaries/laminate-type/factory"
 	factory_dictionaries_papercolor "print-shop-back/internal/modules/dictionaries/paper-color/factory"
 	factory_dictionaries_paperfacture "print-shop-back/internal/modules/dictionaries/paper-facture/factory"
@@ -55,7 +56,8 @@ type (
 		CatalogBoxModule               factory_catalog_box.Options
 		CatalogLaminateModule          factory_catalog_laminate.Options
 		CatalogPaperModule             factory_catalog_paper.Options
-		ControlsModule                 factory_controls.Options
+		ControlsElementTemplateModule  factory_controls_elementtemplate.Options
+		ControlsSubmitFormModule       factory_controls_submitform.Options
 		DictionariesLaminateTypeModule factory_dictionaries_laminatetype.Options
 		DictionariesPaperColorModule   factory_dictionaries_papercolor.Options
 		DictionariesPaperFactureModule factory_dictionaries_paperfacture.Options
@@ -75,9 +77,9 @@ type (
 		ListSorter *mrparser.ListSorter
 		ListPager  *mrparser.ListPager
 		String     *mrparser.String
-		// UUID       *mrparser.UUID
-		Validator *mrparser.Validator
-		FileJson  *mrparser.File
-		Image     *mrparser.Image
+		UUID       *mrparser.UUID
+		Validator  *mrparser.Validator
+		FileJson   *mrparser.File
+		Image      *mrparser.Image
 	}
 )

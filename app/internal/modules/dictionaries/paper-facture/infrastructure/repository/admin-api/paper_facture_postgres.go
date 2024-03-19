@@ -29,7 +29,7 @@ func NewPaperFacturePostgres(
 	}
 }
 
-func (re *PaperFacturePostgres) NewFetchParams(params entity.PaperFactureParams) mrstorage.SqlSelectParams {
+func (re *PaperFacturePostgres) NewSelectParams(params entity.PaperFactureParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(

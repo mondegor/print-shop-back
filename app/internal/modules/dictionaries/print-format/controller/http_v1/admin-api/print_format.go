@@ -7,12 +7,10 @@ import (
 	entity "print-shop-back/internal/modules/dictionaries/print-format/entity/admin-api"
 	usecase "print-shop-back/internal/modules/dictionaries/print-format/usecase/admin-api"
 	"print-shop-back/pkg/modules/dictionaries"
-	"strconv"
+	"print-shop-back/pkg/shared/view"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
-
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
@@ -56,7 +54,7 @@ func (ht *PrintFormat) Handlers() []mrserver.HttpHandler {
 		{http.MethodPut, printFormatItemURL, "", ht.Store},
 		{http.MethodDelete, printFormatItemURL, "", ht.Remove},
 
-		{http.MethodPut, printFormatItemChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPatch, printFormatItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -119,12 +117,8 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 		return ht.sender.Send(
 			w,
 			http.StatusCreated,
-			SuccessCreatedItemResponse{
-				ItemID: strconv.Itoa(int(itemID)),
-				Message: mrlang.Ctx(r.Context()).TranslateMessage(
-					"msgDictionariesPrintFormatSuccessCreated",
-					"entity has been success created",
-				),
+			view.SuccessCreatedItemInt32Response{
+				ItemID: itemID,
 			},
 		)
 	}
@@ -153,7 +147,7 @@ func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *PrintFormat) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangeItemStatusRequest{}
+	request := view.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

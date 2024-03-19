@@ -1,0 +1,79 @@
+/v1/controls/submit-forms:
+  get:
+    summary: Метод получения списка форм
+    description: |-
+      Метод предназначен для получения списка всех форм, сохраненных в БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - caption;
+
+      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - caption,default,asc;
+      - createdAt;
+      - updatedAt;
+
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
+    operationId: getSubmitFormList
+    tags:
+      - Controls.SubmitForm
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список форм
+        content:
+          application/json;charset=UTF-8:
+            schema:
+                $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.FormList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/controls/submit-forms/{paramName}:
+  get:
+    summary: Метод получения формы
+    description: Метод предназначен для получения формы из БД
+    operationId: getSubmitForm
+    tags:
+      - Controls.SubmitForm
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Controls.SubmitForms.PublicAPI.Request.Path.FormParamName"
+
+    responses:
+      "200":
+        description: Получена информация о форме
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

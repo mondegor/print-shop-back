@@ -6,7 +6,8 @@ import (
 	factory_catalog_box_adm "print-shop-back/internal/modules/catalog/box/factory/admin-api"
 	factory_catalog_laminate_adm "print-shop-back/internal/modules/catalog/laminate/factory/admin-api"
 	factory_catalog_paper_adm "print-shop-back/internal/modules/catalog/paper/factory/admin-api"
-	factory_controls_adm "print-shop-back/internal/modules/controls/factory/admin-api"
+	factory_controls_elementtemplate_adm "print-shop-back/internal/modules/controls/element-template/factory/admin-api"
+	factory_controls_submitform_adm "print-shop-back/internal/modules/controls/submit-form/factory/admin-api"
 	factory_dictionaries_laminatetype_adm "print-shop-back/internal/modules/dictionaries/laminate-type/factory/admin-api"
 	factory_dictionaries_papercolor_adm "print-shop-back/internal/modules/dictionaries/paper-color/factory/admin-api"
 	factory_dictionaries_paperfacture_adm "print-shop-back/internal/modules/dictionaries/paper-facture/factory/admin-api"
@@ -66,7 +67,15 @@ func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapt
 		)
 	}
 
-	if controllers, err := factory_controls_adm.CreateModule(ctx, opts.ControlsModule); err != nil {
+	if controllers, err := factory_controls_elementtemplate_adm.CreateModule(ctx, opts.ControlsElementTemplateModule); err != nil {
+		return nil, err
+	} else {
+		router.Register(
+			mrfactory.WithMiddlewareCheckAccess(ctx, controllers, sectionAdminAPI, opts.AccessControl)...,
+		)
+	}
+
+	if controllers, err := factory_controls_submitform_adm.CreateModule(ctx, opts.ControlsSubmitFormModule); err != nil {
 		return nil, err
 	} else {
 		router.Register(

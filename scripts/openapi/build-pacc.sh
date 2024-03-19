@@ -72,6 +72,7 @@ mrcmd_func_openapi_build_pacc() {
     # "${sharedDir}/components/fields/App.Field.Int32.yaml"
     # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
+    # "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
     # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
@@ -100,6 +101,7 @@ mrcmd_func_openapi_build_pacc() {
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
 
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
@@ -107,11 +109,10 @@ mrcmd_func_openapi_build_pacc() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.ColorID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.FactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.ParamName.yaml"
 
     "${sharedDir}/system/schemas.yaml"
 

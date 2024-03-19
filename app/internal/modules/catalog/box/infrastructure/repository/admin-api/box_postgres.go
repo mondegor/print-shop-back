@@ -32,7 +32,7 @@ func NewBoxPostgres(
 	}
 }
 
-func (re *BoxPostgres) NewFetchParams(params entity.BoxParams) mrstorage.SqlSelectParams {
+func (re *BoxPostgres) NewSelectParams(params entity.BoxParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(

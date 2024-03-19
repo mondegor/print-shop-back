@@ -8,10 +8,9 @@ import (
 	usecase "print-shop-back/internal/modules/catalog/paper/usecase/admin-api"
 	usecase_shared "print-shop-back/internal/modules/catalog/paper/usecase/shared"
 	"print-shop-back/pkg/modules/dictionaries"
-	"strconv"
+	"print-shop-back/pkg/shared/view"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
@@ -56,7 +55,7 @@ func (ht *Paper) Handlers() []mrserver.HttpHandler {
 		{http.MethodPut, paperItemURL, "", ht.Store},
 		{http.MethodDelete, paperItemURL, "", ht.Remove},
 
-		{http.MethodPut, paperItemChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPatch, paperItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -128,12 +127,8 @@ func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
 		return ht.sender.Send(
 			w,
 			http.StatusCreated,
-			SuccessCreatedItemResponse{
-				ItemID: strconv.Itoa(int(itemID)),
-				Message: mrlang.Ctx(r.Context()).TranslateMessage(
-					"msgCatalogPaperSuccessCreated",
-					"entity has been success created",
-				),
+			view.SuccessCreatedItemInt32Response{
+				ItemID: itemID,
 			},
 		)
 	}
@@ -168,7 +163,7 @@ func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *Paper) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangeItemStatusRequest{}
+	request := view.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

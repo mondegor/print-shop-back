@@ -1,5 +1,5 @@
 Custom.Field.Dictionaries.PrintFormatID:
-  description: Идентификатор печатного формата
+  description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
   type: integer
   format: int32
   minimum: 1

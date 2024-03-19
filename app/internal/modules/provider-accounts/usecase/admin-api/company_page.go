@@ -29,7 +29,7 @@ func NewCompanyPage(
 }
 
 func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) ([]entity.CompanyPage, int64, error) {
-	fetchParams := uc.storage.NewFetchParams(params)
+	fetchParams := uc.storage.NewSelectParams(params)
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {

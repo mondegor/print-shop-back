@@ -1,6 +1,8 @@
 package http_v1
 
-import entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+import (
+	"print-shop-back/pkg/modules/provider-accounts/enums"
+)
 
 type (
 	StoreCompanyPageRequest struct {
@@ -10,6 +12,6 @@ type (
 	}
 
 	ChangePublicStatusRequest struct {
-		Status entity_shared.PublicStatus `json:"status" validate:"required"`
+		Status enums.PublicStatus `json:"status" validate:"required"`
 	}
 )

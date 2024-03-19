@@ -41,7 +41,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-                $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList"
+                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -58,7 +58,7 @@
       - template.paramName: required,unique,min=4,max=32,pattern=variable
       - template.caption: required,max=64
       - template.elementType: required (Custom.Enum.FormElementType)
-      - template.elementDetailing: required (Custom.Enum.FormElementDetailing)
+      - template.detailing: required (Custom.Enum.FormElementDetailing)
       - attachment: required,size=1Mb; ext=[.json]
 
     operationId: createElementTemplate
@@ -77,7 +77,7 @@
       content:
         multipart/form-data:
           schema:
-            $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachment"
+            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttachment"
 
     responses:
       "201":
@@ -85,7 +85,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
@@ -109,7 +109,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
     responses:
       "200":
@@ -117,7 +117,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
+              $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -127,7 +127,7 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  put:
+  patch:
     summary: Метод сохранения шаблона элемента формы
     description: |-
       Метод предназначен для сохранения шаблона элемента формы в БД
@@ -147,14 +147,14 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
     requestBody:
       required: true
       content:
         multipart/form-data:
           schema:
-            $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachment"
+            $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplateWithAttachment"
 
     responses:
       "204":
@@ -183,7 +183,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
     responses:
       "204":
@@ -198,7 +198,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/controls/element-templates/{templateId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса шаблона элемента формы
     description: |-
       Метод предназначен для изменения статуса шаблона элемента формы в БД
@@ -217,7 +217,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
     requestBody:
       required: true
@@ -254,11 +254,11 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/Controls.ElementTemplate.AdminAPI.Request.Path.TemplateID"
+      - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
     responses:
       "200":
-        description: Json файл получен
+        description: Json файл шаблона получен
         content:
           application/json;charset=UTF-8:
             schema:

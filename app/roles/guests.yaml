@@ -3,5 +3,5 @@ privileges:
   - apiPublic
 
 permissions:
-  - modFileStationImageProxy
+  - modFileStation
   - modProviderAccountsCompanyPage

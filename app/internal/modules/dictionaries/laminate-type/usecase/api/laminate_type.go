@@ -17,10 +17,6 @@ type (
 		storage       LaminateTypeStorage
 		usecaseHelper *mrcore.UsecaseHelper
 	}
-
-	LaminateTypeStorage interface {
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
-	}
 )
 
 func NewLaminateType(
@@ -37,7 +33,7 @@ func (uc *LaminateType) CheckingAvailability(ctx context.Context, itemID mrtype.
 	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
 	if itemID < 1 {
-		return dictionaries.FactoryErrLaminateTypeNotFound.New(itemID)
+		return dictionaries.FactoryErrLaminateTypeRequired.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, itemID); err != nil {

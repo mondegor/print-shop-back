@@ -51,7 +51,7 @@ Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
     - status
   properties:
     id: # colorId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:

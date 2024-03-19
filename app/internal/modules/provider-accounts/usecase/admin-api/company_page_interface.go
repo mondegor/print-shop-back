@@ -13,7 +13,7 @@ type (
 	}
 
 	CompanyPageStorage interface {
-		NewFetchParams(params entity.CompanyPageParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.CompanyPageParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.CompanyPage, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 	}

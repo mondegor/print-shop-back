@@ -1,23 +1,31 @@
-Controls.SubmitForm.AdminAPI.Request.Model.CreateFormElement:
-  description: DTO сохранения элемента формы
+Controls.SubmitForms.AdminAPI.Field.ElementRequired:
+  description: Обязательность заполнения элемента в форме
+  type: boolean
+  example: true
+
+Controls.SubmitForms.AdminAPI.Request.Model.CreateFormElement:
+  description: DTO добавления элемента формы
   type: object
   required:
+    - formId
     - templateId
+    - elementRequired
   properties:
+    formId:
+      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Процесс печати"
     templateId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
+      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
     elementRequired:
-      description: Обязательность заполнения элемента в форме
-      type: boolean
-      example: true
+      $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
 
-Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement:
+Controls.SubmitForms.AdminAPI.Request.Model.StoreFormElement:
   description: DTO сохранения элемента формы
   type: object
   required:
@@ -25,33 +33,24 @@ Controls.SubmitForm.AdminAPI.Request.Model.StoreFormElement:
   properties:
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    formId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Процесс печати"
     elementRequired:
-      description: Обязательность заполнения элемента в форме
-      type: boolean
-      example: true
+      $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
 
-Controls.SubmitForm.AdminAPI.Response.Model.FormElementList:
-  description: DTO - список элементов формы
-  type: array
-  items:
-    $ref: "#/components/schemas/Controls.SubmitForm.AdminAPI.Response.Model.FormElement"
-
-Controls.SubmitForm.AdminAPI.Response.Model.FormElement:
+Controls.SubmitForms.AdminAPI.Response.Model.FormElement:
   description: |-
     DTO - элемент формы пользовательского интерфейса
     Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
   type: object
   properties:
     id: # elementId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.ElementID"
+      $ref: "#/components/schemas/Custom.Field.Controls.ElementID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
@@ -59,21 +58,22 @@ Controls.SubmitForm.AdminAPI.Response.Model.FormElement:
     updatedAt:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Процесс печати"
+    templateId:
+      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+    templateVersion:
+      description: Последняя актуальная версия шаблона
+      type: integer
+      minimum: 1
+      example: 5
+    elementRequired:
+      $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
     elementType:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
-    elementDetailing:
+    detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-    elementRequired:
-      description: Обязательность заполнения элемента
-      type: boolean
-      example: true
-    elementBody:
-      description: Json объект элемента формы
-      type: string
-      maxLength: 65536 # 64Kb
-      example: "{\"json\": \"object\"}"

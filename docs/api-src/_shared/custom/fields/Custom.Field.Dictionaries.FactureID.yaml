@@ -1,6 +1,0 @@
-Custom.Field.Dictionaries.FactureID:
-  description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
-  type: integer
-  format: int32
-  minimum: 1
-  example: 2

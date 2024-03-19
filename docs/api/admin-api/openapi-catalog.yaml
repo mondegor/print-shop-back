@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.1
+  version: v0.2.1
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -106,7 +106,7 @@ paths:
 
         **Ограничения и ошибки полей:**
         - Article: required,unique,min=3,max=32,pattern=article
-        - Caption: required,max=64
+        - caption: required,max=64
         - Length: required,gte=1,lte=10000000
         - Depth: required,gte=1,lte=10000000
 
@@ -134,7 +134,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -184,7 +184,7 @@ paths:
         **Ограничения и ошибки полей:**
         - Version: required,gte=1
         - Article: omitempty,unique,min=3,max=32,pattern=article
-        - Caption: omitempty,max=64
+        - caption: omitempty,max=64
         - Length: omitempty,gte=1,lte=10000000
         - Depth: omitempty,gte=1,lte=10000000
 
@@ -249,7 +249,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/catalog/boxes/{boxId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса коробки
       description: |-
         Метод предназначен для изменения статуса коробки в БД
@@ -352,7 +352,7 @@ paths:
 
         **Ограничения и ошибки полей:**
         - Article: required,unique,min=3,max=32,pattern=article
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createLaminate
       tags:
@@ -378,15 +378,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Артикул не может быть пустым
-          # Указанный артикул уже существует
-          # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
-          # Тип ламината содержит недопустимое значение
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -433,7 +426,7 @@ paths:
         Метод предназначен для сохранения информации о ламинате в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storeLaminate
       tags:
@@ -458,13 +451,6 @@ paths:
         "204":
           description: Информация о ламинате успешно сохранена
         "400":
-          # Артикул не может быть пустым
-          # Указанный артикул уже существует
-          # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
-          # Тип ламината содержит недопустимое значение
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -503,7 +489,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/catalog/laminates/{laminateId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса ламината
       description: |-
         Метод предназначен для изменения статуса ламината в БД
@@ -535,8 +521,6 @@ paths:
         "204":
           description: Статус ламината успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -611,7 +595,7 @@ paths:
 
         **Ограничения и ошибки полей:**
         - Article: required,unique,min=3,max=32,pattern=article
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createPaper
       tags:
@@ -637,16 +621,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Артикул не может быть пустым
-          # Указанный артикул уже существует
-          # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
-          # Цвет бумаги содержит недопустимое значение
-          # Фактура бумаги содержит недопустимое значение
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -693,7 +669,7 @@ paths:
         Метод предназначен для сохранения информации о бумаге в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storePaper
       tags:
@@ -718,14 +694,6 @@ paths:
         "204":
           description: Информация о бумаге успешно сохранена
         "400":
-          # Артикул не может быть пустым
-          # Указанный артикул уже существует
-          # Артикул не может быть более 32 символов
-          # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
-          # Цвет бумаги содержит недопустимое значение
-          # Фактура бумаги содержит недопустимое значение
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -764,7 +732,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/catalog/papers/{paperId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса бумаги
       description: |-
         Метод предназначен для изменения статуса бумаги в БД
@@ -796,8 +764,6 @@ paths:
         "204":
           description: Статус бумаги успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -1195,19 +1161,17 @@ components:
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
 
-    App.Response.Model.SuccessCreatedItem:
-      description: DTO результата создания записи
+    App.Response.Model.SuccessCreatedItemInt32:
+      description: DTO результата создания записи (int32 ID)
       type: object
       required:
         - id
       properties:
         id:
           description: Идентификатор созданной записи
-          type: string
-          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
-        message:
-          type: string
-          example: "Запись была успешно создана"
+          type: integer
+          format: int32
+          example: 2147483647
 
     Custom.Enum.PaperSides:
       description: |-
@@ -1221,42 +1185,42 @@ components:
       example: "SAME"
 
     Custom.Field.Dictionaries.Catalog.BoxID:
-      description: Идентификатор коробки
+      description: Идентификатор коробки (модуль - Catalog.Box)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.Catalog.LaminateID:
-      description: Идентификатор ламината
+      description: Идентификатор ламината (модуль - Catalog.Laminate)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.Catalog.PaperID:
-      description: Идентификатор бумаги
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
-
-    Custom.Field.Dictionaries.ColorID:
-      description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
-
-    Custom.Field.Dictionaries.FactureID:
-      description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
+      description: Идентификатор бумаги (модуль - Catalog.Paper)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperColorID:
+      description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperFactureID:
+      description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
       type: integer
       format: int32
       minimum: 1
@@ -1490,9 +1454,9 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         length:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
@@ -1520,9 +1484,9 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         length:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
@@ -1583,9 +1547,9 @@ components:
             - maxLength: 64
             - example: "Мелованная"
         colorId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         length:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:

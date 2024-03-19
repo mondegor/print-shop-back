@@ -27,13 +27,13 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  put:
+  patch:
     summary: Метод сохранения страницы компании
     description: |-
       Метод предназначен для сохранения страницы компании текущего аккаунта в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: storeCompanyPage
     tags:
@@ -57,8 +57,6 @@
       "204":
         description: Информация о страницы компании текущего аккаунта успешно сохранена
       "400":
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 128 символов
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -68,13 +66,13 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/account/company-page/status:
-  put:
+  patch:
     summary: Метод изменения статуса публикации страницы компании
     description: |-
       Метод предназначен для изменения статуса публикации страницы компании текущего аккаунта в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: changeCompanyPageStatus
     tags:
@@ -98,8 +96,6 @@
       "204":
         description: Статус публикации страницы компании текущего аккаунта успешно изменён
       "400":
-        # Указанный статус содержит недопустимое значение
-        # В данный статус переключение невозможно
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -109,13 +105,13 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/account/company-page/logo:
-  put:
+  patch:
     summary: Метод сохранения логотипа компании
     description: |-
       Метод предназначен для загрузки и сохранения нового логотипа компании на её страницу для текущего аккаунта в файловое хранилище
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: uploadCompanyPageLogo
     tags:
@@ -145,7 +141,6 @@
       "204":
         description: Логотип компании текущего аккаунта был сохранён
       "400":
-        # Загруженный логотип некорректен (битый файл, расширение, ...)
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"

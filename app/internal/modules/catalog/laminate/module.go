@@ -1,8 +1,7 @@
 package module
 
 const (
-	Name = "Catalog.Laminate"
-
+	Name       = "Catalog.Laminate"
 	Permission = "modCatalogLaminate"
 	DBSchema   = "printshop_catalog"
 )

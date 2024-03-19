@@ -1,8 +1,8 @@
 package module
 
 const (
-	Name = "FileStation"
+	Name       = "FileStation"
+	Permission = "modFileStation"
 
-	UnitImageProxyName       = Name + ".ImageProxy"
-	UnitImageProxyPermission = "modFileStationImageProxy"
+	UnitImageProxyPermission = Permission
 )

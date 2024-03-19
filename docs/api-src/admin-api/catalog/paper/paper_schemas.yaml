@@ -20,9 +20,9 @@ Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
         - maxLength: 64
         - example: "Мелованная"
     colorId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
     length:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
@@ -50,9 +50,9 @@ Catalog.Papers.AdminAPI.Request.Model.StorePaper:
         - maxLength: 64
         - example: "Мелованная"
     colorId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
     length:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
@@ -113,9 +113,9 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
         - maxLength: 64
         - example: "Мелованная"
     colorId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
     length:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:

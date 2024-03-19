@@ -39,7 +39,7 @@ func NewLaminate(
 }
 
 func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) ([]entity.Laminate, int64, error) {
-	fetchParams := uc.storage.NewFetchParams(params)
+	fetchParams := uc.storage.NewSelectParams(params)
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {

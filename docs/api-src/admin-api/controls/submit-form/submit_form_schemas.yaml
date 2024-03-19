@@ -2,17 +2,20 @@ Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
   description: DTO добавления новой формы
   type: object
   required:
+    - rewriteName
     - paramName
     - caption
-    - formDetailing
+    - detailing
   properties:
+    rewriteName:
+      $ref: "#/components/schemas/App.Field.RewriteName"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
         - example: "Листовая продукция"
-    formDetailing:
+    detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
 Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
@@ -23,14 +26,14 @@ Controls.SubmitForms.AdminAPI.Request.Model.StoreForm:
   properties:
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
+    rewriteName:
+      $ref: "#/components/schemas/App.Field.RewriteName"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
         - example: "Листовая продукция"
-    formDetailing:
-      $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
 Controls.SubmitForms.AdminAPI.Response.Model.FormList:
   description: DTO - список форм
@@ -56,32 +59,69 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
     - id
     - tagVersion
     - createdAt
+    - rewriteName
     - paramName
     - caption
-    - formDetailing
-    - formBody
+    - detailing
     - status
   properties:
     id: # formId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.FormID"
+      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
     updatedAt:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    rewriteName:
+      $ref: "#/components/schemas/App.Field.RewriteName"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
         - example: "Листовая продукция"
-    formDetailing:
+    detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
-    formBody:
-      description: Json объект формы соответствущего спецификации
-      type: string
-      maxLength: 65536 # 64Kb
-      example: "{\"json\": \"object\"}"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+
+Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
+  description: |-
+    DTO - собранная форма пользовательского интерфейса
+  type: object
+  required:
+    - version
+    - createdAt
+    - rewriteName
+    - caption
+    - activityStatus
+  properties:
+    version:
+      $ref: "#/components/schemas/App.Field.Int32"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    rewriteName:
+      $ref: "#/components/schemas/App.Field.RewriteName"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Листовая продукция"
+    activityStatus:
+      $ref: "#/components/schemas/Custom.Enum.SubmitFormActivityStatus"
+
+Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems:
+  allOf:
+    - $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.Form"
+    - type: object
+      properties:
+        elements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormElement"
+        compiledForms:
+          type: array
+          items:
+            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm"

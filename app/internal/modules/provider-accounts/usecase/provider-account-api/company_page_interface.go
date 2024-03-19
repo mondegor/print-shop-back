@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/provider-account-api"
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	"print-shop-back/pkg/modules/provider-accounts/enums"
 
 	"github.com/mondegor/go-webcore/mrtype"
 )
@@ -17,7 +17,7 @@ type (
 
 	CompanyPageStorage interface {
 		FetchOne(ctx context.Context, accountID mrtype.KeyString) (entity.CompanyPage, error)
-		FetchStatus(ctx context.Context, row entity.CompanyPage) (entity_shared.PublicStatus, error)
+		FetchStatus(ctx context.Context, row entity.CompanyPage) (enums.PublicStatus, error)
 		InsertOrUpdate(ctx context.Context, row entity.CompanyPage) error
 		UpdateStatus(ctx context.Context, row entity.CompanyPage) error
 	}

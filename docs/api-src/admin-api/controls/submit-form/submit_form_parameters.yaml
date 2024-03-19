@@ -4,14 +4,14 @@ Controls.SubmitForms.AdminAPI.Request.Path.FormID:
   in: path
   required: true
   schema:
-    type: integer
-    minimum: 1
-  example: 1000
+    type: string
+    format: uuid
+  example: "1be2be72-2cac-45d3-8dda-2476fcc600f0"
 
-Controls.SubmitForm.AdminAPI.Request.Query.FormID:
-  description: Идентификатор формы
-  name: formId
-  in: query
+Controls.SubmitForms.AdminAPI.Request.Path.FormVersion:
+  description: Версия формы
+  name: version
+  in: path
   required: true
   schema:
     type: integer

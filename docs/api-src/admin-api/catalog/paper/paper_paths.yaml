@@ -62,7 +62,7 @@
 
       **Ограничения и ошибки полей:**
       - Article: required,unique,min=3,max=32,pattern=article
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: createPaper
     tags:
@@ -88,16 +88,8 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
       "400":
-        # Артикул не может быть пустым
-        # Указанный артикул уже существует
-        # Артикул не может быть более 32 символов
-        # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
-        # Цвет бумаги содержит недопустимое значение
-        # Фактура бумаги содержит недопустимое значение
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -144,7 +136,7 @@
       Метод предназначен для сохранения информации о бумаге в БД
 
       **Ограничения и ошибки полей:**
-      - Caption: required,max=64
+      - caption: required,max=64
 
     operationId: storePaper
     tags:
@@ -169,14 +161,6 @@
       "204":
         description: Информация о бумаге успешно сохранена
       "400":
-        # Артикул не может быть пустым
-        # Указанный артикул уже существует
-        # Артикул не может быть более 32 символов
-        # Артикул должен соответствовать следующему шаблону "[a-zA-Z0-9][a-zA-Z0-9_.+-]*[a-zA-Z0-9]"
-        # Заголовок записи не может быть пустым
-        # Заголовок записи не может быть более 64 символов
-        # Цвет бумаги содержит недопустимое значение
-        # Фактура бумаги содержит недопустимое значение
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -215,7 +199,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
 /v1/catalog/papers/{paperId}/status:
-  put:
+  patch:
     summary: Метод изменения статуса бумаги
     description: |-
       Метод предназначен для изменения статуса бумаги в БД
@@ -247,8 +231,6 @@
       "204":
         description: Статус бумаги успешно изменён
       "400":
-        # Указанный статус содержит недопустимое значение
-        # В данный статус переключение невозможно
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"

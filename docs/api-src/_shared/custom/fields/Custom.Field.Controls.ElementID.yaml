@@ -1,5 +1,5 @@
-Custom.Field.Dictionaries.Controls.ElementID:
-  description: Идентификатор элемента формы
+Custom.Field.Controls.ElementID:
+  description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
   type: integer
   format: int32
   minimum: 1

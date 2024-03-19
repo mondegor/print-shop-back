@@ -8,10 +8,9 @@ import (
 	usecase "print-shop-back/internal/modules/catalog/laminate/usecase/admin-api"
 	usecase_shared "print-shop-back/internal/modules/catalog/laminate/usecase/shared"
 	"print-shop-back/pkg/modules/dictionaries"
-	"strconv"
+	"print-shop-back/pkg/shared/view"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
@@ -56,7 +55,7 @@ func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 		{http.MethodPut, laminateItemURL, "", ht.Store},
 		{http.MethodDelete, laminateItemURL, "", ht.Remove},
 
-		{http.MethodPut, laminateItemChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPatch, laminateItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -123,12 +122,8 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 		return ht.sender.Send(
 			w,
 			http.StatusCreated,
-			SuccessCreatedItemResponse{
-				ItemID: strconv.Itoa(int(itemID)),
-				Message: mrlang.Ctx(r.Context()).TranslateMessage(
-					"msgCatalogLaminateSuccessCreated",
-					"entity has been success created",
-				),
+			view.SuccessCreatedItemInt32Response{
+				ItemID: itemID,
 			},
 		)
 	}
@@ -160,7 +155,7 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *Laminate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangeItemStatusRequest{}
+	request := view.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

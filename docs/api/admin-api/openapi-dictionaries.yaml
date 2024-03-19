@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: 0.12.1
+  version: v0.2.1
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -103,7 +103,7 @@ paths:
         Метод предназначен для создания информации о новом типе ламината в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createLaminateType
       tags:
@@ -129,10 +129,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -179,7 +177,7 @@ paths:
         Метод предназначен для сохранения информации о типе ламината в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storeLaminateType
       tags:
@@ -204,8 +202,6 @@ paths:
         "204":
           description: Информация о типе ламината успешно сохранена
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -244,7 +240,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/dictionaries/laminate-types/{typeId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса типа ламината
       description: |-
         Метод предназначен для изменения статуса типа ламината в БД
@@ -276,8 +272,6 @@ paths:
         "204":
           description: Статус типа ламината успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -344,7 +338,7 @@ paths:
         Метод предназначен для создания информации о новом цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createPaperColor
       tags:
@@ -370,10 +364,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -433,7 +425,7 @@ paths:
         Метод предназначен для сохранения информации о цвете бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storePaperColor
       tags:
@@ -458,8 +450,6 @@ paths:
         "204":
           description: Информация о цвете бумаги успешно сохранена
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -498,7 +488,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/dictionaries/paper-colors/{colorId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса цвета бумаги
       description: |-
         Метод предназначен для изменения статуса цвета бумаги в БД
@@ -530,8 +520,6 @@ paths:
         "204":
           description: Статус цвета бумаги успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -598,7 +586,7 @@ paths:
         Метод предназначен для создания информации о новой фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createPaperFacture
       tags:
@@ -624,10 +612,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -687,7 +673,7 @@ paths:
         Метод предназначен для сохранения информации о фактуре бумаги в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storePaperFacture
       tags:
@@ -712,8 +698,6 @@ paths:
         "204":
           description: Информация о фактуре бумаги успешно сохранена
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -752,7 +736,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/dictionaries/paper-factures/{factureId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса фактуры бумаги
       description: |-
         Метод предназначен для изменения статуса фактуры бумаги в БД
@@ -784,8 +768,6 @@ paths:
         "204":
           description: Статус фактуры бумаги успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -856,7 +838,7 @@ paths:
         Метод предназначен для создания информации о новом печатном формате в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: createPrintFormat
       tags:
@@ -882,10 +864,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -945,7 +925,7 @@ paths:
         Метод предназначен для сохранения информации о печатном формате в БД
 
         **Ограничения и ошибки полей:**
-        - Caption: required,max=64
+        - caption: required,max=64
 
       operationId: storePrintFormat
       tags:
@@ -970,8 +950,6 @@ paths:
         "204":
           description: Информация о печатном формате успешно сохранена
         "400":
-          # Заголовок записи не может быть пустым
-          # Заголовок записи не может быть более 64 символов
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -1010,7 +988,7 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   /v1/dictionaries/print-formats/{formatId}/status:
-    put:
+    patch:
       summary: Метод изменения статуса печатного формата
       description: |-
         Метод предназначен для изменения статуса печатного формата в БД
@@ -1042,8 +1020,6 @@ paths:
         "204":
           description: Статус печатного формата успешно изменён
         "400":
-          # Указанный статус содержит недопустимое значение
-          # В данный статус переключение невозможно
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
@@ -1348,43 +1324,41 @@ components:
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
 
-    App.Response.Model.SuccessCreatedItem:
-      description: DTO результата создания записи
+    App.Response.Model.SuccessCreatedItemInt32:
+      description: DTO результата создания записи (int32 ID)
       type: object
       required:
         - id
       properties:
         id:
           description: Идентификатор созданной записи
-          type: string
-          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
-        message:
-          type: string
-          example: "Запись была успешно создана"
-
-    Custom.Field.Dictionaries.ColorID:
-      description: Идентификатор цвета материала (/v1/dictionaries/paper-colors)
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
-
-    Custom.Field.Dictionaries.FactureID:
-      description: Идентификатор фактуры материала (/v1/dictionaries/paper-factures)
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
+          type: integer
+          format: int32
+          example: 2147483647
 
     Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperColorID:
+      description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperFactureID:
+      description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PrintFormatID:
-      description: Идентификатор печатного формата
+      description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
       type: integer
       format: int32
       minimum: 1
@@ -1511,7 +1485,7 @@ components:
         - status
       properties:
         id: # colorId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.ColorID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:
@@ -1579,7 +1553,7 @@ components:
         - status
       properties:
         id: # factureId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.FactureID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         createdAt:

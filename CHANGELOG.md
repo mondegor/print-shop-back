@@ -1,20 +1,45 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-03-19
+### Added
+- Добавлен `App.Response.Model.SuccessCreatedItemInt32` в API и в `pkg`;
+- Добавлены новые типы ошибок (`FactoryErrElementTemplateRequired` и другие);
+
+### Changed
+- Перенесены в `pkg` часто используемые сервисом модели:
+    - `SuccessCreatedItemResponse`;
+    - `ChangeItemStatusRequest`;
+    - `MoveItemRequest`;
+- Внедрена новая версия библиотеки `go-sysmess`, в связи с этим:
+    - в функции `IsAutoCallerOnFunc` изменено условие с использованием `HasCallStack()`;
+- В некоторых API методах тип `PUT` преобразован в `PATCH` для более строгого соответствия API спецификации;
+- Переработан модуль SubmitForm:
+    - идентификатор SubmitForm был заменён с int на uuid;
+    - добавлена таблица `submit_forms_compiled` для хранения собранных форм в json формате;
+    - добавлен `ActivityStatus`;
+- Переименованы методы:
+    - `NewFetchParams -> NewSelectParams`;
+    - `GetMetaData -> NewOrderMeta`;
+
+### Removed
+- Удалён `App.Response.Model.Success`;
+- Удалён `App.Response.Model.SuccessModifyItem`;
+
 ## 2024-03-16
 ### Changed
 - Все поля БД типа `timestamp` теперь с `with time zone`;
-- Заменено `version` -> `tagVersion`;
-- Доработан модуль ElementTemplate и его API, добавлена поддержка получения json файла;
+- Заменено `version -> tagVersion`;
+- Доработан модуль `ElementTemplate` и его API, добавлена поддержка получения json файла;
 
 ## 2024-03-15
 ### Changed
 - Рефакторинг кода:
-    - переименование `FactoryErrService*` -> `FactoryErrUseCase*`, `errService*` -> `errUseCase*`;
-    - переименование интерфейсов `*Service` -> `*UseCase`;
+    - переименование `FactoryErrService* -> FactoryErrUseCase*`, `errService* -> errUseCase*`;
+    - переименование интерфейсов `*Service -> *UseCase`;
     - замена методов `LoadOne` на `FetchOne`;
     - методы `Create`, `Insert` теперь возвращают ID записи;
-    - схема БД переименована `gscatalog` -> `sample_catalog`;
+    - схема БД переименована `gscatalog -> sample_catalog`;
 - Вся мета информация об изображениях стала необязательной (`imageUrl`, и т.д.);
 - Настройки `PageSizeMax` и `PageSizeDefault` вынесены в общие настройки модулей `ModulesSettings.General`;
 - Парсер `SortPage` разделён на два: `ListSorter`, `ListPager`;
@@ -37,9 +62,9 @@
 ## 2024-02-05
 ### Changed
 - Переименованы:
-    - `datetime_created` -> `created_at`;
-    - `datetime_updated` -> `updated_at`;
-    - `modules.Options` -> `app.Options`;
+    - `datetime_created -> created_at`;
+    - `datetime_updated -> updated_at`;
+    - `modules.Options -> app.Options`;
 - Создание модулей переехало в `factory/modules/*`;
 - Большинство юнитов было преобразовано в модули, которые объединены доменами;
 
@@ -48,10 +73,10 @@
 - Внедрён новый интерфейс логгера, добавлен режим трассировки запросов;
 - Для многих методов добавлен параметр `ctx context.Context`;
 - Заменён устаревший интерфейс `mrcore.EventBox` на `mrsender.EventEmitter`;
-- Переименован `ServiceHelper` -> `UsecaseHelper`;
+- Переименован `ServiceHelper -> UsecaseHelper`;
 - Внедрены `mrlib.CallEachFunc`, `CloseFunc` для группового закрытия ресурсов;
 - Переименован `CorrelationID` на `X-Correlation-ID`;
-- Объекты конфигураций/опций теперь передаются по значению (`*Config` -> `Config`, `*Options` -> `Options`);
+- Объекты конфигураций/опций теперь передаются по значению (`*Config -> Config`, `*Options -> Options`);
 - Внедрён `oklog/run` для управления одновременным запуском нескольких серверов (http, grpc)
 - Добавлены методы для создания и инициализации всех глобальных настроек приложения
   (`CreateAppEnvironment`, `InitAppEnvironment`);
@@ -62,20 +87,20 @@
     - добавлен `APPX_LOG_JSON=true|false` (вывод логов в json формате);
     - добавлен `APPX_LOG_COLOR=true|false` (использование цветного вывода логов в консоле);
     - переименованы:
-        - `APPX_SERVICE_LISTEN_TYPE` -> `APPX_SERVER_LISTEN_TYPE`;
-        - `APPX_SERVICE_LISTEN_SOCK` -> `APPX_SERVER_LISTEN_SOCK`;
-        - `APPX_SERVICE_BIND` -> `APPX_SERVER_LISTEN_BIND`;
-        - `APPX_SERVICE_PORT` -> `APPX_SERVER_LISTEN_PORT`;
+        - `APPX_SERVICE_LISTEN_TYPE -> APPX_SERVER_LISTEN_TYPE`;
+        - `APPX_SERVICE_LISTEN_SOCK -> APPX_SERVER_LISTEN_SOCK`;
+        - `APPX_SERVICE_BIND -> APPX_SERVER_LISTEN_BIND`;
+        - `APPX_SERVICE_PORT -> APPX_SERVER_LISTEN_PORT`;
 
 ## 2024-01-25
 ### Added
 - Внедрены парсеры на основе интерфейсов `mrserver.RequestParserFile` и
   `mrserver.RequestParserImage` для получения файлов и изображений из `multipart` формы.
-    - заменено `mrreq.File` -> `ht.parser.FormImage`;
-    - в `CompanyPageLogoService` изменён тип `mrtype.File` -> `mrtype.Image`;
+    - заменено `mrreq.File -> ht.parser.FormImage`;
+    - в `CompanyPageLogoService` изменён тип `mrtype.File -> mrtype.Image`;
 
 ### Changed
-- Переименовано `ConvertImageMetaToInfo` -> `ImageMetaToInfoPointer`;
+- Переименовано `ConvertImageMetaToInfo -> ImageMetaToInfoPointer`;
 
 ### Removed
 - `mrserver.RequestParserPath` удалён вместо него используется
@@ -84,24 +109,24 @@
 ## 2024-01-22
 ### Changed
 - Расформирован объект `ClientContext` и его одноименный интерфейс, в результате:
-    - Изменена сигнатура обработчиков с `func(c mrcore.ClientContext)` на `func(w http.ResponseWriter, r *http.Request) error`;
-    - С помощью интерфейсов `RequestDecoder`, `ResponseEncoder` можно задавать различные форматы
+    - изменена сигнатура обработчиков с `func(c mrcore.ClientContext)` на `func(w http.ResponseWriter, r *http.Request) error`;
+    - с помощью интерфейсов `RequestDecoder`, `ResponseEncoder` можно задавать различные форматы
       принимаемых и отправляемых данных (сейчас реализован только формат `JSON`);
-    - Запросы обрабатываются встраиваемыми в обработчики объектов `mrparser.*` через интерфейсы:
+    - запросы обрабатываются встраиваемыми в обработчики объектов `mrparser.*` через интерфейсы:
       `mrserver.RequestParserPath`, `RequestParser`, `RequestParserItemStatus`, `RequestParserKeyInt32`,
       `RequestParserSortPage`, `RequestParserUUID`, `RequestParserValidate`;
-    - Ответы отправляются встраиваемыми в обработчики объекты `mrresponse.*` через интерфейсы:
+    - ответы отправляются встраиваемыми в обработчики объекты `mrresponse.*` через интерфейсы:
       `mrserver.ResponseSender`, `FileResponseSender`, `ErrorResponseSender`;
-    - Вместо метода `Validate(structRequest any)` используется объект `mrparser.Validator`;
+    - вместо метода `Validate(structRequest any)` используется объект `mrparser.Validator`;
 - Произведены следующие замены:
-    - `HttpController.AddHandlers` -> `Handlers() []HttpHandler`.
-      Убрана зависимость контроллера от роутера и секции.
-      Для установки стандартных разрешений добавлены следующие методы
+    - `HttpController.AddHandlers -> Handlers() []HttpHandler`
+      убрана зависимость контроллера от роутера и секции,
+      для установки стандартных разрешений добавлены следующие методы:
       `mrfactory.WithPermission`, `mrfactory.WithMiddlewareCheckAccess`;
-    - `ModulesAccess` -> `AccessControl` (`modules_access` -> `access_control`) и добавлен интерфейс `mrcore.AccessControl`;
-    - `ClientSection` -> `AppSection` (`client_section` -> `app_section`) удалена зависимость от `AccessControl`;
+    - `ModulesAccess -> AccessControl` (`modules_access -> access_control`) и добавлен интерфейс `mrcore.AccessControl`;
+    - `ClientSection -> AppSection` (`client_section -> app_section`) удалена зависимость от `AccessControl`;
 - При внедрении новой версии библиотеки `go-sysmess` было заменено:
-    - `mrerr.FieldErrorList` -> `CustomErrorList`;
+    - `mrerr.FieldErrorList -> CustomErrorList`;
 
 ## 2024-01-19
 ### Changed
@@ -166,15 +191,15 @@
 ## 2023-07-27
 ### Changed
 - Изменена валидация поля article, теперь доступны все символы кроме пробельных;
-- Переименованы `ErrHttpRequestEnumLen` -> `ErrHttpRequestParamLen` и
-  `ErrHttpRequestParseEnum` -> `ErrHttpRequestParseParam` для обобщения;
+- Переименованы `ErrHttpRequestEnumLen -> ErrHttpRequestParamLen` и
+  `ErrHttpRequestParseEnum -> ErrHttpRequestParseParam` для обобщения;
 
 ### Fixed
 - Добавлено забытое поле `Sides` в `entity.CatalogPaper`;
 - Скорректированы значение валидаторов (min, max, lte)ж
 - Добавлен пропущенный фильтр `App.Request.Query.ItemStatuses` в API документацию;
-- `*Remove` -> `*RemoveURL`;
-- В методах формирования списков заменён: `client.Query` -> `client.SqQuery`;
+- `*Remove -> *RemoveURL`;
+- В методах формирования списков заменён: `client.Query -> client.SqQuery`;
 
 ## 2023-07-23
 ### Add

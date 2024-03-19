@@ -4,7 +4,7 @@ import (
 	"context"
 	module "print-shop-back/internal/modules/provider-accounts"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/provider-account-api"
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	"print-shop-back/pkg/modules/provider-accounts/enums"
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
@@ -59,7 +59,7 @@ func (re *CompanyPagePostgres) FetchOne(ctx context.Context, accountID mrtype.Ke
 	return row, err
 }
 
-func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.CompanyPage) (entity_shared.PublicStatus, error) {
+func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.CompanyPage) (enums.PublicStatus, error) {
 	sql := `
         SELECT
             page_status
@@ -69,7 +69,7 @@ func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.Compa
             account_id = $1
         LIMIT 1;`
 
-	var status entity_shared.PublicStatus
+	var status enums.PublicStatus
 
 	err := re.client.QueryRow(
 		ctx,

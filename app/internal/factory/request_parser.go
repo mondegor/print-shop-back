@@ -37,8 +37,8 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 				PageSizeDefault: cfg.General.PageSizeDefault,
 			},
 		),
-		String: mrparser.NewString(pathFunc),
-		// UUID:       mrparser.NewUUID(pathFunc),
+		String:    mrparser.NewString(pathFunc),
+		UUID:      mrparser.NewUUID(pathFunc),
 		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
 		FileJson: mrparser.NewFile(
 			mrparser.FileOptions{
@@ -61,6 +61,10 @@ func NewValidator(ctx context.Context, cfg config.Config) (*mrplayvalidator.Vali
 	// registers custom tags for validation (see mrview.validator_tags.go)
 
 	if err := validator.Register("tag_article", mrview.ValidateAnyNotSpaceSymbol); err != nil {
+		return nil, err
+	}
+
+	if err := validator.Register("tag_rewrite_name", mrview.ValidateRewriteName); err != nil {
 		return nil, err
 	}
 

@@ -3,5 +3,5 @@ privileges:
   - apiProviderAccount
 
 permissions:
-  - modFileStationImageProxy
+  - modFileStation
   - modProviderAccountsCompanyPage

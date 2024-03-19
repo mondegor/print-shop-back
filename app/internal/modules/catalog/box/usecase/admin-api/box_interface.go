@@ -20,7 +20,7 @@ type (
 	}
 
 	BoxStorage interface {
-		NewFetchParams(params entity.BoxParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.BoxParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.Box, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.Box, error)

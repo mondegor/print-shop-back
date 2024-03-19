@@ -1,4 +1,4 @@
-Controls.SubmitForm.AdminAPI.Request.Path.ElementID:
+Controls.SubmitForms.AdminAPI.Request.Path.ElementID:
   description: Идентификатор поля формы
   name: elementId
   in: path

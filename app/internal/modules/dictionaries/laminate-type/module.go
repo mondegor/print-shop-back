@@ -1,8 +1,7 @@
 package module
 
 const (
-	Name = "Dictionaries.LaminateType"
-
+	Name       = "Dictionaries.LaminateType"
 	Permission = "modDictionariesLaminateType"
 	DBSchema   = "printshop_dictionaries"
 )

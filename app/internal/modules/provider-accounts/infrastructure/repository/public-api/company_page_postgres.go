@@ -4,7 +4,7 @@ import (
 	"context"
 	module "print-shop-back/internal/modules/provider-accounts"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/public-api"
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	"print-shop-back/pkg/modules/provider-accounts/enums"
 
 	"github.com/mondegor/go-storage/mrstorage"
 )
@@ -41,8 +41,8 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 		ctx,
 		sql,
 		rewriteName,
-		entity_shared.PublicStatusPublished,
-		entity_shared.PublicStatusPublishedShared,
+		enums.PublicStatusPublished,
+		enums.PublicStatusPublishedShared,
 	).Scan(
 		&row.PageHead,
 		&row.LogoURL,

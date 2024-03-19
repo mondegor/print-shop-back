@@ -1,7 +1,7 @@
 package entity
 
 import (
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	"print-shop-back/pkg/modules/provider-accounts/enums"
 	"time"
 
 	"github.com/mondegor/go-webcore/mrtype"
@@ -22,6 +22,6 @@ type (
 		LogoURL     string `json:"logoUrl,omitempty"` // logo_meta.path
 		SiteURL     string `json:"siteUrl"`           // site_url
 
-		Status entity_shared.PublicStatus `json:"status"` // page_status
+		Status enums.PublicStatus `json:"status"` // page_status
 	}
 )

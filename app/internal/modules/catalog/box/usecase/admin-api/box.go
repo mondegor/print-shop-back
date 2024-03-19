@@ -35,7 +35,7 @@ func NewBox(
 }
 
 func (uc *Box) GetList(ctx context.Context, params entity.BoxParams) ([]entity.Box, int64, error) {
-	fetchParams := uc.storage.NewFetchParams(params)
+	fetchParams := uc.storage.NewSelectParams(params)
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {

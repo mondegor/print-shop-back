@@ -7,10 +7,9 @@ import (
 	entity "print-shop-back/internal/modules/catalog/box/entity/admin-api"
 	usecase "print-shop-back/internal/modules/catalog/box/usecase/admin-api"
 	usecase_shared "print-shop-back/internal/modules/catalog/box/usecase/shared"
-	"strconv"
+	"print-shop-back/pkg/shared/view"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
@@ -55,7 +54,7 @@ func (ht *Box) Handlers() []mrserver.HttpHandler {
 		{http.MethodPut, boxItemURL, "", ht.Store},
 		{http.MethodDelete, boxItemURL, "", ht.Remove},
 
-		{http.MethodPut, boxItemChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPatch, boxItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 
@@ -121,12 +120,8 @@ func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
 		return ht.sender.Send(
 			w,
 			http.StatusCreated,
-			SuccessCreatedItemResponse{
-				ItemID: strconv.Itoa(int(itemID)),
-				Message: mrlang.Ctx(r.Context()).TranslateMessage(
-					"msgCatalogBoxSuccessCreated",
-					"entity has been success created",
-				),
+			view.SuccessCreatedItemInt32Response{
+				ItemID: itemID,
 			},
 		)
 	}
@@ -157,7 +152,7 @@ func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (ht *Box) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangeItemStatusRequest{}
+	request := view.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &request); err != nil {
 		return err

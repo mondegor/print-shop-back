@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.12.1
+# Описание Print Shop Back v0.12.2
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -10,7 +10,7 @@ Web сервис для расчёта стоимости и времени из
 > Перед запуском консольных скриптов сервиса необходимо скачать и установить утилиту Mrcmd.\
 > Инструкция по её установке находится [здесь](https://github.com/mondegor/mrcmd#readme)
 
-## REST API документация
+## REST API документация v0.2.1
 - [API документация в формате OpenAPI/Swagger](./docs/api)
     - [AdminAPI](./docs/api/admin-api)
     - [PublicAPI](./docs/api/public-api)
@@ -25,7 +25,7 @@ Web сервис для расчёта стоимости и времени из
 - `mrcmd openapi build-all` - сборка документации всех API;
 
 ### Примеры запуска сборки документации из консоли Windows:
-- GitBash (cmd): `"C:\Program Files\Git\git-bash.exe" --cd=d:\mrwork\tn-docs mrcmd openapi build-all`
+- GitBash (cmd): `"C:\Program Files\Git\git-bash.exe" --cd=d:\mrwork\tn-docs mrcmd openapi build-all`;
 - WSL (PowerShell): `cd D:\workdir\go-sample; wsl -d Ubuntu-20.04 -e mrcmd openapi build-all`;
 
 ## Разворачивание, установка и запуск сервиса

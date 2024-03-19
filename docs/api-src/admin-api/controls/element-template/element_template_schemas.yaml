@@ -1,4 +1,4 @@
-Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
+Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
   description: DTO добавления нового json шаблона элемента (multipart)
   type: object
   required:
@@ -6,31 +6,32 @@ Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplateWithAttachm
     - attachment
   properties:
     elementTemplate:
-      $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate"
+      $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate"
     attachment:
       $ref: "#/components/schemas/App.Response.Model.JsonFile"
 
-Controls.ElementTemplate.AdminAPI.Request.Model.CreateElementTemplate:
+Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate:
   description: DTO мета данных json шаблона элемента
   type: object
   required:
     - paramName
     - caption
     - elementType
-    - elementDetailing
+    - detailing
   properties:
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Шаблон процесса печати"
     elementType:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
-    elementDetailing:
+    detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
 
-Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachment:
+Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplateWithAttachment:
   description: DTO сохранения json шаблона элемента (multipart)
   type: object
   required:
@@ -38,11 +39,11 @@ Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplateWithAttachme
     - attachment
   properties:
     elementTemplate:
-      $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate"
+      $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate"
     attachment:
       $ref: "#/components/schemas/App.Response.Model.JsonFile"
 
-Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
+Controls.ElementTemplates.AdminAPI.Request.Model.StoreElementTemplate:
   description: DTO сохранения шаблона элемента
   type: object
   required:
@@ -51,13 +52,14 @@ Controls.ElementTemplate.AdminAPI.Request.Model.StoreElementTemplate:
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Шаблон процесса печати"
 
-Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
+Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList:
   description: DTO - список шаблонов элементов
   type: object
   required:
@@ -68,18 +70,18 @@ Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplateList:
       description: Список записей ограниченный фильтром и pageSize
       type: array
       items:
-        $ref: "#/components/schemas/Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate"
+        $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate"
     total:
       $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
+Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
   description: |-
     DTO - шаблон элемента формы пользовательского интерфейса
     Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
   type: object
   properties:
     id: # templateId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Controls.TemplateID"
+      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     createdAt:
@@ -87,14 +89,15 @@ Controls.ElementTemplate.AdminAPI.Response.Model.ElementTemplate:
     updatedAt:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     paramName:
-      $ref: "#/components/schemas/Custom.Field.ParamName"
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
         - example: "Шаблон процесса печати"
     elementType:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
-    elementDetailing:
+    detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
     status:
       $ref: "#/components/schemas/App.Enum.Status"

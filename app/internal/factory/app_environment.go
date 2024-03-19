@@ -145,7 +145,11 @@ func InitAppEnvironment(ctx context.Context, opts app.Options) (app.Options, err
 		return opts, err
 	}
 
-	if opts.ControlsModule, err = factory_controls.NewModuleOptions(ctx, opts); err != nil {
+	if opts.ControlsElementTemplateModule, err = factory_controls.NewElementTemplateModuleOptions(ctx, opts); err != nil {
+		return opts, err
+	}
+
+	if opts.ControlsSubmitFormModule, err = factory_controls.NewSubmitFormModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 

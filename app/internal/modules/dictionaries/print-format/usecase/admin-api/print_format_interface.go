@@ -20,7 +20,7 @@ type (
 	}
 
 	PrintFormatStorage interface {
-		NewFetchParams(params entity.PrintFormatParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.PrintFormatParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.PrintFormat, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PrintFormat, error)

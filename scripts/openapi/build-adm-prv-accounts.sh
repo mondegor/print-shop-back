@@ -72,7 +72,6 @@ mrcmd_func_openapi_build_adm_prv_accounts() {
     # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
-    # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
@@ -92,11 +91,13 @@ mrcmd_func_openapi_build_adm_prv_accounts() {
     # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemInt32.yaml"
 
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
 
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
@@ -104,11 +105,10 @@ mrcmd_func_openapi_build_adm_prv_accounts() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.ColorID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.FactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.ParamName.yaml"
 
     "${companyPageDir}/company_page_schemas.yaml"
   )

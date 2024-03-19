@@ -1,0 +1,17 @@
+Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm:
+  description: |-
+    DTO - собранная форма пользовательского интерфейса
+  type: object
+  required:
+    - id
+    - paramName
+    - caption
+  properties:
+    id: # formId
+      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+    paramName:
+      $ref: "#/components/schemas/App.Field.VariableCamelCase"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - example: "Листовая продукция"

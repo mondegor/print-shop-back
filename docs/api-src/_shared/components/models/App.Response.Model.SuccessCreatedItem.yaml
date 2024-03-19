@@ -1,5 +1,5 @@
 App.Response.Model.SuccessCreatedItem:
-  description: DTO результата создания записи
+  description: DTO результата создания записи (string ID)
   type: object
   required:
     - id
@@ -8,6 +8,3 @@ App.Response.Model.SuccessCreatedItem:
       description: Идентификатор созданной записи
       type: string
       example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
-    message:
-      type: string
-      example: "Запись была успешно создана"

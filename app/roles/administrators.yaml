@@ -6,12 +6,12 @@ permissions:
   - modCatalogBox
   - modCatalogPaper
   - modCatalogLaminate
-  - modControlsFormData
+  - modControlsSubmitForm
   - modControlsFormElement
   - modControlsElementTemplate
   - modDictionariesPaperColor
   - modDictionariesPaperFacture
   - modDictionariesPrintFormat
   - modDictionariesLaminateType
-  - modFileStationImageProxy
+  - modFileStation
   - modProviderAccountsCompanyPage

@@ -20,7 +20,7 @@ type (
 	}
 
 	PaperFactureStorage interface {
-		NewFetchParams(params entity.PaperFactureParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.PaperFactureParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.PaperFacture, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperFacture, error)

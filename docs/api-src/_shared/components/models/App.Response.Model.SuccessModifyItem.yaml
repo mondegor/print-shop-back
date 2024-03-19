@@ -1,7 +1,0 @@
-App.Response.Model.SuccessModifyItem:
-  description: DTO результата модификации записи (изменения, переключение статуса, удаления)
-  type: object
-  properties:
-    message:
-      type: string
-      example: "Запись была успешно модифицирована"

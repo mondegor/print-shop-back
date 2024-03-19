@@ -39,9 +39,9 @@ func NewCompanyPage(
 func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{http.MethodGet, companyPageItemURL, "", ht.Get},
-		{http.MethodPut, companyPageItemURL, "", ht.Store},
+		{http.MethodPatch, companyPageItemURL, "", ht.Store},
 
-		{http.MethodPut, companyPageItemChangeStatusURL, "", ht.ChangeStatus},
+		{http.MethodPatch, companyPageItemChangeStatusURL, "", ht.ChangeStatus},
 	}
 }
 

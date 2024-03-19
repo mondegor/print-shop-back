@@ -17,10 +17,6 @@ type (
 		storage       PaperFactureStorage
 		usecaseHelper *mrcore.UsecaseHelper
 	}
-
-	PaperFactureStorage interface {
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
-	}
 )
 
 func NewPaperFacture(
@@ -37,7 +33,7 @@ func (uc *PaperFacture) CheckingAvailability(ctx context.Context, itemID mrtype.
 	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
 	if itemID < 1 {
-		return dictionaries.FactoryErrPaperFactureNotFound.New(itemID)
+		return dictionaries.FactoryErrPaperFactureRequired.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, itemID); err != nil {

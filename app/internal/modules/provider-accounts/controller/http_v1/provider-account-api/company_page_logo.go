@@ -35,7 +35,7 @@ func NewCompanyPageLogo(
 
 func (ht *CompanyPageLogo) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{http.MethodPut, companyPageItemLogoURL, "", ht.UploadLogo},
+		{http.MethodPatch, companyPageItemLogoURL, "", ht.UploadLogo},
 		{http.MethodDelete, companyPageItemLogoURL, "", ht.RemoveLogo},
 	}
 }

@@ -32,23 +32,12 @@ func newUnitPrintFormat(ctx context.Context, opts factory.Options) (*http_v1.Pri
 		return nil, err
 	}
 
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.PrintFormat{})
-
-	if err != nil {
-		return nil, err
-	}
-
 	storage := repository.NewPrintFormatPostgres(
 		opts.PostgresAdapter,
 		mrpostgres.NewSqlBuilderSelect(
 			mrpostgres.NewSqlBuilderWhere(),
 			mrpostgres.NewSqlBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
 			mrpostgres.NewSqlBuilderPager(opts.PageSizeMax),
-		),
-		mrpostgres.NewSqlBuilderUpdateWithMeta(
-			entityMetaUpdate,
-			mrpostgres.NewSqlBuilderSet(),
-			nil,
 		),
 	)
 	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseHelper)

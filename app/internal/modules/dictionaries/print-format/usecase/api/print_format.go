@@ -17,10 +17,6 @@ type (
 		storage       PrintFormatStorage
 		usecaseHelper *mrcore.UsecaseHelper
 	}
-
-	PrintFormatStorage interface {
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
-	}
 )
 
 func NewPrintFormat(
@@ -37,7 +33,7 @@ func (uc *PrintFormat) CheckingAvailability(ctx context.Context, itemID mrtype.K
 	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
 	if itemID < 1 {
-		return dictionaries.FactoryErrPrintFormatNotFound.New(itemID)
+		return dictionaries.FactoryErrPrintFormatRequired.New()
 	}
 
 	if err := uc.storage.IsExists(ctx, itemID); err != nil {

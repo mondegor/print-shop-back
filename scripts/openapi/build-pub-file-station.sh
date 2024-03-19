@@ -60,6 +60,7 @@ mrcmd_func_openapi_build_pub_file_station() {
     # "${sharedDir}/components/fields/App.Field.Int32.yaml"
     # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
+    # "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
     # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
@@ -83,6 +84,7 @@ mrcmd_func_openapi_build_pub_file_station() {
     # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemInt32.yaml"
 
     "${fileStationDir}/schemas.yaml"
   )

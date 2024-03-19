@@ -55,6 +55,7 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-pub-all)
       mrcmd openapi build-pub
+      mrcmd openapi build-pub-controls
       mrcmd openapi build-pub-file-station
       ;;
 
@@ -88,6 +89,11 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-pub)
       sectionName="public-api"
+      ;;
+
+    build-pub-controls)
+      sectionName="public-api"
+      fileNamePostfix="controls"
       ;;
 
     build-pub-file-station)
@@ -127,4 +133,5 @@ function mrcmd_plugins_openapi_method_help() {
   echo -e "    build-pacc                Builds only full provider accounts API docs"
   echo -e "    build-pub-all             Builds all public API docs"
   echo -e "    build-pub                 Builds only full public API docs"
+  echo -e "    build-pub-controls        Builds public Controls API docs"
 }

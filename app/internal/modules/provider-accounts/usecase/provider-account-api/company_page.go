@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	entity "print-shop-back/internal/modules/provider-accounts/entity/provider-account-api"
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	"print-shop-back/pkg/modules/provider-accounts/enums"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
@@ -35,7 +35,7 @@ func NewCompanyPage(
 		eventEmitter:  eventEmitter,
 		usecaseHelper: usecaseHelper,
 		imgBaseURL:    imgBaseURL,
-		statusFlow:    entity_shared.PublicStatusFlow,
+		statusFlow:    enums.PublicStatusFlow,
 	}
 }
 
@@ -60,7 +60,7 @@ func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error
 		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	item.Status = entity_shared.PublicStatusDraft // only for insert
+	item.Status = enums.PublicStatusDraft // only for insert
 
 	if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)

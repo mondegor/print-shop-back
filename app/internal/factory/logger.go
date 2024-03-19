@@ -35,8 +35,7 @@ func NewLogger(cfg config.Config) (*mrzerolog.LoggerAdapter, error) {
 			// only if log level: Error, Fatal
 			IsAutoCallerOnFunc: func(err error) bool {
 				if appErr, ok := err.(*mrerr.AppError); ok {
-					return appErr.Kind() == mrerr.ErrorKindUser ||
-						appErr.Kind() == mrerr.ErrorKindInternalNotice
+					return !appErr.HasCallStack()
 				}
 
 				return true

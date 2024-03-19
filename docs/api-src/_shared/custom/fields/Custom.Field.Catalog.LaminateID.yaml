@@ -1,5 +1,5 @@
 Custom.Field.Dictionaries.Catalog.LaminateID:
-  description: Идентификатор ламината
+  description: Идентификатор ламината (модуль - Catalog.Laminate)
   type: integer
   format: int32
   minimum: 1

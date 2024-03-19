@@ -13,12 +13,15 @@ const (
 
 type (
 	PrintFormatAPI interface {
-		// CheckingAvailability - error: FactoryErrPrintFormatNotFound or Failed
+		// CheckingAvailability - error: FactoryErrPrintFormatRequired | FactoryErrPrintFormatNotFound | Failed
 		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
 
 var (
+	FactoryErrPrintFormatRequired = mrerr.NewFactory(
+		"errDictionariesPrintFormatRequired", mrerr.ErrorKindUser, "print format ID is required")
+
 	FactoryErrPrintFormatNotFound = mrerr.NewFactory(
 		"errDictionariesPrintFormatNotFound", mrerr.ErrorKindUser, "print format with ID={{ .id }} not found")
 )

@@ -20,7 +20,7 @@ type (
 	}
 
 	LaminateTypeStorage interface {
-		NewFetchParams(params entity.LaminateTypeParams) mrstorage.SqlSelectParams
+		NewSelectParams(params entity.LaminateTypeParams) mrstorage.SqlSelectParams
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.LaminateType, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.LaminateType, error)

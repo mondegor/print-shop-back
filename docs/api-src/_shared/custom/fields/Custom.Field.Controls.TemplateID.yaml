@@ -1,5 +1,5 @@
-Custom.Field.Dictionaries.Controls.TemplateID:
-  description: Идентификатор шаблона элемента формы (/v1/controls/element-templates)
+Custom.Field.Controls.TemplateID:
+  description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
   type: integer
   format: int32
   minimum: 1

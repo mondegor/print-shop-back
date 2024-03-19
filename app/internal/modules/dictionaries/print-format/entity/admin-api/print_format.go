@@ -19,9 +19,9 @@ type (
 		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
 		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
 
-		Caption string             `json:"caption" sort:"caption,default" upd:"format_caption"`
-		Length  measure.Micrometer `json:"length" sort:"length" upd:"format_length"` // (mm)
-		Width   measure.Micrometer `json:"width" sort:"width" upd:"format_width"`    // (mm)
+		Caption string             `json:"caption" sort:"caption,default"` // format_caption
+		Length  measure.Micrometer `json:"length" sort:"length"`           // format_length (mm)
+		Width   measure.Micrometer `json:"width" sort:"width"`             // format_width (mm)
 
 		Status mrenum.ItemStatus `json:"status"` // format_status
 	}

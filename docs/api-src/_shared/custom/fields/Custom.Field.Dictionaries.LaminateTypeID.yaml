@@ -1,5 +1,5 @@
 Custom.Field.Dictionaries.LaminateTypeID:
-  description: Идентификатор типа ламината (/v1/dictionaries/laminate-types)
+  description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
   type: integer
   format: int32
   minimum: 1

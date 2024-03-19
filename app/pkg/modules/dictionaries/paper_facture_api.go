@@ -13,12 +13,15 @@ const (
 
 type (
 	PaperFactureAPI interface {
-		// CheckingAvailability - error: FactoryErrPaperFactureNotFound or Failed
+		// CheckingAvailability - error: FactoryErrPaperFactureRequired | FactoryErrPaperFactureNotFound | Failed
 		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
 
 var (
+	FactoryErrPaperFactureRequired = mrerr.NewFactory(
+		"errDictionariesPaperFactureRequired", mrerr.ErrorKindUser, "paper facture ID is required")
+
 	FactoryErrPaperFactureNotFound = mrerr.NewFactory(
 		"errDictionariesPaperFactureNotFound", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} not found")
 )

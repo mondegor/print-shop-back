@@ -3,11 +3,12 @@ module print-shop-back
 go 1.21
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mondegor/go-components v0.5.0
-	github.com/mondegor/go-storage v0.9.1
-	github.com/mondegor/go-sysmess v0.7.3
-	github.com/mondegor/go-webcore v0.14.1
+	github.com/mondegor/go-components v0.6.0
+	github.com/mondegor/go-storage v0.10.0
+	github.com/mondegor/go-sysmess v0.8.0
+	github.com/mondegor/go-webcore v0.15.0
 	github.com/oklog/run v1.1.0
 )
 
@@ -20,7 +21,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.19.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect

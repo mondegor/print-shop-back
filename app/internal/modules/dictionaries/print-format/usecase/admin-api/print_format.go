@@ -35,7 +35,7 @@ func NewPrintFormat(
 }
 
 func (uc *PrintFormat) GetList(ctx context.Context, params entity.PrintFormatParams) ([]entity.PrintFormat, int64, error) {
-	fetchParams := uc.storage.NewFetchParams(params)
+	fetchParams := uc.storage.NewSelectParams(params)
 	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
 
 	if err != nil {

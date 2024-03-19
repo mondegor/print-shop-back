@@ -29,7 +29,7 @@ func NewPaperColorPostgres(
 	}
 }
 
-func (re *PaperColorPostgres) NewFetchParams(params entity.PaperColorParams) mrstorage.SqlSelectParams {
+func (re *PaperColorPostgres) NewSelectParams(params entity.PaperColorParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(

@@ -1,10 +1,8 @@
 package view_shared
 
 import (
-	"net/http"
-	entity_shared "print-shop-back/internal/modules/provider-accounts/entity/shared"
+	view_shared "print-shop-back/pkg/modules/provider-accounts/view"
 
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 )
@@ -18,8 +16,7 @@ type (
 		mrserver.RequestParserListPager
 		mrserver.RequestParserString
 		mrserver.RequestParserValidate
-
-		FilterPublicStatusList(r *http.Request, key string) []entity_shared.PublicStatus
+		view_shared.RequestPublicStatusParser
 	}
 
 	Parser struct {
@@ -30,6 +27,7 @@ type (
 		*mrparser.ListPager
 		*mrparser.String
 		*mrparser.Validator
+		*view_shared.PublicStatusParser
 	}
 )
 
@@ -41,31 +39,16 @@ func NewParser(
 	p5 *mrparser.ListPager,
 	p6 *mrparser.String,
 	p7 *mrparser.Validator,
+	p8 *view_shared.PublicStatusParser,
 ) *Parser {
 	return &Parser{
-		Int64:      p1,
-		ItemStatus: p2,
-		KeyInt32:   p3,
-		ListSorter: p4,
-		ListPager:  p5,
-		String:     p6,
-		Validator:  p7,
+		Int64:              p1,
+		ItemStatus:         p2,
+		KeyInt32:           p3,
+		ListSorter:         p4,
+		ListPager:          p5,
+		String:             p6,
+		Validator:          p7,
+		PublicStatusParser: p8,
 	}
-}
-
-func (p *Parser) FilterPublicStatusList(r *http.Request, key string) []entity_shared.PublicStatus {
-	items, err := parseFilterPublicStatusList(
-		r,
-		key,
-		[]entity_shared.PublicStatus{
-			entity_shared.PublicStatusPublished,
-			entity_shared.PublicStatusPublishedShared,
-		},
-	)
-
-	if err != nil {
-		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
-	}
-
-	return items
 }

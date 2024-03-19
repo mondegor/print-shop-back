@@ -7,7 +7,6 @@ import (
 	repository_shared "print-shop-back/internal/modules/dictionaries/print-format/infrastructure/repository/shared"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
@@ -17,23 +16,20 @@ type (
 	PrintFormatPostgres struct {
 		client    mrstorage.DBConn
 		sqlSelect mrstorage.SqlBuilderSelect
-		sqlUpdate mrstorage.SqlBuilderUpdate
 	}
 )
 
 func NewPrintFormatPostgres(
 	client mrstorage.DBConn,
 	sqlSelect mrstorage.SqlBuilderSelect,
-	sqlUpdate mrstorage.SqlBuilderUpdate,
 ) *PrintFormatPostgres {
 	return &PrintFormatPostgres{
 		client:    client,
 		sqlSelect: sqlSelect,
-		sqlUpdate: sqlUpdate,
 	}
 }
 
-func (re *PrintFormatPostgres) NewFetchParams(params entity.PrintFormatParams) mrstorage.SqlSelectParams {
+func (re *PrintFormatPostgres) NewSelectParams(params entity.PrintFormatParams) mrstorage.SqlSelectParams {
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(
@@ -233,27 +229,15 @@ func (re *PrintFormatPostgres) Insert(ctx context.Context, row entity.PrintForma
 }
 
 func (re *PrintFormatPostgres) Update(ctx context.Context, row entity.PrintFormat) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
-	if err != nil || set.Empty() {
-		return 0, err
-	}
-
-	args := []any{
-		row.ID,
-		row.TagVersion,
-		mrenum.ItemStatusRemoved,
-	}
-
-	setStr, setArgs := set.Param(len(args) + 1).ToSql()
-
 	sql := `
         UPDATE
             ` + module.DBSchema + `.print_formats
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
-            ` + setStr + `
+			format_caption = $4,
+			format_length = $5,
+			format_width = $6
         WHERE
             format_id = $1 AND tag_version = $2 AND format_status <> $3
 		RETURNING
@@ -261,10 +245,15 @@ func (re *PrintFormatPostgres) Update(ctx context.Context, row entity.PrintForma
 
 	var tagVersion int32
 
-	err = re.client.QueryRow(
+	err := re.client.QueryRow(
 		ctx,
 		sql,
-		mrsql.MergeArgs(args, setArgs)...,
+		row.ID,
+		row.TagVersion,
+		mrenum.ItemStatusRemoved,
+		row.Caption,
+		row.Length,
+		row.Width,
 	).Scan(
 		&tagVersion,
 	)
