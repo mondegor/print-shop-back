@@ -50,8 +50,6 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
         SELECT
             fe.element_id,
             fe.tag_version,
-            fe.created_at,
-			fe.updated_at,
 			fe.form_id,
             fe.param_name,
             fe.element_caption,
@@ -59,7 +57,9 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 			fe.template_version,
 			fe.element_required,
             et.element_type,
-            et.element_detailing
+            et.element_detailing,
+            fe.created_at,
+			fe.updated_at
         FROM
             ` + module.DBSchema + `.submit_form_elements fe
         JOIN
@@ -91,8 +91,6 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.FormID,
 			&row.ParamName,
 			&row.Caption,
@@ -101,6 +99,8 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 			&row.Required,
 			&row.Type,
 			&row.Detailing,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -118,8 +118,6 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 	sql := `
         SELECT
             fe.tag_version,
-            fe.created_at,
-			fe.updated_at,
 			fe.form_id,
             fe.param_name,
             fe.element_caption,
@@ -127,7 +125,9 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 			fe.template_version,
 			fe.element_required,
             et.element_type,
-            et.element_detailing
+            et.element_detailing,
+            fe.created_at,
+			fe.updated_at
         FROM
             ` + module.DBSchema + `.submit_form_elements fe
         JOIN
@@ -146,8 +146,6 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 		rowID,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.FormID,
 		&row.ParamName,
 		&row.Caption,
@@ -156,6 +154,8 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 		&row.Required,
 		&row.Type,
 		&row.Detailing,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

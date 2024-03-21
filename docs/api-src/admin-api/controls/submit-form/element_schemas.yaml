@@ -12,7 +12,7 @@ Controls.SubmitForms.AdminAPI.Request.Model.CreateFormElement:
     - elementRequired
   properties:
     formId:
-      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+      $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
     paramName:
       $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
@@ -21,7 +21,7 @@ Controls.SubmitForms.AdminAPI.Request.Model.CreateFormElement:
         - maxLength: 64
         - example: "Процесс печати"
     templateId:
-      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+      $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
     elementRequired:
       $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
 
@@ -50,13 +50,9 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormElement:
   type: object
   properties:
     id: # elementId
-      $ref: "#/components/schemas/Custom.Field.Controls.ElementID"
+      $ref: "#/components/schemas/Custom.Field.Controls.FormElementID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     paramName:
       $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
@@ -65,7 +61,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormElement:
         - maxLength: 64
         - example: "Процесс печати"
     templateId:
-      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+      $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
     templateVersion:
       description: Последняя актуальная версия шаблона
       type: integer
@@ -77,3 +73,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormElement:
       $ref: "#/components/schemas/Custom.Enum.FormElementType"
     detailing:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

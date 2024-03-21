@@ -1,0 +1,30 @@
+/v1/dictionaries/paper-factures:
+  get:
+    summary: Метод получения списка фактуры бумаги
+    description: |-
+      Метод предназначен для получения списка фактуры бумаги, сохраненных в БД,
+      со следующими условиями:
+      - isEnabled = true;
+
+      Записи выводятся на языке пользователя или на языке по умолчанию;
+
+      Порядок следования списка:
+      - caption ASC
+
+    operationId: getPaperFactureList
+    tags:
+      - Dictionaries.PaperFacture
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список фактуры бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFactureList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

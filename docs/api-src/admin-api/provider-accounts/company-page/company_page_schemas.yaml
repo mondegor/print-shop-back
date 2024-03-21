@@ -25,7 +25,7 @@ ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage:
       type: string
       maxLength: 64
       example: "company-name"
-    pageHead:
+    pageTitle:
       description: Заголовок страницы компании
       type: string
       maxLength: 128

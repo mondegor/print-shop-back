@@ -80,6 +80,6 @@ type (
 		UUID       *mrparser.UUID
 		Validator  *mrparser.Validator
 		FileJson   *mrparser.File
-		Image      *mrparser.Image
+		ImageLogo  *mrparser.Image
 	}
 )

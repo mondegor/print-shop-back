@@ -31,7 +31,7 @@ func (re *CompanyPagePostgres) NewSelectParams(params entity.CompanyPageParams) 
 	return mrstorage.SqlSelectParams{
 		Where: re.sqlSelect.Where(func(w mrstorage.SqlBuilderWhere) mrstorage.SqlBuilderPartFunc {
 			return w.JoinAnd(
-				w.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(page_head)", "UPPER(site_url)"}, strings.ToUpper(params.Filter.SearchText)),
+				w.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(page_title)", "UPPER(site_url)"}, strings.ToUpper(params.Filter.SearchText)),
 				w.FilterAnyOf("page_status", params.Filter.Statuses),
 			)
 		}),
@@ -48,21 +48,21 @@ func (re *CompanyPagePostgres) NewSelectParams(params entity.CompanyPageParams) 
 }
 
 func (re *CompanyPagePostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.CompanyPage, error) {
-	whereStr, whereArgs := params.Where.ToSql()
+	whereStr, whereArgs := params.Where.WithPrefix(" WHERE ").ToSql()
 
 	sql := `
         SELECT
             account_id,
-            updated_at as updatedAt,
             rewrite_name as rewriteName,
-            page_head as pageHead,
+            page_title as pageTitle,
             COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url as siteUrl,
-            page_status
+            page_status,
+			created_at as createdAt,
+            updated_at as updatedAt
         FROM
-            ` + module.UnitCompanyPageDBSchema + `.companies_pages
-        WHERE
-            ` + whereStr + `
+            ` + module.DBSchema + `.companies_pages
+		` + whereStr + `
         ORDER BY
             ` + params.OrderBy.String() + params.Pager.String() + `;`
 
@@ -85,12 +85,13 @@ func (re *CompanyPagePostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
 
 		err = cursor.Scan(
 			&row.AccountID,
-			&row.UpdatedAt,
 			&row.RewriteName,
-			&row.PageHead,
+			&row.PageTitle,
 			&row.LogoURL,
 			&row.SiteURL,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -104,15 +105,14 @@ func (re *CompanyPagePostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
 }
 
 func (re *CompanyPagePostgres) FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSql()
+	whereStr, whereArgs := where.WithPrefix(" WHERE ").ToSql()
 
 	sql := `
         SELECT
             COUNT(*)
         FROM
-            ` + module.UnitCompanyPageDBSchema + `.companies_pages
-        WHERE
-            ` + whereStr + `;`
+            ` + module.DBSchema + `.companies_pages
+		` + whereStr + `;`
 
 	var totalRow int64
 

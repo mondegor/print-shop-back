@@ -1,0 +1,7 @@
+---
+privileges:
+  - apiProv
+
+permissions:
+  - modFileStation
+  - modProviderAccounts

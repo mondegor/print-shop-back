@@ -190,7 +190,7 @@ func (uc *SubmitForm) checkItem(ctx context.Context, item *entity.SubmitForm) er
 }
 
 func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitForm) error {
-	id, err := uc.storage.FetchIdByRewriteName(ctx, item.ParamName)
+	id, err := uc.storage.FetchIdByRewriteName(ctx, item.RewriteName)
 
 	if err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
@@ -201,7 +201,7 @@ func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitF
 	}
 
 	if item.ID != id {
-		return usecase.FactoryErrSubmitFormRewriteNameAlreadyExists.New(item.ParamName)
+		return usecase.FactoryErrSubmitFormRewriteNameAlreadyExists.New(item.RewriteName)
 	}
 
 	return nil

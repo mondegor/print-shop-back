@@ -1,4 +1,4 @@
-Custom.Field.Dictionaries.Catalog.PaperID:
+Custom.Field.Catalog.PaperID:
   description: Идентификатор бумаги (модуль - Catalog.Paper)
   type: integer
   format: int32

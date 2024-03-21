@@ -42,7 +42,7 @@ func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.Com
 	)
 	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := http_v1.NewCompanyPage(
-		opts.RequestParsers.Parser,
+		opts.RequestParser,
 		opts.ResponseSender,
 		useCase,
 		metaOrderBy,

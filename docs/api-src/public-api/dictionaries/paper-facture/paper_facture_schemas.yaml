@@ -1,0 +1,20 @@
+Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFactureList:
+  description: DTO - список фактуры бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFacture"
+
+Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFacture:
+  description: DTO - фактура бумаги
+  type: object
+  required:
+    - id
+    - caption
+  properties:
+    id: # typeId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Гладкая"

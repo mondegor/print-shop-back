@@ -55,20 +55,16 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
   required:
     - id
     - tagVersion
-    - createdAt
     - caption
     - length
     - width
     - status
+    - createdAt
   properties:
     id: # formatId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
@@ -80,3 +76,7 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

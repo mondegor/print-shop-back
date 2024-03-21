@@ -63,15 +63,15 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SqlSelec
 		SELECT
 			laminate_id,
 			tag_version,
-			created_at as createdAt,
-			updated_at as updatedAt,
 			laminate_article as article,
 			laminate_caption as caption,
 			type_id,
 			laminate_length as length,
 			laminate_weight as weight,
 			laminate_thickness,
-			laminate_status
+			laminate_status,
+			created_at as createdAt,
+			updated_at as updatedAt
 		FROM
 			` + module.DBSchema + `.laminates
 		WHERE
@@ -99,8 +99,6 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SqlSelec
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Article,
 			&row.Caption,
 			&row.TypeID,
@@ -108,6 +106,8 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SqlSelec
 			&row.Weight,
 			&row.Thickness,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -148,15 +148,15 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 	sql := `
 		SELECT
 			tag_version,
-			created_at,
-			updated_at,
 			laminate_article,
 			laminate_caption,
 			type_id,
 			laminate_length,
 			laminate_weight,
 			laminate_thickness,
-			laminate_status
+			laminate_status,
+			created_at,
+			updated_at
 		FROM
 			` + module.DBSchema + `.laminates
 		WHERE
@@ -172,8 +172,6 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Article,
 		&row.Caption,
 		&row.TypeID,
@@ -181,6 +179,8 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 		&row.Weight,
 		&row.Thickness,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

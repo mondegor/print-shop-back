@@ -15,16 +15,15 @@ const (
 
 type (
 	SubmitForm struct { // DB: printshop_controls.submit_forms
-		ID         uuid.UUID  `json:"id"`                                   // form_id
-		TagVersion int32      `json:"tagVersion"`                           // tag_version
-		CreatedAt  time.Time  `json:"createdAt" sort:"createdAt"`           // created_at
-		UpdatedAt  *time.Time `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
-
+		ID          uuid.UUID              `json:"id"` // form_id
+		TagVersion  int32                  `json:"tagVersion"`
 		RewriteName string                 `json:"rewriteName" sort:"rewriteName" upd:"rewrite_name"`
 		ParamName   string                 `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption     string                 `json:"caption" sort:"caption,default" upd:"form_caption"`
 		Detailing   enums.ElementDetailing `json:"detailing"`
-		Status      mrenum.ItemStatus      `json:"status"` // form_status
+		Status      mrenum.ItemStatus      `json:"status"`
+		CreatedAt   time.Time              `json:"createdAt" sort:"createdAt"`
+		UpdatedAt   *time.Time             `json:"updatedAt,omitempty" sort:"updatedAt"`
 
 		Elements []FormElement `json:"elements,omitempty"`
 	}

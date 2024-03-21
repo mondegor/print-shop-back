@@ -16,6 +16,7 @@ type (
 		mrserver.RequestParserListPager
 		mrserver.RequestParserString
 		mrserver.RequestParserValidate
+		mrserver.RequestParserImage
 		view_shared.RequestPublicStatusParser
 	}
 
@@ -27,6 +28,7 @@ type (
 		*mrparser.ListPager
 		*mrparser.String
 		*mrparser.Validator
+		*mrparser.Image
 		*view_shared.PublicStatusParser
 	}
 )
@@ -39,7 +41,8 @@ func NewParser(
 	p5 *mrparser.ListPager,
 	p6 *mrparser.String,
 	p7 *mrparser.Validator,
-	p8 *view_shared.PublicStatusParser,
+	p8 *mrparser.Image,
+	p9 *view_shared.PublicStatusParser,
 ) *Parser {
 	return &Parser{
 		Int64:              p1,
@@ -49,6 +52,7 @@ func NewParser(
 		ListPager:          p5,
 		String:             p6,
 		Validator:          p7,
-		PublicStatusParser: p8,
+		Image:              p8,
+		PublicStatusParser: p9,
 	}
 }

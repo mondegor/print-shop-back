@@ -1,6 +1,6 @@
 App.Field.RewriteName:
   description: |
-    Человеко понятный URL
+    Человекопонятное название используемое в URL
     - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
   type: string
   # pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"

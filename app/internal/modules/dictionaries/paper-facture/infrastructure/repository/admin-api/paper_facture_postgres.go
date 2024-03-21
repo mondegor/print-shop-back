@@ -57,10 +57,10 @@ func (re *PaperFacturePostgres) Fetch(ctx context.Context, params mrstorage.SqlS
         SELECT
             facture_id,
             tag_version,
-            created_at as createdAt,
-			updated_at as updatedAt,
             facture_caption as caption,
-            facture_status
+            facture_status,
+            created_at as createdAt,
+			updated_at as updatedAt
         FROM
             ` + module.DBSchema + `.paper_factures
         WHERE
@@ -88,10 +88,10 @@ func (re *PaperFacturePostgres) Fetch(ctx context.Context, params mrstorage.SqlS
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Caption,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -132,10 +132,10 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
 	sql := `
         SELECT
             tag_version,
-            created_at,
-			updated_at,
             facture_caption,
-            facture_status
+            facture_status,
+            created_at,
+			updated_at
         FROM
             ` + module.DBSchema + `.paper_factures
         WHERE
@@ -151,10 +151,10 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Caption,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.12.3
+# Описание Print Shop Back v0.13.0
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -10,7 +10,7 @@ Web сервис для расчёта стоимости и времени из
 > Перед запуском консольных скриптов сервиса необходимо скачать и установить утилиту Mrcmd.\
 > Инструкция по её установке находится [здесь](https://github.com/mondegor/mrcmd#readme)
 
-## REST API документация v0.2.1
+## REST API документация v0.2.2
 - [API документация в формате OpenAPI/Swagger](./docs/api)
     - [AdminAPI](./docs/api/admin-api)
     - [PublicAPI](./docs/api/public-api)

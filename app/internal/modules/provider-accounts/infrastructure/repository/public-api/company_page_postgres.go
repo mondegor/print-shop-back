@@ -26,11 +26,11 @@ func NewCompanyPagePostgres(
 func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error) {
 	sql := `
         SELECT
-            page_head,
+            page_title,
             COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url
         FROM
-            ` + module.UnitCompanyPageDBSchema + `.companies_pages
+            ` + module.DBSchema + `.companies_pages
         WHERE
             rewrite_name = $1 AND page_status IN ($2, $3)
         LIMIT 1;`
@@ -44,7 +44,7 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 		enums.PublicStatusPublished,
 		enums.PublicStatusPublishedShared,
 	).Scan(
-		&row.PageHead,
+		&row.PageTitle,
 		&row.LogoURL,
 		&row.SiteURL,
 	)

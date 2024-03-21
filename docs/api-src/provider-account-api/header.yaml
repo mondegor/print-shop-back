@@ -1,9 +1,0 @@
-version: v0.2.1
-title: Protected API print-shop
-license:
-  name: Apache-2.0
-  url: https://www.apache.org/licenses/LICENSE-2.0
-contact:
-  name: Andrey Nazarov
-description: |-
-  Protected REST API проекта print-shop

@@ -1,16 +1,19 @@
-Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm:
+Controls.SubmitForms.PublicAPI.Response.Model.FormList:
+  description: DTO - список типов ламината
+  type: array
+  items:
+    $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.Form"
+
+Controls.SubmitForms.PublicAPI.Response.Model.Form:
   description: |-
     DTO - собранная форма пользовательского интерфейса
   type: object
   required:
-    - id
-    - paramName
+    - rewriteName
     - caption
   properties:
-    id: # formId
-      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
-    paramName:
-      $ref: "#/components/schemas/App.Field.VariableCamelCase"
+    rewriteName:
+      $ref: "#/components/schemas/App.Field.RewriteName"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"

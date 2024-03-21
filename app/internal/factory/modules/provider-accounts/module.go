@@ -5,7 +5,6 @@ import (
 	"print-shop-back/internal"
 	view_shared "print-shop-back/internal/modules/provider-accounts/controller/http_v1/shared/view"
 	"print-shop-back/internal/modules/provider-accounts/factory"
-	"print-shop-back/pkg/modules/provider-accounts/enums"
 	view_shared2 "print-shop-back/pkg/modules/provider-accounts/view"
 )
 
@@ -23,25 +22,17 @@ func NewModuleOptions(ctx context.Context, opts app.Options) (factory.Options, e
 		UsecaseHelper:   opts.UsecaseHelper,
 		PostgresAdapter: opts.PostgresAdapter,
 		Locker:          opts.Locker,
-		RequestParsers: factory.RequestParsers{
-			String: opts.RequestParsers.String,
-			Image:  opts.RequestParsers.Image,
-			Parser: view_shared.NewParser(
-				opts.RequestParsers.Int64,
-				opts.RequestParsers.ItemStatus,
-				opts.RequestParsers.KeyInt32,
-				opts.RequestParsers.ListSorter,
-				opts.RequestParsers.ListPager,
-				opts.RequestParsers.String,
-				opts.RequestParsers.Validator,
-				view_shared2.NewPublicStatusWithDefault(
-					[]enums.PublicStatus{
-						enums.PublicStatusPublished,
-						enums.PublicStatusPublishedShared,
-					},
-				),
-			),
-		},
+		RequestParser: view_shared.NewParser(
+			opts.RequestParsers.Int64,
+			opts.RequestParsers.ItemStatus,
+			opts.RequestParsers.KeyInt32,
+			opts.RequestParsers.ListSorter,
+			opts.RequestParsers.ListPager,
+			opts.RequestParsers.String,
+			opts.RequestParsers.Validator,
+			opts.RequestParsers.ImageLogo,
+			view_shared2.NewPublicStatusParser(),
+		),
 		ResponseSender: opts.ResponseSender,
 
 		UnitCompanyPage: factory.UnitCompanyPageOptions{

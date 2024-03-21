@@ -38,9 +38,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
+              $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -93,20 +91,7 @@
 /v1/dictionaries/paper-colors/{colorId}:
   get:
     summary: Метод получения цвета бумаги
-    description: |-
-      Метод предназначен для получения информации о цвете бумаги из БД
-
-      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-      - caption;
-
-      Возможные значения `App.Request.Query.ListSorter.SortField`:
-      - caption,default,asc;
-      - createdAt;
-      - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
-
+    description: Метод предназначен для получения информации о цвете бумаги из БД
     operationId: getPaperColor
     tags:
       - Dictionaries.PaperColor

@@ -61,13 +61,13 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
         SELECT
             template_id,
             tag_version,
-            created_at as createdAt,
-			updated_at as updatedAt,
             param_name as paramName,
             template_caption as caption,
             element_type,
             element_detailing,
-            template_status
+            template_status,
+            created_at as createdAt,
+			updated_at as updatedAt
         FROM
             ` + module.DBSchema + `.element_templates
         WHERE
@@ -95,13 +95,13 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.ParamName,
 			&row.Caption,
 			&row.Type,
 			&row.Detailing,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -142,14 +142,14 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.Ke
 	sql := `
         SELECT
             tag_version,
-            created_at,
-			updated_at,
             param_name,
             template_caption,
             element_type,
             element_detailing,
             element_body,
-            template_status
+            template_status,
+            created_at,
+			updated_at
         FROM
             ` + module.DBSchema + `.element_templates
         WHERE
@@ -165,14 +165,14 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.Ke
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.ParamName,
 		&row.Caption,
 		&row.Type,
 		&row.Detailing,
 		&row.Body,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

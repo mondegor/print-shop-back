@@ -59,12 +59,12 @@ func (re *PrintFormatPostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
         SELECT
             format_id,
             tag_version,
-            created_at as createdAt,
-			updated_at as updatedAt,
             format_caption as caption,
             format_length as length,
             format_width as width,
-            format_status
+            format_status,
+            created_at as createdAt,
+			updated_at as updatedAt
         FROM
             ` + module.DBSchema + `.print_formats
         WHERE
@@ -92,12 +92,12 @@ func (re *PrintFormatPostgres) Fetch(ctx context.Context, params mrstorage.SqlSe
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Caption,
 			&row.Length,
 			&row.Width,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -138,12 +138,12 @@ func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 	sql := `
         SELECT
             tag_version,
-            created_at,
-			updated_at,
             format_caption,
             format_length,
             format_width,
-            format_status
+            format_status,
+            created_at,
+			updated_at
         FROM
             ` + module.DBSchema + `.print_formats
         WHERE
@@ -159,12 +159,12 @@ func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Caption,
 		&row.Length,
 		&row.Width,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

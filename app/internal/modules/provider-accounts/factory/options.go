@@ -9,7 +9,6 @@ import (
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
 
@@ -19,7 +18,7 @@ type (
 		UsecaseHelper   *mrcore.UsecaseHelper
 		PostgresAdapter *mrpostgres.ConnAdapter
 		Locker          mrlock.Locker
-		RequestParsers  RequestParsers
+		RequestParser   *view_shared.Parser
 		ResponseSender  *mrresponse.Sender
 
 		UnitCompanyPage UnitCompanyPageOptions
@@ -31,11 +30,5 @@ type (
 	UnitCompanyPageOptions struct {
 		LogoFileAPI    mrstorage.FileProviderAPI
 		LogoURLBuilder mrlib.BuilderPath
-	}
-
-	RequestParsers struct {
-		String *mrparser.String
-		Image  *mrparser.Image
-		Parser *view_shared.Parser
 	}
 )

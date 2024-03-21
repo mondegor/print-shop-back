@@ -10,7 +10,7 @@ import (
 
 const (
 	appName    = "Print Shop Service"
-	appVersion = "v0.12.3"
+	appVersion = "v0.13.0"
 )
 
 type (
@@ -121,13 +121,13 @@ type (
 				Audience string `yaml:"audience" env:"APPX_ADMIN_API_AUTH_AUDIENCE"`
 			} `yaml:"auth"`
 		} `yaml:"admin_api"`
-		ProviderAccountAPI struct {
+		ProvidersAPI struct {
 			Privilege string `yaml:"privilege"`
 			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_PR_ACCOUNT_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_PR_ACCOUNT_API_AUTH_AUDIENCE"`
+				Secret   string `yaml:"secret" env:"APPX_PROVIDERS_API_AUTH_SECRET"`
+				Audience string `yaml:"audience" env:"APPX_PROVIDERS_API_AUTH_AUDIENCE"`
 			} `yaml:"auth"`
-		} `yaml:"provider_account_api"`
+		} `yaml:"providers_api"`
 		PublicAPI struct {
 			Privilege string `yaml:"privilege"`
 			Auth      struct {

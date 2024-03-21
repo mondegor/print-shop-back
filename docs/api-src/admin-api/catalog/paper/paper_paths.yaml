@@ -61,7 +61,7 @@
       Метод предназначен для создания информации о новой бумаге в БД
 
       **Ограничения и ошибки полей:**
-      - Article: required,unique,min=3,max=32,pattern=article
+      - article: required,unique,min=3,max=32,pattern=article
       - caption: required,max=64
 
     operationId: createPaper

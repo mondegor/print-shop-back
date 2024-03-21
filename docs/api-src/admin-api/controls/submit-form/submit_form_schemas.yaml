@@ -58,21 +58,17 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
   required:
     - id
     - tagVersion
-    - createdAt
     - rewriteName
     - paramName
     - caption
     - detailing
     - status
+    - createdAt
   properties:
     id: # formId
-      $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+      $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     rewriteName:
       $ref: "#/components/schemas/App.Field.RewriteName"
     paramName:
@@ -85,6 +81,10 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
 Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
   description: |-
@@ -92,17 +92,13 @@ Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
   type: object
   required:
     - version
-    - createdAt
     - rewriteName
     - caption
     - activityStatus
+    - createdAt
   properties:
     version:
       $ref: "#/components/schemas/App.Field.Int32"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     rewriteName:
       $ref: "#/components/schemas/App.Field.RewriteName"
     caption:
@@ -111,6 +107,10 @@ Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
         - example: "Листовая продукция"
     activityStatus:
       $ref: "#/components/schemas/Custom.Enum.SubmitFormActivityStatus"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
 Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems:
   allOf:

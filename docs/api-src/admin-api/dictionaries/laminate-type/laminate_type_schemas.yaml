@@ -25,7 +25,7 @@ Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType:
         - maxLength: 64
         - example: "Глянцевый"
 
-Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList:
+Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList:
   description: DTO - список типов ламината
   type: object
   required:
@@ -46,18 +46,14 @@ Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType:
   required:
     - id
     - tagVersion
-    - createdAt
     - caption
     - status
+    - createdAt
   properties:
     id: # typeId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
@@ -65,3 +61,7 @@ Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType:
         - example: "Глянцевый"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

@@ -65,8 +65,6 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPa
 		SELECT
 			paper_id,
 			tag_version,
-			created_at as createdAt,
-			updated_at as updatedAt,
 			paper_article as article,
 			paper_caption as caption,
 			color_id,
@@ -76,7 +74,9 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPa
 			paper_density as density,
 			paper_thickness,
 			paper_sides,
-			paper_status
+			paper_status,
+			created_at as createdAt,
+			updated_at as updatedAt
 		FROM
 			` + module.DBSchema + `.papers
 		WHERE
@@ -104,8 +104,6 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPa
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Article,
 			&row.Caption,
 			&row.ColorID,
@@ -116,6 +114,8 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPa
 			&row.Thickness,
 			&row.Sides,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -156,8 +156,6 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 	sql := `
 		SELECT
 			tag_version,
-			created_at,
-			updated_at,
 			paper_article,
 			paper_caption,
 			color_id,
@@ -167,7 +165,9 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 			paper_density,
 			paper_thickness,
 			paper_sides,
-			paper_status
+			paper_status,
+			created_at,
+			updated_at
 		FROM
 			` + module.DBSchema + `.papers
 		WHERE
@@ -183,8 +183,6 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Article,
 		&row.Caption,
 		&row.ColorID,
@@ -195,6 +193,8 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 		&row.Thickness,
 		&row.Sides,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

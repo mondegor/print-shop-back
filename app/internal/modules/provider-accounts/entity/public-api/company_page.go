@@ -5,9 +5,9 @@ const (
 )
 
 type (
-	CompanyPage struct { // DB: printshop_provider_accounts.companies_pages
-		PageHead string `json:"pageHead"`          // page_head
-		LogoURL  string `json:"logoUrl,omitempty"` // logo_meta.path
-		SiteURL  string `json:"siteUrl"`           // site_url
+	CompanyPage struct { // DB: printshop_providers.companies_pages
+		PageTitle string `json:"pageTitle"`
+		LogoURL   string `json:"logoUrl,omitempty"` // logo_meta.path
+		SiteURL   string `json:"siteUrl"`
 	}
 )

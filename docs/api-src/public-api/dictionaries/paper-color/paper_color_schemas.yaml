@@ -1,0 +1,20 @@
+Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColorList:
+  description: DTO - список цветов бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColor"
+
+Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColor:
+  description: DTO - цвет бумаги
+  type: object
+  required:
+    - id
+    - caption
+  properties:
+    id: # typeId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Белый"

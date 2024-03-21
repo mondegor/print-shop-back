@@ -1,8 +1,8 @@
 -- --------------------------------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS printshop_provider_accounts.companies_pages;
+DROP TABLE IF EXISTS printshop_providers.companies_pages;
 
-DROP SCHEMA printshop_provider_accounts;
+DROP SCHEMA printshop_providers;
 
 -- --------------------------------------------------------------------------------------------------
 

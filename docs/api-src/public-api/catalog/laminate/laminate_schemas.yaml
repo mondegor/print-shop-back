@@ -1,0 +1,35 @@
+Catalog.Laminates.PublicAPI.Response.Model.LaminateList:
+  description: DTO - список ламината
+  type: array
+  items:
+    $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.Laminate"
+
+Catalog.Laminates.PublicAPI.Response.Model.Laminate:
+  description: DTO - ламинат
+  type: object
+  required:
+    - id
+    - article
+    - caption
+    - typeId
+    - length
+    - weight
+    - thickness
+  properties:
+    id: # laminateId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый 450"
+    typeId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"

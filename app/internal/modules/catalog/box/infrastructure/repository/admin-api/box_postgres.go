@@ -63,14 +63,14 @@ func (re *BoxPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPara
 		SELECT
 			box_id,
 			tag_version,
-			created_at as createdAt,
-			updated_at as updatedAt,
 			box_article as article,
 			box_caption as caption,
 			box_length as length,
 			box_width as width,
 			box_depth as depth,
-			box_status
+			box_status,
+			created_at as createdAt,
+			updated_at as updatedAt
 		FROM
 			` + module.DBSchema + `.boxes
 		WHERE
@@ -98,14 +98,14 @@ func (re *BoxPostgres) Fetch(ctx context.Context, params mrstorage.SqlSelectPara
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Article,
 			&row.Caption,
 			&row.Length,
 			&row.Width,
 			&row.Depth,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -146,14 +146,14 @@ func (re *BoxPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (ent
 	sql := `
 		SELECT
 			tag_version,
-			created_at,
-			updated_at,
 			box_article,
 			box_caption,
 			box_length,
 			box_width,
 			box_depth,
-			box_status
+			box_status,
+			created_at,
+			updated_at
 		FROM
 			` + module.DBSchema + `.boxes
 		WHERE
@@ -169,14 +169,14 @@ func (re *BoxPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (ent
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Article,
 		&row.Caption,
 		&row.Length,
 		&row.Width,
 		&row.Depth,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

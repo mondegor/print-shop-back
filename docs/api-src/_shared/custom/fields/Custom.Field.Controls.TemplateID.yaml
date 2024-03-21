@@ -1,6 +1,0 @@
-Custom.Field.Controls.TemplateID:
-  description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
-  type: integer
-  format: int32
-  minimum: 1
-  example: 2

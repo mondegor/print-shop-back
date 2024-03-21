@@ -46,18 +46,14 @@ Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture:
   required:
     - id
     - tagVersion
-    - createdAt
     - caption
     - status
+    - createdAt
   properties:
     id: # factureId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
@@ -65,3 +61,7 @@ Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture:
         - example: "Гладкая"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

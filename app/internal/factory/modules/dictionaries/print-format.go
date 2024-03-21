@@ -33,7 +33,7 @@ func NewPrintFormatModuleOptions(ctx context.Context, opts app.Options) (factory
 		),
 		ResponseSender: opts.ResponseSender,
 
-		UnitPrintFormatFacture: factory.UnitPrintFormatOptions{
+		UnitPrintFormat: factory.UnitPrintFormatOptions{
 			Dictionary: printFormatDictionary,
 		},
 

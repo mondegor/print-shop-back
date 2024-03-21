@@ -1,0 +1,32 @@
+Catalog.Boxes.PublicAPI.Response.Model.BoxList:
+  description: DTO - список упаковочных коробок
+  type: array
+  items:
+    $ref: "#/components/schemas/Catalog.Boxes.PublicAPI.Response.Model.Box"
+
+Catalog.Boxes.PublicAPI.Response.Model.Box:
+  description: DTO - упаковочная коробка
+  type: object
+  required:
+    - id
+    - article
+    - caption
+    - length
+    - width
+    - depth
+  properties:
+    id: # boxId
+      $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "СДЭК"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    depth:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"

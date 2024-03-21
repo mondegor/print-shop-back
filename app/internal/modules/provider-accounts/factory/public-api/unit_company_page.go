@@ -26,7 +26,7 @@ func newUnitCompanyPage(ctx context.Context, opts factory.Options) (*http_v1.Com
 	storage := repository.NewCompanyPagePostgres(opts.PostgresAdapter)
 	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper)
 	controller := http_v1.NewCompanyPage(
-		opts.RequestParsers.String,
+		opts.RequestParser,
 		opts.ResponseSender,
 		useCase,
 		opts.UnitCompanyPage.LogoURLBuilder,

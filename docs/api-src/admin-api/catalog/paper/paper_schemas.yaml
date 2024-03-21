@@ -85,7 +85,6 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
   required:
     - id
     - tagVersion
-    - createdAt
     - article
     - caption
     - colorId
@@ -96,15 +95,12 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
     - thickness
     - sides
     - status
+    - createdAt
   properties:
     id: # paperId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
+      $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     article:
       $ref: "#/components/schemas/App.Field.Article"
     caption:
@@ -128,3 +124,7 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
       $ref: "#/components/schemas/Custom.Enum.PaperSides"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

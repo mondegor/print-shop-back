@@ -57,10 +57,10 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SqlSel
         SELECT
             color_id,
             tag_version,
-            created_at as createdAt,
-			updated_at as updatedAt,
             color_caption as caption,
-            color_status
+            color_status,
+            created_at as createdAt,
+			updated_at as updatedAt
         FROM
             ` + module.DBSchema + `.paper_colors
         WHERE
@@ -88,10 +88,10 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SqlSel
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.Caption,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -132,10 +132,10 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt3
 	sql := `
         SELECT
             tag_version,
-            created_at,
-			updated_at,
             color_caption,
-            color_status
+            color_status,
+            created_at,
+			updated_at
         FROM
             ` + module.DBSchema + `.paper_colors
         WHERE
@@ -151,10 +151,10 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt3
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.Caption,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

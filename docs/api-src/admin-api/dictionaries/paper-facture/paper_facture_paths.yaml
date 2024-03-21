@@ -38,9 +38,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
+              $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -93,20 +91,7 @@
 /v1/dictionaries/paper-factures/{factureId}:
   get:
     summary: Метод получения фактуры бумаги
-    description: |-
-      Метод предназначен для получения информации о фактуре бумаги из БД
-
-      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-      - caption;
-
-      Возможные значения `App.Request.Query.ListSorter.SortField`:
-      - caption,default,asc;
-      - createdAt;
-      - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
-
+    description: Метод предназначен для получения информации о фактуре бумаги из БД
     operationId: getPaperFacture
     tags:
       - Dictionaries.PaperFacture

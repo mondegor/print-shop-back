@@ -1,10 +1,10 @@
 package module
 
 const (
-	Name = "ProviderAccounts"
+	Name       = "ProviderAccounts"
+	Permission = "modProviderAccounts"
+	DBSchema   = "printshop_providers"
 
-	UnitCompanyPageName       = Name + ".CompanyPage"
-	UnitCompanyPagePermission = "modProviderAccountsCompanyPage"
-	UnitCompanyPageDBSchema   = "printshop_provider_accounts"
+	UnitCompanyPagePermission = Permission
 	UnitCompanyPageLogoDir    = "provider-account/companies-logo"
 )

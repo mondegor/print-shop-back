@@ -1,7 +1,0 @@
----
-privileges:
-  - apiProviderAccount
-
-permissions:
-  - modFileStation
-  - modProviderAccountsCompanyPage

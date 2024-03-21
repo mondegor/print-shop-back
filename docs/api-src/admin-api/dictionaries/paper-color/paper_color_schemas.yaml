@@ -46,18 +46,14 @@ Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
   required:
     - id
     - tagVersion
-    - createdAt
     - caption
     - status
+    - createdAt
   properties:
     id: # colorId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
@@ -65,3 +61,7 @@ Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
         - example: "Белый"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

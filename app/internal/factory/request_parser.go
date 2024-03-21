@@ -44,12 +44,24 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 			mrparser.FileOptions{
 				AllowedExts:             []string{".json"},
 				MinSize:                 512,
-				MaxSize:                 1024 * 1024,
+				MaxSize:                 512 * 1024, // 512Kb
 				MaxFiles:                4,
 				CheckRequestContentType: true,
 			},
 		),
-		Image: mrparser.NewImage(mrparser.ImageOptions{}),
+		ImageLogo: mrparser.NewImage(
+			mrparser.ImageOptions{
+				File: mrparser.FileOptions{
+					AllowedExts:             []string{".jpeg", ".jpg", ".png"},
+					MinSize:                 512,
+					MaxSize:                 128 * 1024, // 128Kb
+					CheckRequestContentType: true,
+				},
+				MaxWidth:  1024,
+				MaxHeight: 1024,
+				CheckBody: true,
+			},
+		),
 	}, nil
 }
 

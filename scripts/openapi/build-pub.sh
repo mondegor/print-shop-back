@@ -3,10 +3,20 @@ mrcmd_func_openapi_build_pub() {
   local sectionDir="${1:?}" # sample: .../admin-api, .../public-api
   local sharedDir="${2:?}" # sample: .../_shared
 
+  local catalogDir="${sectionDir}/catalog"
+  local boxDir="${catalogDir}/box"
+  local laminateDir="${catalogDir}/laminate"
+  local paperDir="${catalogDir}/paper"
+
   local companyPageDir="${sectionDir}/company-page"
 
   local controlsDir="${sectionDir}/controls"
   local submitFormDir="${controlsDir}/submit-form"
+
+  local dictionariesDir="${sectionDir}/dictionaries"
+  local laminateTypeDir="${dictionariesDir}/laminate-type"
+  local paperColorDir="${dictionariesDir}/paper-color"
+  local paperFactureDir="${dictionariesDir}/paper-facture"
 
   local fileStationDir="${sectionDir}/file-station"
 
@@ -24,16 +34,36 @@ mrcmd_func_openapi_build_pub() {
   OPENAPI_TAGS=(
     "${sharedDir}/system/tags.yaml"
 
+    "${boxDir}/tags.yaml"
+    "${laminateDir}/tags.yaml"
+    "${paperDir}/tags.yaml"
+
     "${companyPageDir}/tags.yaml"
+
     "${submitFormDir}/tags.yaml"
+
+    "${laminateTypeDir}/tags.yaml"
+    "${paperColorDir}/tags.yaml"
+    "${paperFactureDir}/tags.yaml"
+
     "${fileStationDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
     "${sharedDir}/system/paths.yaml"
 
+    "${boxDir}/box_paths.yaml"
+    "${laminateDir}/laminate_paths.yaml"
+    "${paperDir}/paper_paths.yaml"
+
     "${companyPageDir}/company_page_paths.yaml"
+
     "${submitFormDir}/submit_form_paths.yaml"
+
+    "${laminateTypeDir}/laminate_type_paths.yaml"
+    "${paperColorDir}/paper_color_paths.yaml"
+    "${paperFactureDir}/paper_facture_paths.yaml"
+
     "${fileStationDir}/paths.yaml"
   )
 
@@ -58,8 +88,18 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
+    # "${boxDir}/box_parameters.yaml"
+    # "${laminateDir}/laminate_parameters.yaml"
+    # "${paperDir}/paper_parameters.yaml"
+
     "${companyPageDir}/company_page_parameters.yaml"
+
     "${submitFormDir}/submit_form_parameters.yaml"
+
+    # "${laminateTypeDir}/laminate_type_parameters.yaml"
+    # "${paperColorDir}/paper_color_parameters.yaml"
+    # "${paperFactureDir}/paper_facture_parameters.yaml"
+
     "${fileStationDir}/parameters.yaml"
   )
 
@@ -69,9 +109,9 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/enums/App.Enum.Gender.yaml"
     # "${sharedDir}/components/enums/App.Enum.Status.yaml"
 
-    # "${sharedDir}/components/fields/App.Field.Article.yaml"
+    "${sharedDir}/components/fields/App.Field.Article.yaml"
     # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
-    # "${sharedDir}/components/fields/App.Field.Caption.yaml"
+    "${sharedDir}/components/fields/App.Field.Caption.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.Date.yaml"
@@ -90,8 +130,8 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
@@ -112,24 +152,34 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
+    "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
 
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.PaperID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.FormID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.TemplateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Catalog.PaperID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementTemplateID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.FormElementID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Controls.SubmitFormID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
 
     "${sharedDir}/system/schemas.yaml"
 
     "${companyPageDir}/company_page_schemas.yaml"
+
+    "${boxDir}/box_schemas.yaml"
+    "${laminateDir}/laminate_schemas.yaml"
+    "${paperDir}/paper_schemas.yaml"
+
+    "${laminateTypeDir}/laminate_type_schemas.yaml"
+    "${paperColorDir}/paper_color_schemas.yaml"
+    "${paperFactureDir}/paper_facture_schemas.yaml"
+
     "${submitFormDir}/submit_form_schemas.yaml"
+
     "${fileStationDir}/schemas.yaml"
   )
 

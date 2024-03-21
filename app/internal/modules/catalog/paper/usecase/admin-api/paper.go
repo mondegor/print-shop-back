@@ -4,7 +4,7 @@ import (
 	"context"
 	entity "print-shop-back/internal/modules/catalog/paper/entity/admin-api"
 	usecase_shared "print-shop-back/internal/modules/catalog/paper/usecase/shared"
-	catalog "print-shop-back/pkg/modules/dictionaries"
+	"print-shop-back/pkg/modules/dictionaries"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
@@ -16,8 +16,8 @@ import (
 type (
 	Paper struct {
 		storage         PaperStorage
-		paperColorAPI   catalog.PaperColorAPI
-		paperFactureAPI catalog.PaperFactureAPI
+		paperColorAPI   dictionaries.PaperColorAPI
+		paperFactureAPI dictionaries.PaperFactureAPI
 		eventEmitter    mrsender.EventEmitter
 		usecaseHelper   *mrcore.UsecaseHelper
 		statusFlow      mrenum.StatusFlow
@@ -26,8 +26,8 @@ type (
 
 func NewPaper(
 	storage PaperStorage,
-	paperColorAPI catalog.PaperColorAPI,
-	paperFactureAPI catalog.PaperFactureAPI,
+	paperColorAPI dictionaries.PaperColorAPI,
+	paperFactureAPI dictionaries.PaperFactureAPI,
 	eventEmitter mrsender.EventEmitter,
 	usecaseHelper *mrcore.UsecaseHelper,
 ) *Paper {

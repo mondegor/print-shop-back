@@ -22,7 +22,7 @@ func NewPublicStatusParser() *PublicStatusParser {
 	return &PublicStatusParser{}
 }
 
-func NewPublicStatusWithDefault(items []enums.PublicStatus) *PublicStatusParser {
+func NewPublicStatusParserWithDefault(items []enums.PublicStatus) *PublicStatusParser {
 	return &PublicStatusParser{
 		defaultItems: items,
 	}

@@ -1,7 +1,15 @@
 ---
 privileges:
-  - apiPublic
+  - apiPub
 
 permissions:
+  - modCatalogBox
+  - modCatalogPaper
+  - modCatalogLaminate
+  - modControlsSubmitForm
+  - modDictionariesLaminateType
+  - modDictionariesPaperColor
+  - modDictionariesPaperFacture
+  - modDictionariesPrintFormat
   - modFileStation
-  - modProviderAccountsCompanyPage
+  - modProviderAccounts

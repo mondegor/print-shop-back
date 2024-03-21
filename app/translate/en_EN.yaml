@@ -51,3 +51,6 @@ errors:
 
   validator_err_lte:
     reason: "The field value must be less than or equal to {{ .param }} (current value: {{ .value }})"
+
+  validator_err_http_url:
+    reason: "The field value must be URL (current value: {{ .value }})"

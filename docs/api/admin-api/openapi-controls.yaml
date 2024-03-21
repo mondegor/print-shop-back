@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.1
+  version: v0.2.2
   title: Private API print-shop управления пользовательскими интерфейсами
   license:
     name: Apache-2.0
@@ -1033,7 +1033,7 @@ components:
 
     App.Field.RewriteName:
       description: |
-        Человеко понятный URL
+        Человекопонятное название используемое в URL
         - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
       type: string
       # pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
@@ -1199,25 +1199,25 @@ components:
         - ARCHIVED
       example: "PUBLISHED"
 
-    Custom.Field.Controls.ElementID:
+    Custom.Field.Controls.ElementTemplateID:
+      description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Controls.FormElementID:
       description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
-    Custom.Field.Controls.FormID:
+    Custom.Field.Controls.SubmitFormID:
       description: Идентификатор формы (модуль - Controls.SubmitForm)
       type: string
       format: uuid
       example: "1be2be72-2cac-45d3-8dda-2476fcc600f0"
-
-    Custom.Field.Controls.TemplateID:
-      description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
 
     Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
       description: DTO добавления нового json шаблона элемента (multipart)
@@ -1302,13 +1302,9 @@ components:
       type: object
       properties:
         id: # templateId
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -1322,6 +1318,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
       description: DTO добавления новой формы
@@ -1383,21 +1383,17 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - rewriteName
         - paramName
         - caption
         - detailing
         - status
+        - createdAt
       properties:
         id: # formId
-          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+          $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         rewriteName:
           $ref: "#/components/schemas/App.Field.RewriteName"
         paramName:
@@ -1410,6 +1406,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
       description: |-
@@ -1417,17 +1417,13 @@ components:
       type: object
       required:
         - version
-        - createdAt
         - rewriteName
         - caption
         - activityStatus
+        - createdAt
       properties:
         version:
           $ref: "#/components/schemas/App.Field.Int32"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         rewriteName:
           $ref: "#/components/schemas/App.Field.RewriteName"
         caption:
@@ -1436,6 +1432,10 @@ components:
             - example: "Листовая продукция"
         activityStatus:
           $ref: "#/components/schemas/Custom.Enum.SubmitFormActivityStatus"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems:
       allOf:
@@ -1465,7 +1465,7 @@ components:
         - elementRequired
       properties:
         formId:
-          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+          $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -1474,7 +1474,7 @@ components:
             - maxLength: 64
             - example: "Процесс печати"
         templateId:
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         elementRequired:
           $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
 
@@ -1503,13 +1503,9 @@ components:
       type: object
       properties:
         id: # elementId
-          $ref: "#/components/schemas/Custom.Field.Controls.ElementID"
+          $ref: "#/components/schemas/Custom.Field.Controls.FormElementID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -1518,7 +1514,7 @@ components:
             - maxLength: 64
             - example: "Процесс печати"
         templateId:
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         templateVersion:
           description: Последняя актуальная версия шаблона
           type: integer
@@ -1530,6 +1526,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementType"
         detailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
   responses:
     App.ResponseJson.Error400:

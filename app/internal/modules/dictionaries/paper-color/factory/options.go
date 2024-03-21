@@ -18,31 +18,13 @@ type (
 		RequestParser   *view_shared.Parser
 		ResponseSender  *mrresponse.Sender
 
-		UnitLaminateType       UnitLaminateTypeOptions
-		UnitPaperColor         UnitPaperColorOptions
-		UnitPaperFacture       UnitPaperFactureOptions
-		UnitPrintFormatFacture UnitPrintFormatOptions
+		UnitPaperColor UnitPaperColorOptions
 
 		PageSizeMax     uint64
 		PageSizeDefault uint64
 	}
 
-	UnitLaminateTypeOptions struct {
-		Dictionary *mrlang.MultiLangDictionary
-	}
-
 	UnitPaperColorOptions struct {
 		Dictionary *mrlang.MultiLangDictionary
 	}
-
-	UnitPaperFactureOptions struct {
-		Dictionary *mrlang.MultiLangDictionary
-	}
-
-	UnitPrintFormatOptions struct {
-		Dictionary *mrlang.MultiLangDictionary
-	}
-
-	PageSizeMax     uint64
-	PageSizeDefault uint64
 )

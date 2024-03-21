@@ -51,3 +51,6 @@ errors:
 
   validator_err_lte:
     reason: "Значение поля должно быть меньше или равно {{ .param }} (текущее значение: {{ .value }})"
+
+  validator_err_http_url:
+    reason: "Значение поля должно быть URL (текущее значение: {{ .value }})"

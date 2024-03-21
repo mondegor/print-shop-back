@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.1
+  version: v0.2.2
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -87,9 +87,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -322,9 +320,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
+                $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -377,20 +373,7 @@ paths:
   /v1/dictionaries/paper-colors/{colorId}:
     get:
       summary: Метод получения цвета бумаги
-      description: |-
-        Метод предназначен для получения информации о цвете бумаги из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о цвете бумаги из БД
       operationId: getPaperColor
       tags:
         - Dictionaries.PaperColor
@@ -570,9 +553,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
+                $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -625,20 +606,7 @@ paths:
   /v1/dictionaries/paper-factures/{factureId}:
     get:
       summary: Метод получения фактуры бумаги
-      description: |-
-        Метод предназначен для получения информации о фактуре бумаги из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о фактуре бумаги из БД
       operationId: getPaperFacture
       tags:
         - Dictionaries.PaperFacture
@@ -822,9 +790,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -877,20 +843,7 @@ paths:
   /v1/dictionaries/print-formats/{formatId}:
     get:
       summary: Метод получения печатного формата
-      description: |-
-        Метод предназначен для получения информации о печатном формате из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о печатном формате из БД
       operationId: getPrintFormat
       tags:
         - Dictionaries.PrintFormat
@@ -1391,7 +1344,7 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList:
+    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList:
       description: DTO - список типов ламината
       type: object
       required:
@@ -1412,18 +1365,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # typeId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1431,6 +1380,10 @@ components:
             - example: "Глянцевый"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor:
       description: DTO добавления нового цвета бумаги
@@ -1480,18 +1433,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # colorId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1499,6 +1448,10 @@ components:
             - example: "Белый"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture:
       description: DTO добавления нового фактуры бумаги
@@ -1548,18 +1501,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # factureId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1567,6 +1516,10 @@ components:
             - example: "Гладкая"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
       description: DTO добавления нового печатного формата
@@ -1625,20 +1578,16 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - length
         - width
         - status
+        - createdAt
       properties:
         id: # formatId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -1650,6 +1599,10 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
   responses:
     App.ResponseJson.Error400:

@@ -1,0 +1,175 @@
+/v1/account/company-page:
+  get:
+    summary: Метод получения страницы компании
+    description: Метод предназначен для получения информации о странице компании текущего аккаунта из БД
+    operationId: getCompanyPage
+    tags:
+      - Account.CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получена информация о странице компании текущего аккаунта
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Response.Model.CompanyPage"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  patch:
+    summary: Метод сохранения страницы компании
+    description: |-
+      Метод предназначен для сохранения страницы компании текущего аккаунта в БД
+
+      **Ограничения и ошибки полей:**
+      - rewriteName: required,unique,min=4,max=32,pattern=rewrite_name
+      - pageTitle: required,max=128
+      - siteURL: omitempty,max=512,pattern=http_url
+
+    operationId: storeCompanyPage
+    tags:
+      - Account.CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage"
+
+    responses:
+      "204":
+        description: Информация о страницы компании текущего аккаунта успешно сохранена
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/account/company-page/status:
+  patch:
+    summary: Метод изменения статуса публикации страницы компании
+    description: |-
+      Метод предназначен для изменения статуса публикации страницы компании текущего аккаунта в БД
+
+      **Ограничения и ошибки полей:**
+      - status: required,enum | ErrSwitchStatusRejected
+
+    operationId: changeCompanyPageStatus
+    tags:
+      - Account.CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus"
+
+    responses:
+      "204":
+        description: Статус публикации страницы компании текущего аккаунта успешно изменён
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/account/company-page/logo:
+  patch:
+    summary: Метод сохранения логотипа компании
+    description: |-
+      Метод предназначен для загрузки и сохранения нового логотипа компании на её страницу
+      для текущего аккаунта в файловое хранилище.
+
+      **Ограничения и ошибки полей:**
+      - file: size=100Kb; ext=[.jpg, .png]
+
+    operationId: uploadCompanyPageLogo
+    tags:
+      - Account.CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              companyLogo:
+                description: Бинарный файл с расширением JPEG, PNG
+                type:  string
+                format: binary
+                maxLength: 262144 # 256Kb
+
+    responses:
+      "204":
+        description: Логотип компании текущего аккаунта был сохранён
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления логотипа компании
+    description: Метод предназначен для удаления логотипа компании текущего аккаунта из БД
+    operationId: removeCompanyPageLogo
+    tags:
+      - Account.CompanyPage
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "204":
+        description: Логотип компании текущего пользователя успешно удалён
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

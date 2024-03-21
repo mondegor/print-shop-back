@@ -47,8 +47,12 @@ func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPagePar
 	}
 
 	for i := range items {
-		items[i].LogoURL = uc.imgBaseURL.FullPath(items[i].LogoURL)
+		uc.prepareItem(&items[i])
 	}
 
 	return items, total, nil
+}
+
+func (uc *CompanyPage) prepareItem(item *entity.CompanyPage) {
+	item.LogoURL = uc.imgBaseURL.FullPath(item.LogoURL)
 }

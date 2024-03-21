@@ -4,6 +4,7 @@ import (
 	"print-shop-back/pkg/modules/provider-accounts/enums"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
@@ -12,16 +13,15 @@ const (
 )
 
 type (
-	CompanyPage struct { // DB: printshop_provider_accounts.companies_pages
-		AccountID mrtype.KeyString `json:"accountId"`                            // account_id
-		UpdatedAt *time.Time       `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
-
-		RewriteName string `json:"rewriteName" sort:"rewriteName"`   // rewrite_name
-		PageHead    string `json:"pageHead" sort:"pageHead,default"` // page_head
-		LogoURL     string `json:"logoUrl,omitempty"`                // logo_meta.path
-		SiteURL     string `json:"siteUrl" sort:"siteUrl"`           // site_url
-
-		Status enums.PublicStatus `json:"status"` // page_status
+	CompanyPage struct { // DB: printshop_providers.companies_pages
+		AccountID   uuid.UUID          `json:"accountId"` // account_id
+		RewriteName string             `json:"rewriteName" sort:"rewriteName"`
+		PageTitle   string             `json:"pageTitle" sort:"pageTitle,default"`
+		LogoURL     string             `json:"logoUrl,omitempty"` // logo_meta.path
+		SiteURL     string             `json:"siteUrl" sort:"siteUrl"`
+		Status      enums.PublicStatus `json:"status"`
+		CreatedAt   time.Time          `json:"createdAt" sort:"createdAt"`
+		UpdatedAt   *time.Time         `json:"updatedAt,omitempty" sort:"updatedAt"`
 	}
 
 	CompanyPageParams struct {

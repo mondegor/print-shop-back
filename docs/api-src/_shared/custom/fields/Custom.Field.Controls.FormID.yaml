@@ -1,5 +1,0 @@
-Custom.Field.Controls.FormID:
-  description: Идентификатор формы (модуль - Controls.SubmitForm)
-  type: string
-  format: uuid
-  example: "1be2be72-2cac-45d3-8dda-2476fcc600f0"

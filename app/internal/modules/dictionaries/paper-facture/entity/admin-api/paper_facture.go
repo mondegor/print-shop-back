@@ -13,14 +13,12 @@ const (
 
 type (
 	PaperFacture struct { // DB: printshop_dictionaries.paper_factures
-		ID         mrtype.KeyInt32 `json:"id"`                                   // facture_id
-		TagVersion int32           `json:"tagVersion"`                           // tag_version
-		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
-		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
-
-		Caption string `json:"caption" sort:"caption,default"` // facture_caption
-
-		Status mrenum.ItemStatus `json:"status"` // facture_status
+		ID         mrtype.KeyInt32   `json:"id"` // facture_id
+		TagVersion int32             `json:"tagVersion"`
+		Caption    string            `json:"caption" sort:"caption,default"`
+		Status     mrenum.ItemStatus `json:"status"`
+		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  *time.Time        `json:"updatedAt,omitempty" sort:"updatedAt"`
 	}
 
 	PaperFactureParams struct {

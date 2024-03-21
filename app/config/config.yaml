@@ -89,13 +89,13 @@ app_sections:
     auth:
       secret: "The secret for symmetric security key"
       audience: "127.0.0.1:80"
-  provider_account_api:
-    privilege: apiProviderAccount
+  providers_api:
+    privilege: apiProv
     auth:
       secret: "The secret for symmetric security key"
       audience: "127.0.0.1:80"
   public_api:
-    privilege: apiPublic
+    privilege: apiPub
     auth:
       secret: "The secret for symmetric security key"
       audience: "127.0.0.1:80"
@@ -107,24 +107,23 @@ access_control:
     list: # the first role is the guest role
       - guests
       - administrators
-      - provider-accounts
+      - providers
   privileges:
     - apiAdm
-    - apiProviderAccount
-    - apiPublic
+    - apiProv
+    - apiPub
   permissions:
     - modCatalogBox
     - modCatalogPaper
     - modCatalogLaminate
-    - modControlsSubmitForm
-    - modControlsFormElement
     - modControlsElementTemplate
+    - modControlsSubmitForm
+    - modDictionariesLaminateType
     - modDictionariesPaperColor
     - modDictionariesPaperFacture
     - modDictionariesPrintFormat
-    - modDictionariesLaminateType
     - modFileStation
-    - modProviderAccountsCompanyPage
+    - modProviderAccounts
 
 modules_settings:
   general:

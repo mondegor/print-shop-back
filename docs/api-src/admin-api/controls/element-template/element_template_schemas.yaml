@@ -81,13 +81,9 @@ Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
   type: object
   properties:
     id: # templateId
-      $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+      $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
-    createdAt:
-      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
-      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
     paramName:
       $ref: "#/components/schemas/App.Field.VariableCamelCase"
     caption:
@@ -101,3 +97,7 @@ Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplate:
       $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

@@ -1,6 +1,22 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-03-21
+### Added
+- Добавлены public методы и их API описание для модулей каталога и справочников;
+
+### Changed
+- Обновлена структура БД (в том числе поля created_at и updated_at размещены внизу таблицы);
+- В `factory.NewRestServer` создание модулей вынесено в методы подобные этому:
+  `registerAdminAPIControllers`;
+- Переименовано:
+    - `ProviderAccountAPI -> ProvidersAPI`;
+    - `CompanyPage.PageHead -> PageTitle`;
+    - `Custom.Field.Controls.ElementID -> Custom.Field.Controls.FormElementID`;
+    - `Custom.Field.Controls.TemplateID -> Custom.Field.Controls.ElementTemplateID`;
+    - `Custom.Field.Controls.FormID -> Custom.Field.Controls.SubmitFormID`;
+- Добавлено описание ошибки `validator_err_http_url` для `http_url` валидатора;
+
 ## 2024-03-19
 ### Added
 - Добавлен `App.Response.Model.SuccessCreatedItemInt32` в API и в `pkg`;

@@ -1,0 +1,30 @@
+/v1/catalog/laminates:
+  get:
+    summary: Метод получения списка ламината
+    description: |-
+      Метод предназначен для получения списка ламината, сохраненных в БД,
+      со следующими условиями:
+      - isEnabled = true;
+
+      Записи выводятся на языке пользователя или на языке по умолчанию;
+
+      Порядок следования списка:
+      - caption ASC
+
+    operationId: getLaminateList
+    tags:
+      - Catalog.Laminate
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список ламината
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

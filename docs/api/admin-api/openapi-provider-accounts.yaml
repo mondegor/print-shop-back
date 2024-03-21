@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.1
+  version: v0.2.2
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0
@@ -266,7 +266,7 @@ components:
           type: string
           maxLength: 64
           example: "company-name"
-        pageHead:
+        pageTitle:
           description: Заголовок страницы компании
           type: string
           maxLength: 128

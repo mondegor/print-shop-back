@@ -14,16 +14,14 @@ const (
 
 type (
 	PrintFormat struct { // DB: printshop_dictionaries.print_format
-		ID         mrtype.KeyInt32 `json:"id"`                                   // format_id
-		TagVersion int32           `json:"tagVersion"`                           // tag_version
-		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`           // created_at
-		UpdatedAt  *time.Time      `json:"updatedAt,omitempty" sort:"updatedAt"` // updated_at
-
-		Caption string             `json:"caption" sort:"caption,default"` // format_caption
-		Length  measure.Micrometer `json:"length" sort:"length"`           // format_length (mm)
-		Width   measure.Micrometer `json:"width" sort:"width"`             // format_width (mm)
-
-		Status mrenum.ItemStatus `json:"status"` // format_status
+		ID         mrtype.KeyInt32    `json:"id"` // format_id
+		TagVersion int32              `json:"tagVersion"`
+		Caption    string             `json:"caption" sort:"caption,default"`
+		Length     measure.Micrometer `json:"length" sort:"length"` // (mm)
+		Width      measure.Micrometer `json:"width" sort:"width"`   // (mm)
+		Status     mrenum.ItemStatus  `json:"status"`
+		CreatedAt  time.Time          `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  *time.Time         `json:"updatedAt,omitempty" sort:"updatedAt"`
 	}
 
 	PrintFormatParams struct {

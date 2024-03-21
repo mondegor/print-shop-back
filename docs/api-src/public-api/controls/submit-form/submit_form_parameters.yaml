@@ -1,6 +1,6 @@
-Controls.SubmitForms.PublicAPI.Request.Path.FormParamName:
-  description: Идентификатор формы
-  name: paramName
+Controls.SubmitForms.PublicAPI.Request.Path.FormRewriteName:
+  description: Человекопонятное название используемое в URL формы
+  name: rewriteName
   in: path
   required: true
   schema:

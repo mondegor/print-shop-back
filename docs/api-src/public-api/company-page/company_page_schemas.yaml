@@ -2,7 +2,7 @@ CompanyPage.PublicAPI.Response.Model.CompanyPage:
   description: DTO - публичная страница компании
   type: object
   properties:
-    pageHead:
+    pageTitle:
       description: Заголовок страницы компании
       type: string
       maxLength: 128

@@ -1,5 +1,5 @@
 Catalog.Boxes.AdminAPI.Request.Path.BoxID:
-  description: Идентификатор коробки
+  description: Идентификатор упаковочной коробки
   name: boxId
   in: path
   required: true

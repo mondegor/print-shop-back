@@ -1,0 +1,44 @@
+Catalog.Papers.PublicAPI.Response.Model.PaperList:
+  description: DTO - список бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.Paper"
+
+Catalog.Papers.PublicAPI.Response.Model.Paper:
+  description: DTO - бумага
+  type: object
+  required:
+    - id
+    - article
+    - caption
+    - colorId
+    - factureId
+    - length
+    - width
+    - density
+    - thickness
+    - sides
+  properties:
+    id: # paperId
+      $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
+    article:
+      $ref: "#/components/schemas/App.Field.Article"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Мелованная"
+    colorId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+    factureId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+    length:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    density:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    sides:
+      $ref: "#/components/schemas/Custom.Enum.PaperSides"

@@ -38,9 +38,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList"
+              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":

@@ -61,13 +61,13 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SqlSel
         SELECT
             form_id,
             tag_version,
-            created_at as createdAt,
-			updated_at as updatedAt,
 			rewrite_name as rewriteName,
             param_name as paramName,
             form_caption as caption,
             form_detailing,
-            form_status
+            form_status,
+            created_at as createdAt,
+			updated_at as updatedAt
         FROM
             ` + module.DBSchema + `.submit_forms
         WHERE
@@ -95,13 +95,13 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SqlSel
 		err = cursor.Scan(
 			&row.ID,
 			&row.TagVersion,
-			&row.CreatedAt,
-			&row.UpdatedAt,
 			&row.RewriteName,
 			&row.ParamName,
 			&row.Caption,
 			&row.Detailing,
 			&row.Status,
+			&row.CreatedAt,
+			&row.UpdatedAt,
 		)
 
 		if err != nil {
@@ -142,13 +142,13 @@ func (re *SubmitFormPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (en
 	sql := `
         SELECT
             tag_version,
-            created_at,
-			updated_at,
 			rewrite_name,
             param_name,
             form_caption,
             form_detailing,
-            form_status
+            form_status,
+            created_at,
+			updated_at
         FROM
             ` + module.DBSchema + `.submit_forms
         WHERE
@@ -164,13 +164,13 @@ func (re *SubmitFormPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (en
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&row.TagVersion,
-		&row.CreatedAt,
-		&row.UpdatedAt,
 		&row.RewriteName,
 		&row.ParamName,
 		&row.Caption,
 		&row.Detailing,
 		&row.Status,
+		&row.CreatedAt,
+		&row.UpdatedAt,
 	)
 
 	return row, err

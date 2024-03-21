@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.1
+  version: v0.2.2
   title: Private API print-shop
   license:
     name: Apache-2.0
@@ -104,9 +104,9 @@ paths:
 
   /v1/catalog/boxes:
     get:
-      summary: Метод получения списка коробок
+      summary: Метод получения списка упаковочных коробок
       description: |-
-        Метод предназначен для получения списка всех коробок, сохраненных в БД
+        Метод предназначен для получения списка всех упаковочных коробок, сохраненных в БД
 
         Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
         - article;
@@ -145,7 +145,7 @@ paths:
 
       responses:
         "200":
-          description: Получен список коробок
+          description: Получен список упаковочных коробок
           content:
             application/json;charset=UTF-8:
               schema:
@@ -158,15 +158,15 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     post:
-      summary: Метод добавления новой коробки
+      summary: Метод добавления новой упаковочной коробки
       description: |-
-        Метод предназначен для создания информации о новой коробке в БД
+        Метод предназначен для создания информации о новой упаковочной коробке в БД
 
         **Ограничения и ошибки полей:**
-        - Article: required,unique,min=3,max=32,pattern=article
+        - article: required,unique,min=3,max=32,pattern=article
         - caption: required,max=64
-        - Length: required,gte=1,lte=10000000
-        - Depth: required,gte=1,lte=10000000
+        - length: required,gte=1,lte=10000000
+        - depth: required,gte=1,lte=10000000
 
       operationId: createBox
       tags:
@@ -188,7 +188,7 @@ paths:
 
       responses:
         "201":
-          description: Информация о коробке успешно добавлена
+          description: Информация об упаковочной коробке успешно добавлена
           content:
             application/json;charset=UTF-8:
               schema:
@@ -204,8 +204,8 @@ paths:
 
   /v1/catalog/boxes/{boxId}:
     get:
-      summary: Метод получения коробки
-      description: Метод предназначен для получения информации о коробке из БД
+      summary: Метод получения упаковочной коробки
+      description: Метод предназначен для получения информации об упаковочной коробке из БД
       operationId: getBox
       tags:
         - Catalog.Box
@@ -220,7 +220,7 @@ paths:
 
       responses:
         "200":
-          description: Получена информация о коробке
+          description: Получена информация об упаковочной коробке
           content:
             application/json;charset=UTF-8:
               schema:
@@ -235,16 +235,16 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     put:
-      summary: Метод сохранения коробки
+      summary: Метод сохранения упаковочной коробки
       description: |-
-        Метод предназначен для сохранения информации о коробке в БД
+        Метод предназначен для сохранения информации об упаковочной коробке в БД
 
         **Ограничения и ошибки полей:**
-        - Version: required,gte=1
-        - Article: omitempty,unique,min=3,max=32,pattern=article
+        - version: required,gte=1
+        - article: omitempty,unique,min=3,max=32,pattern=article
         - caption: omitempty,max=64
-        - Length: omitempty,gte=1,lte=10000000
-        - Depth: omitempty,gte=1,lte=10000000
+        - length: omitempty,gte=1,lte=10000000
+        - depth: omitempty,gte=1,lte=10000000
 
       operationId: storeBox
       tags:
@@ -267,7 +267,7 @@ paths:
 
       responses:
         "204":
-          description: Информация о коробке успешно сохранена
+          description: Информация об упаковочной коробке успешно сохранена
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -280,8 +280,8 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     delete:
-      summary: Метод удаления коробки
-      description: Метод предназначен для удаления информации о коробке из БД
+      summary: Метод удаления упаковочной коробки
+      description: Метод предназначен для удаления информации об упаковочной коробке из БД
       operationId: removeBox
       tags:
         - Catalog.Box
@@ -296,7 +296,7 @@ paths:
 
       responses:
         "204":
-          description: Информация о коробке успешно удалена
+          description: Информация об упаковочной коробке успешно удалена
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -308,9 +308,9 @@ paths:
 
   /v1/catalog/boxes/{boxId}/status:
     patch:
-      summary: Метод изменения статуса коробки
+      summary: Метод изменения статуса упаковочной коробки
       description: |-
-        Метод предназначен для изменения статуса коробки в БД
+        Метод предназначен для изменения статуса упаковочной коробки в БД
 
         **Ограничения и ошибки полей:**
         - tagVersion: required,gte=1 | ErrVersionInvalid
@@ -337,7 +337,7 @@ paths:
 
       responses:
         "204":
-          description: Статус коробки успешно изменён
+          description: Статус упаковочной коробки успешно изменён
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -409,7 +409,7 @@ paths:
         Метод предназначен для создания информации о новом ламинате в БД
 
         **Ограничения и ошибки полей:**
-        - Article: required,unique,min=3,max=32,pattern=article
+        - article: required,unique,min=3,max=32,pattern=article
         - caption: required,max=64
 
       operationId: createLaminate
@@ -652,7 +652,7 @@ paths:
         Метод предназначен для создания информации о новой бумаге в БД
 
         **Ограничения и ошибки полей:**
-        - Article: required,unique,min=3,max=32,pattern=article
+        - article: required,unique,min=3,max=32,pattern=article
         - caption: required,max=64
 
       operationId: createPaper
@@ -872,9 +872,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1107,9 +1105,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
+                $ref: "#/components/schemas/Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColorList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1162,20 +1158,7 @@ paths:
   /v1/dictionaries/paper-colors/{colorId}:
     get:
       summary: Метод получения цвета бумаги
-      description: |-
-        Метод предназначен для получения информации о цвете бумаги из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о цвете бумаги из БД
       operationId: getPaperColor
       tags:
         - Dictionaries.PaperColor
@@ -1355,9 +1338,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
+                $ref: "#/components/schemas/Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFactureList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1410,20 +1391,7 @@ paths:
   /v1/dictionaries/paper-factures/{factureId}:
     get:
       summary: Метод получения фактуры бумаги
-      description: |-
-        Метод предназначен для получения информации о фактуре бумаги из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о фактуре бумаги из БД
       operationId: getPaperFacture
       tags:
         - Dictionaries.PaperFacture
@@ -1607,9 +1575,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1662,20 +1628,7 @@ paths:
   /v1/dictionaries/print-formats/{formatId}:
     get:
       summary: Метод получения печатного формата
-      description: |-
-        Метод предназначен для получения информации о печатном формате из БД
-
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
-
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
-
+      description: Метод предназначен для получения информации о печатном формате из БД
       operationId: getPrintFormat
       tags:
         - Dictionaries.PrintFormat
@@ -2865,7 +2818,7 @@ components:
       example: 100000 # 100 mm
 
     Catalog.Boxes.AdminAPI.Request.Path.BoxID:
-      description: Идентификатор коробки
+      description: Идентификатор упаковочной коробки
       name: boxId
       in: path
       required: true
@@ -3066,7 +3019,7 @@ components:
 
     App.Field.RewriteName:
       description: |
-        Человеко понятный URL
+        Человекопонятное название используемое в URL
         - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
       type: string
       # pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
@@ -3249,46 +3202,46 @@ components:
         - ARCHIVED
       example: "PUBLISHED"
 
-    Custom.Field.Dictionaries.Catalog.BoxID:
+    Custom.Field.Catalog.BoxID:
       description: Идентификатор коробки (модуль - Catalog.Box)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
-    Custom.Field.Dictionaries.Catalog.LaminateID:
+    Custom.Field.Catalog.LaminateID:
       description: Идентификатор ламината (модуль - Catalog.Laminate)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
-    Custom.Field.Dictionaries.Catalog.PaperID:
+    Custom.Field.Catalog.PaperID:
       description: Идентификатор бумаги (модуль - Catalog.Paper)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
-    Custom.Field.Controls.ElementID:
+    Custom.Field.Controls.ElementTemplateID:
+      description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Controls.FormElementID:
       description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
       type: integer
       format: int32
       minimum: 1
       example: 2
 
-    Custom.Field.Controls.FormID:
+    Custom.Field.Controls.SubmitFormID:
       description: Идентификатор формы (модуль - Controls.SubmitForm)
       type: string
       format: uuid
       example: "1be2be72-2cac-45d3-8dda-2476fcc600f0"
-
-    Custom.Field.Controls.TemplateID:
-      description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
-      type: integer
-      format: int32
-      minimum: 1
-      example: 2
 
     Custom.Field.Dictionaries.LaminateTypeID:
       description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
@@ -3431,22 +3384,18 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - article
         - caption
         - length
         - width
         - depth
         - status
+        - createdAt
       properties:
         id: # boxId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.BoxID"
+          $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3462,6 +3411,10 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
       description: DTO добавления новой ламината
@@ -3535,7 +3488,6 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - article
         - caption
         - typeId
@@ -3543,15 +3495,12 @@ components:
         - weight
         - thickness
         - status
+        - createdAt
       properties:
         id: # laminateId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3569,6 +3518,10 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
       description: DTO добавления новой бумаги
@@ -3657,7 +3610,6 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - article
         - caption
         - colorId
@@ -3668,15 +3620,12 @@ components:
         - thickness
         - sides
         - status
+        - createdAt
       properties:
         id: # paperId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.Catalog.PaperID"
+          $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -3700,6 +3649,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType:
       description: DTO добавления нового типа ламината
@@ -3728,7 +3681,7 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.Laminates.AdminAPI.Response.Model.LaminateTypeList:
+    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList:
       description: DTO - список типов ламината
       type: object
       required:
@@ -3749,18 +3702,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # typeId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3768,6 +3717,10 @@ components:
             - example: "Глянцевый"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor:
       description: DTO добавления нового цвета бумаги
@@ -3817,18 +3770,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # colorId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3836,6 +3785,10 @@ components:
             - example: "Белый"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture:
       description: DTO добавления нового фактуры бумаги
@@ -3885,18 +3838,14 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - status
+        - createdAt
       properties:
         id: # factureId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3904,6 +3853,10 @@ components:
             - example: "Гладкая"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
       description: DTO добавления нового печатного формата
@@ -3962,20 +3915,16 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - caption
         - length
         - width
         - status
+        - createdAt
       properties:
         id: # formatId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -3987,6 +3936,10 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
       description: DTO добавления нового json шаблона элемента (multipart)
@@ -4071,13 +4024,9 @@ components:
       type: object
       properties:
         id: # templateId
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -4091,6 +4040,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
       description: DTO добавления новой формы
@@ -4152,21 +4105,17 @@ components:
       required:
         - id
         - tagVersion
-        - createdAt
         - rewriteName
         - paramName
         - caption
         - detailing
         - status
+        - createdAt
       properties:
         id: # formId
-          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+          $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         rewriteName:
           $ref: "#/components/schemas/App.Field.RewriteName"
         paramName:
@@ -4179,6 +4128,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
       description: |-
@@ -4186,17 +4139,13 @@ components:
       type: object
       required:
         - version
-        - createdAt
         - rewriteName
         - caption
         - activityStatus
+        - createdAt
       properties:
         version:
           $ref: "#/components/schemas/App.Field.Int32"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         rewriteName:
           $ref: "#/components/schemas/App.Field.RewriteName"
         caption:
@@ -4205,6 +4154,10 @@ components:
             - example: "Листовая продукция"
         activityStatus:
           $ref: "#/components/schemas/Custom.Enum.SubmitFormActivityStatus"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems:
       allOf:
@@ -4234,7 +4187,7 @@ components:
         - elementRequired
       properties:
         formId:
-          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
+          $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -4243,7 +4196,7 @@ components:
             - maxLength: 64
             - example: "Процесс печати"
         templateId:
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         elementRequired:
           $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Field.ElementRequired"
 
@@ -4272,13 +4225,9 @@ components:
       type: object
       properties:
         id: # elementId
-          $ref: "#/components/schemas/Custom.Field.Controls.ElementID"
+          $ref: "#/components/schemas/Custom.Field.Controls.FormElementID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
         paramName:
           $ref: "#/components/schemas/App.Field.VariableCamelCase"
         caption:
@@ -4287,7 +4236,7 @@ components:
             - maxLength: 64
             - example: "Процесс печати"
         templateId:
-          $ref: "#/components/schemas/Custom.Field.Controls.TemplateID"
+          $ref: "#/components/schemas/Custom.Field.Controls.ElementTemplateID"
         templateVersion:
           description: Последняя актуальная версия шаблона
           type: integer
@@ -4299,6 +4248,10 @@ components:
           $ref: "#/components/schemas/Custom.Enum.FormElementType"
         detailing:
           $ref: "#/components/schemas/Custom.Enum.FormElementDetailing"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     ProviderAccounts.CompanyPages.AdminAPI.Field.Status:
       description: |-
@@ -4327,7 +4280,7 @@ components:
           type: string
           maxLength: 64
           example: "company-name"
-        pageHead:
+        pageTitle:
           description: Заголовок страницы компании
           type: string
           maxLength: 128

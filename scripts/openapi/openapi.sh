@@ -37,7 +37,7 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-all)
       mrcmd openapi build-adm-all
-      mrcmd openapi build-pacc-all
+      mrcmd openapi build-prov-all
       mrcmd openapi build-pub-all
       ;;
 
@@ -49,13 +49,12 @@ function mrcmd_plugins_openapi_method_exec() {
       mrcmd openapi build-adm-prv-accounts
       ;;
 
-    build-pacc-all)
-      mrcmd openapi build-pacc
+    build-prov-all)
+      mrcmd openapi build-prov
       ;;
 
     build-pub-all)
       mrcmd openapi build-pub
-      mrcmd openapi build-pub-controls
       mrcmd openapi build-pub-file-station
       ;;
 
@@ -83,17 +82,12 @@ function mrcmd_plugins_openapi_method_exec() {
       fileNamePostfix="provider-accounts"
       ;;
 
-    build-pacc)
-      sectionName="provider-account-api"
+    build-prov)
+      sectionName="providers-api"
       ;;
 
     build-pub)
       sectionName="public-api"
-      ;;
-
-    build-pub-controls)
-      sectionName="public-api"
-      fileNamePostfix="controls"
       ;;
 
     build-pub-file-station)
@@ -129,9 +123,6 @@ function mrcmd_plugins_openapi_method_help() {
   echo -e "    build-adm-catalog         Builds admin Catalog API docs"
   echo -e "    build-adm-dictionaries    Builds admin Dictionaries API docs"
   echo -e "    build-adm-prv-accounts    Builds admin Provider accounts API docs"
-  echo -e "    build-pacc-all            Builds all provider accounts API docs"
-  echo -e "    build-pacc                Builds only full provider accounts API docs"
+  echo -e "    build-prov-all            Builds all providers API docs"
   echo -e "    build-pub-all             Builds all public API docs"
-  echo -e "    build-pub                 Builds only full public API docs"
-  echo -e "    build-pub-controls        Builds public Controls API docs"
 }

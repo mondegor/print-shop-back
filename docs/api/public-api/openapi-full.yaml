@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.1
+  version: v0.2.2
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -37,11 +37,29 @@ tags:
   - name: System
     description: API System Methods
 
+  - name: Catalog.Box
+    description: Public API Catalog boxes
+
+  - name: Catalog.Laminate
+    description: Public API Catalog laminates
+
+  - name: Catalog.Paper
+    description: Public API Catalog papers
+
   - name: CompanyPage
     description: Public API Companies' pages
 
   - name: Controls.SubmitForm
     description: Public API Controls submit forms
+
+  - name: Dictionaries.LaminateType
+    description: Public API Dictionary laminate types
+
+  - name: Dictionaries.PaperColor
+    description: Public API Dictionary paper colors
+
+  - name: Dictionaries.PaperFacture
+    description: Public API Dictionary paper factures
 
   - name: FileStation
     description: Public API Files and images
@@ -79,6 +97,99 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
+  /v1/catalog/boxes:
+    get:
+      summary: Метод получения списка упаковочных коробок
+      description: |-
+        Метод предназначен для получения списка упаковочных коробок, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getBoxList
+      tags:
+        - Catalog.Box
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список упаковочных коробок
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Boxes.PublicAPI.Response.Model.BoxList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates:
+    get:
+      summary: Метод получения списка ламината
+      description: |-
+        Метод предназначен для получения списка ламината, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getLaminateList
+      tags:
+        - Catalog.Laminate
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers:
+    get:
+      summary: Метод получения списка бумаги
+      description: |-
+        Метод предназначен для получения списка бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getPaperList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
   /v1/company/{pageName}:
     get:
       summary: Метод получения страницы компании
@@ -108,35 +219,22 @@ paths:
     get:
       summary: Метод получения списка форм
       description: |-
-        Метод предназначен для получения списка всех форм, сохраненных в БД
+        Метод предназначен для получения списка всех форм, сохраненных в БД,
+        со следующими условиями:
+        - isPublished = true;
 
-        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-        - caption;
+        Записи выводятся на языке пользователя или на языке по умолчанию;
 
-        Возможные значения `App.Request.Query.ListSorter.SortField`:
-        - caption,default,asc;
-        - createdAt;
-        - updatedAt;
-
-        Возможные значения `App.Request.Query.ListPager.PageSize`:
-        - от 1 до 1000 (default: 50)
+        Порядок следования списка:
+        - caption ASC
 
       operationId: getSubmitFormList
       tags:
         - Controls.SubmitForm
 
-      security:
-        - bearerAuth: []
-
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
-        - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
-        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
-        - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
-        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
-        - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
 
       responses:
         "200":
@@ -145,14 +243,10 @@ paths:
             application/json;charset=UTF-8:
               schema:
                   $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.FormList"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/controls/submit-forms/{paramName}:
+  /v1/controls/submit-forms/{rewriteName}:
     get:
       summary: Метод получения формы
       description: Метод предназначен для получения формы из БД
@@ -160,13 +254,10 @@ paths:
       tags:
         - Controls.SubmitForm
 
-      security:
-        - bearerAuth: []
-
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Controls.SubmitForms.PublicAPI.Request.Path.FormParamName"
+        - $ref: "#/components/parameters/Controls.SubmitForms.PublicAPI.Request.Path.FormRewriteName"
 
       responses:
         "200":
@@ -174,13 +265,102 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
+                $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.Form"
         "404":
           $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/laminate-types:
+    get:
+      summary: Метод получения списка типов ламината
+      description: |-
+        Метод предназначен для получения списка типов ламината, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getLaminateTypeList
+      tags:
+        - Dictionaries.LaminateType
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список типов ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-colors:
+    get:
+      summary: Метод получения списка цветов бумаги
+      description: |-
+        Метод предназначен для получения списка цветов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getPaperColorList
+      tags:
+        - Dictionaries.PaperColor
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColorList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/paper-factures:
+    get:
+      summary: Метод получения списка фактуры бумаги
+      description: |-
+        Метод предназначен для получения списка фактуры бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getPaperFactureList
+      tags:
+        - Dictionaries.PaperFacture
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список фактуры бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFactureList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -246,9 +426,9 @@ components:
         maxLength: 64
       example: "printrobot"
 
-    Controls.SubmitForms.PublicAPI.Request.Path.FormParamName:
-      description: Идентификатор формы
-      name: paramName
+    Controls.SubmitForms.PublicAPI.Request.Path.FormRewriteName:
+      description: Человекопонятное название используемое в URL формы
+      name: rewriteName
       in: path
       required: true
       schema:
@@ -267,15 +447,43 @@ components:
       example: "category/item-name.jpg"
 
   schemas:
+    App.Field.Article:
+      description: |
+        Уникальный артикул записи (любые буквы без пробелов)
+        - pattern: ^S+$
+      type: string
+      # pattern: "^S+$"
+      minLength: 2
+      maxLength: 64
+      example: "item-FLEX-92744"
+
+    App.Field.Caption:
+      description: Название записи
+      type: string
+      maxLength: 128
+      example: "Название"
+
     App.Field.RewriteName:
       description: |
-        Человеко понятный URL
+        Человекопонятное название используемое в URL
         - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
       type: string
       # pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
       minLength: 4
       maxLength: 32
       example: "rewrite-name"
+
+    App.Field.Measure.GramPerMeter2:
+      description: Поверхностная плотность (g/m2)
+      type: integer
+      maxLength: 10
+      example: 100000 # 100g/m2
+
+    App.Field.Measure.Micrometer:
+      description: Микрометр (µm, 0.001mm)
+      type: integer
+      maxLength: 10
+      example: 100000 # 100mm
 
     App.Response.Model.BinaryImage:
       description: Бинарный файл одного из типов - JPEG, PNG
@@ -336,6 +544,59 @@ components:
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
 
+    Custom.Enum.PaperSides:
+      description: |-
+        Стороны бумаги:
+        - SAME - одинаковые;
+        - DIFFERENT - разные;
+      type: string
+      enum:
+        - SAME
+        - DIFFERENT
+      example: "SAME"
+
+    Custom.Field.Catalog.BoxID:
+      description: Идентификатор коробки (модуль - Catalog.Box)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Catalog.LaminateID:
+      description: Идентификатор ламината (модуль - Catalog.Laminate)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Catalog.PaperID:
+      description: Идентификатор бумаги (модуль - Catalog.Paper)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.LaminateTypeID:
+      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperColorID:
+      description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PaperFactureID:
+      description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
     App.System.Response.Model.SystemInfo:
       description: DTO - системная информация о запущеном приложении
       type: object
@@ -386,7 +647,7 @@ components:
       description: DTO - публичная страница компании
       type: object
       properties:
-        pageHead:
+        pageTitle:
           description: Заголовок страницы компании
           type: string
           maxLength: 128
@@ -402,19 +663,199 @@ components:
           maxLength: 256
           example: "https://site.localhost/"
 
-    Controls.SubmitForms.PublicAPI.Response.Model.CompiledForm:
+    Catalog.Boxes.PublicAPI.Response.Model.BoxList:
+      description: DTO - список упаковочных коробок
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Boxes.PublicAPI.Response.Model.Box"
+
+    Catalog.Boxes.PublicAPI.Response.Model.Box:
+      description: DTO - упаковочная коробка
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - length
+        - width
+        - depth
+      properties:
+        id: # boxId
+          $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "СДЭК"
+        length:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        depth:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateList:
+      description: DTO - список ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.Laminate"
+
+    Catalog.Laminates.PublicAPI.Response.Model.Laminate:
+      description: DTO - ламинат
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - typeId
+        - length
+        - weight
+        - thickness
+      properties:
+        id: # laminateId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый 450"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+        length:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperList:
+      description: DTO - список бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.Paper"
+
+    Catalog.Papers.PublicAPI.Response.Model.Paper:
+      description: DTO - бумага
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - colorId
+        - factureId
+        - length
+        - width
+        - density
+        - thickness
+        - sides
+      properties:
+        id: # paperId
+          $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Мелованная"
+        colorId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+        factureId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+        length:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        sides:
+          $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList:
+      description: DTO - список типов ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType"
+
+    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType:
+      description: DTO - тип ламината
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id: # typeId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый"
+
+    Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColorList:
+      description: DTO - список цветов бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColor"
+
+    Dictionaries.PaperColors.PublicAPI.Response.Model.PaperColor:
+      description: DTO - цвет бумаги
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id: # typeId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Белый"
+
+    Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFactureList:
+      description: DTO - список фактуры бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFacture"
+
+    Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFacture:
+      description: DTO - фактура бумаги
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id: # typeId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Гладкая"
+
+    Controls.SubmitForms.PublicAPI.Response.Model.FormList:
+      description: DTO - список типов ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.Form"
+
+    Controls.SubmitForms.PublicAPI.Response.Model.Form:
       description: |-
         DTO - собранная форма пользовательского интерфейса
       type: object
       required:
-        - id
-        - paramName
+        - rewriteName
         - caption
       properties:
-        id: # formId
-          $ref: "#/components/schemas/Custom.Field.Controls.FormID"
-        paramName:
-          $ref: "#/components/schemas/App.Field.VariableCamelCase"
+        rewriteName:
+          $ref: "#/components/schemas/App.Field.RewriteName"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"

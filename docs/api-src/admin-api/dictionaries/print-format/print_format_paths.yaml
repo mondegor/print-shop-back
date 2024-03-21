@@ -42,9 +42,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
+              $ref: "#/components/schemas/Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -97,20 +95,7 @@
 /v1/dictionaries/print-formats/{formatId}:
   get:
     summary: Метод получения печатного формата
-    description: |-
-      Метод предназначен для получения информации о печатном формате из БД
-
-      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-      - caption;
-
-      Возможные значения `App.Request.Query.ListSorter.SortField`:
-      - caption,default,asc;
-      - createdAt;
-      - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
-
+    description: Метод предназначен для получения информации о печатном формате из БД
     operationId: getPrintFormat
     tags:
       - Dictionaries.PrintFormat

@@ -12,8 +12,8 @@ const (
 	sectionAdminAPICaption  = "Admin API"
 	sectionAdminAPIRootPath = "/adm/"
 
-	sectionProviderAccountAPICaption  = "Provider Account API"
-	sectionProviderAccountAPIRootPath = "/pacc/"
+	sectionProvidersAPICaption  = "Providers API"
+	sectionProvidersAPIRootPath = "/providers/"
 
 	sectionPublicAPICaption  = "Public API"
 	sectionPublicAPIRootPath = "/"
@@ -33,15 +33,15 @@ func NewAppSectionAdminAPI(ctx context.Context, opts app.Options) mrperms.AppSec
 	)
 }
 
-func NewAppSectionProviderAccountAPI(ctx context.Context, opts app.Options) mrperms.AppSection {
+func NewAppSectionProvidersAPI(ctx context.Context, opts app.Options) mrperms.AppSection {
 	return mrfactory.NewAppSection(
 		ctx,
 		mrperms.AppSectionOptions{
-			Caption:      sectionProviderAccountAPICaption,
-			RootPath:     sectionProviderAccountAPIRootPath,
-			Privilege:    opts.Cfg.AppSections.ProviderAccountAPI.Privilege,
-			AuthSecret:   opts.Cfg.AppSections.ProviderAccountAPI.Auth.Secret,
-			AuthAudience: opts.Cfg.AppSections.ProviderAccountAPI.Auth.Audience,
+			Caption:      sectionProvidersAPICaption,
+			RootPath:     sectionProvidersAPIRootPath,
+			Privilege:    opts.Cfg.AppSections.ProvidersAPI.Privilege,
+			AuthSecret:   opts.Cfg.AppSections.ProvidersAPI.Auth.Secret,
+			AuthAudience: opts.Cfg.AppSections.ProvidersAPI.Auth.Audience,
 		},
 		opts.AccessControl,
 	)

@@ -13,7 +13,6 @@ func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpCon
 	var list []mrserver.HttpController
 
 	mrfactory.InfoCreateModule(ctx, module.Name)
-	mrfactory.InfoCreateUnit(ctx, module.UnitCompanyPageName)
 
 	if l, err := createUnitCompanyPage(ctx, opts); err != nil {
 		return nil, err
