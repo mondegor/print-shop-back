@@ -80,7 +80,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage
 		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	currentStatus, err := uc.storage.FetchStatus(ctx, item)
+	currentStatus, err := uc.storage.FetchStatus(ctx, item.AccountID)
 
 	if err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)

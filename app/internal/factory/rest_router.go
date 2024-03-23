@@ -30,20 +30,14 @@ func NewRestRouter(ctx context.Context, cfg config.Config, translator *mrlang.Tr
 		return nil, err
 	}
 
-	handler, err := mrserver.NewMiddlewareHttpHandlerAdapter(errorSender)
-
-	if err != nil {
-		return nil, err
-	}
-
 	router := mrjulienrouter.New(
 		logger.With().Str("router", "julienrouter").Logger(),
-		handler,
+		mrserver.MiddlewareHandlerAdapter(errorSender),
 		mrresponse.HandlerGetNotFoundAsJson(),
 		mrresponse.HandlerGetMethodNotAllowedAsJson(),
 	)
 	router.RegisterMiddleware(
-		mrrscors.New(corsOptions),
+		mrrscors.Middleware(corsOptions),
 		mrserver.MiddlewareGeneral(translator),
 	)
 

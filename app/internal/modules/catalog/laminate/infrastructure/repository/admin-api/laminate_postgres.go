@@ -209,7 +209,9 @@ func (re *LaminatePostgres) FetchIdByArticle(ctx context.Context, article string
 	return rowID, err
 }
 
-func (re *LaminatePostgres) FetchStatus(ctx context.Context, row entity.Laminate) (mrenum.ItemStatus, error) {
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
 		SELECT
 			laminate_status
@@ -224,35 +226,13 @@ func (re *LaminatePostgres) FetchStatus(ctx context.Context, row entity.Laminate
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&status,
 	)
 
 	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *LaminatePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-		SELECT
-			laminate_id
-		FROM
-			` + module.DBSchema + `.laminates
-		WHERE
-			laminate_id = $1 AND laminate_status <> $2
-		LIMIT 1;`
-
-	return re.client.QueryRow(
-		ctx,
-		sql,
-		rowID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&rowID,
-	)
 }
 
 func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mrtype.KeyInt32, error) {
@@ -364,8 +344,8 @@ func (re *LaminatePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) e
 			` + module.DBSchema + `.laminates
 		SET
 			tag_version = tag_version + 1,
-			updated_at = NOW(),
 			laminate_article = NULL,
+			updated_at = NOW(),
 			laminate_status = $2
 		WHERE
 			laminate_id = $1 AND laminate_status <> $2;`

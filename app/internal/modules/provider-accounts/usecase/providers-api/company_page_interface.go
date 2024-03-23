@@ -18,7 +18,7 @@ type (
 	CompanyPageStorage interface {
 		FetchOne(ctx context.Context, accountID uuid.UUID) (entity.CompanyPage, error)
 		FetchAccountIdByRewriteName(ctx context.Context, rewriteName string) (uuid.UUID, error)
-		FetchStatus(ctx context.Context, row entity.CompanyPage) (enums.PublicStatus, error)
+		FetchStatus(ctx context.Context, accountID uuid.UUID) (enums.PublicStatus, error)
 		InsertOrUpdate(ctx context.Context, row entity.CompanyPage) error
 		UpdateStatus(ctx context.Context, row entity.CompanyPage) error
 	}

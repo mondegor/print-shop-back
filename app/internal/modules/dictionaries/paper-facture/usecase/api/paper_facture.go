@@ -6,6 +6,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -36,12 +37,14 @@ func (uc *PaperFacture) CheckingAvailability(ctx context.Context, itemID mrtype.
 		return dictionaries.FactoryErrPaperFactureRequired.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, itemID); err != nil {
+	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPaperFactureNotFound.New(itemID)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PaperFactureAPIName)
+	} else if status != mrenum.ItemStatusEnabled {
+		return dictionaries.FactoryErrPaperFactureNotAvailable.New(itemID)
 	}
 
 	return nil

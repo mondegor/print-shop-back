@@ -9,24 +9,28 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
-// PaperFactureIsExistsPostgres
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func PaperFactureIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) error {
+// PaperFactureFetchStatusPostgres
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func PaperFactureFetchStatusPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
-            1
+            facture_status
         FROM
             ` + module.DBSchema + `.paper_factures
         WHERE
             facture_id = $1 AND facture_status <> $2
         LIMIT 1;`
 
-	return conn.QueryRow(
+	var status mrenum.ItemStatus
+
+	err := conn.QueryRow(
 		ctx,
 		sql,
 		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&rowID,
+		&status,
 	)
+
+	return status, err
 }

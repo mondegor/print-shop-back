@@ -6,6 +6,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -36,12 +37,14 @@ func (uc *PrintFormat) CheckingAvailability(ctx context.Context, itemID mrtype.K
 		return dictionaries.FactoryErrPrintFormatRequired.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, itemID); err != nil {
+	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPrintFormatNotFound.New(itemID)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PrintFormatAPIName)
+	} else if status != mrenum.ItemStatusEnabled {
+		return dictionaries.FactoryErrPrintFormatNotAvailable.New(itemID)
 	}
 
 	return nil

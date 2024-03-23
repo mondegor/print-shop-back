@@ -11,6 +11,7 @@ import (
 	factory_catalog_paper_pub "print-shop-back/internal/modules/catalog/paper/factory/public-api"
 	factory_controls_elementtemplate_adm "print-shop-back/internal/modules/controls/element-template/factory/admin-api"
 	factory_controls_submitform_adm "print-shop-back/internal/modules/controls/submit-form/factory/admin-api"
+	factory_controls_submitform_pub "print-shop-back/internal/modules/controls/submit-form/factory/public-api"
 	factory_dictionaries_laminatetype_adm "print-shop-back/internal/modules/dictionaries/laminate-type/factory/admin-api"
 	factory_dictionaries_laminatetype_pub "print-shop-back/internal/modules/dictionaries/laminate-type/factory/public-api"
 	factory_dictionaries_papercolor_adm "print-shop-back/internal/modules/dictionaries/paper-color/factory/admin-api"
@@ -49,18 +50,13 @@ func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapt
 		return nil, err
 	}
 
-	err = registerAdminAPIControllers(
+	err = createAdminAPIControllers(
 		ctx,
 		opts,
-		func(list []mrserver.HttpController, err error) error {
-			if err == nil {
-				router.Register(
-					mrfactory.WithMiddlewareCheckAccess(ctx, list, sectionAdminAPI, opts.AccessControl)...,
-				)
-			}
-
-			return err
-		},
+		registerControllers(
+			router,
+			mrfactory.WithMiddlewareCheckAccess(ctx, sectionAdminAPI, opts.AccessControl),
+		),
 	)
 
 	if err != nil {
@@ -74,18 +70,13 @@ func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapt
 		return nil, err
 	}
 
-	err = registerProvidersAPIControllers(
+	err = createProvidersAPIControllers(
 		ctx,
 		opts,
-		func(list []mrserver.HttpController, err error) error {
-			if err == nil {
-				router.Register(
-					mrfactory.WithMiddlewareCheckAccess(ctx, list, sectionProvidersAPI, opts.AccessControl)...,
-				)
-			}
-
-			return err
-		},
+		registerControllers(
+			router,
+			mrfactory.WithMiddlewareCheckAccess(ctx, sectionProvidersAPI, opts.AccessControl),
+		),
 	)
 
 	if err != nil {
@@ -99,18 +90,13 @@ func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapt
 		return nil, err
 	}
 
-	err = registerPublicAPIControllers(
+	err = createPublicAPIControllers(
 		ctx,
 		opts,
-		func(list []mrserver.HttpController, err error) error {
-			if err == nil {
-				router.Register(
-					mrfactory.WithMiddlewareCheckAccess(ctx, list, sectionPublicAPI, opts.AccessControl)...,
-				)
-			}
-
-			return err
-		},
+		registerControllers(
+			router,
+			mrfactory.WithMiddlewareCheckAccess(ctx, sectionPublicAPI, opts.AccessControl),
+		),
 	)
 
 	if err != nil {
@@ -138,88 +124,106 @@ func NewRestServer(ctx context.Context, opts app.Options) (*mrserver.ServerAdapt
 	), nil
 }
 
-func registerAdminAPIControllers(ctx context.Context, opts app.Options, registerFunc func([]mrserver.HttpController, error) error) error {
-	if err := registerFunc(factory_catalog_box_adm.CreateModule(ctx, opts.CatalogBoxModule)); err != nil {
+func registerControllers(router mrserver.HttpRouter, operations ...mrfactory.PrepareHandlerFunc) mrfactory.ApplyEachControllerFunc {
+	return func(list []mrserver.HttpController, err error) error {
+		if err != nil {
+			return err
+		}
+
+		router.Register(
+			mrfactory.PrepareEachController(list, operations...)...,
+		)
+
+		return nil
+	}
+}
+
+func createAdminAPIControllers(ctx context.Context, opts app.Options, register mrfactory.ApplyEachControllerFunc) error {
+	if err := register(factory_catalog_box_adm.CreateModule(ctx, opts.CatalogBoxModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_catalog_laminate_adm.CreateModule(ctx, opts.CatalogLaminateModule)); err != nil {
+	if err := register(factory_catalog_laminate_adm.CreateModule(ctx, opts.CatalogLaminateModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_catalog_paper_adm.CreateModule(ctx, opts.CatalogPaperModule)); err != nil {
+	if err := register(factory_catalog_paper_adm.CreateModule(ctx, opts.CatalogPaperModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_controls_elementtemplate_adm.CreateModule(ctx, opts.ControlsElementTemplateModule)); err != nil {
+	if err := register(factory_controls_elementtemplate_adm.CreateModule(ctx, opts.ControlsElementTemplateModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_controls_submitform_adm.CreateModule(ctx, opts.ControlsSubmitFormModule)); err != nil {
+	if err := register(factory_controls_submitform_adm.CreateModule(ctx, opts.ControlsSubmitFormModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_laminatetype_adm.CreateModule(ctx, opts.DictionariesLaminateTypeModule)); err != nil {
+	if err := register(factory_dictionaries_laminatetype_adm.CreateModule(ctx, opts.DictionariesLaminateTypeModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_papercolor_adm.CreateModule(ctx, opts.DictionariesPaperColorModule)); err != nil {
+	if err := register(factory_dictionaries_papercolor_adm.CreateModule(ctx, opts.DictionariesPaperColorModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_paperfacture_adm.CreateModule(ctx, opts.DictionariesPaperFactureModule)); err != nil {
+	if err := register(factory_dictionaries_paperfacture_adm.CreateModule(ctx, opts.DictionariesPaperFactureModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_printformat_adm.CreateModule(ctx, opts.DictionariesPrintFormatModule)); err != nil {
+	if err := register(factory_dictionaries_printformat_adm.CreateModule(ctx, opts.DictionariesPrintFormatModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_provider_accounts_adm.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
+	if err := register(factory_provider_accounts_adm.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func registerProvidersAPIControllers(ctx context.Context, opts app.Options, registerFunc func([]mrserver.HttpController, error) error) error {
-	if err := registerFunc(factory_provider_accounts_prov.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
+func createProvidersAPIControllers(ctx context.Context, opts app.Options, register mrfactory.ApplyEachControllerFunc) error {
+	if err := register(factory_provider_accounts_prov.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func registerPublicAPIControllers(ctx context.Context, opts app.Options, registerFunc func([]mrserver.HttpController, error) error) error {
-	if err := registerFunc(factory_catalog_box_pub.CreateModule(ctx, opts.CatalogBoxModule)); err != nil {
+func createPublicAPIControllers(ctx context.Context, opts app.Options, register mrfactory.ApplyEachControllerFunc) error {
+	if err := register(factory_catalog_box_pub.CreateModule(ctx, opts.CatalogBoxModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_catalog_laminate_pub.CreateModule(ctx, opts.CatalogLaminateModule)); err != nil {
+	if err := register(factory_catalog_laminate_pub.CreateModule(ctx, opts.CatalogLaminateModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_catalog_paper_pub.CreateModule(ctx, opts.CatalogPaperModule)); err != nil {
+	if err := register(factory_catalog_paper_pub.CreateModule(ctx, opts.CatalogPaperModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_laminatetype_pub.CreateModule(ctx, opts.DictionariesLaminateTypeModule)); err != nil {
+	if err := register(factory_controls_submitform_pub.CreateModule(ctx, opts.ControlsSubmitFormModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_papercolor_pub.CreateModule(ctx, opts.DictionariesPaperColorModule)); err != nil {
+	if err := register(factory_dictionaries_laminatetype_pub.CreateModule(ctx, opts.DictionariesLaminateTypeModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_dictionaries_paperfacture_pub.CreateModule(ctx, opts.DictionariesPaperFactureModule)); err != nil {
+	if err := register(factory_dictionaries_papercolor_pub.CreateModule(ctx, opts.DictionariesPaperColorModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_filestation_pub.CreateModule(ctx, opts.FileStationModule)); err != nil {
+	if err := register(factory_dictionaries_paperfacture_pub.CreateModule(ctx, opts.DictionariesPaperFactureModule)); err != nil {
 		return err
 	}
 
-	if err := registerFunc(factory_provider_account_pub.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
+	if err := register(factory_filestation_pub.CreateModule(ctx, opts.FileStationModule)); err != nil {
+		return err
+	}
+
+	if err := register(factory_provider_account_pub.CreateModule(ctx, opts.ProviderAccountsModule)); err != nil {
 		return err
 	}
 

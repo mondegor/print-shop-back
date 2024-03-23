@@ -6,11 +6,11 @@ import (
 	"fmt"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrenum"
 )
 
 const (
 	_ ActivityStatus = iota
+	ActivityStatusDraft
 	ActivityStatusTesting
 	ActivityStatusPublished
 	ActivityStatusArchived
@@ -25,23 +25,17 @@ type (
 
 var (
 	activityStatusName = map[ActivityStatus]string{
+		ActivityStatusDraft:     "DRAFT",
 		ActivityStatusTesting:   "TESTING",
 		ActivityStatusPublished: "PUBLISHED",
 		ActivityStatusArchived:  "ARCHIVED",
 	}
 
 	activityStatusValue = map[string]ActivityStatus{
+		"DRAFT":     ActivityStatusDraft,
 		"TESTING":   ActivityStatusTesting,
 		"PUBLISHED": ActivityStatusPublished,
 		"ARCHIVED":  ActivityStatusArchived,
-	}
-
-	ActivityStatusFlow = mrenum.StatusFlow{
-		ActivityStatusTesting: {
-			ActivityStatusPublished,
-		},
-		ActivityStatusPublished: {},
-		ActivityStatusArchived:  {},
 	}
 )
 

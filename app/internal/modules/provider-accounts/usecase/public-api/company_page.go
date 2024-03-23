@@ -24,15 +24,15 @@ func NewCompanyPage(
 	}
 }
 
-func (uc *CompanyPage) GetItemByName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error) {
+func (uc *CompanyPage) GetItemByRewriteName(ctx context.Context, rewriteName string) (entity.CompanyPage, error) {
 	if rewriteName == "" {
-		return nil, mrcore.FactoryErrUseCaseEntityNotFound.New()
+		return entity.CompanyPage{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	item, err := uc.storage.FetchByRewriteName(ctx, rewriteName)
 
 	if err != nil {
-		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, rewriteName)
+		return entity.CompanyPage{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, rewriteName)
 	}
 
 	return item, nil

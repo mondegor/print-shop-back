@@ -1,6 +1,25 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-03-23
+### Added
+- Добавлены следующие типы ошибок:
+    - `FactoryErrPrintFormatNotAvailable`;
+    - `FactoryErrLaminateTypeNotAvailable`;
+    - `FactoryErrPaperColorNotAvailable`;
+    - `FactoryErrPaperFactureNotAvailable`;
+
+### Changed
+- Доработан модуль `SubmitForm` и его API документация включая
+  библиотеку формирования пользовательских интерфейсов в виде json файлов; 
+- В местах использования метода `mrfactory.WithPermission` добавлен `mrfactory.PrepareEachController`;
+- `mrserver.NewMiddlewareHttpHandlerAdapter -> mrserver.MiddlewareHandlerAdapter`;
+- Доработаны функции типа `factory.registerAdminAPIControllers`, заменены на `createAdminAPIControllers`
+  с использованием новой функции `factory.registerControllers`;
+
+### Removed
+- Удален метод `IsExist` вместо него теперь используется `FetchStatus`;
+
 ## 2024-03-21
 ### Added
 - Добавлены public методы и их API описание для модулей каталога и справочников;

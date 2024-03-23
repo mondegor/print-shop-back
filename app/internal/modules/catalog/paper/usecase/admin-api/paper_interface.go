@@ -25,8 +25,7 @@ type (
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.Paper, error)
 		FetchIdByArticle(ctx context.Context, article string) (mrtype.KeyInt32, error)
-		FetchStatus(ctx context.Context, row entity.Paper) (mrenum.ItemStatus, error)
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
+		FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error)
 		Insert(ctx context.Context, row entity.Paper) (mrtype.KeyInt32, error)
 		Update(ctx context.Context, row entity.Paper) (int32, error)
 		UpdateStatus(ctx context.Context, row entity.Paper) (int32, error)

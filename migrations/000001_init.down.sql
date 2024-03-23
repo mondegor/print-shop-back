@@ -6,7 +6,7 @@ DROP SCHEMA printshop_providers;
 
 -- --------------------------------------------------------------------------------------------------
 
-DROP TABLE IF EXISTS printshop_controls.submit_forms_compiled;
+DROP TABLE IF EXISTS printshop_controls.submit_form_versions;
 DROP TABLE IF EXISTS printshop_controls.submit_form_elements;
 DROP TABLE IF EXISTS printshop_controls.submit_forms;
 DROP TABLE IF EXISTS printshop_controls.element_templates;

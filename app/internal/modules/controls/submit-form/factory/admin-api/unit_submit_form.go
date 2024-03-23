@@ -11,6 +11,7 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
 
 func initUnitSubmitFormEnvironment(ctx context.Context, opts factory.Options) (submitFormOptions, error) {
@@ -62,13 +63,23 @@ func newUnitSubmitForm(ctx context.Context, opts moduleOptions) (*http_v1.Submit
 	useCase := usecase.NewSubmitForm(
 		opts.submitForm.storage,
 		opts.formElement.storage,
+		opts.formVersion.storage,
+		opts.EventEmitter,
+		opts.UsecaseHelper,
+	)
+	useCaseVersion := usecase.NewFormVersion(
+		opts.formVersion.storage,
+		useCase,
+		usecase.NewFormCompilerJson(),
+		opts.Locker,
 		opts.EventEmitter,
 		opts.UsecaseHelper,
 	)
 	controller := http_v1.NewSubmitForm(
 		opts.RequestParser,
-		opts.ResponseSender,
+		mrresponse.NewFileSender(opts.ResponseSender),
 		useCase,
+		useCaseVersion,
 		opts.submitForm.metaOrderBy,
 	)
 

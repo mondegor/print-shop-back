@@ -23,7 +23,7 @@ func NewCompanyPagePostgres(
 	}
 }
 
-func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error) {
+func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteName string) (entity.CompanyPage, error) {
 	sql := `
         SELECT
             page_title,
@@ -49,9 +49,5 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 		&row.SiteURL,
 	)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return &row, err
+	return row, err
 }

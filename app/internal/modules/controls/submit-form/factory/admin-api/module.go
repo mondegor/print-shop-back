@@ -17,6 +17,7 @@ type (
 
 		submitForm  submitFormOptions
 		formElement formElementOptions
+		formVersion formVersionOptions
 	}
 
 	submitFormOptions struct {
@@ -26,6 +27,10 @@ type (
 
 	formElementOptions struct {
 		storage *repository.FormElementPostgres
+	}
+
+	formVersionOptions struct {
+		storage *repository.FormVersionPostgres
 	}
 )
 
@@ -44,12 +49,19 @@ func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpCon
 		return nil, err
 	}
 
+	unitFormVersionOptions, err := initUnitSubmitFormVersionEnvironment(ctx, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return createModule(
 		ctx,
 		moduleOptions{
 			Options:     opts,
 			submitForm:  unitSubmitFormOptions,
 			formElement: unitFormElementOptions,
+			formVersion: unitFormVersionOptions,
 		},
 	)
 }
@@ -60,13 +72,13 @@ func createModule(ctx context.Context, opts moduleOptions) ([]mrserver.HttpContr
 	if l, err := createUnitSubmitForm(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitSubmitFormPermission)...)
+		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.UnitSubmitFormPermission))...)
 	}
 
 	if l, err := createUnitFormElement(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitFormElementPermission)...)
+		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.UnitFormElementPermission))...)
 	}
 
 	return list, nil

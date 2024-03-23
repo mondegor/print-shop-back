@@ -45,7 +45,6 @@ func (re *FormElementPostgres) NewOrderMeta(formID uuid.UUID) mrorderer.EntityMe
 }
 
 func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]entity.FormElement, error) {
-	// :TODO: избавиться от прямой зависимости element_templates
 	sql := `
         SELECT
             fe.element_id,
@@ -58,6 +57,7 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 			fe.element_required,
             et.element_type,
             et.element_detailing,
+			et.element_body,
             fe.created_at,
 			fe.updated_at
         FROM
@@ -99,6 +99,7 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 			&row.Required,
 			&row.Type,
 			&row.Detailing,
+			&row.Body,
 			&row.CreatedAt,
 			&row.UpdatedAt,
 		)
@@ -114,7 +115,6 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 }
 
 func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.FormElement, error) {
-	// :TODO: избавиться от прямой зависимости element_templates
 	sql := `
         SELECT
             fe.tag_version,
@@ -126,6 +126,7 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 			fe.element_required,
             et.element_type,
             et.element_detailing,
+			et.element_body,
             fe.created_at,
 			fe.updated_at
         FROM
@@ -154,6 +155,7 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 		&row.Required,
 		&row.Type,
 		&row.Detailing,
+		&row.Body,
 		&row.CreatedAt,
 		&row.UpdatedAt,
 	)
@@ -185,9 +187,9 @@ func (re *FormElementPostgres) FetchIdByParamName(ctx context.Context, formID uu
 	return rowID, err
 }
 
-// IsExists
+// IsExist
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *FormElementPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
+func (re *FormElementPostgres) IsExist(ctx context.Context, rowID mrtype.KeyInt32) error {
 	sql := `
         SELECT
             element_id

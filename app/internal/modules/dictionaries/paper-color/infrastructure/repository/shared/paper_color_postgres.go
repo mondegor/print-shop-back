@@ -9,24 +9,28 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
-// PaperColorIsExistsPostgres
+// PaperColorFetchStatusPostgres
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func PaperColorIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) error {
+func PaperColorFetchStatusPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
-            1
+            color_status
         FROM
             ` + module.DBSchema + `.paper_colors
         WHERE
             color_id = $1 AND color_status <> $2
         LIMIT 1;`
 
-	return conn.QueryRow(
+	var status mrenum.ItemStatus
+
+	err := conn.QueryRow(
 		ctx,
 		sql,
 		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&rowID,
+		&status,
 	)
+
+	return status, err
 }

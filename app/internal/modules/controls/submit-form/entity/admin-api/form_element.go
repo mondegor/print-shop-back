@@ -24,6 +24,7 @@ type (
 		Required        *bool                  `json:"elementRequired" upd:"element_required"`
 		Type            enums.ElementType      `json:"elementType"` // element_templates::element_type
 		Detailing       enums.ElementDetailing `json:"detailing"`   // element_templates::element_detailing
+		Body            []byte                 `json:"-"`           // element_templates::element_body
 		CreatedAt       time.Time              `json:"createdAt"`
 		UpdatedAt       *time.Time             `json:"updatedAt,omitempty"`
 	}

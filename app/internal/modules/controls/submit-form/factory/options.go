@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/go-components/mrorderer"
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrserver/mrresponse"
 )
@@ -16,6 +17,7 @@ type (
 		EventEmitter    mrsender.EventEmitter
 		UsecaseHelper   *mrcore.UsecaseHelper
 		PostgresAdapter *mrpostgres.ConnAdapter
+		Locker          mrlock.Locker
 		RequestParser   *view_shared.Parser
 		ResponseSender  *mrresponse.Sender
 

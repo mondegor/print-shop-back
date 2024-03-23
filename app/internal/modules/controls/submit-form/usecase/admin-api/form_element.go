@@ -103,7 +103,9 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
+	// предварительная проверка существования записи нужна для того,
+	// чтобы при Update быть уверенным, что отсутствие записи из-за VersionInvalid
+	if err := uc.storage.IsExist(ctx, item.ID); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, item.ID)
 	}
 

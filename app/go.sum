@@ -60,8 +60,8 @@ github.com/mondegor/go-storage v0.10.2 h1:fsaQmZ7ToXwIO8KeQNvalkbJUxZjP32wGEt9d0
 github.com/mondegor/go-storage v0.10.2/go.mod h1:b6LivODu6OflYhPUY/4F2fXSx0Gz7E1NsDSijjQb30w=
 github.com/mondegor/go-sysmess v0.8.2 h1:/wq/r4to1tSm5KKeHYn8dKyw7gyzZdcV5hgs07THy7w=
 github.com/mondegor/go-sysmess v0.8.2/go.mod h1:vWL2CWe0u20l69vQO1RVqMRtL/k+JnXwh+6AcIksoTo=
-github.com/mondegor/go-webcore v0.15.3 h1:2gWUVd39yPTsZPCiq1Nra9q40KqHu2UUbFNw49UtXq4=
-github.com/mondegor/go-webcore v0.15.3/go.mod h1:UuiVPWfkhE2xHiZ7jjQc7Ci88criHwAiRZ5py8MepyI=
+github.com/mondegor/go-webcore v0.16.0 h1:cieHn25a0BRhAsl5Fwwpzm2A7+p4grpUwo6Mox4JsBw=
+github.com/mondegor/go-webcore v0.16.0/go.mod h1:UuiVPWfkhE2xHiZ7jjQc7Ci88criHwAiRZ5py8MepyI=
 github.com/oklog/run v1.1.0 h1:GEenZ1cK0+q0+wsJew9qUg/DyD8k3JzYsZAi5gYi2mA=
 github.com/oklog/run v1.1.0/go.mod h1:sVPdnTZT1zYwAJeCMu2Th4T21pA3FPOQRfWjQlk7DVU=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

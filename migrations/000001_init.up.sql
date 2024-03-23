@@ -42,10 +42,10 @@ INSERT INTO printshop_controls.element_templates (template_id, tag_version, para
 VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEMENT_LIST*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%Quantity",
-    "name": "Тираж",
-    "type": "number",
+    "caption": "Тираж",
+    "type": "NUMBER",
     "required": true,
-    "view": "text",
+    "view": "TEXT",
     "values": [
       {
         "id": "%parentId%_value",
@@ -54,15 +54,15 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
         "maxValue": 1000000
       }
     ],
-    "unit": "шт"
+    "measure": "шт"
   },
 
   {
     "id": "%parentId%SimilarTypes",
-    "name": "Видов",
-    "type": "number",
+    "caption": "Видов",
+    "type": "NUMBER",
     "required": true,
-    "view": "text",
+    "view": "TEXT",
     "values": [
       {
         "id": "%parentId%_value",
@@ -75,10 +75,10 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
 
   {
     "id": "%parentId%FormatX",
-    "name": "Длина",
-    "type": "number",
+    "caption": "Длина",
+    "type": "NUMBER",
     "required": true,
-    "view": "text",
+    "view": "TEXT",
     "values": [
       {
         "id": "%parentId%_value",
@@ -87,15 +87,15 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
         "maxValue": 1020
       }
     ],
-    "unit": "мм"
+    "measure": "мм"
   },
 
   {
     "id": "%parentId%FormatY",
-    "name": "Ширина",
-    "type": "number",
+    "caption": "Ширина",
+    "type": "NUMBER",
     "required": true,
-    "view": "text",
+    "view": "TEXT",
     "values": [
       {
         "id": "%parentId%_value",
@@ -104,85 +104,85 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
         "maxValue": 1020
       }
     ],
-    "unit": "мм"
+    "measure": "мм"
   },
 
   {
     "id": "%parentId%PrintType",
-    "type": "number",
-    "name": "Вид печати",
+    "type": "NUMBER",
+    "caption": "Вид печати",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "values": [
       {
         "id": "%parentId%_Any",
-        "name": "Любая печать"
+        "caption": "Любая печать"
       },
       {
         "id": "%parentId%_Offset",
-        "name": "Офсетная печать"
+        "caption": "Офсетная печать"
       },
       {
         "id": "%parentId%_Digital",
-        "name": "Цифровая печать"
+        "caption": "Цифровая печать"
       }
     ]
   }]', 2/*ENABLED*/, '2023-07-03 16:22:50.911157', NULL),
 (2, 1, 'ProcessMedia', 'Бумага', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_Type",
-    "name": "Тип бумаги",
-    "type": "number",
+    "caption": "Тип бумаги",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "dictionary": "media-type",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ]
   },
   {
     "id": "%parentId%_Density",
-    "name": "Плотность",
-    "type": "number",
+    "caption": "Плотность",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "dictionary": "media-density",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ],
-    "unit": "г/м2"
+    "measure": "г/м2"
   },
   {
     "id": "%parentId%_Texture",
-    "name": "Фактура",
-    "type": "number",
+    "caption": "Фактура",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "dictionary": "media-texture",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ]
   },
   {
     "id": "%parentId%_Color",
-    "name": "Цвет",
-    "type": "number",
+    "caption": "Цвет",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "dictionary": "media-color",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ]
   }
@@ -190,18 +190,18 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
 (3, 1, 'ProcessPackaging', 'Упаковка', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_Type",
-    "name": "Тип упаковки",
-    "type": "number",
+    "caption": "Тип упаковки",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "values": [
       {
         "id": "%parentId%_ShrinkFilm",
-        "name": "Термоусадочная пленка"
+        "caption": "Термоусадочная пленка"
       },
       {
         "id": "%parentId%_CorrugatedBox",
-        "name": "Гофрированная коробка"
+        "caption": "Гофрированная коробка"
       }
     ]
   }
@@ -209,40 +209,40 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
 (4, 1, 'ProcessPrinting', 'Печать', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_SideFace",
-    "name": "Лицевая сторона",
-    "type": "group",
+    "caption": "Лицевая сторона",
+    "type": "GROUP",
     "required": true,
-    "view": "block",
+    "view": "BLOCK",
     "values": [
       {
         "id": "%parentId%_ColorMode",
-        "name": "Количество цветов",
-        "type": "number",
+        "caption": "Количество цветов",
+        "type": "NUMBER",
         "required": true,
-        "view": "combo",
+        "view": "COMBO",
         "values": [
           {
             "id": "%parentId%_1",
-            "name": "[ 1 ]"
+            "caption": "[ 1 ]"
           },
           {
             "id": "%parentId%_4",
-            "name": "[ 4 ]"
+            "caption": "[ 4 ]"
           }
         ]
       },
 
       {
         "id": "%parentId%_Varnish",
-        "name": "Лакировка",
-        "type": "number",
+        "caption": "Лакировка",
+        "type": "NUMBER",
         "required": false,
-        "view": "combo",
+        "view": "COMBO",
         "dictionary": "varnish",
         "values": [
           {
             "id": "%parentId%_None",
-            "name": "без лакировки"
+            "caption": "без лакировки"
           }
         ]
       }
@@ -251,44 +251,44 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
 
   {
     "id": "%parentId%_SideBack",
-    "name": "Обратная сторона",
-    "type": "group",
+    "caption": "Обратная сторона",
+    "type": "GROUP",
     "required": false,
-    "view": "block",
+    "view": "BLOCK",
     "values": [
       {
         "id": "%parentId%_ColorMode",
-        "name": "Количество цветов",
-        "type": "number",
+        "caption": "Количество цветов",
+        "type": "NUMBER",
         "required": true,
-        "view": "combo",
+        "view": "COMBO",
         "values": [
           {
             "id": "%parentId%_0",
-            "name": "[ 0 ]"
+            "caption": "[ 0 ]"
           },
           {
             "id": "%parentId%_1",
-            "name": "[ 1 ]"
+            "caption": "[ 1 ]"
           },
           {
             "id": "%parentId%_4",
-            "name": "[ 4 ]"
+            "caption": "[ 4 ]"
           }
         ]
       },
 
       {
         "id": "%parentId%_Varnish",
-        "type": "number",
-        "name": "Лакировка",
+        "type": "NUMBER",
+        "caption": "Лакировка",
         "required": false,
-        "view": "combo",
+        "view": "COMBO",
         "dictionary": "varnish",
         "values": [
           {
             "id": "%parentId%_None",
-            "name": "без лакировки"
+            "caption": "без лакировки"
           }
         ]
       }
@@ -298,51 +298,51 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
 (5, 1, 'ProcessLaminating', 'Ламинация', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_NumberOfSides",
-    "name": "Количество сторон",
-    "type": "number",
+    "caption": "Количество сторон",
+    "type": "NUMBER",
     "required": true,
-    "view": "radio",
+    "view": "RADIO",
     "values": [
       {
         "id": "%parentId%_OneSide",
-        "name": "Одна сторона"
+        "caption": "Одна сторона"
       },
       {
         "id": "%parentId%_TwoSides",
-        "name": "Две стороны"
+        "caption": "Две стороны"
       }
     ]
   },
 
   {
     "id": "%parentId%_LaminatingTexture",
-    "name": "Тип ламината",
-    "type": "number",
+    "caption": "Тип ламината",
+    "type": "NUMBER",
     "required": true,
-    "view": "combo",
+    "view": "COMBO",
     "dictionary": "laminating-texture",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ]
   },
 
   {
     "id": "%parentId%_LaminatingThikness",
-    "name": "Толщина ламината",
-    "type": "number",
+    "caption": "Толщина ламината",
+    "type": "NUMBER",
     "required": true,
-    "view": "combo",
+    "view": "COMBO",
     "dictionary": "laminating-thikness",
     "values": [
       {
         "id": "%parentId%_None",
-        "name": "не указано"
+        "caption": "не указано"
       }
     ],
-    "unit": "мм"
+    "measure": "мм"
   }
 ]', 2/*ENABLED*/, '2023-07-03 16:36:48.626009', NULL);
 
@@ -393,23 +393,23 @@ ALTER SEQUENCE printshop_controls.submit_form_elements_element_id_seq RESTART WI
 
 -- --------------------------------------------------------------------------------------------------
 
-CREATE TABLE printshop_controls.submit_forms_compiled (
-    form_id uuid NOT NULL CONSTRAINT fk_submit_forms_compiled_form_id REFERENCES printshop_controls.submit_forms (form_id) ON DELETE CASCADE,
+CREATE TABLE printshop_controls.submit_form_versions (
+    form_id uuid NOT NULL CONSTRAINT fk_submit_form_versions_form_id REFERENCES printshop_controls.submit_forms (form_id) ON DELETE CASCADE,
     version int4 NOT NULL CHECK(version > 0),
     rewrite_name character varying(32) NULL,
     form_caption character varying(128) NOT NULL,
     form_detailing int2 NOT NULL, -- 1=NORMAL, 2=EXTENDED
-    body_compiled jsonb NOT NULL,
-    activity_status int2 NOT NULL, -- 1=TESTING, 2=PUBLISHED, 3=ARCHIVED
+    compiled_body jsonb NOT NULL,
+    activity_status int2 NOT NULL, -- 1=DRAFT, 2=TESTING, 3=PUBLISHED, 4=ARCHIVED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NULL,
-    CONSTRAINT uk_submit_forms_compiled_form_id_version UNIQUE (form_id, version),
-    CONSTRAINT uk_submit_forms_compiled_rewrite_name_activity_status UNIQUE (rewrite_name, activity_status)
+    CONSTRAINT pk_submit_form_versions_form_id_version PRIMARY KEY (form_id, version),
+    CONSTRAINT uk_submit_form_versions_rewrite_name_activity_status UNIQUE (rewrite_name, activity_status)
 );
 
-INSERT INTO printshop_controls.submit_forms_compiled (form_id, version, rewrite_name, form_caption, form_detailing, body_compiled, activity_status, created_at, updated_at)
-VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 2/*PUBLISHED*/, '2023-07-03 19:33:28.945816', NULL),
-       ('aa22434f-f09d-4b20-89c0-0785948cdc04', 2, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 1/*TESTING*/, '2023-07-03 19:33:28.945816', NULL);
+INSERT INTO printshop_controls.submit_form_versions (form_id, version, rewrite_name, form_caption, form_detailing, compiled_body, activity_status, created_at, updated_at)
+VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 3/*PUBLISHED*/, '2023-07-03 19:33:28.945816', NULL),
+       ('aa22434f-f09d-4b20-89c0-0785948cdc04', 2, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 2/*TESTING*/, '2023-07-03 19:33:28.945816', NULL);
 
 -- --------------------------------------------------------------------------------------------------
 -- --------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@ type (
 	SubmitForm struct {
 		storage        SubmitFormStorage
 		storageElement FormElementStorage
+		storageVersion FormVersionStorage
 		eventEmitter   mrsender.EventEmitter
 		usecaseHelper  *mrcore.UsecaseHelper
 		statusFlow     mrenum.StatusFlow
@@ -25,12 +26,14 @@ type (
 func NewSubmitForm(
 	storage SubmitFormStorage,
 	storageElement FormElementStorage,
+	storageVersion FormVersionStorage,
 	eventEmitter mrsender.EventEmitter,
 	usecaseHelper *mrcore.UsecaseHelper,
 ) *SubmitForm {
 	return &SubmitForm{
 		storage:        storage,
 		storageElement: storageElement,
+		storageVersion: storageVersion,
 		eventEmitter:   eventEmitter,
 		usecaseHelper:  usecaseHelper,
 		statusFlow:     mrenum.ItemStatusFlow,
@@ -59,17 +62,13 @@ func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParam
 }
 
 func (uc *SubmitForm) GetItem(ctx context.Context, itemID uuid.UUID) (entity.SubmitForm, error) {
-	if itemID == uuid.Nil {
-		return entity.SubmitForm{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
-	}
-
-	item, err := uc.storage.FetchOne(ctx, itemID)
+	item, err := uc.getForm(ctx, itemID)
 
 	if err != nil {
-		return entity.SubmitForm{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameSubmitForm, itemID)
+		return entity.SubmitForm{}, err
 	}
 
-	if err = uc.setElements(ctx, &item); err != nil {
+	if err = uc.setVersions(ctx, &item); err != nil {
 		return entity.SubmitForm{}, err
 	}
 
@@ -102,7 +101,9 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
+	// предварительная проверка существования записи нужна для того,
+	// чтобы при Update быть уверенным, что отсутствие записи из-за VersionInvalid
+	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameSubmitForm, item.ID)
 	}
 
@@ -134,7 +135,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	currentStatus, err := uc.storage.FetchStatus(ctx, item)
+	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 
 	if err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameSubmitForm, item.ID)
@@ -175,6 +176,46 @@ func (uc *SubmitForm) Remove(ctx context.Context, itemID uuid.UUID) error {
 	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
+}
+
+func (uc *SubmitForm) GetFormStatus(ctx context.Context, formID uuid.UUID) (mrenum.ItemStatus, error) {
+	if formID == uuid.Nil {
+		return 0, usecase.FactoryErrSubmitFormRequired.New()
+	}
+
+	status, err := uc.storage.FetchStatus(ctx, formID)
+
+	if err != nil {
+		if uc.usecaseHelper.IsNotFoundError(err) {
+			return 0, usecase.FactoryErrSubmitFormNotFound.New(formID)
+		}
+
+		return 0, uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
+	}
+
+	return status, nil
+}
+
+func (uc *SubmitForm) GetFormWithElements(ctx context.Context, formID uuid.UUID) (entity.SubmitForm, error) {
+	return uc.getForm(ctx, formID)
+}
+
+func (uc *SubmitForm) getForm(ctx context.Context, itemID uuid.UUID) (entity.SubmitForm, error) {
+	if itemID == uuid.Nil {
+		return entity.SubmitForm{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
+	}
+
+	item, err := uc.storage.FetchOne(ctx, itemID)
+
+	if err != nil {
+		return entity.SubmitForm{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameSubmitForm, itemID)
+	}
+
+	if err = uc.setElements(ctx, &item); err != nil {
+		return entity.SubmitForm{}, err
+	}
+
+	return item, nil
 }
 
 func (uc *SubmitForm) checkItem(ctx context.Context, item *entity.SubmitForm) error {
@@ -233,6 +274,18 @@ func (uc *SubmitForm) setElements(ctx context.Context, form *entity.SubmitForm) 
 	}
 
 	form.Elements = elements
+
+	return nil
+}
+
+func (uc *SubmitForm) setVersions(ctx context.Context, form *entity.SubmitForm) error {
+	versions, err := uc.storageVersion.Fetch(ctx, form.ID)
+
+	if err != nil {
+		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormVersion, form.ID)
+	}
+
+	form.Versions = versions
 
 	return nil
 }

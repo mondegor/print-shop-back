@@ -223,7 +223,9 @@ func (re *PaperPostgres) FetchIdByArticle(ctx context.Context, article string) (
 	return rowID, err
 }
 
-func (re *PaperPostgres) FetchStatus(ctx context.Context, row entity.Paper) (mrenum.ItemStatus, error) {
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
 		SELECT
 			paper_status
@@ -238,35 +240,13 @@ func (re *PaperPostgres) FetchStatus(ctx context.Context, row entity.Paper) (mre
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&status,
 	)
 
 	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-		SELECT
-			paper_id
-		FROM
-			` + module.DBSchema + `.papers
-		WHERE
-			paper_id = $1 AND paper_status <> $2
-		LIMIT 1;`
-
-	return re.client.QueryRow(
-		ctx,
-		sql,
-		rowID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&rowID,
-	)
 }
 
 func (re *PaperPostgres) Insert(ctx context.Context, row entity.Paper) (mrtype.KeyInt32, error) {
@@ -384,8 +364,8 @@ func (re *PaperPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) erro
 			` + module.DBSchema + `.papers
 		SET
 			tag_version = tag_version + 1,
-			updated_at = NOW(),
 			paper_article = NULL,
+			updated_at = NOW(),
 			paper_status = $2
 		WHERE
 			paper_id = $1 AND paper_status <> $2;`

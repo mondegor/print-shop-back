@@ -222,7 +222,9 @@ func (re *SubmitFormPostgres) FetchIdByParamName(ctx context.Context, paramName 
 	return rowID, err
 }
 
-func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, row entity.SubmitForm) (mrenum.ItemStatus, error) {
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             form_status
@@ -237,35 +239,13 @@ func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, row entity.Submit
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&status,
 	)
 
 	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *SubmitFormPostgres) IsExists(ctx context.Context, rowID uuid.UUID) error {
-	sql := `
-        SELECT
-            form_id
-        FROM
-            ` + module.DBSchema + `.submit_forms
-        WHERE
-            form_id = $1 AND form_status <> $2
-        LIMIT 1;`
-
-	return re.client.QueryRow(
-		ctx,
-		sql,
-		rowID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&rowID,
-	)
 }
 
 func (re *SubmitFormPostgres) Insert(ctx context.Context, row entity.SubmitForm) (uuid.UUID, error) {
@@ -374,9 +354,9 @@ func (re *SubmitFormPostgres) Delete(ctx context.Context, rowID uuid.UUID) error
             ` + module.DBSchema + `.submit_forms
         SET
             tag_version = tag_version + 1,
-			updated_at = NOW(),
 			rewrite_name = NULL,
             param_name = NULL,
+			updated_at = NOW(),
             form_status = $2
         WHERE
             form_id = $1 AND form_status <> $2;`

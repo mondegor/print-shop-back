@@ -23,7 +23,7 @@ type (
 		Fetch(ctx context.Context, formID uuid.UUID) ([]entity.FormElement, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.FormElement, error)
 		FetchIdByParamName(ctx context.Context, formID uuid.UUID, paramName string) (mrtype.KeyInt32, error)
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
+		IsExist(ctx context.Context, rowID mrtype.KeyInt32) error
 		Insert(ctx context.Context, row entity.FormElement) (mrtype.KeyInt32, error)
 		Update(ctx context.Context, row entity.FormElement) (int32, error)
 		Delete(ctx context.Context, rowID mrtype.KeyInt32) error

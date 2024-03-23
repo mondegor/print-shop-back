@@ -14,6 +14,7 @@ func NewSubmitFormModuleOptions(ctx context.Context, opts app.Options) (factory.
 		EventEmitter:    opts.EventEmitter,
 		UsecaseHelper:   opts.UsecaseHelper,
 		PostgresAdapter: opts.PostgresAdapter,
+		Locker:          opts.Locker,
 		RequestParser: view_shared.NewParser(
 			opts.RequestParsers.Int64,
 			opts.RequestParsers.ItemStatus,

@@ -118,6 +118,7 @@ access_control:
     - modCatalogLaminate
     - modControlsElementTemplate
     - modControlsSubmitForm
+    - modControlsSubmitFormToPublish
     - modDictionariesLaminateType
     - modDictionariesPaperColor
     - modDictionariesPaperFacture

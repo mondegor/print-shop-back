@@ -17,7 +17,7 @@ func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpCon
 	if l, err := createUnitPrintFormat(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(ctx, l, module.Permission)...)
+		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
 	}
 
 	return list, nil

@@ -26,6 +26,7 @@ type (
 		UpdatedAt   *time.Time             `json:"updatedAt,omitempty" sort:"updatedAt"`
 
 		Elements []FormElement `json:"elements,omitempty"`
+		Versions []FormVersion `json:"versions,omitempty"`
 	}
 
 	SubmitFormParams struct {

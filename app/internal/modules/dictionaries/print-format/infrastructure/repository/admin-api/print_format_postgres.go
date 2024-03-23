@@ -170,34 +170,10 @@ func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 	return row, err
 }
 
-func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, row entity.PrintFormat) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            format_status
-        FROM
-            ` + module.DBSchema + `.print_formats
-        WHERE
-            format_id = $1 AND format_status <> $2
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&status,
-	)
-
-	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PrintFormatPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	return repository_shared.PrintFormatIsExistsPostgres(ctx, re.client, rowID)
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
+	return repository_shared.PrintFormatFetchStatusPostgres(ctx, re.client, rowID)
 }
 
 func (re *PrintFormatPostgres) Insert(ctx context.Context, row entity.PrintFormat) (mrtype.KeyInt32, error) {

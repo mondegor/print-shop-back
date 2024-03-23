@@ -42,7 +42,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 }
 
 func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.useCase.GetItemByName(r.Context(), ht.parser.PathParamString(r, "rewriteName"))
+	item, err := ht.useCase.GetItemByRewriteName(r.Context(), ht.parser.PathParamString(r, "rewriteName"))
 
 	if err != nil {
 		return err

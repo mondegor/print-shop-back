@@ -242,14 +242,15 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/controls/submit-forms/{formId}/compile:
-  post:
-    summary: Метод компиляции формы в json файл
+/v1/controls/submit-forms/{formId}/prepare-for-test:
+  patch:
+    summary: Метод подготовки формы к тестированию
     description: |-
-      Метод предназначен для компиляции формы и её элеменов
-      в готовый json файл для его использования в тестовой среде
+      Метод предназначен для подготовки формы и её элеменов к тестированию в рабочей среде.
+      При этом создаётся новая версия с готовым json файлом, в который входят все элементы формы.
+      Но если последняя версия находится на этапе тестирования, то происходит только её обновление.
 
-    operationId: buildSubmitFormForTest
+    operationId: prepareSubmitFormForTest
     tags:
       - Controls.SubmitForm
 
@@ -263,7 +264,7 @@
 
     responses:
       "204":
-        description: json файл успешно собран и переведён в статус тестирования
+        description: Для формы выпущена новая версия, которая переведена в статус тестирования
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -275,13 +276,13 @@
 
 /v1/controls/submit-forms/{formId}/publish:
   patch:
-    summary: Метод публикации собранного json файла
+    summary: Метод публикации версии формы, которая находится на тестировании
     description: |-
-      Метод предназначен для публикации собранной формы, которая находится на этапе тестирования
+      Метод предназначен для публикации версии формы, которая находится на этапе тестирования.
 
       **Ограничения и ошибки полей:**
-      - запись может быть только переключена из TESTING -> PUBLISHED,
-        если указанная запись не в статусе TESTING, то формируется 400 ошибка;
+      - только пользователи с разрешением `modControlsSubmitFormToPublish` могут вызывать данный метод;
+      - версия формы должна находится в статусе `TESTING`, тогда она будет переключена в `PUBLISHED`;
 
     operationId: publishSubmitForm
     tags:
@@ -297,7 +298,7 @@
 
     responses:
       "204":
-        description: Статус json файла успешно установлен в режим публикации
+        description: Тестовая версия формы успешно переведена в статус публикации
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -307,11 +308,14 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/controls/submit-forms/{formId}/{version}/json:
+/v1/controls/submit-forms/{formId}/versions/{version}/json:
   get:
-    summary: Метод получения json файла формы
-    description: Метод предназначен для получения json файла откомпилированной формы из БД
-    operationId: getCompiledSubmitForm
+    summary: Метод получения json файла указанной версии формы
+    description: |-
+      Метод предназначен для получения json файла указанной версии формы из БД.\
+      При указании формы нулевой версии возвращается копия текущей формы.
+
+    operationId: getSubmitFormVersionJson
     tags:
       - Controls.SubmitForm
 
@@ -326,7 +330,7 @@
 
     responses:
       "200":
-        description: Json файл формы получен
+        description: Json файл указанной версии формы получен
         content:
           application/json;charset=UTF-8:
             schema:

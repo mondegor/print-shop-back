@@ -76,21 +76,21 @@ func (uc *ElementTemplate) GetItem(ctx context.Context, itemID mrtype.KeyInt32) 
 
 func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID mrtype.KeyInt32, pretty bool) ([]byte, error) {
 	if itemID < 1 {
-		return []byte{}, mrcore.FactoryErrUseCaseEntityNotFound.New()
+		return nil, mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
 	// :TODO: можно оптимизировать получая только body
 	item, err := uc.storage.FetchOne(ctx, itemID)
 
 	if err != nil {
-		return []byte{}, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, itemID)
+		return nil, uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, itemID)
 	}
 
 	if pretty {
 		var prettyJSON bytes.Buffer
 
 		if err = json.Indent(&prettyJSON, item.Body, "", module.JsonPrettyIndent); err != nil {
-			return []byte{}, uc.usecaseHelper.WrapErrorEntityFailed(err, entity.ModelNameElementTemplate, itemID)
+			return nil, uc.usecaseHelper.WrapErrorEntityFailed(err, entity.ModelNameElementTemplate, itemID)
 		}
 
 		return prettyJSON.Bytes(), nil
@@ -121,7 +121,9 @@ func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplat
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
+	// предварительная проверка существования записи нужна для того,
+	// чтобы при Update быть уверенным, что отсутствие записи из-за VersionInvalid
+	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, item.ID)
 	}
 
@@ -149,7 +151,7 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	currentStatus, err := uc.storage.FetchStatus(ctx, item)
+	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 
 	if err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, item.ID)

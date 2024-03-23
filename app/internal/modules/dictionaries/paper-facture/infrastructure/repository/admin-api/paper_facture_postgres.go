@@ -160,34 +160,10 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
 	return row, err
 }
 
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, row entity.PaperFacture) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            facture_status
-        FROM
-            ` + module.DBSchema + `.paper_factures
-        WHERE
-            facture_id = $1 AND facture_status <> $2
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&status,
-	)
-
-	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperFacturePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	return repository_shared.PaperFactureIsExistsPostgres(ctx, re.client, rowID)
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
+	return repository_shared.PaperFactureFetchStatusPostgres(ctx, re.client, rowID)
 }
 
 func (re *PaperFacturePostgres) Insert(ctx context.Context, row entity.PaperFacture) (mrtype.KeyInt32, error) {

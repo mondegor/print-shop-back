@@ -43,7 +43,7 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		FileJson: mrparser.NewFile(
 			mrparser.FileOptions{
 				AllowedExts:             []string{".json"},
-				MinSize:                 512,
+				MinSize:                 1,
 				MaxSize:                 512 * 1024, // 512Kb
 				MaxFiles:                4,
 				CheckRequestContentType: true,

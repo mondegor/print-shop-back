@@ -160,34 +160,10 @@ func (re *LaminateTypePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
 	return row, err
 }
 
-func (re *LaminateTypePostgres) FetchStatus(ctx context.Context, row entity.LaminateType) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            type_status
-        FROM
-            ` + module.DBSchema + `.laminate_types
-        WHERE
-            type_id = $1 AND type_status <> $2
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&status,
-	)
-
-	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *LaminateTypePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	return repository_shared.LaminateTypeIsExistsPostgres(ctx, re.client, rowID)
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *LaminateTypePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
+	return repository_shared.LaminateTypeFetchStatusPostgres(ctx, re.client, rowID)
 }
 
 func (re *LaminateTypePostgres) Insert(ctx context.Context, row entity.LaminateType) (mrtype.KeyInt32, error) {

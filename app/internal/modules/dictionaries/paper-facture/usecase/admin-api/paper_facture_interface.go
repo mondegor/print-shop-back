@@ -24,8 +24,7 @@ type (
 		Fetch(ctx context.Context, params mrstorage.SqlSelectParams) ([]entity.PaperFacture, error)
 		FetchTotal(ctx context.Context, where mrstorage.SqlBuilderPart) (int64, error)
 		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperFacture, error)
-		FetchStatus(ctx context.Context, row entity.PaperFacture) (mrenum.ItemStatus, error)
-		IsExists(ctx context.Context, rowID mrtype.KeyInt32) error
+		FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error)
 		Insert(ctx context.Context, row entity.PaperFacture) (mrtype.KeyInt32, error)
 		Update(ctx context.Context, row entity.PaperFacture) (int32, error)
 		UpdateStatus(ctx context.Context, row entity.PaperFacture) (int32, error)

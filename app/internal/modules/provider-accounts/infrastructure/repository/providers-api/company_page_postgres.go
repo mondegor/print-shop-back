@@ -84,7 +84,9 @@ func (re *CompanyPagePostgres) FetchAccountIdByRewriteName(ctx context.Context, 
 	return accountID, err
 }
 
-func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.CompanyPage) (enums.PublicStatus, error) {
+// FetchStatus
+// result: enums.PublicStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (enums.PublicStatus, error) {
 	sql := `
         SELECT
             page_status
@@ -99,7 +101,7 @@ func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, row entity.Compa
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.AccountID,
+		accountID,
 	).Scan(
 		&status,
 	)

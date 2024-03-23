@@ -178,7 +178,9 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.Ke
 	return row, err
 }
 
-func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, row entity.ElementTemplate) (mrenum.ItemStatus, error) {
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
             template_status
@@ -193,35 +195,13 @@ func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, row entity.E
 	err := re.client.QueryRow(
 		ctx,
 		sql,
-		row.ID,
+		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
 		&status,
 	)
 
 	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *ElementTemplatePostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        SELECT
-            template_id
-        FROM
-            ` + module.DBSchema + `.element_templates
-        WHERE
-            template_id = $1 AND template_status <> $2
-        LIMIT 1;`
-
-	return re.client.QueryRow(
-		ctx,
-		sql,
-		rowID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&rowID,
-	)
 }
 
 func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.ElementTemplate) (mrtype.KeyInt32, error) {
@@ -302,8 +282,8 @@ func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row entity.
             ` + module.DBSchema + `.element_templates
         SET
             tag_version = tag_version + 1,
-			updated_at = NOW(),
-            template_status = $4
+            template_status = $4,
+			updated_at = NOW()
         WHERE
             template_id = $1 AND tag_version = $2 AND template_status <> $3
 		RETURNING
@@ -331,8 +311,8 @@ func (re *ElementTemplatePostgres) Delete(ctx context.Context, rowID mrtype.KeyI
             ` + module.DBSchema + `.element_templates
         SET
             tag_version = tag_version + 1,
-			updated_at = NOW(),
             param_name = NULL,
+			updated_at = NOW(),
             template_status = $2
         WHERE
             template_id = $1 AND template_status <> $2;`

@@ -13,7 +13,11 @@ const (
 
 type (
 	PaperColorAPI interface {
-		// CheckingAvailability - error: FactoryErrPaperColorRequired | FactoryErrPaperColorNotFound | Failed
+		// CheckingAvailability - error:
+		//    - FactoryErrPaperColorRequired
+		//	  - FactoryErrPaperColorNotAvailable
+		//	  - FactoryErrPaperColorNotFound
+		//	  - Failed
 		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
 	}
 )
@@ -21,6 +25,9 @@ type (
 var (
 	FactoryErrPaperColorRequired = mrerr.NewFactory(
 		"errDictionariesPaperColorRequired", mrerr.ErrorKindUser, "paper color ID is required")
+
+	FactoryErrPaperColorNotAvailable = mrerr.NewFactory(
+		"errDictionariesPaperColorNotAvailable", mrerr.ErrorKindUser, "paper color with ID={{ .id }} is not available")
 
 	FactoryErrPaperColorNotFound = mrerr.NewFactory(
 		"errDictionariesPaperColorNotFound", mrerr.ErrorKindUser, "paper color with ID={{ .id }} not found")

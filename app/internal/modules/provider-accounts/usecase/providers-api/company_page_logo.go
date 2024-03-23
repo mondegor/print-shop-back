@@ -62,13 +62,11 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 		return err
 	}
 
-	unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID))
-
-	if err != nil {
+	if unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID)); err != nil {
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameCompanyPageLogo)
+	} else {
+		defer unlock()
 	}
-
-	defer unlock()
 
 	oldLogoMeta, err := uc.storage.FetchMeta(ctx, accountID)
 
@@ -105,13 +103,11 @@ func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID uuid.UUID) 
 		return mrcore.FactoryErrUseCaseEntityNotFound.New()
 	}
 
-	unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID))
-
-	if err != nil {
+	if unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID)); err != nil {
 		return uc.usecaseHelper.WrapErrorFailed(err, entity.ModelNameCompanyPageLogo)
+	} else {
+		defer unlock()
 	}
-
-	defer unlock()
 
 	logoMeta, err := uc.storage.FetchMeta(ctx, accountID)
 

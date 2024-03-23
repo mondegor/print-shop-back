@@ -102,7 +102,9 @@ func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, item.ID); err != nil {
+	// предварительная проверка существования записи нужна для того,
+	// чтобы при Update быть уверенным, что отсутствие записи из-за VersionInvalid
+	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
 	}
 
@@ -134,7 +136,7 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 		return mrcore.FactoryErrUseCaseEntityVersionInvalid.New()
 	}
 
-	currentStatus, err := uc.storage.FetchStatus(ctx, item)
+	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 
 	if err != nil {
 		return uc.usecaseHelper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)

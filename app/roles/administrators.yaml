@@ -8,6 +8,7 @@ permissions:
   - modCatalogLaminate
   - modControlsElementTemplate
   - modControlsSubmitForm
+  - modControlsSubmitFormToPublish
   - modDictionariesLaminateType
   - modDictionariesPaperColor
   - modDictionariesPaperFacture

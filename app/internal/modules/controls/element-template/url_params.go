@@ -1,9 +1,6 @@
-package submit_form
+package module
 
 const (
-	JsonFileNamePattern = "controls-template-%d.json"
-	JsonPrettyIndent    = "  "
-
 	ParamNameFilterElementDetailing = "detailing"
 	ParamNameFilterSearchText       = "query"
 	ParamNameFilterStatuses         = "statuses"

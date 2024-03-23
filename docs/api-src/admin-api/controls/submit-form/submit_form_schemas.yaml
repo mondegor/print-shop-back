@@ -86,9 +86,9 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
     updatedAt:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
-Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm:
+Controls.SubmitForms.AdminAPI.Response.Model.FormVersion:
   description: |-
-    DTO - собранная форма пользовательского интерфейса
+    DTO - версия формы пользовательского интерфейса
   type: object
   required:
     - version
@@ -121,7 +121,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormWithItems:
           type: array
           items:
             $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormElement"
-        compiledForms:
+        versions:
           type: array
           items:
-            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.CompiledForm"
+            $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormVersion"

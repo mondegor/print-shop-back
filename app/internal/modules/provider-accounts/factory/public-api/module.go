@@ -17,7 +17,7 @@ func CreateModule(ctx context.Context, opts factory.Options) ([]mrserver.HttpCon
 	if l, err := createUnitCompanyPage(ctx, opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.WithPermission(ctx, l, module.UnitCompanyPagePermission)...)
+		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.UnitCompanyPagePermission))...)
 	}
 
 	return list, nil

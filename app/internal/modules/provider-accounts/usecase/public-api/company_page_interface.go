@@ -7,10 +7,10 @@ import (
 
 type (
 	CompanyPageUseCase interface {
-		GetItemByName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error)
+		GetItemByRewriteName(ctx context.Context, rewriteName string) (entity.CompanyPage, error)
 	}
 
 	CompanyPageStorage interface {
-		FetchByRewriteName(ctx context.Context, rewriteName string) (*entity.CompanyPage, error)
+		FetchByRewriteName(ctx context.Context, rewriteName string) (entity.CompanyPage, error)
 	}
 )

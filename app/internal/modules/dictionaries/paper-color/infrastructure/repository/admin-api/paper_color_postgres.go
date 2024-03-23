@@ -160,34 +160,10 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt3
 	return row, err
 }
 
-func (re *PaperColorPostgres) FetchStatus(ctx context.Context, row entity.PaperColor) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            color_status
-        FROM
-            ` + module.DBSchema + `.paper_colors
-        WHERE
-            color_id = $1 AND color_status <> $2
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		mrenum.ItemStatusRemoved,
-	).Scan(
-		&status,
-	)
-
-	return status, err
-}
-
-// IsExists
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *PaperColorPostgres) IsExists(ctx context.Context, rowID mrtype.KeyInt32) error {
-	return repository_shared.PaperColorIsExistsPostgres(ctx, re.client, rowID)
+// FetchStatus
+// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error
+func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
+	return repository_shared.PaperColorFetchStatusPostgres(ctx, re.client, rowID)
 }
 
 func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor) (mrtype.KeyInt32, error) {

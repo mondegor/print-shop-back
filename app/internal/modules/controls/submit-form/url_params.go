@@ -1,4 +1,4 @@
-package submit_form
+package modile
 
 const (
 	ParamNameFilterElementDetailing = "detailing"

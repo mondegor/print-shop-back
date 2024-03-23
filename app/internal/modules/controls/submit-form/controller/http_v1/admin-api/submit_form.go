@@ -1,7 +1,9 @@
 package http_v1
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"net/http"
 	module "print-shop-back/internal/modules/controls/submit-form"
 	view_shared "print-shop-back/internal/modules/controls/submit-form/controller/http_v1/shared/view"
@@ -14,6 +16,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 )
 
@@ -21,32 +24,35 @@ const (
 	submitFormListURL             = "/v1/controls/submit-forms"
 	submitFormItemURL             = "/v1/controls/submit-forms/:id"
 	submitFormItemChangeStatusURL = "/v1/controls/submit-forms/:id/status"
-	submitFormItemCompileURL      = "/v1/controls/submit-forms/:id/compile"
+
+	submitFormVersionItemJsonURL    = "/v1/controls/submit-forms/:id/versions/:version/json"
+	submitFormItemPrepareForTestURL = "/v1/controls/submit-forms/:id/prepare-for-test"
+	submitFormItemPublishURL        = "/v1/controls/submit-forms/:id/publish"
 )
 
 type (
 	SubmitForm struct {
-		parser  view_shared.RequestParser
-		sender  mrserver.ResponseSender
-		useCase usecase.SubmitFormUseCase
-		// useCaseUISubmitForm usecase.UISubmitFormUseCase
-		listSorter mrview.ListSorter
+		parser         view_shared.RequestParser
+		sender         mrserver.FileResponseSender
+		useCase        usecase.SubmitFormUseCase
+		useCaseVersion usecase.FormVersionUseCase
+		listSorter     mrview.ListSorter
 	}
 )
 
 func NewSubmitForm(
 	parser view_shared.RequestParser,
-	sender mrserver.ResponseSender,
+	sender mrserver.FileResponseSender,
 	useCase usecase.SubmitFormUseCase,
-	// useCaseUISubmitForm usecase.UISubmitFormUseCase,
+	useCaseVersion usecase.FormVersionUseCase,
 	listSorter mrview.ListSorter,
 ) *SubmitForm {
 	return &SubmitForm{
-		parser:  parser,
-		sender:  sender,
-		useCase: useCase,
-		// useCaseUISubmitForm: useCaseUISubmitForm,
-		listSorter: listSorter,
+		parser:         parser,
+		sender:         sender,
+		useCase:        useCase,
+		useCaseVersion: useCaseVersion,
+		listSorter:     listSorter,
 	}
 }
 
@@ -61,7 +67,9 @@ func (ht *SubmitForm) Handlers() []mrserver.HttpHandler {
 
 		{http.MethodPatch, submitFormItemChangeStatusURL, "", ht.ChangeStatus},
 
-		{http.MethodPatch, submitFormItemCompileURL, "", ht.Compile},
+		{http.MethodGet, submitFormVersionItemJsonURL, "", ht.GetVersionJson},
+		{http.MethodPatch, submitFormItemPrepareForTestURL, "", ht.PrepareForTest},
+		{http.MethodPatch, submitFormItemPublishURL, "modControlsSubmitFormToPublish", ht.Publish},
 	}
 }
 
@@ -181,20 +189,53 @@ func (ht *SubmitForm) Remove(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *SubmitForm) Compile(w http.ResponseWriter, r *http.Request) error {
-	// item, err := ht.useCaseUISubmitForm.CompileForm(r.Context(), ht.getItemID(r))
-	err := fmt.Errorf("of")
-	item := ""
+func (ht *SubmitForm) GetVersionJson(w http.ResponseWriter, r *http.Request) error {
+	primary := entity.PrimaryKey{
+		FormID:  ht.getItemID(r),
+		Version: ht.getItemVersion(r),
+	}
+	body, err := ht.useCaseVersion.GetItemJson(r.Context(), primary, true)
 
 	if err != nil {
 		return err
 	}
 
-	return ht.sender.Send(w, http.StatusOK, item)
+	return ht.sender.SendAttachmentFile(
+		r.Context(),
+		w,
+		mrtype.File{
+			FileInfo: mrtype.FileInfo{
+				ContentType:  "application/json",
+				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, primary.FormID, primary.Version),
+				Size:         int64(len(body)),
+			},
+			Body: io.NopCloser(bytes.NewReader(body)),
+		},
+	)
+}
+
+func (ht *SubmitForm) PrepareForTest(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.useCaseVersion.PrepareForTest(r.Context(), ht.getItemID(r)); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
+}
+
+func (ht *SubmitForm) Publish(w http.ResponseWriter, r *http.Request) error {
+	if err := ht.useCaseVersion.Publish(r.Context(), ht.getItemID(r)); err != nil {
+		return ht.wrapError(err, r)
+	}
+
+	return ht.sender.SendNoContent(w)
 }
 
 func (ht *SubmitForm) getItemID(r *http.Request) uuid.UUID {
 	return ht.parser.PathParamUUID(r, "id")
+}
+
+func (ht *SubmitForm) getItemVersion(r *http.Request) int32 {
+	return int32(ht.parser.PathParamInt64(r, "version"))
 }
 
 func (ht *SubmitForm) getRawItemID(r *http.Request) string {

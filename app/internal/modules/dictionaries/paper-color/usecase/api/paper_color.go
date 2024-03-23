@@ -6,6 +6,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -36,12 +37,14 @@ func (uc *PaperColor) CheckingAvailability(ctx context.Context, itemID mrtype.Ke
 		return dictionaries.FactoryErrPaperColorRequired.New()
 	}
 
-	if err := uc.storage.IsExists(ctx, itemID); err != nil {
+	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
 		if uc.usecaseHelper.IsNotFoundError(err) {
 			return dictionaries.FactoryErrPaperColorNotFound.New(itemID)
 		}
 
 		return uc.usecaseHelper.WrapErrorFailed(err, dictionaries.PaperColorAPIName)
+	} else if status != mrenum.ItemStatusEnabled {
+		return dictionaries.FactoryErrPaperColorNotAvailable.New(itemID)
 	}
 
 	return nil

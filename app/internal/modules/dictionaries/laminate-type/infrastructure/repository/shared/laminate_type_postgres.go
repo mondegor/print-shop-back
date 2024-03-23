@@ -9,24 +9,28 @@ import (
 	"github.com/mondegor/go-webcore/mrtype"
 )
 
-// LaminateTypeIsExistsPostgres
+// LaminateTypeFetchStatusPostgres
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func LaminateTypeIsExistsPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) error {
+func LaminateTypeFetchStatusPostgres(ctx context.Context, conn mrstorage.DBConn, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
 	sql := `
         SELECT
-            1
+            type_status
         FROM
             ` + module.DBSchema + `.laminate_types
         WHERE
             type_id = $1 AND type_status <> $2
         LIMIT 1;`
 
-	return conn.QueryRow(
+	var status mrenum.ItemStatus
+
+	err := conn.QueryRow(
 		ctx,
 		sql,
 		rowID,
 		mrenum.ItemStatusRemoved,
 	).Scan(
-		&rowID,
+		&status,
 	)
+
+	return status, err
 }
