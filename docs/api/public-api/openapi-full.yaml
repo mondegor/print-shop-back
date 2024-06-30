@@ -52,7 +52,7 @@ tags:
   - name: Controls.SubmitForm
     description: Public API Controls submit forms
 
-  - name: Dictionaries.LaminateType
+  - name: Dictionaries.MaterialType
     description: Public API Dictionary laminate types
 
   - name: Dictionaries.PaperColor
@@ -60,6 +60,9 @@ tags:
 
   - name: Dictionaries.PaperFacture
     description: Public API Dictionary paper factures
+
+  - name: Dictionaries.PrintFormat
+    description: Public API Dictionary print formats
 
   - name: FileStation
     description: Public API Files and images
@@ -159,6 +162,61 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
+  /v1/catalog/laminates/types:
+    get:
+      summary: Метод получения списка ID типов ламината
+      description: |-
+        Метод предназначен для получения списка ID типов ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+
+      operationId: getMaterialTypeIDList
+      tags:
+        - Catalog.Laminate
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID типов ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates/thicknesses:
+    get:
+      summary: Метод получения списка толщин ламината
+      description: |-
+        Метод предназначен для получения списка толщин ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+
+        Порядок следования списка:
+        - thickness ASC
+
+      operationId: getLaminateThicknessList
+      tags:
+        - Catalog.Laminate
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список толщин ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
   /v1/catalog/papers:
     get:
       summary: Метод получения списка бумаги
@@ -187,6 +245,113 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/types:
+    get:
+      summary: Метод получения списка ID типов бумаги
+      description: |-
+        Метод предназначен для получения списка ID типов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getMaterialTypeIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID типов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/colors:
+    get:
+      summary: Метод получения списка ID цветов бумаги
+      description: |-
+        Метод предназначен для получения списка ID цветов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getPaperColorIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/densities:
+    get:
+      summary: Метод получения списка плотностей бумаги
+      description: |-
+        Метод предназначен для получения списка плотностей бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+        Порядок следования списка:
+        - density ASC
+
+      operationId: getPaperDensityList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список плотностей бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperDensityList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/factures:
+    get:
+      summary: Метод получения списка ID фактур бумаги
+      description: |-
+        Метод предназначен для получения списка ID фактур бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getPaperFactureIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID фактур бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -271,11 +436,11 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types:
+  /v1/dictionaries/material-types:
     get:
-      summary: Метод получения списка типов ламината
+      summary: Метод получения списка типов материала
       description: |-
-        Метод предназначен для получения списка типов ламината, сохраненных в БД,
+        Метод предназначен для получения списка типов материала, сохраненных в БД,
         со следующими условиями:
         - isEnabled = true;
 
@@ -284,9 +449,9 @@ paths:
         Порядок следования списка:
         - caption ASC
 
-      operationId: getLaminateTypeList
+      operationId: getMaterialTypeList
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
@@ -294,11 +459,11 @@ paths:
 
       responses:
         "200":
-          description: Получен список типов ламината
+          description: Получен список типов материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -361,6 +526,37 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/Dictionaries.PaperFactures.PublicAPI.Response.Model.PaperFactureList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/dictionaries/print-formats:
+    get:
+      summary: Метод получения списка печатных форматов
+      description: |-
+        Метод предназначен для получения списка печатных форматов, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getPrintFormatList
+      tags:
+        - Dictionaries.PrintFormat
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список печатных форматов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormatList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -473,6 +669,12 @@ components:
       maxLength: 32
       example: "rewrite-name"
 
+    App.Field.Measure.Gram:
+      description: Грамм (g)
+      type: integer
+      maxLength: 12
+      example: 1000 # 1kg
+
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
       type: integer
@@ -576,8 +778,8 @@ components:
       minimum: 1
       example: 2
 
-    Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+    Custom.Field.Dictionaries.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
       format: int32
       minimum: 1
@@ -592,6 +794,13 @@ components:
 
     Custom.Field.Dictionaries.PaperFactureID:
       description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.Dictionaries.PrintFormatID:
+      description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
       type: integer
       format: int32
       minimum: 1
@@ -678,7 +887,8 @@ components:
         - caption
         - length
         - width
-        - depth
+        - height
+        - weight
       properties:
         id: # boxId
           $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
@@ -693,8 +903,10 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
+        height:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
 
     Catalog.Laminates.PublicAPI.Response.Model.LaminateList:
       description: DTO - список ламината
@@ -711,11 +923,12 @@ components:
         - caption
         - typeId
         - length
-        - weight
+        - width
         - thickness
+        - weight
       properties:
         id: # laminateId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
         article:
           $ref: "#/components/schemas/App.Field.Article"
         caption:
@@ -724,13 +937,27 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList:
+      description: DTO - список ID типов ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList:
+      description: DTO - список толщин ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Papers.PublicAPI.Response.Model.PaperList:
       description: DTO - список бумаги
@@ -745,12 +972,13 @@ components:
         - id
         - article
         - caption
+        - typeId
         - colorId
         - factureId
-        - length
         - width
-        - density
+        - height
         - thickness
+        - density
         - sides
       properties:
         id: # paperId
@@ -762,36 +990,62 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
-    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList:
-      description: DTO - список типов ламината
+    Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList:
+      description: DTO - список ID типов бумаги
       type: array
       items:
-        $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType"
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
 
-    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType:
-      description: DTO - тип ламината
+    Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList:
+      description: DTO - список ID цветов бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperDensityList:
+      description: DTO - список плотностей бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList:
+      description: DTO - список ID фактур бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+
+    Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList:
+      description: DTO - список типов материала
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType"
+
+    Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType:
+      description: DTO - тип материала
       type: object
       required:
         - id
         - caption
       properties:
         id: # typeId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -839,6 +1093,33 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Гладкая"
+
+    Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormatList:
+      description: DTO - список печатных форматов
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat"
+
+    Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat:
+      description: DTO - печатный формат
+      type: object
+      required:
+        - id
+        - caption
+        - width
+        - height
+      properties:
+        id: # formatId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "A4 (210 x 297 mm)"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Controls.SubmitForms.PublicAPI.Response.Model.FormList:
       description: DTO - список типов ламината

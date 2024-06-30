@@ -4,7 +4,7 @@ mrcmd_func_openapi_build_adm_dictionaries() {
   local sharedDir="${2:?}" # sample: .../_shared
 
   local dictionariesDir="${sectionDir}/dictionaries"
-  local laminateTypeDir="${dictionariesDir}/laminate-type"
+  local materialTypeDir="${dictionariesDir}/material-type"
   local paperColorDir="${dictionariesDir}/paper-color"
   local paperFactureDir="${dictionariesDir}/paper-facture"
   local printFormatDir="${dictionariesDir}/print-format"
@@ -21,14 +21,14 @@ mrcmd_func_openapi_build_adm_dictionaries() {
   )
 
   OPENAPI_TAGS=(
-    "${laminateTypeDir}/tags.yaml"
+    "${materialTypeDir}/tags.yaml"
     "${paperColorDir}/tags.yaml"
     "${paperFactureDir}/tags.yaml"
     "${printFormatDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
-    "${laminateTypeDir}/laminate_type_paths.yaml"
+    "${materialTypeDir}/material_type_paths.yaml"
     "${paperColorDir}/paper_color_paths.yaml"
     "${paperFactureDir}/paper_facture_paths.yaml"
     "${printFormatDir}/print_format_paths.yaml"
@@ -48,14 +48,15 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
 
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DensityRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DepthRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ElementDetailing.yaml"
+    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.HeightRange.yaml"
     "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LengthRange.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.MaterialTypeIDs.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
-    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
-    "${laminateTypeDir}/laminate_type_parameters.yaml"
+    "${materialTypeDir}/material_type_parameters.yaml"
     "${paperColorDir}/paper_color_parameters.yaml"
     "${paperFactureDir}/paper_facture_parameters.yaml"
     "${printFormatDir}/print_format_parameters.yaml"
@@ -90,6 +91,7 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
@@ -119,12 +121,12 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementTemplateID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.SubmitFormID.yaml"
-    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.MaterialTypeID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
 
-    "${laminateTypeDir}/laminate_type_schemas.yaml"
+    "${materialTypeDir}/material_type_schemas.yaml"
     "${paperColorDir}/paper_color_schemas.yaml"
     "${paperFactureDir}/paper_facture_schemas.yaml"
     "${printFormatDir}/print_format_schemas.yaml"

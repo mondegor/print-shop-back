@@ -1,0 +1,67 @@
+Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType:
+  description: DTO добавления нового типа материала
+  type: object
+  required:
+    - caption
+  properties:
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый"
+
+Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType:
+  description: DTO сохранения типа материала
+  type: object
+  required:
+    - tagVersion
+    - caption
+  properties:
+    tagVersion:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый"
+
+Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList:
+  description: DTO - список типов материала
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType:
+  description: DTO - тип материала
+  type: object
+  required:
+    - id
+    - tagVersion
+    - caption
+    - status
+    - createdAt
+  properties:
+    id: # typeId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+    tagVersion:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый"
+    status:
+      $ref: "#/components/schemas/App.Enum.Status"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

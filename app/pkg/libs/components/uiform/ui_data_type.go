@@ -2,27 +2,30 @@ package uiform
 
 import (
 	"encoding/json"
-	"fmt"
+
+	"github.com/mondegor/go-webcore/mrcore"
 )
 
 const (
-	_ UIDataType = iota
-	UIDataTypeBoolean
-	UIDataTypeGroup
-	UIDataTypeEnum
-	UIDataTypeNumber
-	UIDataTypeString
+	_                 UIDataType = iota
+	UIDataTypeBoolean            // UIDataTypeBoolean - comment const
+	UIDataTypeGroup              // UIDataTypeGroup - comment const
+	UIDataTypeEnum               // UIDataTypeEnum - comment const
+	UIDataTypeNumber             // UIDataTypeNumber - comment const
+	UIDataTypeString             // UIDataTypeString - comment const
 
-	// uiDataTypeLast     = uint8(UIDataTypeString)
+	// uiDataTypeLast = uint8(UIDataTypeString).
+
 	enumNameUIDataType = "UIDataType"
 )
 
 type (
+	// UIDataType - comment type.
 	UIDataType uint8
 )
 
 var (
-	uiDataTypeName = map[UIDataType]string{
+	uiDataTypeName = map[UIDataType]string{ //nolint:gochecknoglobals
 		UIDataTypeBoolean: "BOOLEAN",
 		UIDataTypeGroup:   "GROUP",
 		UIDataTypeEnum:    "ENUM",
@@ -30,7 +33,7 @@ var (
 		UIDataTypeString:  "STRING",
 	}
 
-	uiDataTypeValue = map[string]UIDataType{
+	uiDataTypeValue = map[string]UIDataType{ //nolint:gochecknoglobals
 		"BOOLEAN": UIDataTypeBoolean,
 		"GROUP":   UIDataTypeGroup,
 		"ENUM":    UIDataTypeEnum,
@@ -39,32 +42,39 @@ var (
 	}
 )
 
+// ParseAndSet - парсит указанное значение и если оно валидно, то устанавливает его числовое значение.
 func (e *UIDataType) ParseAndSet(value string) error {
 	if parsedValue, ok := uiDataTypeValue[value]; ok {
 		*e = parsedValue
+
 		return nil
 	}
 
-	return fmt.Errorf("'%s' is not found in map %s", value, enumNameUIDataType)
+	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
 }
 
-//func (e *UIDataType) Set(value uint8) error {
-//	if value > 0 && value <= uiDataTypeLast {
-//		*e = UIDataType(value)
-//		return nil
-//	}
+// Set - устанавливает указанное значение, если оно является enum значением.
+// func (e *UIDataType) Set(value uint8) error {
+// 	if value > 0 && value <= uiDataTypeLast {
+// 		*e = UIDataType(value)
 //
-//	return fmt.Errorf("number '%d' is not registered in %s", value, enumNameUIDataType)
-//}
+// 		return nil
+// 	}
+//
+// 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
+// }
 
+// String - comment method.
 func (e UIDataType) String() string {
 	return uiDataTypeName[e]
 }
 
+// MarshalJSON - переводит enum значение в строковое представление.
 func (e UIDataType) MarshalJSON() ([]byte, error) {
 	return json.Marshal(e.String())
 }
 
+// UnmarshalJSON - переводит строковое значение в enum представление.
 func (e UIDataType) UnmarshalJSON(data []byte) error {
 	var value string
 

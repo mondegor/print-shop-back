@@ -28,3 +28,110 @@
               $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperList"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/papers/types:
+  get:
+    summary: Метод получения списка ID типов бумаги
+    description: |-
+      Метод предназначен для получения списка ID типов бумаги, сохраненных в БД,
+      со следующими условиями:
+      - paper.isEnabled = true;
+
+    operationId: getMaterialTypeIDList
+    tags:
+      - Catalog.Paper
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список ID типов бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/papers/colors:
+  get:
+    summary: Метод получения списка ID цветов бумаги
+    description: |-
+      Метод предназначен для получения списка ID цветов бумаги, сохраненных в БД,
+      со следующими условиями:
+      - paper.isEnabled = true;
+
+    operationId: getPaperColorIDList
+    tags:
+      - Catalog.Paper
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список ID цветов бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/papers/densities:
+  get:
+    summary: Метод получения списка плотностей бумаги
+    description: |-
+      Метод предназначен для получения списка плотностей бумаги, сохраненных в БД,
+      со следующими условиями:
+      - paper.isEnabled = true;
+
+      Порядок следования списка:
+      - density ASC
+
+    operationId: getPaperDensityList
+    tags:
+      - Catalog.Paper
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список плотностей бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperDensityList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/papers/factures:
+  get:
+    summary: Метод получения списка ID фактур бумаги
+    description: |-
+      Метод предназначен для получения списка ID фактур бумаги, сохраненных в БД,
+      со следующими условиями:
+      - paper.isEnabled = true;
+
+    operationId: getPaperFactureIDList
+    tags:
+      - Catalog.Paper
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список ID фактур бумаги
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

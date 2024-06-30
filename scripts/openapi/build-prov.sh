@@ -42,9 +42,10 @@ mrcmd_func_openapi_build_prov() {
     # "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
 
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DensityRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DepthRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ElementDetailing.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.HeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LengthRange.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.MaterialTypeIDs.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
@@ -81,6 +82,7 @@ mrcmd_func_openapi_build_prov() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
@@ -109,7 +111,7 @@ mrcmd_func_openapi_build_prov() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementTemplateID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.SubmitFormID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.MaterialTypeID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"

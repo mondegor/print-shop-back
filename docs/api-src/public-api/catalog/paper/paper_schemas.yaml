@@ -11,12 +11,13 @@ Catalog.Papers.PublicAPI.Response.Model.Paper:
     - id
     - article
     - caption
+    - typeId
     - colorId
     - factureId
-    - length
     - width
-    - density
+    - height
     - thickness
+    - density
     - sides
   properties:
     id: # paperId
@@ -28,17 +29,43 @@ Catalog.Papers.PublicAPI.Response.Model.Paper:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "Мелованная"
+    typeId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     colorId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     density:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     sides:
       $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList:
+  description: DTO - список ID типов бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+
+Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList:
+  description: DTO - список ID цветов бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+
+Catalog.Papers.PublicAPI.Response.Model.PaperDensityList:
+  description: DTO - список плотностей бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+
+Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList:
+  description: DTO - список ID фактур бумаги
+  type: array
+  items:
+    $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"

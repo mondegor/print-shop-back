@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.13.1
+# Описание Print Shop Back v0.14.0
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -34,7 +34,7 @@ Web сервис для расчёта стоимости и времени из
 
 - Выбрать рабочую директорию, где должен быть расположен сервис
 - `mkdir print-shop-back && cd print-shop-back` // создать и перейти в директорию проекта
-- `git clone -b latest git@github.com:mondegor/print-shop-back.git .`
+- `git clone git@github.com:mondegor/print-shop-back.git .`
 - `cp .env.dist .env`
 - `mrcmd state` // проверка состояния сервиса
 - `mrcmd config` // проверка установленных переменных сервиса

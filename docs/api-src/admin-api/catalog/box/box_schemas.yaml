@@ -6,7 +6,8 @@ Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
     - caption
     - length
     - width
-    - depth
+    - height
+    - weight
   properties:
     article:
       $ref: "#/components/schemas/App.Field.Article"
@@ -19,8 +20,10 @@ Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    depth:
+    height:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Field.Measure.Milligram"
 
 Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
   description: DTO сохранения упаковочной коробки
@@ -41,8 +44,10 @@ Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    depth:
+    height:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Field.Measure.Milligram"
 
 Catalog.Boxes.AdminAPI.Response.Model.BoxList:
   description: DTO - список упаковочных коробок
@@ -69,7 +74,8 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
     - caption
     - length
     - width
-    - depth
+    - height
+    - weight
     - status
     - createdAt
   properties:
@@ -88,8 +94,10 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    depth:
+    height:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    weight:
+      $ref: "#/components/schemas/App.Field.Measure.Milligram"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
     createdAt:

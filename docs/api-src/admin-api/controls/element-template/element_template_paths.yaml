@@ -207,7 +207,7 @@
       - tagVersion: required,gte=1 | ErrVersionInvalid
       - status: required,enum | ErrSwitchStatusRejected
 
-    operationId: changeElementTemplatestatus
+    operationId: changeElementTemplateStatus
     tags:
       - Controls.ElementTemplate
 

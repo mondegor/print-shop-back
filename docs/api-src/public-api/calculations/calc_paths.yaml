@@ -1,0 +1,35 @@
+/v1/calculations:
+  post:
+    summary: Метод расчёта указанной формы
+    description: |-
+      Метод предназначен для расчёта указанной формы
+
+    operationId: createCalc
+    tags:
+      - Calculations
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: "#/components/schemas/Calculations.AdminAPI.Request.Model.CreateForm"
+
+    responses:
+      "201":
+        description: Форма была расчитана
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

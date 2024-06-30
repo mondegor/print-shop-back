@@ -69,6 +69,7 @@ mrcmd_func_openapi_build_pub_file_station() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"

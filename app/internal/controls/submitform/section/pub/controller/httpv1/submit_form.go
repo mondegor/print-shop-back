@@ -1,0 +1,66 @@
+package httpv1
+
+import (
+	"net/http"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/usecase"
+	"github.com/mondegor/print-shop-back/pkg/validate"
+
+	"github.com/mondegor/go-webcore/mrserver"
+)
+
+const (
+	submitFormListURL = "/v1/controls/submit-forms"
+	submitFormItemURL = "/v1/controls/submit-forms/{rewriteName}"
+)
+
+type (
+	// SubmitForm - comment struct.
+	SubmitForm struct {
+		parser  validate.RequestParser
+		sender  mrserver.ResponseSender
+		useCase usecase.SubmitFormUseCase
+	}
+)
+
+// NewSubmitForm - создаёт объект SubmitForm.
+func NewSubmitForm(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.SubmitFormUseCase) *SubmitForm {
+	return &SubmitForm{
+		parser:  parser,
+		sender:  sender,
+		useCase: useCase,
+	}
+}
+
+// Handlers - comment method.
+func (ht *SubmitForm) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{Method: http.MethodGet, URL: submitFormListURL, Func: ht.GetList},
+		{Method: http.MethodGet, URL: submitFormItemURL, Func: ht.Get},
+	}
+}
+
+// GetList - comment method.
+func (ht *SubmitForm) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(w, http.StatusOK, items)
+}
+
+func (ht *SubmitForm) listParams(_ *http.Request) entity.SubmitFormParams {
+	return entity.SubmitFormParams{}
+}
+
+// Get - comment method.
+func (ht *SubmitForm) Get(w http.ResponseWriter, r *http.Request) error {
+	item, err := ht.useCase.GetItemByRewriteName(r.Context(), ht.parser.PathParamString(r, "rewriteName"))
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(w, http.StatusOK, item)
+}

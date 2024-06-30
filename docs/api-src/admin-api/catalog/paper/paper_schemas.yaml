@@ -4,12 +4,13 @@ Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
   required:
     - article
     - caption
+    - typeId
     - colorId
     - factureId
-    - length
     - width
-    - density
+    - height
     - thickness
+    - density
     - sides
   properties:
     article:
@@ -19,18 +20,20 @@ Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "Мелованная"
+    typeId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     colorId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     density:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     sides:
       $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -49,18 +52,20 @@ Catalog.Papers.AdminAPI.Request.Model.StorePaper:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "Мелованная"
+    typeId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     colorId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     density:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     sides:
       $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -87,12 +92,13 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
     - tagVersion
     - article
     - caption
+    - typeId
     - colorId
     - factureId
-    - length
     - width
-    - density
+    - height
     - thickness
+    - density
     - sides
     - status
     - createdAt
@@ -108,18 +114,20 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "Мелованная"
+    typeId:
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     colorId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
     factureId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     density:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     sides:
       $ref: "#/components/schemas/Custom.Enum.PaperSides"
     status:

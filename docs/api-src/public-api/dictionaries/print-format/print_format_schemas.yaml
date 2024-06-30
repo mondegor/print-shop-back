@@ -1,0 +1,26 @@
+Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormatList:
+  description: DTO - список печатных форматов
+  type: array
+  items:
+    $ref: "#/components/schemas/Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat"
+
+Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat:
+  description: DTO - печатный формат
+  type: object
+  required:
+    - id
+    - caption
+    - width
+    - height
+  properties:
+    id: # formatId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "A4 (210 x 297 mm)"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"

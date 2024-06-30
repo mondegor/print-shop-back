@@ -1,0 +1,9 @@
+Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID:
+  description: Идентификатор типа материала
+  name: typeId
+  in: path
+  required: true
+  schema:
+    type: integer
+    minimum: 1
+  example: 1000

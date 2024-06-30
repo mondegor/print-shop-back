@@ -1,4 +1,4 @@
-/v1/provider-accounts/companies-pages:
+/v1/prov/companies-pages:
   get:
     summary: Метод получения списка страниц компаний
     description: |-

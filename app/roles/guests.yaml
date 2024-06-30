@@ -3,11 +3,13 @@ privileges:
   - apiPub
 
 permissions:
+  - modCalculationsAlgo
+  - modCalculationsBox
   - modCatalogBox
   - modCatalogPaper
   - modCatalogLaminate
   - modControlsSubmitForm
-  - modDictionariesLaminateType
+  - modDictionariesMaterialType
   - modDictionariesPaperColor
   - modDictionariesPaperFacture
   - modDictionariesPrintFormat
