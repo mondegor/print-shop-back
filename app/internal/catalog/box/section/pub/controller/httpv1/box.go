@@ -24,7 +24,7 @@ type (
 	}
 )
 
-// NewBox - создаёт объект Box.
+// NewBox - создаёт контроллер Box.
 func NewBox(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.BoxUseCase) *Box {
 	return &Box{
 		parser:  parser,
@@ -33,7 +33,7 @@ func NewBox(parser validate.RequestParser, sender mrserver.ResponseSender, useCa
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера Box.
 func (ht *Box) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: boxListURL, Func: ht.GetList},

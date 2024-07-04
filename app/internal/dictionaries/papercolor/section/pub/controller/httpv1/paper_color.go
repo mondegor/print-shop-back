@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// NewPaperColor - создаёт объект PaperColor.
+// NewPaperColor - создаёт контроллер PaperColor.
 func NewPaperColor(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.PaperColorUseCase) *PaperColor {
 	return &PaperColor{
 		parser:  parser,
@@ -32,7 +32,7 @@ func NewPaperColor(parser validate.RequestParser, sender mrserver.ResponseSender
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера PaperColor.
 func (ht *PaperColor) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: paperColorListURL, Func: ht.GetList},

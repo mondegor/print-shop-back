@@ -24,7 +24,7 @@ type (
 	}
 )
 
-// NewCompanyPageLogo - создаёт объект CompanyPageLogo.
+// NewCompanyPageLogo - создаёт контроллер CompanyPageLogo.
 func NewCompanyPageLogo(parser mrserver.RequestParserImage, sender mrserver.ResponseSender, useCase usecase.CompanyPageLogoUseCase) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		parser:  parser,
@@ -33,7 +33,7 @@ func NewCompanyPageLogo(parser mrserver.RequestParserImage, sender mrserver.Resp
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера CompanyPageLogo.
 func (ht *CompanyPageLogo) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodPatch, URL: companyPageItemLogoURL, Func: ht.UploadLogo},

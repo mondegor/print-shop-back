@@ -140,6 +140,7 @@ access_control:
   permissions:
     - modCalculationsAlgo
     - modCalculationsBox
+    - modCalculationsQueryResult
     - modCatalogBox
     - modCatalogPaper
     - modCatalogLaminate

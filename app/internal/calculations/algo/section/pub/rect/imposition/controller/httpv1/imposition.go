@@ -22,7 +22,7 @@ type (
 	}
 )
 
-// NewRectImposition - создаёт объект RectImposition.
+// NewRectImposition - создаёт контроллер RectImposition.
 func NewRectImposition(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectImpositionUseCase) *RectImposition {
 	return &RectImposition{
 		parser:  parser,
@@ -31,7 +31,7 @@ func NewRectImposition(parser mrserver.RequestParserValidate, sender mrserver.Re
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера RectImposition.
 func (ht *RectImposition) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodPost, URL: rectImpositionCalcURL, Func: ht.Calc},

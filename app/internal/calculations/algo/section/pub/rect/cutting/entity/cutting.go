@@ -10,22 +10,19 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// RawData - сырые данные поступившие с обработчика.
 	RawData struct {
 		Fragments      []string
 		DistanceFormat string
 	}
 
-	// ParsedData - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		Fragments      []base.Fragment
 		DistanceFormat rect.Format
 	}
 
-	// AlgoQuantityResult - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// AlgoQuantityResult - результат работы алгоритма AlgoQuantity.
 	AlgoQuantityResult struct {
 		Quantity uint64 `json:"quantity"`
 	}

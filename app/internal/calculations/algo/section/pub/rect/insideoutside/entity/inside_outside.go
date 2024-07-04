@@ -10,29 +10,25 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// RawData - сырые данные поступившие с обработчика.
 	RawData struct {
 		InFormat  string
 		OutFormat string
 	}
 
-	// ParsedData - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		In  rect.Format
 		Out rect.Format
 	}
 
-	// AlgoQuantityResult - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// AlgoQuantityResult - результат работы алгоритма AlgoQuantity.
 	AlgoQuantityResult struct {
 		Fragment base.Fragment `json:"fragment"`
 		Total    uint64        `json:"total"`
 	}
 
-	// AlgoMaxResult - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// AlgoMaxResult - результат работы алгоритма AlgoMax.
 	AlgoMaxResult struct {
 		Fragments []base.Fragment `json:"fragments"`
 		Total     uint64          `json:"total"`

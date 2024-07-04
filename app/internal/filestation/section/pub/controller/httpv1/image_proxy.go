@@ -20,7 +20,7 @@ type (
 	}
 )
 
-// NewImageProxy - создаёт объект ImageProxy.
+// NewImageProxy - создаёт контроллер ImageProxy.
 func NewImageProxy(
 	parser mrserver.RequestParserString,
 	sender mrserver.FileResponseSender,
@@ -35,7 +35,7 @@ func NewImageProxy(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера ImageProxy.
 func (ht *ImageProxy) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: ht.imagesURL, Func: ht.Get},

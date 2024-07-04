@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// NewMaterialType - создаёт объект MaterialType.
+// NewMaterialType - создаёт контроллер MaterialType.
 func NewMaterialType(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.MaterialTypeUseCase) *MaterialType {
 	return &MaterialType{
 		parser:  parser,
@@ -32,7 +32,7 @@ func NewMaterialType(parser validate.RequestParser, sender mrserver.ResponseSend
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера MaterialType.
 func (ht *MaterialType) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: materialTypeListURL, Func: ht.GetList},

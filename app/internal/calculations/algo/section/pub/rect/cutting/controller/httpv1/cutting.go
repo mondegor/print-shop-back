@@ -22,7 +22,7 @@ type (
 	}
 )
 
-// NewRectCutting - создаёт объект RectCutting.
+// NewRectCutting - создаёт контроллер RectCutting.
 func NewRectCutting(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectCuttingUseCase) *RectCutting {
 	return &RectCutting{
 		parser:  parser,
@@ -31,7 +31,7 @@ func NewRectCutting(parser mrserver.RequestParserValidate, sender mrserver.Respo
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера RectCutting.
 func (ht *RectCutting) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodPost, URL: rectCuttingQuantityURL, Func: ht.CalcQuantity},

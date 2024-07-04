@@ -33,7 +33,7 @@ type (
 	}
 )
 
-// NewPrintFormat - создаёт объект PrintFormat.
+// NewPrintFormat - создаёт контроллер PrintFormat.
 func NewPrintFormat(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
@@ -48,7 +48,7 @@ func NewPrintFormat(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера PrintFormat.
 func (ht *PrintFormat) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: printFormatListURL, Func: ht.GetList},

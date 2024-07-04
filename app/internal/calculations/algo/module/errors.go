@@ -8,7 +8,7 @@ var (
 // // ErrBoxNotFound - box with ID not found.
 // ErrBoxNotFound = mrerrfactory.NewProtoAppErrorByDefault(
 //
-//	"errCatalogBoxNotFound", mrerr.ErrorKindUser, "box with ID={{ .id }} not found")
+//	"errCalculationsBoxNotFound", mrerr.ErrorKindUser, "box with ID={{ .id }} not found")
 )
 
 // Errors - comment func.

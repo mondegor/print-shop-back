@@ -33,7 +33,7 @@ type (
 	}
 )
 
-// NewPaperFacture - создаёт объект PaperFacture.
+// NewPaperFacture - создаёт контроллер PaperFacture.
 func NewPaperFacture(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
@@ -48,7 +48,7 @@ func NewPaperFacture(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера PaperFacture.
 func (ht *PaperFacture) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: paperFactureListURL, Func: ht.GetList},

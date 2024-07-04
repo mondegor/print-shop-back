@@ -33,7 +33,7 @@ type (
 	}
 )
 
-// NewFormElement - создаёт объект FormElement.
+// NewFormElement - создаёт контроллер FormElement.
 func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.ResponseSender, useCase usecase.FormElementUseCase) *FormElement {
 	return &FormElement{
 		parser:  parser,
@@ -42,7 +42,7 @@ func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.Res
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера FormElement.
 func (ht *FormElement) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodPost, URL: formElementListURL, Func: ht.Create},

@@ -41,7 +41,7 @@ type (
 	}
 )
 
-// NewSubmitForm - создаёт объект SubmitForm.
+// NewSubmitForm - создаёт контроллер SubmitForm.
 func NewSubmitForm(
 	parser validate.RequestSubmitFormParser,
 	sender mrserver.FileResponseSender,
@@ -58,7 +58,7 @@ func NewSubmitForm(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера SubmitForm.
 func (ht *SubmitForm) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: submitFormListURL, Func: ht.GetList},

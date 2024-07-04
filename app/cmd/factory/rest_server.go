@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	calculationsalgopub "github.com/mondegor/print-shop-back/internal/factory/calculations/algo/section/pub"
-	calculationsboxpub "github.com/mondegor/print-shop-back/internal/factory/calculations/box/section/pub"
+	calculationsquerypub "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory/section/pub"
 	catalogboxadm "github.com/mondegor/print-shop-back/internal/factory/catalog/box/section/adm"
 	catalogboxpub "github.com/mondegor/print-shop-back/internal/factory/catalog/box/section/pub"
 	cataloglaminateadm "github.com/mondegor/print-shop-back/internal/factory/catalog/laminate/section/adm"
@@ -187,7 +187,7 @@ func getProvidersAPIControllers(ctx context.Context, opts app.Options) []func() 
 func getPublicAPIControllers(ctx context.Context, opts app.Options) []func() (list []mrserver.HttpController, err error) {
 	return []func() (list []mrserver.HttpController, err error){
 		func() ([]mrserver.HttpController, error) {
-			return calculationsboxpub.CreateModule(ctx, opts.CalculationsBoxModule)
+			return calculationsquerypub.CreateModule(ctx, opts.CalculationsQueryHistoryModule)
 		},
 		func() ([]mrserver.HttpController, error) {
 			return calculationsalgopub.CreateModule(ctx, opts.CalculationsAlgoModule)

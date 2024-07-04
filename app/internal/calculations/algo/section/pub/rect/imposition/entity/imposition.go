@@ -10,8 +10,7 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// RawData - сырые данные поступившие с обработчика.
 	RawData struct {
 		ItemFormat       string
 		ItemBorderFormat string
@@ -20,8 +19,7 @@ type (
 		UseMirror        bool
 	}
 
-	// ParsedData - разобранные валидные данные поступившие с обработчика,
-	// которые предназначены для вычисления алгоритма.
+	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		Item rect.Item
 		Out  rect.Format

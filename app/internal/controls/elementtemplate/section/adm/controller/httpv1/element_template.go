@@ -38,7 +38,7 @@ type (
 	}
 )
 
-// NewElementTemplate - создаёт объект ElementTemplate.
+// NewElementTemplate - создаёт контроллер ElementTemplate.
 func NewElementTemplate(
 	parser validate.RequestElementTemplateParser,
 	sender mrserver.FileResponseSender,
@@ -53,7 +53,7 @@ func NewElementTemplate(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера ElementTemplate.
 func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: elementListTemplateURL, Func: ht.GetList},

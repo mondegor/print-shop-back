@@ -27,7 +27,7 @@ type (
 	}
 )
 
-// NewPaper - создаёт объект Paper.
+// NewPaper - создаёт контроллер Paper.
 func NewPaper(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.PaperUseCase) *Paper {
 	return &Paper{
 		parser:  parser,
@@ -36,7 +36,7 @@ func NewPaper(parser validate.RequestParser, sender mrserver.ResponseSender, use
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера Paper.
 func (ht *Paper) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: paperListURL, Func: ht.GetList},

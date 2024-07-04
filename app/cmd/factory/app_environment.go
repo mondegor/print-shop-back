@@ -124,7 +124,7 @@ func InitAppEnvironment(ctx context.Context, opts app.Options) (app.Options, err
 
 	// Register errors (!!! only after init opts)
 	calculations.RegisterAlgoErrors(opts.ErrorManager)
-	calculations.RegisterBoxErrors(opts.ErrorManager)
+	calculations.RegisterQueryHistoryErrors(opts.ErrorManager)
 	catalog.RegisterBoxErrors(opts.ErrorManager)
 	catalog.RegisterLaminateErrors(opts.ErrorManager)
 	catalog.RegisterPaperErrors(opts.ErrorManager)
@@ -167,7 +167,7 @@ func InitAppEnvironment(ctx context.Context, opts app.Options) (app.Options, err
 		return opts, err
 	}
 
-	if opts.CalculationsBoxModule, err = calculations.NewBoxModuleOptions(ctx, opts); err != nil {
+	if opts.CalculationsQueryHistoryModule, err = calculations.NewQueryHistoryModuleOptions(ctx, opts); err != nil {
 		return opts, err
 	}
 

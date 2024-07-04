@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// NewCompanyPage - создаёт объект CompanyPage.
+// NewCompanyPage - создаёт контроллер CompanyPage.
 func NewCompanyPage(
 	parser mrserver.RequestParserString,
 	sender mrserver.ResponseSender,
@@ -38,7 +38,7 @@ func NewCompanyPage(
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера CompanyPage.
 func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: companyPageItemURL, Func: ht.Get},

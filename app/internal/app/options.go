@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/config"
 	calculationsalgo "github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
-	calculationsbox "github.com/mondegor/print-shop-back/internal/factory/calculations/box"
+	calculationsquery "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
 	catalogbox "github.com/mondegor/print-shop-back/internal/factory/catalog/box"
 	cataloglaminate "github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
 	catalogpaper "github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
@@ -72,7 +72,7 @@ type (
 
 		// Modules section
 		CalculationsAlgoModule         calculationsalgo.Options
-		CalculationsBoxModule          calculationsbox.Options
+		CalculationsQueryHistoryModule calculationsquery.Options
 		CatalogBoxModule               catalogbox.Options
 		CatalogLaminateModule          cataloglaminate.Options
 		CatalogPaperModule             catalogpaper.Options

@@ -33,7 +33,7 @@ type (
 	}
 )
 
-// NewLaminate - создаёт объект Laminate.
+// NewLaminate - создаёт контроллер Laminate.
 func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase usecase.LaminateUseCase, listSorter mrview.ListSorter) *Laminate {
 	return &Laminate{
 		parser:     parser,
@@ -43,7 +43,7 @@ func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSe
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера Laminate.
 func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: laminateListURL, Func: ht.GetList},

@@ -23,7 +23,7 @@ type (
 	}
 )
 
-// NewRectInsideOutside - создаёт объект RectInsideOutside.
+// NewRectInsideOutside - создаёт контроллер RectInsideOutside.
 func NewRectInsideOutside(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectInsideOutsideUseCase) *RectInsideOutside {
 	return &RectInsideOutside{
 		parser:  parser,
@@ -32,7 +32,7 @@ func NewRectInsideOutside(parser mrserver.RequestParserValidate, sender mrserver
 	}
 }
 
-// Handlers - comment method.
+// Handlers - возвращает обработчики контроллера RectInsideOutside.
 func (ht *RectInsideOutside) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodPost, URL: rectQuantityInsideOnOutsideURL, Func: ht.CalcQuantity},
