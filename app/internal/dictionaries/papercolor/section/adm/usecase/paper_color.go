@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -18,7 +19,7 @@ import (
 type (
 	// PaperColor - comment struct.
 	PaperColor struct {
-		storage      PaperColorStorage
+		storage      adm.PaperColorStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -26,7 +27,7 @@ type (
 )
 
 // NewPaperColor - создаёт объект PaperColor.
-func NewPaperColor(storage PaperColorStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperColor {
+func NewPaperColor(storage adm.PaperColorStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
 		eventEmitter: eventEmitter,

@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -20,12 +20,12 @@ type (
 	SubmitForm struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.SubmitFormUseCase
+		useCase pub.SubmitFormUseCase
 	}
 )
 
 // NewSubmitForm - создаёт контроллер SubmitForm.
-func NewSubmitForm(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.SubmitFormUseCase) *SubmitForm {
+func NewSubmitForm(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.SubmitFormUseCase) *SubmitForm {
 	return &SubmitForm{
 		parser:  parser,
 		sender:  sender,

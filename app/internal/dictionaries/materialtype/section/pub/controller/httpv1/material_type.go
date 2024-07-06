@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,12 +19,12 @@ type (
 	MaterialType struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.MaterialTypeUseCase
+		useCase pub.MaterialTypeUseCase
 	}
 )
 
 // NewMaterialType - создаёт контроллер MaterialType.
-func NewMaterialType(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.MaterialTypeUseCase) *MaterialType {
+func NewMaterialType(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.MaterialTypeUseCase) *MaterialType {
 	return &MaterialType{
 		parser:  parser,
 		sender:  sender,

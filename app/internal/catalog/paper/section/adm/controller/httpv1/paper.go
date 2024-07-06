@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
@@ -29,13 +29,13 @@ type (
 	Paper struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.PaperUseCase
+		useCase    adm.PaperUseCase
 		listSorter mrview.ListSorter
 	}
 )
 
 // NewPaper - создаёт контроллер Paper.
-func NewPaper(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase usecase.PaperUseCase, listSorter mrview.ListSorter) *Paper {
+func NewPaper(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.PaperUseCase, listSorter mrview.ListSorter) *Paper {
 	return &Paper{
 		parser:     parser,
 		sender:     sender,

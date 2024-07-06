@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
@@ -29,13 +29,13 @@ type (
 	Laminate struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.LaminateUseCase
+		useCase    adm.LaminateUseCase
 		listSorter mrview.ListSorter
 	}
 )
 
 // NewLaminate - создаёт контроллер Laminate.
-func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase usecase.LaminateUseCase, listSorter mrview.ListSorter) *Laminate {
+func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.LaminateUseCase, listSorter mrview.ListSorter) *Laminate {
 	return &Laminate{
 		parser:     parser,
 		sender:     sender,

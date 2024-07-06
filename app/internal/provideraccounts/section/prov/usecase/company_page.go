@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 
 	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 	"github.com/mondegor/print-shop-back/pkg/provideraccounts/flow"
@@ -21,7 +22,7 @@ import (
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
-		storage      CompanyPageStorage
+		storage      prov.CompanyPageStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		imgBaseURL   mrpath.PathBuilder
@@ -31,7 +32,7 @@ type (
 
 // NewCompanyPage - создаёт объект CompanyPage.
 func NewCompanyPage(
-	storage CompanyPageStorage,
+	storage prov.CompanyPageStorage,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UsecaseErrorWrapper,
 	imgBaseURL mrpath.PathBuilder,

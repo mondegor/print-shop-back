@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -20,7 +21,7 @@ import (
 type (
 	// Laminate - comment struct.
 	Laminate struct {
-		storage         LaminateStorage
+		storage         adm.LaminateStorage
 		materialTypeAPI api.MaterialTypeAvailability
 		eventEmitter    mrsender.EventEmitter
 		errorWrapper    mrcore.UsecaseErrorWrapper
@@ -30,7 +31,7 @@ type (
 
 // NewLaminate - создаёт объект NewLaminate.
 func NewLaminate(
-	storage LaminateStorage,
+	storage adm.LaminateStorage,
 	materialTypeAPI api.MaterialTypeAvailability,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UsecaseErrorWrapper,

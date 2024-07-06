@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -29,12 +29,12 @@ type (
 	FormElement struct {
 		parser  validate.RequestSubmitFormParser
 		sender  mrserver.ResponseSender
-		useCase usecase.FormElementUseCase
+		useCase adm.FormElementUseCase
 	}
 )
 
 // NewFormElement - создаёт контроллер FormElement.
-func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.ResponseSender, useCase usecase.FormElementUseCase) *FormElement {
+func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.ResponseSender, useCase adm.FormElementUseCase) *FormElement {
 	return &FormElement{
 		parser:  parser,
 		sender:  sender,

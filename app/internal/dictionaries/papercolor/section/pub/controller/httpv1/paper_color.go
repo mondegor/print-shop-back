@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,12 +19,12 @@ type (
 	PaperColor struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.PaperColorUseCase
+		useCase pub.PaperColorUseCase
 	}
 )
 
 // NewPaperColor - создаёт контроллер PaperColor.
-func NewPaperColor(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.PaperColorUseCase) *PaperColor {
+func NewPaperColor(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.PaperColorUseCase) *PaperColor {
 	return &PaperColor{
 		parser:  parser,
 		sender:  sender,

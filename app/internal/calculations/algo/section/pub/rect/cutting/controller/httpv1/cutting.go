@@ -5,8 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/usecase"
 )
 
 const (
@@ -18,12 +19,12 @@ type (
 	RectCutting struct {
 		parser  mrserver.RequestParserValidate
 		sender  mrserver.ResponseSender
-		useCase usecase.RectCuttingUseCase
+		useCase pub.RectCuttingUseCase
 	}
 )
 
 // NewRectCutting - создаёт контроллер RectCutting.
-func NewRectCutting(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectCuttingUseCase) *RectCutting {
+func NewRectCutting(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.RectCuttingUseCase) *RectCutting {
 	return &RectCutting{
 		parser:  parser,
 		sender:  sender,

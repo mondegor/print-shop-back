@@ -30,7 +30,9 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 	t.Parallel()
 
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
+	t.Cleanup(func() {
+		ctrl.Finish()
+	})
 
 	tests := []struct {
 		name string

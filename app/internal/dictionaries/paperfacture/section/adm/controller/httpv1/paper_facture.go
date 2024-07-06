@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -28,7 +28,7 @@ type (
 	PaperFacture struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.PaperFactureUseCase
+		useCase    adm.PaperFactureUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -37,7 +37,7 @@ type (
 func NewPaperFacture(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
-	useCase usecase.PaperFactureUseCase,
+	useCase adm.PaperFactureUseCase,
 	listSorter mrview.ListSorter,
 ) *PaperFacture {
 	return &PaperFacture{

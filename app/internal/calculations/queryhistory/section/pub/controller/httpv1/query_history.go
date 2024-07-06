@@ -5,10 +5,11 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -26,12 +27,12 @@ type (
 	QueryHistory struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.QueryResultUseCase
+		useCase pub.QueryResultUseCase
 	}
 )
 
 // NewQueryHistory - создаёт контроллер QueryHistory.
-func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.QueryResultUseCase) *QueryHistory {
+func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.QueryResultUseCase) *QueryHistory {
 	return &QueryHistory{
 		parser:  parser,
 		sender:  sender,

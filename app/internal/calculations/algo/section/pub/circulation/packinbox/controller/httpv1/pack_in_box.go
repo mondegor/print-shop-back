@@ -5,8 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/entity"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/usecase"
 )
 
 const (
@@ -18,12 +19,12 @@ type (
 	PackInBox struct {
 		parser  mrserver.RequestParserValidate
 		sender  mrserver.ResponseSender
-		useCase usecase.CirculationPackInBoxUseCase
+		useCase pub.CirculationPackInBoxUseCase
 	}
 )
 
 // NewPackInBox - создаёт контроллер PackInBox.
-func NewPackInBox(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.CirculationPackInBoxUseCase) *PackInBox {
+func NewPackInBox(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.CirculationPackInBoxUseCase) *PackInBox {
 	return &PackInBox{
 		parser:  parser,
 		sender:  sender,

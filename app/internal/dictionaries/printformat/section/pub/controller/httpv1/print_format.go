@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,12 +19,12 @@ type (
 	PrintFormat struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.PrintFormatUseCase
+		useCase pub.PrintFormatUseCase
 	}
 )
 
 // NewPrintFormat - создаёт контроллер PrintFormat.
-func NewPrintFormat(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.PrintFormatUseCase) *PrintFormat {
+func NewPrintFormat(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.PrintFormatUseCase) *PrintFormat {
 	return &PrintFormat{
 		parser:  parser,
 		sender:  sender,

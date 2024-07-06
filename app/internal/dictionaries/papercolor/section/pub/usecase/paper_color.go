@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
 
 	"github.com/mondegor/go-webcore/mrcore"
@@ -11,13 +12,13 @@ import (
 type (
 	// PaperColor - comment struct.
 	PaperColor struct {
-		storage      PaperColorStorage
+		storage      pub.PaperColorStorage
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewPaperColor - создаёт объект PaperColor.
-func NewPaperColor(storage PaperColorStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PaperColor {
+func NewPaperColor(storage pub.PaperColorStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
 		errorWrapper: errorWrapper,

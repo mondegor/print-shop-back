@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -21,7 +22,7 @@ type (
 	// ElementTemplate - comment struct.
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
-		storage      ElementTemplateStorage
+		storage      adm.ElementTemplateStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -30,7 +31,7 @@ type (
 
 // NewElementTemplate - создаёт объект ElementTemplate.
 func NewElementTemplate(
-	storage ElementTemplateStorage,
+	storage adm.ElementTemplateStorage,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UsecaseErrorWrapper,
 ) *ElementTemplate {

@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -22,12 +22,12 @@ type (
 	Laminate struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.LaminateUseCase
+		useCase pub.LaminateUseCase
 	}
 )
 
 // NewLaminate - создаёт контроллер Laminate.
-func NewLaminate(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.LaminateUseCase) *Laminate {
+func NewLaminate(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.LaminateUseCase) *Laminate {
 	return &Laminate{
 		parser:  parser,
 		sender:  sender,

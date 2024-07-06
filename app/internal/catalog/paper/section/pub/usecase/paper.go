@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 
@@ -13,13 +14,13 @@ import (
 type (
 	// Paper - comment struct.
 	Paper struct {
-		storage      PaperStorage
+		storage      pub.PaperStorage
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewPaper - создаёт объект Paper.
-func NewPaper(storage PaperStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Paper {
+func NewPaper(storage pub.PaperStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Paper {
 	return &Paper{
 		storage:      storage,
 		errorWrapper: errorWrapper,

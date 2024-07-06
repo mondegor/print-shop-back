@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/usecase"
-
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/filestation/section/pub"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 	ImageProxy struct {
 		parser    mrserver.RequestParserString
 		sender    mrserver.FileResponseSender
-		useCase   usecase.FileProviderAdapterUseCase
+		useCase   pub.FileProviderAdapterUseCase
 		imagesURL string
 	}
 )
@@ -24,7 +24,7 @@ type (
 func NewImageProxy(
 	parser mrserver.RequestParserString,
 	sender mrserver.FileResponseSender,
-	useCase usecase.FileProviderAdapterUseCase,
+	useCase pub.FileProviderAdapterUseCase,
 	basePath string, // TODO: to URL
 ) *ImageProxy {
 	return &ImageProxy{

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -20,7 +21,7 @@ import (
 type (
 	// Paper - comment struct.
 	Paper struct {
-		storage         PaperStorage
+		storage         adm.PaperStorage
 		materialTypeAPI api.MaterialTypeAvailability
 		paperColorAPI   api.PaperColorAvailability
 		paperFactureAPI api.PaperFactureAvailability
@@ -32,7 +33,7 @@ type (
 
 // NewPaper - создаёт объект Paper.
 func NewPaper(
-	storage PaperStorage,
+	storage adm.PaperStorage,
 	materialTypeAPI api.MaterialTypeAvailability,
 	paperColorAPI api.PaperColorAvailability,
 	paperFactureAPI api.PaperFactureAvailability,

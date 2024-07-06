@@ -5,8 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/usecase"
 )
 
 const (
@@ -18,12 +19,12 @@ type (
 	RectImposition struct {
 		parser  mrserver.RequestParserValidate
 		sender  mrserver.ResponseSender
-		useCase usecase.RectImpositionUseCase
+		useCase pub.RectImpositionUseCase
 	}
 )
 
 // NewRectImposition - создаёт контроллер RectImposition.
-func NewRectImposition(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectImpositionUseCase) *RectImposition {
+func NewRectImposition(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.RectImpositionUseCase) *RectImposition {
 	return &RectImposition{
 		parser:  parser,
 		sender:  sender,

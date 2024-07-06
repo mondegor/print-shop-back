@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/google/uuid"
@@ -26,12 +26,12 @@ type (
 	CompanyPage struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.CompanyPageUseCase
+		useCase prov.CompanyPageUseCase
 	}
 )
 
 // NewCompanyPage - создаёт контроллер CompanyPage.
-func NewCompanyPage(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.CompanyPageUseCase) *CompanyPage {
+func NewCompanyPage(parser validate.RequestParser, sender mrserver.ResponseSender, useCase prov.CompanyPageUseCase) *CompanyPage {
 	return &CompanyPage{
 		parser:  parser,
 		sender:  sender,

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 
@@ -19,9 +20,9 @@ import (
 type (
 	// SubmitForm - comment struct.
 	SubmitForm struct {
-		storage        SubmitFormStorage
-		storageElement FormElementStorage
-		storageVersion FormVersionStorage
+		storage        adm.SubmitFormStorage
+		storageElement adm.FormElementStorage
+		storageVersion adm.FormVersionStorage
 		eventEmitter   mrsender.EventEmitter
 		errorWrapper   mrcore.UsecaseErrorWrapper
 		statusFlow     mrstatus.Flow
@@ -30,9 +31,9 @@ type (
 
 // NewSubmitForm - создаёт объект SubmitForm.
 func NewSubmitForm(
-	storage SubmitFormStorage,
-	storageElement FormElementStorage,
-	storageVersion FormVersionStorage,
+	storage adm.SubmitFormStorage,
+	storageElement adm.FormElementStorage,
+	storageVersion adm.FormVersionStorage,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UsecaseErrorWrapper,
 ) *SubmitForm {

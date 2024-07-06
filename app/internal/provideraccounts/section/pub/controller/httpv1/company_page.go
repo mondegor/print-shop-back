@@ -3,10 +3,10 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/usecase"
-
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub"
 )
 
 const (
@@ -18,7 +18,7 @@ type (
 	CompanyPage struct {
 		parser     mrserver.RequestParserString
 		sender     mrserver.ResponseSender
-		useCase    usecase.CompanyPageUseCase
+		useCase    pub.CompanyPageUseCase
 		imgBaseURL mrpath.PathBuilder
 	}
 )
@@ -27,7 +27,7 @@ type (
 func NewCompanyPage(
 	parser mrserver.RequestParserString,
 	sender mrserver.ResponseSender,
-	useCase usecase.CompanyPageUseCase,
+	useCase pub.CompanyPageUseCase,
 	imgBaseURL mrpath.PathBuilder,
 ) *CompanyPage {
 	return &CompanyPage{

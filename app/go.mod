@@ -6,10 +6,10 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mondegor/go-components v0.7.4
-	github.com/mondegor/go-storage v0.11.7
-	github.com/mondegor/go-sysmess v0.10.8
-	github.com/mondegor/go-webcore v0.19.2
+	github.com/mondegor/go-components v0.7.6
+	github.com/mondegor/go-storage v0.11.8
+	github.com/mondegor/go-sysmess v0.10.9
+	github.com/mondegor/go-webcore v0.19.3
 	github.com/oklog/run v1.1.0
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0

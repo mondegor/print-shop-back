@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
@@ -29,7 +29,7 @@ type (
 	PrintFormat struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.PrintFormatUseCase
+		useCase    adm.PrintFormatUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -38,7 +38,7 @@ type (
 func NewPrintFormat(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
-	useCase usecase.PrintFormatUseCase,
+	useCase adm.PrintFormatUseCase,
 	listSorter mrview.ListSorter,
 ) *PrintFormat {
 	return &PrintFormat{

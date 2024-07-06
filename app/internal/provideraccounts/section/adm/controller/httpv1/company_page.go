@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -21,7 +21,7 @@ type (
 	CompanyPage struct {
 		parser     validate.RequestProviderAccountsParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.CompanyPageUseCase
+		useCase    adm.CompanyPageUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -30,7 +30,7 @@ type (
 func NewCompanyPage(
 	parser validate.RequestProviderAccountsParser,
 	sender mrserver.ResponseSender,
-	useCase usecase.CompanyPageUseCase,
+	useCase adm.CompanyPageUseCase,
 	listSorter mrview.ListSorter,
 ) *CompanyPage {
 	return &CompanyPage{

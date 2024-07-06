@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -17,13 +18,13 @@ import (
 type (
 	// PaperFacture - comment struct.
 	PaperFacture struct {
-		storage      PaperFactureStorage
+		storage      availability.PaperFactureStorage
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewPaperFacture - создаёт объект PaperFacture.
-func NewPaperFacture(storage PaperFactureStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
+func NewPaperFacture(storage availability.PaperFactureStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
 		errorWrapper: errorWrapper,

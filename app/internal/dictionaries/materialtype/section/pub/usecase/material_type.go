@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
 
 	"github.com/mondegor/go-webcore/mrcore"
@@ -11,13 +12,13 @@ import (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
-		storage      MaterialTypeStorage
+		storage      pub.MaterialTypeStorage
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(storage MaterialTypeStorage, errorWrapper mrcore.UsecaseErrorWrapper) *MaterialType {
+func NewMaterialType(storage pub.MaterialTypeStorage, errorWrapper mrcore.UsecaseErrorWrapper) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
 		errorWrapper: errorWrapper,

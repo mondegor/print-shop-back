@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,12 +19,12 @@ type (
 	PaperFacture struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.PaperFactureUseCase
+		useCase pub.PaperFactureUseCase
 	}
 )
 
 // NewPaperFacture - создаёт контроллер PaperFacture.
-func NewPaperFacture(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.PaperFactureUseCase) *PaperFacture {
+func NewPaperFacture(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.PaperFactureUseCase) *PaperFacture {
 	return &PaperFacture{
 		parser:  parser,
 		sender:  sender,

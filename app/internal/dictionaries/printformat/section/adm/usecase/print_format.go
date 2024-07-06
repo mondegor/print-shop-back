@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -18,7 +19,7 @@ import (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
-		storage      PrintFormatStorage
+		storage      adm.PrintFormatStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -26,7 +27,7 @@ type (
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(storage PrintFormatStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PrintFormat {
+func NewPrintFormat(storage adm.PrintFormatStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
 		eventEmitter: eventEmitter,

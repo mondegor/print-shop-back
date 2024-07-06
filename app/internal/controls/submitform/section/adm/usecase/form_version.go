@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 
@@ -22,9 +23,9 @@ type (
 	// FormVersion - comment struct.
 	// FormVersion - comment struct.
 	FormVersion struct {
-		storage       FormVersionStorage
-		formComponent SubmitFormComponent
-		formCompiler  FormCompilerComponent
+		storage       adm.FormVersionStorage
+		formComponent adm.SubmitFormComponent
+		formCompiler  adm.FormCompilerComponent
 		locker        mrlock.Locker
 		eventEmitter  mrsender.EventEmitter
 		errorWrapper  mrcore.UsecaseErrorWrapper
@@ -33,9 +34,9 @@ type (
 
 // NewFormVersion - создаёт объект FormVersion.
 func NewFormVersion(
-	storage FormVersionStorage,
-	formComponent SubmitFormComponent,
-	formCompiler FormCompilerComponent,
+	storage adm.FormVersionStorage,
+	formComponent adm.SubmitFormComponent,
+	formCompiler adm.FormCompilerComponent,
 	locker mrlock.Locker,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UsecaseErrorWrapper,

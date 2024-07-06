@@ -98,7 +98,7 @@ linters-settings:
   dupl:
     # Tokens count to trigger issue.
     # Default: 150
-    threshold: 125
+    threshold: 200
 
   gofumpt:
     # Choose whether to use the extra rules.

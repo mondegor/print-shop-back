@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -35,8 +35,8 @@ type (
 	SubmitForm struct {
 		parser         validate.RequestSubmitFormParser
 		sender         mrserver.FileResponseSender
-		useCase        usecase.SubmitFormUseCase
-		useCaseVersion usecase.FormVersionUseCase
+		useCase        adm.SubmitFormUseCase
+		useCaseVersion adm.FormVersionUseCase
 		listSorter     mrview.ListSorter
 	}
 )
@@ -45,8 +45,8 @@ type (
 func NewSubmitForm(
 	parser validate.RequestSubmitFormParser,
 	sender mrserver.FileResponseSender,
-	useCase usecase.SubmitFormUseCase,
-	useCaseVersion usecase.FormVersionUseCase,
+	useCase adm.SubmitFormUseCase,
+	useCaseVersion adm.FormVersionUseCase,
 	listSorter mrview.ListSorter,
 ) *SubmitForm {
 	return &SubmitForm{

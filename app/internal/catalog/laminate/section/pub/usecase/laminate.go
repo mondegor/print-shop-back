@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 
@@ -14,13 +15,13 @@ type (
 	// Laminate - comment struct.
 	// Laminate - comment struct.
 	Laminate struct {
-		storage      LaminateStorage
+		storage      pub.LaminateStorage
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewLaminate - создаёт объект Laminate.
-func NewLaminate(storage LaminateStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Laminate {
+func NewLaminate(storage pub.LaminateStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Laminate {
 	return &Laminate{
 		storage:      storage,
 		errorWrapper: errorWrapper,

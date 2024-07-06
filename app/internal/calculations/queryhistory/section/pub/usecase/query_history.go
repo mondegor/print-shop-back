@@ -6,6 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrlog"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -16,14 +18,14 @@ import (
 type (
 	// QueryHistory - comment struct.
 	QueryHistory struct {
-		storage      QueryResultStorage
+		storage      pub.QueryResultStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 	}
 )
 
 // NewQueryHistory - создаёт объект QueryHistory.
-func NewQueryHistory(storage QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *QueryHistory {
+func NewQueryHistory(storage pub.QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *QueryHistory {
 	return &QueryHistory{
 		storage:      storage,
 		eventEmitter: eventEmitter,

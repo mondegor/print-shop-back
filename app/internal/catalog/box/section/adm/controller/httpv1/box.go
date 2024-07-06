@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -28,13 +28,13 @@ type (
 	Box struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.BoxUseCase
+		useCase    adm.BoxUseCase
 		listSorter mrview.ListSorter
 	}
 )
 
 // NewBox - создаёт контроллер Box.
-func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase usecase.BoxUseCase, listSorter mrview.ListSorter) *Box {
+func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.BoxUseCase, listSorter mrview.ListSorter) *Box {
 	return &Box{
 		parser:     parser,
 		sender:     sender,

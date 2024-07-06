@@ -5,8 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/usecase"
 )
 
 const (
@@ -19,12 +20,12 @@ type (
 	RectInsideOutside struct {
 		parser  mrserver.RequestParserValidate
 		sender  mrserver.ResponseSender
-		useCase usecase.RectInsideOutsideUseCase
+		useCase pub.RectInsideOutsideUseCase
 	}
 )
 
 // NewRectInsideOutside - создаёт контроллер RectInsideOutside.
-func NewRectInsideOutside(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase usecase.RectInsideOutsideUseCase) *RectInsideOutside {
+func NewRectInsideOutside(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.RectInsideOutsideUseCase) *RectInsideOutside {
 	return &RectInsideOutside{
 		parser:  parser,
 		sender:  sender,

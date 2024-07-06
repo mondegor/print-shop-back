@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
 
@@ -19,7 +20,7 @@ import (
 type (
 	// Box - comment struct.
 	Box struct {
-		storage      BoxStorage
+		storage      adm.BoxStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -27,7 +28,7 @@ type (
 )
 
 // NewBox - создаёт объект Box.
-func NewBox(storage BoxStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *Box {
+func NewBox(storage adm.BoxStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *Box {
 	return &Box{
 		storage:      storage,
 		eventEmitter: eventEmitter,

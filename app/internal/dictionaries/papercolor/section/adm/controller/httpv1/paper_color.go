@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -28,7 +28,7 @@ type (
 	PaperColor struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.PaperColorUseCase
+		useCase    adm.PaperColorUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -37,7 +37,7 @@ type (
 func NewPaperColor(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
-	useCase usecase.PaperColorUseCase,
+	useCase adm.PaperColorUseCase,
 	listSorter mrview.ListSorter,
 ) *PaperColor {
 	return &PaperColor{

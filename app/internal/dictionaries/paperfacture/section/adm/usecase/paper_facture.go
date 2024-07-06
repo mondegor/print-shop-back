@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -18,7 +19,7 @@ import (
 type (
 	// PaperFacture - comment struct.
 	PaperFacture struct {
-		storage      PaperFactureStorage
+		storage      adm.PaperFactureStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -26,7 +27,7 @@ type (
 )
 
 // NewPaperFacture - создаёт объект PaperFacture.
-func NewPaperFacture(storage PaperFactureStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
+func NewPaperFacture(storage adm.PaperFactureStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
 		eventEmitter: eventEmitter,

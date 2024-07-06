@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -33,7 +33,7 @@ type (
 	ElementTemplate struct {
 		parser     validate.RequestElementTemplateParser
 		sender     mrserver.FileResponseSender
-		useCase    usecase.ElementTemplateUseCase
+		useCase    adm.ElementTemplateUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -42,7 +42,7 @@ type (
 func NewElementTemplate(
 	parser validate.RequestElementTemplateParser,
 	sender mrserver.FileResponseSender,
-	useCase usecase.ElementTemplateUseCase,
+	useCase adm.ElementTemplateUseCase,
 	listSorter mrview.ListSorter,
 ) *ElementTemplate {
 	return &ElementTemplate{

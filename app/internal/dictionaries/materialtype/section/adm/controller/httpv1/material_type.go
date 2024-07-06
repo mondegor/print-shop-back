@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
@@ -28,7 +28,7 @@ type (
 	MaterialType struct {
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
-		useCase    usecase.MaterialTypeUseCase
+		useCase    adm.MaterialTypeUseCase
 		listSorter mrview.ListSorter
 	}
 )
@@ -37,7 +37,7 @@ type (
 func NewMaterialType(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
-	useCase usecase.MaterialTypeUseCase,
+	useCase adm.MaterialTypeUseCase,
 	listSorter mrview.ListSorter,
 ) *MaterialType {
 	return &MaterialType{

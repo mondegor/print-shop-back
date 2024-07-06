@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 
 	"github.com/mondegor/go-webcore/mrserver"
@@ -20,12 +20,12 @@ type (
 	Box struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
-		useCase usecase.BoxUseCase
+		useCase pub.BoxUseCase
 	}
 )
 
 // NewBox - создаёт контроллер Box.
-func NewBox(parser validate.RequestParser, sender mrserver.ResponseSender, useCase usecase.BoxUseCase) *Box {
+func NewBox(parser validate.RequestParser, sender mrserver.ResponseSender, useCase pub.BoxUseCase) *Box {
 	return &Box{
 		parser:  parser,
 		sender:  sender,

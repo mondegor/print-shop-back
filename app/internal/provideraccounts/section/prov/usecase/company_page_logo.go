@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
 
 	"github.com/google/uuid"
@@ -25,7 +26,7 @@ import (
 type (
 	// CompanyPageLogo - comment struct.
 	CompanyPageLogo struct {
-		storage      CompanyPageLogoStorage
+		storage      prov.CompanyPageLogoStorage
 		fileAPI      mrstorage.FileProviderAPI
 		locker       mrlock.Locker
 		eventEmitter mrsender.EventEmitter
@@ -35,7 +36,7 @@ type (
 
 // NewCompanyPageLogo - создаёт объект CompanyPageLogo.
 func NewCompanyPageLogo(
-	storage CompanyPageLogoStorage,
+	storage prov.CompanyPageLogoStorage,
 	fileAPI mrstorage.FileProviderAPI,
 	locker mrlock.Locker,
 	eventEmitter mrsender.EventEmitter,

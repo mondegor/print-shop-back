@@ -3,12 +3,12 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 )
 
 const (
@@ -20,12 +20,12 @@ type (
 	CompanyPageLogo struct {
 		parser  mrserver.RequestParserImage
 		sender  mrserver.ResponseSender
-		useCase usecase.CompanyPageLogoUseCase
+		useCase prov.CompanyPageLogoUseCase
 	}
 )
 
 // NewCompanyPageLogo - создаёт контроллер CompanyPageLogo.
-func NewCompanyPageLogo(parser mrserver.RequestParserImage, sender mrserver.ResponseSender, useCase usecase.CompanyPageLogoUseCase) *CompanyPageLogo {
+func NewCompanyPageLogo(parser mrserver.RequestParserImage, sender mrserver.ResponseSender, useCase prov.CompanyPageLogoUseCase) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		parser:  parser,
 		sender:  sender,

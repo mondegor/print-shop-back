@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
@@ -22,7 +23,7 @@ import (
 type (
 	// FormElement - comment struct.
 	FormElement struct {
-		storage            FormElementStorage
+		storage            adm.FormElementStorage
 		submitFormAPI      SubmitFormAPI
 		elementTemplateAPI api.ElementTemplateHeader
 		ordererAPI         mrsort.Orderer
@@ -38,7 +39,7 @@ type (
 
 // NewFormElement - создаёт объект FormElement.
 func NewFormElement(
-	storage FormElementStorage,
+	storage adm.FormElementStorage,
 	submitFormAPI SubmitFormAPI,
 	elementTemplateAPI api.ElementTemplateHeader,
 	ordererAPI mrsort.Orderer,

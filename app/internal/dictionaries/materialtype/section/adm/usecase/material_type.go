@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -18,7 +19,7 @@ import (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
-		storage      MaterialTypeStorage
+		storage      adm.MaterialTypeStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UsecaseErrorWrapper
 		statusFlow   mrstatus.Flow
@@ -26,7 +27,7 @@ type (
 )
 
 // NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(storage MaterialTypeStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *MaterialType {
+func NewMaterialType(storage adm.MaterialTypeStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
 		eventEmitter: eventEmitter,
