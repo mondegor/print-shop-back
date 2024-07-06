@@ -30,18 +30,18 @@ func NewRectCutting(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.Usec
 }
 
 // CalcQuantity - comment method.
-func (uc *RectCutting) CalcQuantity(ctx context.Context, raw entity.RawData) (entity.AlgoQuantityResult, error) {
+func (uc *RectCutting) CalcQuantity(ctx context.Context, raw entity.RawData) (entity.QuantityResult, error) {
 	parsedData, err := uc.parse(raw)
 	if err != nil {
-		return entity.AlgoQuantityResult{}, err
+		return entity.QuantityResult{}, err
 	}
 
 	result := cutting.AlgoQuantity(parsedData.Fragments, parsedData.DistanceFormat)
 
 	uc.emitEvent(ctx, "CalcQuantity", mrmsg.Data{"raw": parsedData})
 
-	return entity.AlgoQuantityResult{
-		Quantity: result,
+	return entity.QuantityResult{
+		Quantity: int32(result),
 	}, nil
 }
 
@@ -72,7 +72,7 @@ func (uc *RectCutting) emitEvent(ctx context.Context, eventName string, data mrm
 	uc.eventEmitter.EmitWithSource(
 		ctx,
 		eventName,
-		entity.ModelNameCutting,
+		entity.ModelNameRectCutting,
 		data,
 	)
 }

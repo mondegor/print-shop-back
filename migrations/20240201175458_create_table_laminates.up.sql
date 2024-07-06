@@ -6,10 +6,10 @@ CREATE TABLE printshop_catalog.laminates (
     laminate_article character varying(32) NULL,
     laminate_caption character varying(64) NOT NULL,
     type_id int4 NOT NULL CHECK(type_id > 0),
-    laminate_length int4 NOT NULL CHECK(laminate_length > 0), -- mkm (mm * 1000)
-    laminate_width int4 NOT NULL CHECK(laminate_width > 0), -- mkm (mm * 1000)
-    laminate_thickness int4 NOT NULL CHECK(laminate_thickness > 0), -- mkm (mm * 1000)
-    laminate_weight int4 NOT NULL CHECK(laminate_weight > 0), -- g/m2
+    laminate_length double NOT NULL, -- meter
+    laminate_width double NOT NULL, -- meter
+    laminate_thickness double NOT NULL, -- meter
+    laminate_weight double NOT NULL, -- kilogram
     laminate_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NULL,
@@ -24,6 +24,6 @@ CREATE INDEX ix_laminates_laminate_thickness ON printshop_catalog.laminates (lam
 
 INSERT INTO printshop_catalog.laminates (laminate_id, tag_version, laminate_article, laminate_caption, type_id, laminate_length, laminate_width, laminate_thickness, laminate_weight, laminate_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 1, 'lam-1', 'Глянцевый 450', 8, 10000000, 450000, 30, 1, 2/*ENABLED*/, '2023-07-26 21:08:40.908057', NULL, NULL);
+    (1, 1, 'lam-1', 'Глянцевый 450', 8, 10.0, 0.450, 0.00003, 1.0, 2/*ENABLED*/, '2023-07-26 21:08:40.908057', NULL, NULL);
 
 ALTER SEQUENCE printshop_catalog.laminates_laminate_id_seq RESTART WITH 2;

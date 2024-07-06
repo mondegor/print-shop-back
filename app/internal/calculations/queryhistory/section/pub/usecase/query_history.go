@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -43,7 +44,7 @@ func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Q
 
 	// обновление счётчика посещений
 	// TODO: send to queue
-	go func () {
+	go func() {
 		if err := uc.storage.UpdateQuantity(ctx, itemID); err != nil {
 			mrlog.Ctx(ctx).Error().Err(err).Send()
 		}

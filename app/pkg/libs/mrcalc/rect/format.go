@@ -10,14 +10,14 @@ import (
 type (
 	// Format - прямоугольный формат.
 	Format struct {
-		Width  int64 `json:"width"`
-		Height int64 `json:"height"`
+		Width  float64 `json:"width"`
+		Height float64 `json:"height"`
 	}
 )
 
 // String - возвращает текущий формат в виде строки {width}x{height}.
 func (f Format) String() string {
-	return strconv.FormatInt(f.Width, 10) + "x" + strconv.FormatInt(f.Height, 10)
+	return strconv.FormatFloat(f.Width, 'f', -1, 64) + "x" + strconv.FormatFloat(f.Height, 'f', -1, 64)
 }
 
 // IsValid - проверяет валиден ли текущий формат.
@@ -31,12 +31,12 @@ func (f *Format) IsZero() bool {
 }
 
 // Area - возвращает площадь формата.
-func (f *Format) Area() int64 {
+func (f *Format) Area() float64 {
 	return f.Width * f.Height
 }
 
 // Max - возвращает самую длинную сторону формата.
-func (f *Format) Max() int64 {
+func (f *Format) Max() float64 {
 	if f.Width > f.Height {
 		return f.Width
 	}
@@ -93,7 +93,7 @@ func (f *Format) Diff(second Format) Format {
 }
 
 // DivBy - возвращает формат разделённый на указанную величину по широкой стороне.
-func (f *Format) DivBy(divisor int64) (Format, error) {
+func (f *Format) DivBy(divisor uint64) (Format, error) {
 	if divisor == 0 {
 		return Format{}, errors.New("divide by zero")
 	}
@@ -101,9 +101,9 @@ func (f *Format) DivBy(divisor int64) (Format, error) {
 	res := *f
 
 	if res.Height >= res.Width {
-		res.Height /= divisor
+		res.Height /= float64(divisor)
 	} else {
-		res.Width /= divisor
+		res.Width /= float64(divisor)
 	}
 
 	return res, nil

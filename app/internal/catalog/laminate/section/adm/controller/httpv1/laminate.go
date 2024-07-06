@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -111,10 +112,10 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 		Article:   request.Article,
 		Caption:   request.Caption,
 		TypeID:    request.TypeID,
-		Length:    request.Length,
-		Width:     request.Width,
-		Thickness: request.Thickness,
-		Weight:    request.Weight,
+		Length:    measure.Meter(request.Length * measure.OneThousandth),
+		Width:     measure.Meter(request.Width * measure.OneThousandth),
+		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
+		Weight:    measure.KilogramPerMeter2(request.Weight * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -145,10 +146,10 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 		Article:    request.Article,
 		Caption:    request.Caption,
 		TypeID:     request.TypeID,
-		Length:     request.Length,
-		Width:      request.Width,
-		Thickness:  request.Thickness,
-		Weight:     request.Weight,
+		Length:     request.Length * measure.OneThousandth,
+		Width:      measure.Meter(request.Width * measure.OneThousandth),
+		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
+		Weight:     measure.KilogramPerMeter2(request.Weight * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {

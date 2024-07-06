@@ -32,24 +32,29 @@ func NewRectImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter
 }
 
 // Calc - comment method.
-func (uc *RectImposition) Calc(ctx context.Context, raw entity.RawData) (imposition.AlgoResult, error) {
+func (uc *RectImposition) Calc(ctx context.Context, raw entity.RawData) (entity.Result, error) {
 	parsedData, err := uc.parse(raw)
 	if err != nil {
-		return imposition.AlgoResult{}, err
+		return entity.Result{}, err
 	}
 
 	result, err := uc.algo.Calc(parsedData.Item, parsedData.Out, parsedData.Opts)
 	if err != nil {
-		return imposition.AlgoResult{}, err
+		return entity.Result{}, err
 	}
 
 	if len(result.Fragments) == 0 {
-		return imposition.AlgoResult{}, errors.New("error") // TODO: result NULL
+		return entity.Result{}, errors.New("error") // TODO: result NULL
 	}
 
 	uc.emitEvent(ctx, "Calc", mrmsg.Data{"raw": parsedData})
 
-	return result, nil
+	return entity.Result{
+		Layout:    result.Layout,
+		Fragments: result.Fragments,
+		Total:     int32(result.Total),
+		Garbage:   result.RestArea,
+	}, nil
 }
 
 func (uc *RectImposition) parse(data entity.RawData) (entity.ParsedData, error) {

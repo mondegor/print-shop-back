@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ModelNameInsideOutside = "public-api.Calculations.Rect.InsideOutside" // ModelNameInsideOutside - название сущности
+	ModelNameRectInsideOutside = "public-api.Calculations.Algo.Rect.InsideOutside" // ModelNameRectInsideOutside - название сущности
 )
 
 type (

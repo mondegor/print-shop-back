@@ -5,7 +5,7 @@ privileges:
 permissions:
   - modCalculationsAlgo
   - modCalculationsBox
-  - modCalculationsQueryResult
+  - modCalculationsQueryHistory
   - modCatalogBox
   - modCatalogPaper
   - modCatalogLaminate

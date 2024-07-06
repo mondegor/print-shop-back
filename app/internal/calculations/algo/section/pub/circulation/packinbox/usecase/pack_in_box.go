@@ -6,6 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrsender"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 )
@@ -35,9 +36,7 @@ func (uc *CirculationPackInBox) CalcQuantity(ctx context.Context, raw entity.Raw
 
 	uc.emitEvent(ctx, "CalcQuantity", mrmsg.Data{"raw": parsedData})
 
-	return entity.AlgoResult{
-		Format: parsedData.Format,
-	}, nil
+	return entity.AlgoResult(parsedData), nil
 }
 
 func (uc *CirculationPackInBox) parse(data entity.RawData) (entity.ParsedData, error) {
@@ -55,7 +54,7 @@ func (uc *CirculationPackInBox) emitEvent(ctx context.Context, eventName string,
 	uc.eventEmitter.EmitWithSource(
 		ctx,
 		eventName,
-		entity.ModelNamePackInBox,
+		entity.ModelNameCirculationPackInBox,
 		data,
 	)
 }

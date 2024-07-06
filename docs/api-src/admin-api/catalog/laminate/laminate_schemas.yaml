@@ -20,9 +20,9 @@ Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
     typeId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
@@ -46,9 +46,9 @@ Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
     typeId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
@@ -99,9 +99,9 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
     typeId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:

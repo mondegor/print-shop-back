@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// ParseDoubleSize - возвращает результат парсинга строки вида '{first}x{second}' два целых числа.
-func ParseDoubleSize(str string) (first, second int64, err error) {
+// ParseDoubleSize - возвращает результат парсинга строки вида '{first}x{second}' два вещественных числа.
+func ParseDoubleSize(str string) (first, second float64, err error) {
 	items := strings.SplitN(str, "x", 2)
 
 	if len(items) != 2 {
@@ -27,11 +27,15 @@ func ParseDoubleSize(str string) (first, second int64, err error) {
 	return first, second, nil
 }
 
-func parseDoubleSizeItem(str string) (int64, error) {
-	value, err := strconv.ParseUint(str, 10, 64)
+func parseDoubleSizeItem(str string) (float64, error) {
+	value, err := strconv.ParseFloat(str, 64)
 	if err != nil {
 		return 0, fmt.Errorf("error parse item '%s': %w", str, err)
 	}
 
-	return int64(value), nil
+	if value < 0 {
+		return 0, fmt.Errorf("error parse item '%s': got negative value", str)
+	}
+
+	return value, nil
 }

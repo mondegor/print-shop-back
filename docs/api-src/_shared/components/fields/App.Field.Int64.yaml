@@ -1,0 +1,5 @@
+App.Field.Int64:
+  description: Целое 64-ти разрядное число
+  type: integer
+  format: int64
+  example: 9223372036854775807

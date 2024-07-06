@@ -89,7 +89,7 @@ func (uc *RectInsideOutside) emitEvent(ctx context.Context, eventName string, da
 	uc.eventEmitter.EmitWithSource(
 		ctx,
 		eventName,
-		entity.ModelNameInsideOutside,
+		entity.ModelNameRectInsideOutside,
 		data,
 	)
 }

@@ -8,7 +8,7 @@ type (
 	}
 )
 
-// WithBorder
+// WithBorder - возвращается прямоугольный элемент с учётом технологических границ.
 func (f *Item) WithBorder() Format {
 	return Format{
 		Width:  f.Width + f.Border.Width,

@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -1089,21 +1089,38 @@ components:
 
     App.Field.Measure.Gram:
       description: Грамм (g)
-      type: integer
-      maxLength: 12
+      type: number
+      format: double
+      maxLength: 16
       example: 1000 # 1kg
 
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100g/m2
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg/m2
+
+    App.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000000 # 1m
+
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
       description: |-
@@ -1260,11 +1277,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -1284,11 +1301,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -1334,11 +1351,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
         status:
@@ -1370,9 +1387,9 @@ components:
         typeId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
@@ -1396,9 +1413,9 @@ components:
         typeId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
@@ -1449,9 +1466,9 @@ components:
         typeId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
@@ -1492,9 +1509,9 @@ components:
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
@@ -1524,9 +1541,9 @@ components:
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
@@ -1586,9 +1603,9 @@ components:
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:

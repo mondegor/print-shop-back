@@ -12,9 +12,9 @@ Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
 Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
   description: DTO сохранения печатного формата
@@ -30,9 +30,9 @@ Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
 Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
   description: DTO - список печатных форматов
@@ -71,9 +71,9 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
     createdAt:

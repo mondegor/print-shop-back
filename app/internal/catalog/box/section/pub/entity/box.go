@@ -13,13 +13,13 @@ const (
 type (
 	// Box - comment struct.
 	Box struct { // DB: printshop_catalog.boxes
-		ID      mrtype.KeyInt32    `json:"id"` // box_id
-		Article string             `json:"article"`
-		Caption string             `json:"caption"`
-		Length  measure.Micrometer `json:"length"` // mkm (mm * 1000)
-		Width   measure.Micrometer `json:"width"`  // mkm (mm * 1000)
-		Height  measure.Micrometer `json:"height"` // mkm (mm * 1000)
-		Weight  measure.Milligram  `json:"weight"` // mg (g * 1000)
+		ID      mrtype.KeyInt32  `json:"id"` // box_id
+		Article string           `json:"article"`
+		Caption string           `json:"caption"`
+		Length  measure.Meter    `json:"length"`
+		Width   measure.Meter    `json:"width"`
+		Height  measure.Meter    `json:"height"`
+		Weight  measure.Kilogram `json:"weight"`
 	}
 
 	// BoxParams - comment struct.

@@ -3,7 +3,8 @@ App.System.Response.Model.SystemInfo:
   type: object
   required:
     - name
-    - tagVersion
+    - version
+    - environment
     - hostName
     - isDebug
     - logLevel
@@ -19,6 +20,11 @@ App.System.Response.Model.SystemInfo:
       type: string
       maxLength: 16
       example: "v0.1.0"
+    environment:
+      description: Окружение, на котором запущено приложение
+      type: string
+      maxLength: 16
+      example: "prod"
     hostName:
       description: Название хоста, на котором запущено приложение
       type: string

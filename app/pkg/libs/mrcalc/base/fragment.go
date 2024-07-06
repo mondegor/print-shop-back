@@ -1,7 +1,7 @@
 package base
 
 type (
-	// Fragment - фрагмент прямоугольного формата с количеством размещенных на нём элементов.
+	// Fragment - фрагмент площади с количеством размещенных на нём элементов.
 	Fragment struct {
 		ByWidth  uint64 `json:"byWidth"`  // кол-во элементов по ширине
 		ByHeight uint64 `json:"byHeight"` // кол-во элементов по высоте

@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 )
 
@@ -15,8 +17,8 @@ func TestParseDoubleSize(t *testing.T) {
 	tests := []struct {
 		name    string
 		str     string
-		want1   int64
-		want2   int64
+		want1   float64
+		want2   float64
 		wantErr bool
 	}{
 		{
@@ -83,8 +85,8 @@ func TestParseDoubleSize(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			assert.Equal(t, tt.want1, got1)
-			assert.Equal(t, tt.want2, got2)
+			assert.InDelta(t, tt.want1, got1, measure.DeltaThousand)
+			assert.InDelta(t, tt.want2, got2, measure.DeltaThousand)
 		})
 	}
 }

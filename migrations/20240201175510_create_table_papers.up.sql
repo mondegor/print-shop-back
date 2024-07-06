@@ -8,10 +8,10 @@ CREATE TABLE printshop_catalog.papers (
     type_id int4 NOT NULL CHECK(type_id > 0),
     color_id int4 NOT NULL CHECK(color_id > 0),
     facture_id int4 NOT NULL CHECK(facture_id > 0),
-    paper_width int4 NOT NULL CHECK(paper_width > 0), -- mkm (mm * 1000)
-    paper_height int4 NOT NULL CHECK(paper_height > 0), -- mkm (mm * 1000)
-    paper_thickness int4 NOT NULL CHECK(paper_thickness > 0), -- mkm (mm * 1000)
-    paper_density int4 NOT NULL CHECK(paper_density > 0), -- g/m2
+    paper_width double NOT NULL, -- meter
+    paper_height double NOT NULL, -- meter
+    paper_thickness double NOT NULL, -- meter
+    paper_density double NOT NULL, -- kg/m2
     paper_sides int2 NOT NULL, -- 1=SAME, 2=DIFFERENT
     paper_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
@@ -29,10 +29,10 @@ CREATE INDEX ix_papers_paper_density ON printshop_catalog.papers (paper_density)
 
 INSERT INTO printshop_catalog.papers (paper_id, tag_version, paper_article, paper_caption, type_id, color_id, facture_id, paper_width, paper_height, paper_thickness, paper_density, paper_sides, paper_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 3, 'mel130-64х90', 'мелованная', 3, 1, 2, 900000, 640000, 100, 130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:08:45.348283', NULL, NULL),
-    (2, 1, 'v130-70х100', 'мелованная', 3, 1, 2, 1000000, 700000, 100, 130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:13:23.991912', NULL, NULL),
-    (3, 1, 'offset-80-70х100', 'офсетная', 5, 1, 3, 1000000, 700000, 100, 80, 1/*SAME*/, 2/*ENABLED*/, '2023-07-29 13:38:24.199768', NULL, NULL),
-    (4, 1, 'offset-170-70х100', 'мелованная', 6, 1, 2, 1000000, 700000, 130, 170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:41:25.813125', NULL, NULL),
-    (5, 1, 'coatGlossy-170-70х100', 'мелованная', 4, 1, 1, 1000000, 700000, 120, 170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:43:54.456152', NULL, NULL);
+    (1, 3, 'mel130-64х90', 'мелованная', 3, 1, 2, 0.064, 0.090, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:08:45.348283', NULL, NULL),
+    (2, 1, 'v130-70х100', 'мелованная', 3, 1, 2, 0.070, 0.100, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:13:23.991912', NULL, NULL),
+    (3, 1, 'offset-80-70х100', 'офсетная', 5, 1, 3, 0.070, 0.100, 0.0001, 0.080, 1/*SAME*/, 2/*ENABLED*/, '2023-07-29 13:38:24.199768', NULL, NULL),
+    (4, 1, 'offset-170-70х100', 'мелованная', 6, 1, 2, 0.070, 0.100, 0.00013, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:41:25.813125', NULL, NULL),
+    (5, 1, 'coatGlossy-170-70х100', 'мелованная', 4, 1, 1, 0.070, 0.100, 0.00012, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:43:54.456152', NULL, NULL);
 
 ALTER SEQUENCE printshop_catalog.papers_paper_id_seq RESTART WITH 6;

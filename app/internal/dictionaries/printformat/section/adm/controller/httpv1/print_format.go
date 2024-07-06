@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -112,8 +113,8 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 
 	item := entity.PrintFormat{
 		Caption: request.Caption,
-		Width:   request.Width,
-		Height:  request.Height,
+		Width:   measure.Meter(request.Width * measure.OneThousandth),
+		Height:  measure.Meter(request.Height * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -142,8 +143,8 @@ func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
 		ID:         ht.getItemID(r),
 		TagVersion: request.TagVersion,
 		Caption:    request.Caption,
-		Width:      request.Width,
-		Height:     request.Height,
+		Width:      measure.Meter(request.Width * measure.OneThousandth),
+		Height:     measure.Meter(request.Height * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {

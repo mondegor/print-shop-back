@@ -57,7 +57,7 @@ func (uc *Paper) GetColorList(ctx context.Context) ([]mrtype.KeyInt32, error) {
 }
 
 // GetDensityList - comment method.
-func (uc *Paper) GetDensityList(ctx context.Context) ([]measure.GramsPerMeter2, error) {
+func (uc *Paper) GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter2, error) {
 	items, err := uc.storage.FetchDensities(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)

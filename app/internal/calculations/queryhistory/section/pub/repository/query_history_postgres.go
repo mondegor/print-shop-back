@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 
@@ -89,8 +90,8 @@ func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.U
 		UPDATE
 			` + module.DBSchema + `.` + module.DBTableNameQueryHistory + `
 		SET
-			download_count = download_count + 1,
-			downloaded_at = NOW()
+			used_count = used_count + 1,
+			used_at = NOW()
 		WHERE
 			query_id = $1 AND deleted_at IS NULL
 		LIMIT $2;`
@@ -116,7 +117,7 @@ func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration
 	return re.client.Conn(ctx).Exec(
 		ctx,
 		sql,
-		expiry * time.Second,
+		expiry.Nanoseconds()/1e9, // to seconds
 		limit,
 	)
 }

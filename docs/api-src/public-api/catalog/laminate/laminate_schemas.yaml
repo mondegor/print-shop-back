@@ -29,9 +29,9 @@ Catalog.Laminates.PublicAPI.Response.Model.Laminate:
     typeId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:

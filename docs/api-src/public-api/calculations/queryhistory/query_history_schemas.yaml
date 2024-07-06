@@ -1,0 +1,32 @@
+Calculations.QueryHistory.PublicAPI.Request.Model.Query:
+  description: DTO параметров сохранения расчётов запроса
+  type: object
+  required:
+    - caption
+    - params
+    - result
+  properties:
+    caption:
+      $ref: "#/components/schemas/App.Field.Caption"
+    params:
+      $ref: "#/components/schemas/App.Field.JsonData"
+    result:
+      $ref: "#/components/schemas/App.Field.JsonData"
+
+Calculations.QueryHistory.PublicAPI.Response.Model.Query:
+  description: DTO - расчёты запроса
+  type: object
+  required:
+    - caption
+    - params
+    - result
+    - createdAt
+  properties:
+    caption:
+      $ref: "#/components/schemas/App.Field.Caption"
+    params:
+      $ref: "#/components/schemas/App.Field.JsonData"
+    result:
+      $ref: "#/components/schemas/App.Field.JsonData"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"

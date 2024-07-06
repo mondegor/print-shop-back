@@ -1,12 +1,38 @@
 package measure
 
+const (
+	DeltaThousand = 0.001     // DeltaThousand - дельта (одна десятитысячная) для сравнения float чисел
+	Thousand      = 1000.0    // Thousand - тысяча единиц
+	Million       = 1000000.0 // Million - миллион единиц
+	OneThousandth = 0.001     // OneThousandth - одна тысячная единицы
+	OneMillionth  = 0.000001  // OneMillionth - одна миллионная единицы
+)
+
 type (
-	// GramsPerMeter2 - comment type.
-	GramsPerMeter2 int32
+	// Meter - метр (m, СИ).
+	Meter float64
 
-	// Micrometer - comment type.
-	Micrometer int32
+	// Centimeter - сантиметр (cm).
+	Centimeter float64
 
-	// Milligram - comment type.
-	Milligram int32
+	// Millimeter - миллиметр (mm).
+	Millimeter float64
+
+	// Micrometer - микрометр (µm).
+	Micrometer float64
+
+	// Kilogram - килограмм (kg, СИ).
+	Kilogram float64
+
+	// Gram - грамм (g).
+	Gram float64
+
+	// Milligram - миллиграмм (mg).
+	Milligram float64
+
+	// GramPerMeter2 - грамм на метр квадратный (g/m2).
+	GramPerMeter2 float64
+
+	// KilogramPerMeter2 - килограмм на метр квадратный (kg/m2, СИ).
+	KilogramPerMeter2 float64
 )

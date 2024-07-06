@@ -36,9 +36,9 @@ Catalog.Papers.PublicAPI.Response.Model.Paper:
     factureId:
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     density:

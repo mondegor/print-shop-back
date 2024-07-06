@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
@@ -16,8 +17,8 @@ import (
 )
 
 const (
-	queryHistoryURL     = "/v1/calculations/query"
-	queryHistoryItemURL = "/v1/calculations/query/{id}"
+	queryHistoryURL     = "/v1/calculations/query-history"
+	queryHistoryItemURL = "/v1/calculations/query-history/{id}"
 )
 
 type (
@@ -65,9 +66,9 @@ func (ht *QueryHistory) Create(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	item := entity.QueryHistoryItem{
-		Caption:   request.Caption,
-		Params:   request.Params,
-		Result:    request.Result,
+		Caption: request.Caption,
+		Params:  request.Params,
+		Result:  request.Result,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)

@@ -12,11 +12,11 @@ import (
 // во внешнем указанном формате (без использования поворотов).
 func AlgoQuantity(in, out rect.Format) (base.Fragment, error) {
 	if in.Width < 1 {
-		return base.Fragment{}, fmt.Errorf("in.Width is zero or negative: %d", in.Width)
+		return base.Fragment{}, fmt.Errorf("in.Width is zero or negative: %.2f", in.Width)
 	}
 
 	if in.Height < 1 {
-		return base.Fragment{}, fmt.Errorf("in.Height is zero or negative: %d", in.Height)
+		return base.Fragment{}, fmt.Errorf("in.Height is zero or negative: %.2f", in.Height)
 	}
 
 	return getQuantityInsideOnOutside(in, out), nil

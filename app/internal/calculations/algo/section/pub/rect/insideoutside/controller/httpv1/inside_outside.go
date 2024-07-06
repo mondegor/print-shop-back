@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	rectQuantityInsideOnOutsideURL = "/v1/calculations/algo/rect/quantity-inside-on-outside"
-	rectMaxInsideOnOutsideURL      = "/v1/calculations/algo/rect/max-inside-on-outside"
+	rectQuantityInsideOnOutsideURL = "/v1/calculations/algo/rect/inside-on-outside-quantity"
+	rectMaxInsideOnOutsideURL      = "/v1/calculations/algo/rect/inside-on-outside-max"
 )
 
 type (

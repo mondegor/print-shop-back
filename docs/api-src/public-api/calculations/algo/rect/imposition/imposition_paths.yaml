@@ -1,0 +1,36 @@
+/v1/calculations/algo/rect/imposition:
+  post:
+    summary: Метод расчёта спуска полос
+    description: |-
+      Спуска полос - расположения элементов указанного формата на указанном печатном формате
+
+    operationId: calcAlgoRectImposition
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectImposition"
+
+    responses:
+      "200":
+        description: Получен расчет спуска полос
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectImposition"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

@@ -17,13 +17,13 @@ Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
         - maxLength: 64
         - example: "СДЭК"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     weight:
-      $ref: "#/components/schemas/App.Field.Measure.Milligram"
+      $ref: "#/components/schemas/App.Field.Measure.Gram"
 
 Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
   description: DTO сохранения упаковочной коробки
@@ -41,13 +41,13 @@ Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
         - maxLength: 64
         - example: "СДЭК"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     weight:
-      $ref: "#/components/schemas/App.Field.Measure.Milligram"
+      $ref: "#/components/schemas/App.Field.Measure.Gram"
 
 Catalog.Boxes.AdminAPI.Response.Model.BoxList:
   description: DTO - список упаковочных коробок
@@ -91,13 +91,13 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
         - maxLength: 64
         - example: "СДЭК"
     length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     weight:
-      $ref: "#/components/schemas/App.Field.Measure.Milligram"
+      $ref: "#/components/schemas/App.Field.Measure.Gram"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
     createdAt:

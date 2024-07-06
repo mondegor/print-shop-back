@@ -1,0 +1,65 @@
+/v1/calculations/query-history:
+  post:
+    summary: Метод сохранения расчёта запроса
+    description: |-
+      Метод предназначен для сохранения расчётов запроса в БД
+
+    operationId: storeCalcQuery
+    tags:
+      - Calculations.QueryHistory
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Request.Model.Query"
+
+    responses:
+      "201":
+        description: Информация о запросе успешно сохранена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/calculations/query-history/{queryId}:
+  get:
+    summary: Метод получения расчёта по указанному ID запроса
+    description: |-
+      Метод предназначен для получения расчёта по указанному ID запроса сохранённого ранее в БД,
+      со следующими условиями:
+      - query.isDeleted = false;
+
+    operationId: getCalcQueryId
+    tags:
+      - Calculations.QueryHistory
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Calculations.QueryHistory.PublicAPI.Request.Path.QueryID"
+
+    responses:
+      "200":
+        description: Получен расчёт об указанном запросе
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Response.Model.Query"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

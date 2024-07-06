@@ -6,22 +6,17 @@ import (
 )
 
 type (
-	// AlgoTotal - спуск полос.
-	// * Рассчитывается максимальное количество элементов указанного формата,
-	// * которое можно разместить на листе указанного формата.
-	// * Также учитывается расстояние между элементами по горизонтали и вертикали.
+	// AlgoTotal - вспомогательный алгоритм расчёта поверхности размещения элементов.
 	AlgoTotal struct{}
 )
 
 // New - создаёт объект AlgoTotal.
-// Поддерживается параметр allowRotation при true разрешается
-// располагать элементы повёрнутые на 90 градусов к друг другу.
 func New() *AlgoTotal {
 	return &AlgoTotal{}
 }
 
-// Calc - слайс layouts всегда содержит минимум 1 элемент и не больше 2‑х элементов.
-func (ri *AlgoTotal) Calc(item rect.Item, out rect.Format, layouts base.Fragments) (layout rect.Format, restArea int64) {
+// Calc - расчёт алгоритма.
+func (ri *AlgoTotal) Calc(item rect.Item, out rect.Format, layouts base.Fragments) (layout rect.Format, restArea float64) {
 	// рассчитывается основной блок элементов
 	layout = ri.calcLayoutFormat(item, layouts[0])
 	restArea = out.Area() - layout.Area()
@@ -53,8 +48,8 @@ func (ri *AlgoTotal) Calc(item rect.Item, out rect.Format, layouts base.Fragment
 
 func (ri *AlgoTotal) calcLayoutFormat(item rect.Item, layout base.Fragment) rect.Format {
 	format := rect.Format{
-		Width:  int64(layout.ByWidth) * (item.Width + item.Border.Width),
-		Height: int64(layout.ByHeight) * (item.Height + item.Border.Height),
+		Width:  float64(layout.ByWidth) * (item.Width + item.Border.Width),
+		Height: float64(layout.ByHeight) * (item.Height + item.Border.Height),
 	}
 
 	// удаляется лишняя рамка элемента, т.к. она должна быть только между элементами

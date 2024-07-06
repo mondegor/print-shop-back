@@ -6,6 +6,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/usecase"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -109,10 +110,10 @@ func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
 	item := entity.Box{
 		Article: request.Article,
 		Caption: request.Caption,
-		Length:  request.Length,
-		Width:   request.Width,
-		Height:  request.Height,
-		Weight:  request.Weight,
+		Length:  measure.Meter(request.Length * measure.OneThousandth),
+		Width:   measure.Meter(request.Width * measure.OneThousandth),
+		Height:  measure.Meter(request.Height * measure.OneThousandth),
+		Weight:  measure.Kilogram(request.Weight * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -142,10 +143,10 @@ func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
 		TagVersion: request.TagVersion,
 		Article:    request.Article,
 		Caption:    request.Caption,
-		Length:     request.Length,
-		Width:      request.Width,
-		Height:     request.Height,
-		Weight:     request.Weight,
+		Length:     measure.Meter(request.Length * measure.OneThousandth),
+		Width:      measure.Meter(request.Width * measure.OneThousandth),
+		Height:     measure.Meter(request.Height * measure.OneThousandth),
+		Weight:     measure.Kilogram(request.Weight * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {

@@ -124,7 +124,7 @@ func (re *LaminatePostgres) FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32
 }
 
 // FetchThicknesses - comment method.
-func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Micrometer, error) {
+func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Meter, error) {
 	sql := `
         SELECT
 			laminate_thickness
@@ -146,10 +146,10 @@ func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Mic
 
 	defer cursor.Close()
 
-	rows := make([]measure.Micrometer, 0)
+	rows := make([]measure.Meter, 0)
 
 	for cursor.Next() {
-		var thickness measure.Micrometer
+		var thickness measure.Meter
 
 		err = cursor.Scan(
 			&thickness,

@@ -10,10 +10,10 @@ type (
 	CreateBoxRequest struct {
 		Article string             `json:"article" validate:"required,min=3,max=32,tag_article"`
 		Caption string             `json:"caption" validate:"required,max=64"`
-		Length  measure.Micrometer `json:"length" validate:"required,gte=1,lte=10000000"`
-		Width   measure.Micrometer `json:"width" validate:"required,gte=1,lte=10000000"`
-		Height  measure.Micrometer `json:"height" validate:"required,gte=1,lte=10000000"`
-		Weight  measure.Milligram  `json:"weight" validate:"required,gte=1,lte=10000000"`
+		Length  measure.Millimeter `json:"length" validate:"required,gte=1,lte=10000"`
+		Width   measure.Millimeter `json:"width" validate:"required,gte=1,lte=10000"`
+		Height  measure.Millimeter `json:"height" validate:"required,gte=1,lte=10000"`
+		Weight  measure.Gram       `json:"weight" validate:"required,gte=1,lte=10000"`
 	}
 
 	// StoreBoxRequest - comment struct.
@@ -21,10 +21,10 @@ type (
 		TagVersion int32              `json:"tagVersion" validate:"required,gte=1"`
 		Article    string             `json:"article" validate:"omitempty,min=3,max=32,tag_article"`
 		Caption    string             `json:"caption" validate:"omitempty,max=64"`
-		Length     measure.Micrometer `json:"length" validate:"omitempty,gte=1,lte=10000000"`
-		Width      measure.Micrometer `json:"width" validate:"omitempty,gte=1,lte=10000000"`
-		Height     measure.Micrometer `json:"height" validate:"omitempty,gte=1,lte=10000000"`
-		Weight     measure.Milligram  `json:"weight" validate:"required,gte=1,lte=10000000"`
+		Length     measure.Millimeter `json:"length" validate:"omitempty,gte=1,lte=10000"`
+		Width      measure.Millimeter `json:"width" validate:"omitempty,gte=1,lte=10000"`
+		Height     measure.Millimeter `json:"height" validate:"omitempty,gte=1,lte=10000"`
+		Weight     measure.Gram       `json:"weight" validate:"required,gte=1,lte=10000"`
 	}
 
 	// BoxListResponse - comment struct.

@@ -14,13 +14,13 @@ type (
 	LaminateUseCase interface {
 		GetList(ctx context.Context, params entity.LaminateParams) ([]entity.Laminate, error)
 		GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error)
-		GetThicknessList(ctx context.Context) ([]measure.Micrometer, error)
+		GetThicknessList(ctx context.Context) ([]measure.Meter, error)
 	}
 
 	// LaminateStorage - comment interface.
 	LaminateStorage interface {
 		Fetch(ctx context.Context, params entity.LaminateParams) ([]entity.Laminate, error)
 		FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32, error)
-		FetchThicknesses(ctx context.Context) ([]measure.Micrometer, error)
+		FetchThicknesses(ctx context.Context) ([]measure.Meter, error)
 	}
 )

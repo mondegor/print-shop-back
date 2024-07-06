@@ -14,34 +14,31 @@ import (
 )
 
 type (
-	// Algo - спуск полос.
-	// * Рассчитывается максимальное количество элементов указанного формата,
-	// * которое можно разместить на листе указанного формата.
-	// * Также учитывается расстояние между элементами по горизонтали и вертикали.
+	// Algo - спуск полос рассчитывает раскладку максимального количество элементов
+	// указанного формата, которое можно разместить на листе указанного формата.
+	// Также учитывается расстояние между элементами по горизонтали и вертикали.
 	Algo struct {
 		logger    mrlog.Logger
 		remaining *remaining.AlgoRemaining
 		total     *total.AlgoTotal
 	}
 
-	// Options - comment struct.
+	// Options - опции алгоритма Algo.
 	Options struct {
-		AllowRotation bool
-		UseMirror     bool
+		AllowRotation bool // при true разрешается располагать элементы повёрнутые на 90 градусов друг к другу
+		UseMirror     bool // размещение на листе элементов зеркально друг к другу
 	}
 
 	// AlgoResult - результат вычислений спуска полос.
 	AlgoResult struct {
-		Layout    rect.Format     `json:"layout"`    // формат листа, куда помещаются все изделия
-		Fragments []base.Fragment `json:"fragments"` // раскладка изделий на листе
-		Total     uint64          `json:"total"`     // общее кол-во элементов
-		RestArea  uint64          `json:"restArea"`  // неиспользуемый остаток (mm2)
+		Layout    rect.Format     // формат листа, куда помещаются все изделия
+		Fragments []base.Fragment // раскладка изделий на листе
+		Total     uint64          // общее кол-во элементов
+		RestArea  float64         // неиспользуемый остаток (m2)
 	}
 )
 
 // New - создаёт объект Algo.
-// Поддерживается параметр allowRotation при true разрешается
-// располагать элементы повёрнутые на 90 градусов к друг другу.
 func New(logger mrlog.Logger) *Algo {
 	return &Algo{
 		logger:    logger,
@@ -50,7 +47,7 @@ func New(logger mrlog.Logger) *Algo {
 	}
 }
 
-// Calc - comment method.
+// Calc - расчёт алгоритма.
 func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult, error) {
 	if !item.IsValid() {
 		return AlgoResult{}, fmt.Errorf("item format is incorrect: %s", item.Format.String())
@@ -130,14 +127,14 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 	ri.logger.Debug().MsgFunc(
 		func() string {
 			return fmt.Sprintf(
-				"- calculated successfully: %d items of %s + %s on %s, image: %s, rest %dx%.2f ~= %d, fragments: %d",
+				"- calculated successfully: %d items of %s + %s on %s, image: %s, rest %.2fx%.2f ~= %.2f, fragments: %d",
 				fragments.Total(),
 				item.Format,
 				item.Border,
 				out,
 				totalLayout,
 				item.Format.Width,
-				float64(restArea/item.Format.Width),
+				restArea/item.Format.Width,
 				restArea,
 				len(fragments),
 			)
@@ -152,11 +149,10 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 		Layout:    totalLayout,
 		Fragments: fragments,
 		Total:     fragments.Total(),
-		RestArea:  uint64(restArea),
+		RestArea:  restArea,
 	}, nil
 }
 
-// Calc - comment method.
 func (ri *Algo) calcMainLayout(item rect.Item, out rect.Format) (base.Fragment, error) {
 	// добавляются фиктивные границы к внешнему формату,
 	// для того, чтобы поместить граничные элементы, у которых внешние края

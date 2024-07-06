@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -36,6 +36,12 @@ servers:
 tags:
   - name: System
     description: API System Methods
+
+  - name: Calculations.Algo
+    description: Public API Calculations algorithms
+
+  - name: Calculations.QueryHistory
+    description: Public API Calculations query history
 
   - name: Catalog.Box
     description: Public API Catalog boxes
@@ -97,6 +103,216 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/cutting-quantity:
+    post:
+      summary: Метод расчёта количества резов на печатном формате
+      description: |-
+        Возвращает общее количество резов необходимых совершить резательным оборудованием
+        на печатном формате, чтобы получить заданное кол-во элементов нужного формата.
+
+      operationId: calcAlgoRectCuttingQuantity
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity"
+
+      responses:
+        "200":
+          description: Получен расчет количества резов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/imposition:
+    post:
+      summary: Метод расчёта спуска полос
+      description: |-
+        Спуска полос - расположения элементов указанного формата на указанном печатном формате
+
+      operationId: calcAlgoRectImposition
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectImposition"
+
+      responses:
+        "200":
+          description: Получен расчет спуска полос
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectImposition"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/inside-on-outside-quantity:
+    post:
+      summary: Метод расчёта количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает количество единиц указанного внутреннего формата, которое можно разместить
+        по вертикали и горизонтали во внешнем указанном формате (без использования поворотов).
+
+      operationId: calcAlgoRectInsideOutsideQuantity
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+
+      responses:
+        "200":
+          description: Получен расчет количества размещений
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/inside-on-outside-max:
+    post:
+      summary: Метод расчёта максимальное количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает максимальное количество единиц указанного
+        внутреннего формата, которое можно разместить во внешнем указанном формате.
+
+      operationId: calcAlgoRectInsideOutsideMax
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен расчет максимального количества размещений
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/query-history:
+    post:
+      summary: Метод сохранения расчёта запроса
+      description: |-
+        Метод предназначен для сохранения расчётов запроса в БД
+
+      operationId: storeCalcQuery
+      tags:
+        - Calculations.QueryHistory
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Request.Model.Query"
+
+      responses:
+        "201":
+          description: Информация о запросе успешно сохранена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/query-history/{queryId}:
+    get:
+      summary: Метод получения расчёта по указанному ID запроса
+      description: |-
+        Метод предназначен для получения расчёта по указанному ID запроса сохранённого ранее в БД,
+        со следующими условиями:
+        - query.isDeleted = false;
+
+      operationId: getCalcQueryId
+      tags:
+        - Calculations.QueryHistory
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Calculations.QueryHistory.PublicAPI.Request.Path.QueryID"
+
+      responses:
+        "200":
+          description: Получен расчёт об указанном запросе
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Response.Model.Query"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -611,6 +827,16 @@ components:
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
+    Calculations.QueryHistory.PublicAPI.Request.Path.QueryID:
+      description: Идентификатор запроса
+      name: queryId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: "a9b95e74-654f-4a76-a97a-d378665f8815"
+
     CompanyPage.PublicAPI.Request.Path.PageName:
       description: Название страницы используемое в URL
       name: pageName
@@ -659,6 +885,31 @@ components:
       maxLength: 128
       example: "Название"
 
+    App.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"
+
+    App.Field.Float64:
+      description: Дробное 64-х разрядное число
+      type: number
+      format: double
+      example: 83076403.209471
+
+    App.Field.Int32:
+      description: Целое 32-ти разрядное число
+      type: integer
+      format: int32
+      example: 2147483647
+
+    App.Field.JsonData:
+      description: Данные в формате json
+      type: string
+      # format: json
+      maxLength: 16384
+      example: "{'data': 'value'}"
+
     App.Field.RewriteName:
       description: |
         Человекопонятное название используемое в URL
@@ -671,21 +922,38 @@ components:
 
     App.Field.Measure.Gram:
       description: Грамм (g)
-      type: integer
-      maxLength: 12
+      type: number
+      format: double
+      maxLength: 16
       example: 1000 # 1kg
 
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100g/m2
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg/m2
+
+    App.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000000 # 1m
+
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Response.Model.BinaryImage:
       description: Бинарный файл одного из типов - JPEG, PNG
@@ -745,6 +1013,17 @@ components:
           description: Идентификатор конкретного возникновения ошибки
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи (string ID)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
 
     Custom.Enum.PaperSides:
       description: |-
@@ -806,12 +1085,52 @@ components:
       minimum: 1
       example: 2
 
+    Custom.Field.DoubleSize:
+      description: Два вещественных числа в формате {first}x{second}
+      type: string
+      # format: rect-format
+      maxLength: 16
+      example: "100x200"
+
+    Custom.Field.Fragment:
+      description: Фрагмент площади с количеством размещенных на нём элементов
+      type: object
+      required:
+        - byWidth
+        - byHeight
+      properties:
+        byWidth:
+          description: Кол-во элементов по ширине
+          format: double
+          example: 0.210
+        byHeight:
+          description: Кол-во элементов по высоте
+          format: double
+          example: 0.297
+
+    Custom.Field.RectFormat:
+      description: Прямоугольный формат
+      type: object
+      required:
+        - width
+        - height
+      properties:
+        width:
+          description: Ширина в метрах
+          format: double
+          example: 0.210
+        height:
+          description: Высота в метрах
+          format: double
+          example: 0.297
+
     App.System.Response.Model.SystemInfo:
       description: DTO - системная информация о запущеном приложении
       type: object
       required:
         - name
-        - tagVersion
+        - version
+        - environment
         - hostName
         - isDebug
         - logLevel
@@ -827,6 +1146,11 @@ components:
           type: string
           maxLength: 16
           example: "v0.1.0"
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          maxLength: 16
+          example: "prod"
         hostName:
           description: Название хоста, на котором запущено приложение
           type: string
@@ -852,25 +1176,146 @@ components:
           format: date-time
           example: "2023-01-01T12:00:00.000+02:00"
 
-    CompanyPage.PublicAPI.Response.Model.CompanyPage:
-      description: DTO - публичная страница компании
+    Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
+      description: DTO параметров алгоритма "Количество резов"
       type: object
+      required:
+        - fragments
+        - distance
       properties:
-        pageTitle:
-          description: Заголовок страницы компании
-          type: string
-          maxLength: 128
-          example: "Компания 0001"
-        logoUrl:
-          description: URL логотипа компании
-          type: string
-          maxLength: 128
-          example: "https://localhost/company-logo.png"
-        siteUrl:
-          description: URL страницы сайта компании
-          type: string
-          maxLength: 256
-          example: "https://site.localhost/"
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        distance:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
+      description: DTO - результат алгоритма "Количество резов"
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectImposition:
+      description: DTO параметров алгоритма "Спуск полос"
+      type: object
+      required:
+        - itemFormat
+        - itemBorderFormat
+        - outFormat
+      properties:
+        itemFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        itemBorderFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectImposition:
+      description: DTO - расчёта алгоритма "Спуск полос"
+      type: object
+      required:
+        - layout
+        - fragments
+        - total
+        - garbage
+      properties:
+        layout:
+          $ref: "#/components/schemas/Custom.Field.RectFormat"
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+        garbage:
+          $ref: "#/components/schemas/App.Field.Float64"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
+      description: DTO - параметров алгоритма "Количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
+      description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - fragment
+        - total
+      properties:
+        fragment:
+          $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
+      description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
+      description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - fragments
+        - total
+      properties:
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.QueryHistory.PublicAPI.Request.Model.Query:
+      description: DTO параметров сохранения расчётов запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+      properties:
+        caption:
+          $ref: "#/components/schemas/App.Field.Caption"
+        params:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        result:
+          $ref: "#/components/schemas/App.Field.JsonData"
+
+    Calculations.QueryHistory.PublicAPI.Response.Model.Query:
+      description: DTO - расчёты запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+        - createdAt
+      properties:
+        caption:
+          $ref: "#/components/schemas/App.Field.Caption"
+        params:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        result:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
 
     Catalog.Boxes.PublicAPI.Response.Model.BoxList:
       description: DTO - список упаковочных коробок
@@ -900,11 +1345,11 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -939,9 +1384,9 @@ components:
         typeId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
@@ -997,9 +1442,9 @@ components:
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
@@ -1030,6 +1475,26 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+
+    CompanyPage.PublicAPI.Response.Model.CompanyPage:
+      description: DTO - публичная страница компании
+      type: object
+      properties:
+        pageTitle:
+          description: Заголовок страницы компании
+          type: string
+          maxLength: 128
+          example: "Компания 0001"
+        logoUrl:
+          description: URL логотипа компании
+          type: string
+          maxLength: 128
+          example: "https://localhost/company-logo.png"
+        siteUrl:
+          description: URL страницы сайта компании
+          type: string
+          maxLength: 256
+          example: "https://site.localhost/"
 
     Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList:
       description: DTO - список типов материала
@@ -1117,9 +1582,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Controls.SubmitForms.PublicAPI.Response.Model.FormList:
       description: DTO - список типов ламината
@@ -1159,6 +1624,20 @@ components:
 
     App.ResponseJson.Error5XX:
       description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
       content:
         application/problem+json;charset=UTF-8:
           schema:

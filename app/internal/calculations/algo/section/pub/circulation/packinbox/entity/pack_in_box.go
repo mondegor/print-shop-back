@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ModelNamePackInBox = "public-api.Calculations.Circulation.PackInBox" // ModelNamePackInBox - название сущности
+	ModelNameCirculationPackInBox = "public-api.Calculations.Algo.Circulation.PackInBox" // ModelNameCirculationPackInBox - название сущности
 )
 
 type (

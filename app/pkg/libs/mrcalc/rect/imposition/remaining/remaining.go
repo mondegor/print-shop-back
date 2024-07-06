@@ -11,25 +11,20 @@ import (
 )
 
 type (
-	// AlgoRemaining - спуск полос.
-	// * Рассчитывается максимальное количество элементов указанного формата,
-	// * которое можно разместить на листе указанного формата.
-	// * Также учитывается расстояние между элементами по горизонтали и вертикали.
+	// AlgoRemaining - вспомогательный алгоритм расчёта остатка.
 	AlgoRemaining struct {
 		logger mrlog.Logger
 	}
 )
 
 // New - создаёт объект AlgoRemaining.
-// Поддерживается параметр allowRotation при true разрешается
-// располагать элементы повёрнутые на 90 градусов к друг другу.
 func New(logger mrlog.Logger) *AlgoRemaining {
 	return &AlgoRemaining{
 		logger: logger,
 	}
 }
 
-// Calc - comment method.
+// Calc - расчёт алгоритма.
 func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.Format) (base.Fragment, error) {
 	outRemaining, remainingPosition := ri.remainingFormat(item, out, layout)
 
@@ -85,14 +80,14 @@ func (ri *AlgoRemaining) remainingFormat(item rect.Item, out rect.Format, layout
 			Width:  out.Height,
 			Height: out.Width + item.Border.Width,
 		}
-		correct.Height = inWithBorder.Width*int64(layout.ByWidth) + item.Border.Max()
+		correct.Height = inWithBorder.Width*float64(layout.ByWidth) + item.Border.Max()
 	} else {
 		position = base.PositionBottom
 		format = rect.Format{
 			Width:  out.Height + item.Border.Height,
 			Height: out.Width,
 		}
-		correct.Width = inWithBorder.Height*int64(layout.ByHeight) + item.Border.Max()
+		correct.Width = inWithBorder.Height*float64(layout.ByHeight) + item.Border.Max()
 	}
 
 	// прибавляется фиктивная граница для учёта размещения граничных элементов

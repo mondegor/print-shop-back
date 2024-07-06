@@ -1,0 +1,9 @@
+Calculations.QueryHistory.PublicAPI.Request.Path.QueryID:
+  description: Идентификатор запроса
+  name: queryId
+  in: path
+  required: true
+  schema:
+    type: string
+    format: uuid
+  example: "a9b95e74-654f-4a76-a97a-d378665f8815"

@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 
@@ -115,10 +116,10 @@ func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
 		TypeID:    request.TypeID,
 		ColorID:   request.ColorID,
 		FactureID: request.FactureID,
-		Length:    request.Length,
-		Height:    request.Height,
-		Thickness: request.Thickness,
-		Density:   request.Density,
+		Length:    measure.Meter(request.Length * measure.OneThousandth),
+		Height:    measure.Meter(request.Height * measure.OneThousandth),
+		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
+		Density:   measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
 		Sides:     request.Sides,
 	}
 
@@ -152,10 +153,10 @@ func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
 		TypeID:     request.TypeID,
 		ColorID:    request.ColorID,
 		FactureID:  request.FactureID,
-		Length:     request.Length,
-		Height:     request.Height,
-		Thickness:  request.Thickness,
-		Density:    request.Density,
+		Length:     measure.Meter(request.Length * measure.OneThousandth),
+		Height:     measure.Meter(request.Height * measure.OneThousandth),
+		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
+		Density:    measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
 		Sides:      request.Sides,
 	}
 

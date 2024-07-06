@@ -16,17 +16,17 @@ const (
 type (
 	// Box - comment struct.
 	Box struct { // DB: printshop_catalog.boxes
-		ID         mrtype.KeyInt32    `json:"id"` // box_id
-		TagVersion int32              `json:"tagVersion"`
-		Article    string             `json:"article" sort:"article" upd:"box_article"`
-		Caption    string             `json:"caption" sort:"caption,default" upd:"box_caption"`
-		Length     measure.Micrometer `json:"length" sort:"length" upd:"box_length"` // mkm (mm * 1000)
-		Width      measure.Micrometer `json:"width" sort:"width" upd:"box_width"`    // mkm (mm * 1000)
-		Height     measure.Micrometer `json:"height" sort:"height" upd:"box_height"` // mkm (mm * 1000)
-		Weight     measure.Milligram  `json:"weight" sort:"weight" upd:"box_weight"` // mg (g * 1000)
-		Status     mrenum.ItemStatus  `json:"status"`
-		CreatedAt  time.Time          `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  *time.Time         `json:"updatedAt,omitempty" sort:"updatedAt"`
+		ID         mrtype.KeyInt32   `json:"id"` // box_id
+		TagVersion int32             `json:"tagVersion"`
+		Article    string            `json:"article" sort:"article" upd:"box_article"`
+		Caption    string            `json:"caption" sort:"caption,default" upd:"box_caption"`
+		Length     measure.Meter     `json:"length" sort:"length" upd:"box_length"`
+		Width      measure.Meter     `json:"width" sort:"width" upd:"box_width"`
+		Height     measure.Meter     `json:"height" sort:"height" upd:"box_height"`
+		Weight     measure.Kilogram  `json:"weight" sort:"weight" upd:"box_weight"`
+		Status     mrenum.ItemStatus `json:"status"`
+		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  *time.Time        `json:"updatedAt,omitempty" sort:"updatedAt"`
 	}
 
 	// BoxParams - comment struct.

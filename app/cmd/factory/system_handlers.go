@@ -25,6 +25,7 @@ func RegisterSystemHandlers(ctx context.Context, cfg config.Config, router mrser
 			Version:     cfg.App.Version,
 			Environment: cfg.App.Environment,
 			IsDebug:     cfg.Debugging.Debug,
+			LogLevel:    mrlog.Ctx(ctx).Level(),
 			StartedAt:   cfg.App.StartedAt,
 		},
 	)

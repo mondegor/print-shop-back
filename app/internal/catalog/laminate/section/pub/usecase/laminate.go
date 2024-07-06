@@ -48,7 +48,7 @@ func (uc *Laminate) GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error) 
 }
 
 // GetThicknessList - comment method.
-func (uc *Laminate) GetThicknessList(ctx context.Context) ([]measure.Micrometer, error) {
+func (uc *Laminate) GetThicknessList(ctx context.Context) ([]measure.Meter, error) {
 	items, err := uc.storage.FetchThicknesses(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)

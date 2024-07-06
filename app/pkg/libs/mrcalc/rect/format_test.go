@@ -3,6 +3,7 @@ package rect_test
 import (
 	"testing"
 
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 
@@ -15,8 +16,8 @@ func TestFormat_Cast(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
+		width  float64
+		height float64
 		want   rect.Format
 	}{
 		{
@@ -54,8 +55,8 @@ func TestFormat_Change(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
+		width  float64
+		height float64
 		want   rect.Format
 	}{
 		{
@@ -195,9 +196,9 @@ func TestFormat_DivBy(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		width   int64
-		height  int64
-		divisor int64
+		width   float64
+		height  float64
+		divisor uint64
 		want    rect.Format
 		wantErr bool
 	}{
@@ -230,7 +231,7 @@ func TestFormat_DivBy(t *testing.T) {
 			width:   200,
 			height:  50,
 			divisor: 3,
-			want:    rect.Format{Width: 66, Height: 50},
+			want:    rect.Format{Width: 66.667, Height: 50},
 			wantErr: false,
 		},
 	}
@@ -253,7 +254,8 @@ func TestFormat_DivBy(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			assert.Equal(t, tt.want, got)
+			assert.InDelta(t, tt.want.Width, got.Width, measure.DeltaThousand)
+			assert.InDelta(t, tt.want.Height, got.Height, measure.DeltaThousand)
 		})
 	}
 }
@@ -263,8 +265,8 @@ func TestFormat_IsValid(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
+		width  float64
+		height float64
 		want   bool
 	}{
 		{
@@ -314,8 +316,8 @@ func TestFormat_IsZero(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
+		width  float64
+		height float64
 		want   bool
 	}{
 		{
@@ -365,8 +367,8 @@ func TestFormat_String(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
+		width  float64
+		height float64
 		want   string
 	}{
 		{
@@ -374,6 +376,12 @@ func TestFormat_String(t *testing.T) {
 			width:  100,
 			height: 200,
 			want:   "100x200",
+		},
+		{
+			name:   "{width}x{height} float",
+			width:  100.1,
+			height: 200.83,
+			want:   "100.1x200.83",
 		},
 	}
 	for _, tt := range tests {
@@ -431,9 +439,9 @@ func TestFormat_Area(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		width  int64
-		height int64
-		want   int64
+		width  float64
+		height float64
+		want   float64
 	}{
 		{
 			name:   "Zero value",
@@ -472,7 +480,7 @@ func TestFormat_Area(t *testing.T) {
 			}
 
 			got := f.Area()
-			assert.Equal(t, tt.want, got)
+			assert.InDelta(t, tt.want, got, measure.DeltaThousand)
 		})
 	}
 }

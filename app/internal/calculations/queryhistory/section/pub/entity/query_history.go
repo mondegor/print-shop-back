@@ -9,9 +9,9 @@ const (
 type (
 	// QueryHistoryItem - comment struct.
 	QueryHistoryItem struct {
-		Caption  string    `json:"caption"`
-		Params  string  `json:"params"`
-		Result   string    `json:"result"`
-		CreatedAt  time.Time   `json:"createdAt"`
+		Caption   string    `json:"caption"`
+		Params    string    `json:"params"`
+		Result    string    `json:"result"`
+		CreatedAt time.Time `json:"createdAt"`
 	}
 )

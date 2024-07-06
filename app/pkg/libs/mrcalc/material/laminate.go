@@ -5,15 +5,17 @@ import (
 )
 
 type (
+	// Laminate - материал "Ламинат".
 	Laminate struct {
 		Material
 	}
 )
 
-func NewLaminate(thickness measure.Micrometer, weightM2 measure.GramsPerMeter2) *Laminate {
+// NewLaminate - создаёт объект Laminate.
+func NewLaminate(thickness measure.Micrometer, weightM2 measure.GramPerMeter2) *Laminate {
 	return &Laminate{
 		Material: Material{
-			weightM2: weightM2,
+			weightM2:  weightM2,
 			thickness: thickness,
 		},
 	}

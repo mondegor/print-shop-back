@@ -21,6 +21,6 @@ Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat:
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"

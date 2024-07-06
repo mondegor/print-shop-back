@@ -170,7 +170,7 @@ func (re *PaperPostgres) FetchColorIDs(ctx context.Context) ([]mrtype.KeyInt32, 
 }
 
 // FetchDensities - comment method.
-func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.GramsPerMeter2, error) {
+func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.KilogramPerMeter2, error) {
 	sql := `
         SELECT
 			paper_density
@@ -192,10 +192,10 @@ func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.GramsPer
 
 	defer cursor.Close()
 
-	rows := make([]measure.GramsPerMeter2, 0)
+	rows := make([]measure.KilogramPerMeter2, 0)
 
 	for cursor.Next() {
-		var typeID measure.GramsPerMeter2
+		var typeID measure.KilogramPerMeter2
 
 		err = cursor.Scan(
 			&typeID,

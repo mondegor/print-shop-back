@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -1200,11 +1200,12 @@ components:
       minimum: 1
       example: 5
 
-    App.Field.Measure.Micrometer:
-      description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
       description: |-
@@ -1535,9 +1536,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
       description: DTO сохранения печатного формата
@@ -1553,9 +1554,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
       description: DTO - список печатных форматов
@@ -1594,9 +1595,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:

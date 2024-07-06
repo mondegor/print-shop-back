@@ -1,0 +1,15 @@
+Custom.Field.Fragment:
+  description: Фрагмент площади с количеством размещенных на нём элементов
+  type: object
+  required:
+    - byWidth
+    - byHeight
+  properties:
+    byWidth:
+      description: Кол-во элементов по ширине
+      format: double
+      example: 0.210
+    byHeight:
+      description: Кол-во элементов по высоте
+      format: double
+      example: 0.297

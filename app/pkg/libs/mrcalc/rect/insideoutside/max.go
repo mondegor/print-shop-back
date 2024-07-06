@@ -63,9 +63,9 @@ func getMaxInsideOnOutside(in, out rect.Format) base.Fragments {
 
 	if in.Width > in.Height {
 		remaining.Width = out.Height
-		remaining.Height = out.Width - in.Width*int64(fragment.ByWidth)
+		remaining.Height = out.Width - in.Width*float64(fragment.ByWidth)
 	} else {
-		remaining.Width = out.Height - in.Height*int64(fragment.ByHeight)
+		remaining.Width = out.Height - in.Height*float64(fragment.ByHeight)
 		remaining.Height = out.Width
 	}
 

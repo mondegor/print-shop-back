@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ModelNameCutting = "public-api.Calculations.Rect.Cutting" // ModelNameCutting - название сущности
+	ModelNameRectCutting = "public-api.Calculations.Algo.Rect.Cutting" // ModelNameRectCutting - название сущности
 )
 
 type (
@@ -22,8 +22,8 @@ type (
 		DistanceFormat rect.Format
 	}
 
-	// AlgoQuantityResult - результат работы алгоритма AlgoQuantity.
-	AlgoQuantityResult struct {
-		Quantity uint64 `json:"quantity"`
+	// QuantityResult - результат работы алгоритма AlgoQuantity.
+	QuantityResult struct {
+		Quantity int32 `json:"quantity"`
 	}
 )

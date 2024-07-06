@@ -1,6 +1,6 @@
 package base
 
 const (
-	OrientationBook  = "BOOK"  // OrientationBook // TODO: заменить на int + string
-	OrientationAlbum = "ALBUM" // OrientationAlbum
+	OrientationBook  = "BOOK"  // OrientationBook - книжная ориентация // TODO: заменить на int + string
+	OrientationAlbum = "ALBUM" // OrientationAlbum - альбомная ориентация
 )

@@ -15,7 +15,7 @@ type (
 		GetList(ctx context.Context, params entity.PaperParams) ([]entity.Paper, error)
 		GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error)
 		GetColorList(ctx context.Context) ([]mrtype.KeyInt32, error)
-		GetDensityList(ctx context.Context) ([]measure.GramsPerMeter2, error)
+		GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter2, error)
 		GetFactureList(ctx context.Context) ([]mrtype.KeyInt32, error)
 	}
 
@@ -24,7 +24,7 @@ type (
 		Fetch(ctx context.Context, params entity.PaperParams) ([]entity.Paper, error)
 		FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32, error)
 		FetchColorIDs(ctx context.Context) ([]mrtype.KeyInt32, error)
-		FetchDensities(ctx context.Context) ([]measure.GramsPerMeter2, error)
+		FetchDensities(ctx context.Context) ([]measure.KilogramPerMeter2, error)
 		FetchFactureIDs(ctx context.Context) ([]mrtype.KeyInt32, error)
 	}
 )

@@ -27,7 +27,7 @@ func AlgoQuantity(fragments []base.Fragment, distance rect.Format) (quantity uin
 	return quantity
 }
 
-func getQuantityLine(distance int64, countItems uint64) uint64 {
+func getQuantityLine(distance float64, countItems uint64) uint64 {
 	if distance > 0 {
 		return 2 * countItems
 	}

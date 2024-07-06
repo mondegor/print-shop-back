@@ -1,0 +1,34 @@
+Calculations.Algo.PublicAPI.Request.Model.RectImposition:
+  description: DTO параметров алгоритма "Спуск полос"
+  type: object
+  required:
+    - itemFormat
+    - itemBorderFormat
+    - outFormat
+  properties:
+    itemFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+    itemBorderFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+    outFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+Calculations.Algo.PublicAPI.Response.Model.RectImposition:
+  description: DTO - расчёта алгоритма "Спуск полос"
+  type: object
+  required:
+    - layout
+    - fragments
+    - total
+    - garbage
+  properties:
+    layout:
+      $ref: "#/components/schemas/Custom.Field.RectFormat"
+    fragments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Fragment"
+    total:
+      $ref: "#/components/schemas/App.Field.Int32"
+    garbage:
+      $ref: "#/components/schemas/App.Field.Float64"

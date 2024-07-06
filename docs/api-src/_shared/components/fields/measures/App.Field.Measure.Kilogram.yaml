@@ -1,0 +1,6 @@
+App.Field.Measure.Kilogram:
+  description: Килограмм (kg)
+  type: number
+  format: double
+  maxLength: 16
+  example: 10

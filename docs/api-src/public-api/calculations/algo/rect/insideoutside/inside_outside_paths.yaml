@@ -1,0 +1,68 @@
+/v1/calculations/algo/rect/inside-on-outside-quantity:
+  post:
+    summary: Метод расчёта количества размещений элементов на внешнем формате
+    description: |-
+      Возвращает количество единиц указанного внутреннего формата, которое можно разместить
+      по вертикали и горизонтали во внешнем указанном формате (без использования поворотов).
+
+    operationId: calcAlgoRectInsideOutsideQuantity
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+
+    responses:
+      "200":
+        description: Получен расчет количества размещений
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/calculations/algo/rect/inside-on-outside-max:
+  post:
+    summary: Метод расчёта максимальное количества размещений элементов на внешнем формате
+    description: |-
+      Возвращает максимальное количество единиц указанного
+      внутреннего формата, которое можно разместить во внешнем указанном формате.
+
+    operationId: calcAlgoRectInsideOutsideMax
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен расчет максимального количества размещений
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
