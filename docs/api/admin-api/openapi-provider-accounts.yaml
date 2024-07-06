@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0
@@ -38,7 +38,7 @@ tags:
     description: Private API Companies' pages
 
 paths:
-  /v1/provider-accounts/companies-pages:
+  /v1/prov/companies-pages:
     get:
       summary: Метод получения списка страниц компаний
       description: |-

@@ -1,17 +1,19 @@
 package uiform
 
 const (
-	ModelNameUIForm      = "uiform.UIForm"
-	ModelNameUIFieldItem = "uiform.UIFieldItem"
+	ModelNameUIForm      = "uiform.UIForm"      // ModelNameUIForm - название сущности
+	ModelNameUIFieldItem = "uiform.UIFieldItem" // ModelNameUIFieldItem - название сущности
 )
 
 type (
+	// UIForm - comment struct.
 	UIForm struct {
 		ID      string        `json:"id"`
 		Caption string        `json:"caption"`
 		Fields  []UIFieldItem `json:"fields"`
 	}
 
+	// UIFieldItem - comment struct.
 	UIFieldItem struct {
 		ID            string        `json:"id"`                      // for all
 		Caption       string        `json:"caption,omitempty"`       // for field, enum

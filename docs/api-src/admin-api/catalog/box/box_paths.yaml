@@ -31,8 +31,10 @@
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
-      - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMin"
-      - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMax"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
       - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -62,7 +64,9 @@
       - article: required,unique,min=3,max=32,pattern=article
       - caption: required,max=64
       - length: required,gte=1,lte=10000000
-      - depth: required,gte=1,lte=10000000
+      - width: required,gte=1,lte=10000000
+      - height: required,gte=1,lte=10000000
+      - weight: required,gte=1,lte=10000000
 
     operationId: createBox
     tags:
@@ -140,7 +144,9 @@
       - article: omitempty,unique,min=3,max=32,pattern=article
       - caption: omitempty,max=64
       - length: omitempty,gte=1,lte=10000000
-      - depth: omitempty,gte=1,lte=10000000
+      - width: omitempty,gte=1,lte=10000000
+      - height: omitempty,gte=1,lte=10000000
+      - weight: omitempty,gte=1,lte=10000000
 
     operationId: storeBox
     tags:

@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -37,6 +37,12 @@ tags:
   - name: System
     description: API System Methods
 
+  - name: Calculations.Algo
+    description: Public API Calculations algorithms
+
+  - name: Calculations.QueryHistory
+    description: Public API Calculations query history
+
   - name: Catalog.Box
     description: Public API Catalog boxes
 
@@ -52,7 +58,7 @@ tags:
   - name: Controls.SubmitForm
     description: Public API Controls submit forms
 
-  - name: Dictionaries.LaminateType
+  - name: Dictionaries.MaterialType
     description: Public API Dictionary laminate types
 
   - name: Dictionaries.PaperColor
@@ -60,6 +66,9 @@ tags:
 
   - name: Dictionaries.PaperFacture
     description: Public API Dictionary paper factures
+
+  - name: Dictionaries.PrintFormat
+    description: Public API Dictionary print formats
 
   - name: FileStation
     description: Public API Files and images
@@ -94,6 +103,216 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/cutting-quantity:
+    post:
+      summary: Метод расчёта количества резов на печатном формате
+      description: |-
+        Возвращает общее количество резов необходимых совершить резательным оборудованием
+        на печатном формате, чтобы получить заданное кол-во элементов нужного формата.
+
+      operationId: calcAlgoRectCuttingQuantity
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity"
+
+      responses:
+        "200":
+          description: Получен расчет количества резов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/imposition:
+    post:
+      summary: Метод расчёта спуска полос
+      description: |-
+        Спуска полос - расположения элементов указанного формата на указанном печатном формате
+
+      operationId: calcAlgoRectImposition
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectImposition"
+
+      responses:
+        "200":
+          description: Получен расчет спуска полос
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectImposition"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/inside-on-outside-quantity:
+    post:
+      summary: Метод расчёта количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает количество единиц указанного внутреннего формата, которое можно разместить
+        по вертикали и горизонтали во внешнем указанном формате (без использования поворотов).
+
+      operationId: calcAlgoRectInsideOutsideQuantity
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+
+      responses:
+        "200":
+          description: Получен расчет количества размещений
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/rect/inside-on-outside-max:
+    post:
+      summary: Метод расчёта максимальное количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает максимальное количество единиц указанного
+        внутреннего формата, которое можно разместить во внешнем указанном формате.
+
+      operationId: calcAlgoRectInsideOutsideMax
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен расчет максимального количества размещений
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/query-history:
+    post:
+      summary: Метод сохранения расчёта запроса
+      description: |-
+        Метод предназначен для сохранения расчётов запроса в БД
+
+      operationId: storeCalcQuery
+      tags:
+        - Calculations.QueryHistory
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Request.Model.Query"
+
+      responses:
+        "201":
+          description: Информация о запросе успешно сохранена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItem"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/query-history/{queryId}:
+    get:
+      summary: Метод получения расчёта по указанному ID запроса
+      description: |-
+        Метод предназначен для получения расчёта по указанному ID запроса сохранённого ранее в БД,
+        со следующими условиями:
+        - query.isDeleted = false;
+
+      operationId: getCalcQueryId
+      tags:
+        - Calculations.QueryHistory
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/Calculations.QueryHistory.PublicAPI.Request.Path.QueryID"
+
+      responses:
+        "200":
+          description: Получен расчёт об указанном запросе
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.QueryHistory.PublicAPI.Response.Model.Query"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -159,6 +378,61 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
+  /v1/catalog/laminates/types:
+    get:
+      summary: Метод получения списка ID типов ламината
+      description: |-
+        Метод предназначен для получения списка ID типов ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+
+      operationId: getMaterialTypeIDList
+      tags:
+        - Catalog.Laminate
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID типов ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/laminates/thicknesses:
+    get:
+      summary: Метод получения списка толщин ламината
+      description: |-
+        Метод предназначен для получения списка толщин ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+
+        Порядок следования списка:
+        - thickness ASC
+
+      operationId: getLaminateThicknessList
+      tags:
+        - Catalog.Laminate
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список толщин ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
   /v1/catalog/papers:
     get:
       summary: Метод получения списка бумаги
@@ -187,6 +461,113 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/types:
+    get:
+      summary: Метод получения списка ID типов бумаги
+      description: |-
+        Метод предназначен для получения списка ID типов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getMaterialTypeIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID типов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/colors:
+    get:
+      summary: Метод получения списка ID цветов бумаги
+      description: |-
+        Метод предназначен для получения списка ID цветов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getPaperColorIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/densities:
+    get:
+      summary: Метод получения списка плотностей бумаги
+      description: |-
+        Метод предназначен для получения списка плотностей бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+        Порядок следования списка:
+        - density ASC
+
+      operationId: getPaperDensityList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список плотностей бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperDensityList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/catalog/papers/factures:
+    get:
+      summary: Метод получения списка ID фактур бумаги
+      description: |-
+        Метод предназначен для получения списка ID фактур бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+      operationId: getPaperFactureIDList
+      tags:
+        - Catalog.Paper
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список ID фактур бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -271,11 +652,11 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types:
+  /v1/dictionaries/material-types:
     get:
-      summary: Метод получения списка типов ламината
+      summary: Метод получения списка типов материала
       description: |-
-        Метод предназначен для получения списка типов ламината, сохраненных в БД,
+        Метод предназначен для получения списка типов материала, сохраненных в БД,
         со следующими условиями:
         - isEnabled = true;
 
@@ -284,9 +665,9 @@ paths:
         Порядок следования списка:
         - caption ASC
 
-      operationId: getLaminateTypeList
+      operationId: getMaterialTypeList
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
@@ -294,11 +675,11 @@ paths:
 
       responses:
         "200":
-          description: Получен список типов ламината
+          description: Получен список типов материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList"
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -364,6 +745,37 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
+  /v1/dictionaries/print-formats:
+    get:
+      summary: Метод получения списка печатных форматов
+      description: |-
+        Метод предназначен для получения списка печатных форматов, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+
+      operationId: getPrintFormatList
+      tags:
+        - Dictionaries.PrintFormat
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      responses:
+        "200":
+          description: Получен список печатных форматов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormatList"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
   /img/{filePath}:
     get:
       summary: Метод получения указанного изображения
@@ -415,6 +827,16 @@ components:
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
 
+    Calculations.QueryHistory.PublicAPI.Request.Path.QueryID:
+      description: Идентификатор запроса
+      name: queryId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: "a9b95e74-654f-4a76-a97a-d378665f8815"
+
     CompanyPage.PublicAPI.Request.Path.PageName:
       description: Название страницы используемое в URL
       name: pageName
@@ -463,6 +885,31 @@ components:
       maxLength: 128
       example: "Название"
 
+    App.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+02:00"
+
+    App.Field.Float64:
+      description: Дробное 64-х разрядное число
+      type: number
+      format: double
+      example: 83076403.209471
+
+    App.Field.Int32:
+      description: Целое 32-ти разрядное число
+      type: integer
+      format: int32
+      example: 2147483647
+
+    App.Field.JsonData:
+      description: Данные в формате json
+      type: string
+      # format: json
+      maxLength: 16384
+      example: "{'data': 'value'}"
+
     App.Field.RewriteName:
       description: |
         Человекопонятное название используемое в URL
@@ -473,17 +920,40 @@ components:
       maxLength: 32
       example: "rewrite-name"
 
+    App.Field.Measure.Gram:
+      description: Грамм (g)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg
+
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100g/m2
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg/m2
+
+    App.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000000 # 1m
+
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Response.Model.BinaryImage:
       description: Бинарный файл одного из типов - JPEG, PNG
@@ -544,6 +1014,17 @@ components:
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
 
+    App.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи (string ID)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: string
+          example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
+
     Custom.Enum.PaperSides:
       description: |-
         Стороны бумаги:
@@ -576,8 +1057,8 @@ components:
       minimum: 1
       example: 2
 
-    Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+    Custom.Field.Dictionaries.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
       format: int32
       minimum: 1
@@ -597,12 +1078,59 @@ components:
       minimum: 1
       example: 2
 
+    Custom.Field.Dictionaries.PrintFormatID:
+      description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
+      type: integer
+      format: int32
+      minimum: 1
+      example: 2
+
+    Custom.Field.DoubleSize:
+      description: Два вещественных числа в формате {first}x{second}
+      type: string
+      # format: rect-format
+      maxLength: 16
+      example: "100x200"
+
+    Custom.Field.Fragment:
+      description: Фрагмент площади с количеством размещенных на нём элементов
+      type: object
+      required:
+        - byWidth
+        - byHeight
+      properties:
+        byWidth:
+          description: Кол-во элементов по ширине
+          format: double
+          example: 0.210
+        byHeight:
+          description: Кол-во элементов по высоте
+          format: double
+          example: 0.297
+
+    Custom.Field.RectFormat:
+      description: Прямоугольный формат
+      type: object
+      required:
+        - width
+        - height
+      properties:
+        width:
+          description: Ширина в метрах
+          format: double
+          example: 0.210
+        height:
+          description: Высота в метрах
+          format: double
+          example: 0.297
+
     App.System.Response.Model.SystemInfo:
       description: DTO - системная информация о запущеном приложении
       type: object
       required:
         - name
-        - tagVersion
+        - version
+        - environment
         - hostName
         - isDebug
         - logLevel
@@ -618,6 +1146,11 @@ components:
           type: string
           maxLength: 16
           example: "v0.1.0"
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          maxLength: 16
+          example: "prod"
         hostName:
           description: Название хоста, на котором запущено приложение
           type: string
@@ -643,6 +1176,306 @@ components:
           format: date-time
           example: "2023-01-01T12:00:00.000+02:00"
 
+    Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
+      description: DTO параметров алгоритма "Количество резов"
+      type: object
+      required:
+        - fragments
+        - distance
+      properties:
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        distance:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
+      description: DTO - результат алгоритма "Количество резов"
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectImposition:
+      description: DTO параметров алгоритма "Спуск полос"
+      type: object
+      required:
+        - itemFormat
+        - itemBorderFormat
+        - outFormat
+      properties:
+        itemFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        itemBorderFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectImposition:
+      description: DTO - расчёта алгоритма "Спуск полос"
+      type: object
+      required:
+        - layout
+        - fragments
+        - total
+        - garbage
+      properties:
+        layout:
+          $ref: "#/components/schemas/Custom.Field.RectFormat"
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+        garbage:
+          $ref: "#/components/schemas/App.Field.Float64"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
+      description: DTO - параметров алгоритма "Количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
+      description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - fragment
+        - total
+      properties:
+        fragment:
+          $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
+      description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        outFormat:
+          $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
+      description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - fragments
+        - total
+      properties:
+        fragments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Custom.Field.Fragment"
+        total:
+          $ref: "#/components/schemas/App.Field.Int32"
+
+    Calculations.QueryHistory.PublicAPI.Request.Model.Query:
+      description: DTO параметров сохранения расчётов запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+      properties:
+        caption:
+          $ref: "#/components/schemas/App.Field.Caption"
+        params:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        result:
+          $ref: "#/components/schemas/App.Field.JsonData"
+
+    Calculations.QueryHistory.PublicAPI.Response.Model.Query:
+      description: DTO - расчёты запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+        - createdAt
+      properties:
+        caption:
+          $ref: "#/components/schemas/App.Field.Caption"
+        params:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        result:
+          $ref: "#/components/schemas/App.Field.JsonData"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+
+    Catalog.Boxes.PublicAPI.Response.Model.BoxList:
+      description: DTO - список упаковочных коробок
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Boxes.PublicAPI.Response.Model.Box"
+
+    Catalog.Boxes.PublicAPI.Response.Model.Box:
+      description: DTO - упаковочная коробка
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - length
+        - width
+        - height
+        - weight
+      properties:
+        id: # boxId
+          $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "СДЭК"
+        length:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateList:
+      description: DTO - список ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.Laminate"
+
+    Catalog.Laminates.PublicAPI.Response.Model.Laminate:
+      description: DTO - ламинат
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - typeId
+        - length
+        - width
+        - thickness
+        - weight
+      properties:
+        id: # laminateId
+          $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Глянцевый 450"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+        length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList:
+      description: DTO - список ID типов ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+
+    Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList:
+      description: DTO - список толщин ламината
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperList:
+      description: DTO - список бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.Paper"
+
+    Catalog.Papers.PublicAPI.Response.Model.Paper:
+      description: DTO - бумага
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - typeId
+        - colorId
+        - factureId
+        - width
+        - height
+        - thickness
+        - density
+        - sides
+      properties:
+        id: # paperId
+          $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
+        article:
+          $ref: "#/components/schemas/App.Field.Article"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+        colorId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+        factureId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+        sides:
+          $ref: "#/components/schemas/Custom.Enum.PaperSides"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperTypeIDList:
+      description: DTO - список ID типов бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperColorIDList:
+      description: DTO - список ID цветов бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperDensityList:
+      description: DTO - список плотностей бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+
+    Catalog.Papers.PublicAPI.Response.Model.PaperFactureIDList:
+      description: DTO - список ID фактур бумаги
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
+
     CompanyPage.PublicAPI.Response.Model.CompanyPage:
       description: DTO - публичная страница компании
       type: object
@@ -663,135 +1496,21 @@ components:
           maxLength: 256
           example: "https://site.localhost/"
 
-    Catalog.Boxes.PublicAPI.Response.Model.BoxList:
-      description: DTO - список упаковочных коробок
+    Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList:
+      description: DTO - список типов материала
       type: array
       items:
-        $ref: "#/components/schemas/Catalog.Boxes.PublicAPI.Response.Model.Box"
+        $ref: "#/components/schemas/Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType"
 
-    Catalog.Boxes.PublicAPI.Response.Model.Box:
-      description: DTO - упаковочная коробка
-      type: object
-      required:
-        - id
-        - article
-        - caption
-        - length
-        - width
-        - depth
-      properties:
-        id: # boxId
-          $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"
-        article:
-          $ref: "#/components/schemas/App.Field.Article"
-        caption:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.Caption"
-            - maxLength: 64
-            - example: "СДЭК"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-
-    Catalog.Laminates.PublicAPI.Response.Model.LaminateList:
-      description: DTO - список ламината
-      type: array
-      items:
-        $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.Laminate"
-
-    Catalog.Laminates.PublicAPI.Response.Model.Laminate:
-      description: DTO - ламинат
-      type: object
-      required:
-        - id
-        - article
-        - caption
-        - typeId
-        - length
-        - weight
-        - thickness
-      properties:
-        id: # laminateId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
-        article:
-          $ref: "#/components/schemas/App.Field.Article"
-        caption:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.Caption"
-            - maxLength: 64
-            - example: "Глянцевый 450"
-        typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        weight:
-          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-
-    Catalog.Papers.PublicAPI.Response.Model.PaperList:
-      description: DTO - список бумаги
-      type: array
-      items:
-        $ref: "#/components/schemas/Catalog.Papers.PublicAPI.Response.Model.Paper"
-
-    Catalog.Papers.PublicAPI.Response.Model.Paper:
-      description: DTO - бумага
-      type: object
-      required:
-        - id
-        - article
-        - caption
-        - colorId
-        - factureId
-        - length
-        - width
-        - density
-        - thickness
-        - sides
-      properties:
-        id: # paperId
-          $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"
-        article:
-          $ref: "#/components/schemas/App.Field.Article"
-        caption:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.Caption"
-            - maxLength: 64
-            - example: "Мелованная"
-        colorId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
-        factureId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        density:
-          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        sides:
-          $ref: "#/components/schemas/Custom.Enum.PaperSides"
-
-    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateTypeList:
-      description: DTO - список типов ламината
-      type: array
-      items:
-        $ref: "#/components/schemas/Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType"
-
-    Dictionaries.LaminateTypes.PublicAPI.Response.Model.LaminateType:
-      description: DTO - тип ламината
+    Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType:
+      description: DTO - тип материала
       type: object
       required:
         - id
         - caption
       properties:
         id: # typeId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
@@ -840,6 +1559,33 @@ components:
             - maxLength: 64
             - example: "Гладкая"
 
+    Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormatList:
+      description: DTO - список печатных форматов
+      type: array
+      items:
+        $ref: "#/components/schemas/Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat"
+
+    Dictionaries.PrintFormats.PublicAPI.Response.Model.PrintFormat:
+      description: DTO - печатный формат
+      type: object
+      required:
+        - id
+        - caption
+        - width
+        - height
+      properties:
+        id: # formatId
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"
+        caption:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Caption"
+            - maxLength: 64
+            - example: "A4 (210 x 297 mm)"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+
     Controls.SubmitForms.PublicAPI.Response.Model.FormList:
       description: DTO - список типов ламината
       type: array
@@ -878,6 +1624,20 @@ components:
 
     App.ResponseJson.Error5XX:
       description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
       content:
         application/problem+json;charset=UTF-8:
           schema:

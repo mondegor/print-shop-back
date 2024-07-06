@@ -9,7 +9,7 @@ permissions:
   - modControlsElementTemplate
   - modControlsSubmitForm
   - modControlsSubmitFormToPublish
-  - modDictionariesLaminateType
+  - modDictionariesMaterialType
   - modDictionariesPaperColor
   - modDictionariesPaperFacture
   - modDictionariesPrintFormat

@@ -3,6 +3,10 @@ mrcmd_func_openapi_build_pub() {
   local sectionDir="${1:?}" # sample: .../admin-api, .../public-api
   local sharedDir="${2:?}" # sample: .../_shared
 
+  local calculationsDir="${sectionDir}/calculations"
+  local calculationsAlgoDir="${calculationsDir}/algo"
+  local calculationsQueryHistoryDir="${calculationsDir}/queryhistory"
+
   local catalogDir="${sectionDir}/catalog"
   local boxDir="${catalogDir}/box"
   local laminateDir="${catalogDir}/laminate"
@@ -14,9 +18,10 @@ mrcmd_func_openapi_build_pub() {
   local submitFormDir="${controlsDir}/submit-form"
 
   local dictionariesDir="${sectionDir}/dictionaries"
-  local laminateTypeDir="${dictionariesDir}/laminate-type"
+  local materialTypeDir="${dictionariesDir}/material-type"
   local paperColorDir="${dictionariesDir}/paper-color"
   local paperFactureDir="${dictionariesDir}/paper-facture"
+  local printFormatDir="${dictionariesDir}/print-format"
 
   local fileStationDir="${sectionDir}/file-station"
 
@@ -34,6 +39,9 @@ mrcmd_func_openapi_build_pub() {
   OPENAPI_TAGS=(
     "${sharedDir}/system/tags.yaml"
 
+    "${calculationsAlgoDir}/tags.yaml"
+    "${calculationsQueryHistoryDir}/tags.yaml"
+
     "${boxDir}/tags.yaml"
     "${laminateDir}/tags.yaml"
     "${paperDir}/tags.yaml"
@@ -42,15 +50,21 @@ mrcmd_func_openapi_build_pub() {
 
     "${submitFormDir}/tags.yaml"
 
-    "${laminateTypeDir}/tags.yaml"
+    "${materialTypeDir}/tags.yaml"
     "${paperColorDir}/tags.yaml"
     "${paperFactureDir}/tags.yaml"
+    "${printFormatDir}/tags.yaml"
 
     "${fileStationDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
     "${sharedDir}/system/paths.yaml"
+
+    "${calculationsAlgoDir}/rect/cutting/cutting_paths.yaml"
+    "${calculationsAlgoDir}/rect/imposition/imposition_paths.yaml"
+    "${calculationsAlgoDir}/rect/insideoutside/inside_outside_paths.yaml"
+    "${calculationsQueryHistoryDir}/query_history_paths.yaml"
 
     "${boxDir}/box_paths.yaml"
     "${laminateDir}/laminate_paths.yaml"
@@ -60,9 +74,10 @@ mrcmd_func_openapi_build_pub() {
 
     "${submitFormDir}/submit_form_paths.yaml"
 
-    "${laminateTypeDir}/laminate_type_paths.yaml"
+    "${materialTypeDir}/material_type_paths.yaml"
     "${paperColorDir}/paper_color_paths.yaml"
     "${paperFactureDir}/paper_facture_paths.yaml"
+    "${printFormatDir}/print_format_paths.yaml"
 
     "${fileStationDir}/paths.yaml"
   )
@@ -81,12 +96,15 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
 
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DensityRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DepthRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ElementDetailing.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.HeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LengthRange.yaml"
+    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.MaterialTypeIDs.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
+
+    "${calculationsQueryHistoryDir}/query_history_parameters.yaml"
 
     # "${boxDir}/box_parameters.yaml"
     # "${laminateDir}/laminate_parameters.yaml"
@@ -96,9 +114,10 @@ mrcmd_func_openapi_build_pub() {
 
     "${submitFormDir}/submit_form_parameters.yaml"
 
-    # "${laminateTypeDir}/laminate_type_parameters.yaml"
+    # "${materialTypeDir}/material_type_parameters.yaml"
     # "${paperColorDir}/paper_color_parameters.yaml"
     # "${paperFactureDir}/paper_facture_parameters.yaml"
+    # "${printFormatDir}/print_format_parameters.yaml"
 
     "${fileStationDir}/parameters.yaml"
   )
@@ -112,15 +131,20 @@ mrcmd_func_openapi_build_pub() {
     "${sharedDir}/components/fields/App.Field.Article.yaml"
     # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
     "${sharedDir}/components/fields/App.Field.Caption.yaml"
-    # "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
+    "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.Date.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTime.yaml"
     # "${sharedDir}/components/fields/App.Field.Email.yaml"
+    # "${sharedDir}/components/fields/App.Field.ExternalURL.yaml"
+    # "${sharedDir}/components/fields/App.Field.FileURL.yaml"
+    "${sharedDir}/components/fields/App.Field.Float64.yaml"
     # "${sharedDir}/components/fields/App.Field.GEO.yaml"
     # "${sharedDir}/components/fields/App.Field.ImageURL.yaml"
     # "${sharedDir}/components/fields/App.Field.Int16.yaml"
-    # "${sharedDir}/components/fields/App.Field.Int32.yaml"
+    "${sharedDir}/components/fields/App.Field.Int32.yaml"
+    # "${sharedDir}/components/fields/App.Field.Int64.yaml"
+    "${sharedDir}/components/fields/App.Field.JsonData.yaml"
     # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
     "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
@@ -129,9 +153,15 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
     # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Centimeter.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Kilogram.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.KilogramPerMeter2.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Meter.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Millimeter.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
@@ -146,7 +176,7 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/models/App.Response.Model.JsonFile.yaml"
     # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
-    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
+    "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemInt32.yaml"
 
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
@@ -161,22 +191,31 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementTemplateID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.FormElementID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Controls.SubmitFormID.yaml"
-    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.LaminateTypeID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.MaterialTypeID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.DoubleSize.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.RectFormat.yaml"
 
     "${sharedDir}/system/schemas.yaml"
 
-    "${companyPageDir}/company_page_schemas.yaml"
+    "${calculationsAlgoDir}/rect/cutting/cutting_schemas.yaml"
+    "${calculationsAlgoDir}/rect/imposition/imposition_schemas.yaml"
+    "${calculationsAlgoDir}/rect/insideoutside/inside_outside_schemas.yaml"
+    "${calculationsQueryHistoryDir}/query_history_schemas.yaml"
 
     "${boxDir}/box_schemas.yaml"
     "${laminateDir}/laminate_schemas.yaml"
     "${paperDir}/paper_schemas.yaml"
 
-    "${laminateTypeDir}/laminate_type_schemas.yaml"
+    "${companyPageDir}/company_page_schemas.yaml"
+
+    "${materialTypeDir}/material_type_schemas.yaml"
     "${paperColorDir}/paper_color_schemas.yaml"
     "${paperFactureDir}/paper_facture_schemas.yaml"
+    "${printFormatDir}/print_format_schemas.yaml"
 
     "${submitFormDir}/submit_form_schemas.yaml"
 
@@ -185,7 +224,7 @@ mrcmd_func_openapi_build_pub() {
 
   OPENAPI_COMPONENTS_RESPONSES=(
     "${sharedDir}/components/responses/App.ResponseJson.Errors.yaml"
-    # "${sharedDir}/components/responses/App.ResponseJson.ErrorsAuth.yaml"
+    "${sharedDir}/components/responses/App.ResponseJson.ErrorsAuth.yaml"
   )
 
 #  OPENAPI_SECURITY_SCHEMES=(

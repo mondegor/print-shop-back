@@ -1,0 +1,20 @@
+Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList:
+  description: DTO - список типов материала
+  type: array
+  items:
+    $ref: "#/components/schemas/Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType"
+
+Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialType:
+  description: DTO - тип материала
+  type: object
+  required:
+    - id
+    - caption
+  properties:
+    id: # typeId
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+    caption:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 64
+        - example: "Глянцевый"

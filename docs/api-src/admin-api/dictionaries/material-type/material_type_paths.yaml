@@ -1,0 +1,232 @@
+/v1/dictionaries/material-types:
+  get:
+    summary: Метод получения списка типов материала
+    description: |-
+      Метод предназначен для получения списка всех типов материала, сохраненных в БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - caption;
+
+      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      - caption,default,asc;
+      - createdAt;
+      - updatedAt;
+
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
+    operationId: getMaterialTypeList
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
+      - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"
+
+    responses:
+      "200":
+        description: Получен список типов материала
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления нового типа материала
+    description: |-
+      Метод предназначен для создания информации о новом типе материала в БД
+
+      **Ограничения и ошибки полей:**
+      - caption: required,max=64
+
+    operationId: createMaterialType
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType"
+
+    responses:
+      "201":
+        description: Информация о типе материала успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/material-types/{typeId}:
+  get:
+    summary: Метод получения типа материала
+    description: Метод предназначен для получения информации о типе материала из БД
+    operationId: getMaterialType
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
+
+    responses:
+      "200":
+        description: Получена информация о типе материала
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  put:
+    summary: Метод сохранения типа материала
+    description: |-
+      Метод предназначен для сохранения информации о типе материала в БД
+
+      **Ограничения и ошибки полей:**
+      - caption: required,max=64
+
+    operationId: storeMaterialType
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType"
+
+    responses:
+      "204":
+        description: Информация о типе материала успешно сохранена
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления типа материала
+    description: Метод предназначен для удаления информации о типе материала из БД
+    operationId: removeMaterialType
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
+
+    responses:
+      "204":
+        description: Информация о типе материала успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/dictionaries/material-types/{typeId}/status:
+  patch:
+    summary: Метод изменения статуса типа материала
+    description: |-
+      Метод предназначен для изменения статуса типа материала в БД
+
+      **Ограничения и ошибки полей:**
+      - tagVersion: required,gte=1 | ErrVersionInvalid
+      - status: required,enum | ErrSwitchStatusRejected
+
+    operationId: changeMaterialTypeStatus
+    tags:
+      - Dictionaries.MaterialType
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Request.Model.ChangeStatus"
+
+    responses:
+      "204":
+        description: Статус типа материала успешно изменён
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

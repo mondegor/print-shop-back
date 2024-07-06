@@ -12,6 +12,7 @@ const (
 )
 
 type (
+	// UIMixedValue - comment struct.
 	UIMixedValue struct {
 		StringValue string
 		FloatValue  float64
@@ -19,6 +20,7 @@ type (
 	}
 )
 
+// String - comment method.
 func (v UIMixedValue) String() string {
 	if v.IsString {
 		return v.StringValue
@@ -27,6 +29,7 @@ func (v UIMixedValue) String() string {
 	return strconv.FormatFloat(v.FloatValue, 'f', 4, 64)
 }
 
+// MarshalJSON - переводит данные в строковое представление в зависимости от текущего типа данных.
 func (v UIMixedValue) MarshalJSON() ([]byte, error) {
 	if v.IsString {
 		return json.Marshal(v.StringValue)
@@ -35,6 +38,7 @@ func (v UIMixedValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.FloatValue)
 }
 
+// UnmarshalJSON - переводит строковые данные в соответствующих им тип.
 func (v *UIMixedValue) UnmarshalJSON(data []byte) error {
 	v.IsString = data[0] == quotesByte
 

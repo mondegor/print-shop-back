@@ -13,11 +13,12 @@ Catalog.Laminates.PublicAPI.Response.Model.Laminate:
     - caption
     - typeId
     - length
-    - weight
+    - width
     - thickness
+    - weight
   properties:
     id: # laminateId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
     article:
       $ref: "#/components/schemas/App.Field.Article"
     caption:
@@ -26,10 +27,24 @@ Catalog.Laminates.PublicAPI.Response.Model.Laminate:
         - maxLength: 64
         - example: "Глянцевый 450"
     typeId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+
+Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList:
+  description: DTO - список ID типов ламината
+  type: array
+  items:
+    $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
+
+Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList:
+  description: DTO - список толщин ламината
+  type: array
+  items:
+    $ref: "#/components/schemas/App.Field.Measure.Micrometer"

@@ -1,0 +1,11 @@
+Calculations.AdminAPI.Request.Model.CreateForm:
+  description: DTO - расчёт
+  type: object
+  required:
+    - id
+    - caption
+  properties:
+    id:
+      $ref: "#/components/schemas/App.Field.UUID"
+    caption:
+      $ref: "#/components/schemas/App.Field.Caption"

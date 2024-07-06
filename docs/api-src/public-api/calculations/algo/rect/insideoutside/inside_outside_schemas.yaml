@@ -1,0 +1,49 @@
+Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
+  description: DTO - параметров алгоритма "Количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - inFormat
+    - outFormat
+  properties:
+    inFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+    outFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
+  description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - fragment
+    - total
+  properties:
+    fragment:
+      $ref: "#/components/schemas/Custom.Field.Fragment"
+    total:
+      $ref: "#/components/schemas/App.Field.Int32"
+
+Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
+  description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - inFormat
+    - outFormat
+  properties:
+    inFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+    outFormat:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
+  description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - fragments
+    - total
+  properties:
+    fragments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Fragment"
+    total:
+      $ref: "#/components/schemas/App.Field.Int32"

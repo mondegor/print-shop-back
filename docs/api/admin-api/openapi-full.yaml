@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop
   license:
     name: Apache-2.0
@@ -46,8 +46,8 @@ tags:
   - name: Catalog.Paper
     description: Private API Catalog papers
 
-  - name: Dictionaries.LaminateType
-    description: Private API Dictionary laminate types
+  - name: Dictionaries.MaterialType
+    description: Private API Dictionary material types
 
   - name: Dictionaries.PaperColor
     description: Private API Dictionary paper colors
@@ -135,8 +135,10 @@ paths:
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -166,7 +168,9 @@ paths:
         - article: required,unique,min=3,max=32,pattern=article
         - caption: required,max=64
         - length: required,gte=1,lte=10000000
-        - depth: required,gte=1,lte=10000000
+        - width: required,gte=1,lte=10000000
+        - height: required,gte=1,lte=10000000
+        - weight: required,gte=1,lte=10000000
 
       operationId: createBox
       tags:
@@ -244,7 +248,9 @@ paths:
         - article: omitempty,unique,min=3,max=32,pattern=article
         - caption: omitempty,max=64
         - length: omitempty,gte=1,lte=10000000
-        - depth: omitempty,gte=1,lte=10000000
+        - width: omitempty,gte=1,lte=10000000
+        - height: omitempty,gte=1,lte=10000000
+        - weight: omitempty,gte=1,lte=10000000
 
       operationId: storeBox
       tags:
@@ -378,9 +384,11 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
-        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -618,12 +626,13 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMin"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -832,11 +841,11 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types:
+  /v1/dictionaries/material-types:
     get:
-      summary: Метод получения списка типов ламината
+      summary: Метод получения списка типов материала
       description: |-
-        Метод предназначен для получения списка всех типов ламината, сохраненных в БД
+        Метод предназначен для получения списка всех типов материала, сохраненных в БД
 
         Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
         - caption;
@@ -849,9 +858,9 @@ paths:
         Возможные значения `App.Request.Query.ListPager.PageSize`:
         - от 1 до 1000 (default: 50)
 
-      operationId: getLaminateTypeList
+      operationId: getMaterialTypeList
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -868,11 +877,11 @@ paths:
 
       responses:
         "200":
-          description: Получен список типов ламината
+          description: Получен список типов материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -881,16 +890,16 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     post:
-      summary: Метод добавления нового типа ламината
+      summary: Метод добавления нового типа материала
       description: |-
-        Метод предназначен для создания информации о новом типе ламината в БД
+        Метод предназначен для создания информации о новом типе материала в БД
 
         **Ограничения и ошибки полей:**
         - caption: required,max=64
 
-      operationId: createLaminateType
+      operationId: createMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -904,11 +913,11 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType"
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType"
 
       responses:
         "201":
-          description: Информация о типе ламината успешно добавлена
+          description: Информация о типе материала успешно добавлена
           content:
             application/json;charset=UTF-8:
               schema:
@@ -922,13 +931,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types/{typeId}:
+  /v1/dictionaries/material-types/{typeId}:
     get:
-      summary: Метод получения типа ламината
-      description: Метод предназначен для получения информации о типе ламината из БД
-      operationId: getLaminateType
+      summary: Метод получения типа материала
+      description: Метод предназначен для получения информации о типе материала из БД
+      operationId: getMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -936,15 +945,15 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
         "200":
-          description: Получена информация о типе ламината
+          description: Получена информация о типе материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -955,16 +964,16 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     put:
-      summary: Метод сохранения типа ламината
+      summary: Метод сохранения типа материала
       description: |-
-        Метод предназначен для сохранения информации о типе ламината в БД
+        Метод предназначен для сохранения информации о типе материала в БД
 
         **Ограничения и ошибки полей:**
         - caption: required,max=64
 
-      operationId: storeLaminateType
+      operationId: storeMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -972,18 +981,18 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType"
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType"
 
       responses:
         "204":
-          description: Информация о типе ламината успешно сохранена
+          description: Информация о типе материала успешно сохранена
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -996,11 +1005,11 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     delete:
-      summary: Метод удаления типа ламината
-      description: Метод предназначен для удаления информации о типе ламината из БД
-      operationId: removeLaminateType
+      summary: Метод удаления типа материала
+      description: Метод предназначен для удаления информации о типе материала из БД
+      operationId: removeMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -1008,11 +1017,11 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
         "204":
-          description: Информация о типе ламината успешно удалена
+          description: Информация о типе материала успешно удалена
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1022,19 +1031,19 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types/{typeId}/status:
+  /v1/dictionaries/material-types/{typeId}/status:
     patch:
-      summary: Метод изменения статуса типа ламината
+      summary: Метод изменения статуса типа материала
       description: |-
-        Метод предназначен для изменения статуса типа ламината в БД
+        Метод предназначен для изменения статуса типа материала в БД
 
         **Ограничения и ошибки полей:**
         - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
-      operationId: changeLaminateTypeStatus
+      operationId: changeMaterialTypeStatus
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -1042,7 +1051,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
         required: true
@@ -1053,7 +1062,7 @@ paths:
 
       responses:
         "204":
-          description: Статус типа ламината успешно изменён
+          description: Статус типа материала успешно изменён
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1559,10 +1568,10 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -1977,7 +1986,7 @@ paths:
         - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
-      operationId: changeElementTemplatestatus
+      operationId: changeElementTemplateStatus
       tags:
         - Controls.ElementTemplate
 
@@ -2573,7 +2582,7 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/provider-accounts/companies-pages:
+  /v1/prov/companies-pages:
     get:
       summary: Метод получения списка страниц компаний
       description: |-
@@ -2731,26 +2740,6 @@ components:
         maxLength: 10
       example: 100000 # 100 g/m2
 
-    Custom.Request.Query.Filter.DepthMin:
-      description: Минимальная глубина (µm)
-      name: depth-min
-      in: query
-      required: false
-      schema:
-        type: integer
-        maxLength: 10
-      example: 100000 # 100 mm
-
-    Custom.Request.Query.Filter.DepthMax:
-      description: Максимальная глубина (µm)
-      name: depth-max
-      in: query
-      required: false
-      schema:
-        type: integer
-        maxLength: 10
-      example: 100000 # 100 mm
-
     Custom.Request.Query.Filter.ElementDetailing:
       description: Список типов детализации через "," (см. Custom.Enum.FormElementDetailing)
       name: detailing
@@ -2760,6 +2749,26 @@ components:
         type: string
         default: "NORMAL"
       example: "NORMAL,EXTENDED"
+
+    Custom.Request.Query.Filter.HeightMin:
+      description: Минимальная высота (µm)
+      name: height-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 200000 # 100 mm
+
+    Custom.Request.Query.Filter.HeightMax:
+      description: Максимальная высота (µm)
+      name: height-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 200000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMin:
       description: Минимальная длина (µm)
@@ -2780,6 +2789,15 @@ components:
         type: integer
         maxLength: 10
       example: 100000 # 100 mm
+
+    Custom.Request.Query.Filter.MaterialTypeIDs:
+      description: Список идентификаторов типов материала через ","
+      name: types
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "1,2,3"
 
     Custom.Request.Query.Filter.WeightMin:
       description: Минимальный вес (g/m2)
@@ -2841,15 +2859,6 @@ components:
         minimum: 1
       example: 1000
 
-    Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs:
-      description: Список идентификаторов типов ламината через ","
-      name: types
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "1,2,3"
-
     Catalog.Papers.AdminAPI.Request.Path.PaperID:
       description: Идентификатор бумаги
       name: paperId
@@ -2878,8 +2887,8 @@ components:
         type: string
       example: "1,2,3"
 
-    Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID:
-      description: Идентификатор типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID:
+      description: Идентификатор типа материала
       name: typeId
       in: path
       required: true
@@ -3047,17 +3056,40 @@ components:
       maxLength: 32
       example: "goodVar001"
 
+    App.Field.Measure.Gram:
+      description: Грамм (g)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg
+
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100g/m2
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg/m2
+
+    App.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000000 # 1m
+
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
       description: |-
@@ -3247,8 +3279,8 @@ components:
       format: uuid
       example: "1be2be72-2cac-45d3-8dda-2476fcc600f0"
 
-    Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+    Custom.Field.Dictionaries.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
       format: int32
       minimum: 1
@@ -3280,7 +3312,8 @@ components:
       type: object
       required:
         - name
-        - tagVersion
+        - version
+        - environment
         - hostName
         - isDebug
         - logLevel
@@ -3296,6 +3329,11 @@ components:
           type: string
           maxLength: 16
           example: "v0.1.0"
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          maxLength: 16
+          example: "prod"
         hostName:
           description: Название хоста, на котором запущено приложение
           type: string
@@ -3329,7 +3367,8 @@ components:
         - caption
         - length
         - width
-        - depth
+        - height
+        - weight
       properties:
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -3339,11 +3378,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
 
     Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       description: DTO сохранения упаковочной коробки
@@ -3361,11 +3402,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
 
     Catalog.Boxes.AdminAPI.Response.Model.BoxList:
       description: DTO - список упаковочных коробок
@@ -3392,7 +3435,8 @@ components:
         - caption
         - length
         - width
-        - depth
+        - height
+        - weight
         - status
         - createdAt
       properties:
@@ -3408,11 +3452,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:
@@ -3428,8 +3474,9 @@ components:
         - caption
         - typeId
         - length
-        - weight
+        - width
         - thickness
+        - weight
       properties:
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -3439,13 +3486,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
       description: DTO сохранения ламината
@@ -3463,13 +3512,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
       description: DTO - список ламината
@@ -3496,13 +3547,14 @@ components:
         - caption
         - typeId
         - length
-        - weight
+        - width
         - thickness
+        - weight
         - status
         - createdAt
       properties:
         id: # laminateId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         article:
@@ -3513,13 +3565,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:
@@ -3533,12 +3587,13 @@ components:
       required:
         - article
         - caption
+        - typeId
         - colorId
         - factureId
-        - length
         - width
-        - density
+        - height
         - thickness
+        - density
         - sides
       properties:
         article:
@@ -3548,18 +3603,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -3578,18 +3635,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -3616,12 +3675,13 @@ components:
         - tagVersion
         - article
         - caption
+        - typeId
         - colorId
         - factureId
-        - length
         - width
-        - density
+        - height
         - thickness
+        - density
         - sides
         - status
         - createdAt
@@ -3637,18 +3697,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
         status:
@@ -3658,8 +3720,8 @@ components:
         updatedAt:
           $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
-    Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType:
-      description: DTO добавления нового типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType:
+      description: DTO добавления нового типа материала
       type: object
       required:
         - caption
@@ -3670,8 +3732,8 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType:
-      description: DTO сохранения типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType:
+      description: DTO сохранения типа материала
       type: object
       required:
         - tagVersion
@@ -3685,8 +3747,8 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList:
-      description: DTO - список типов ламината
+    Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList:
+      description: DTO - список типов материала
       type: object
       required:
         - items
@@ -3696,12 +3758,12 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+            $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType:
-      description: DTO - тип ламината
+    Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType:
+      description: DTO - тип материала
       type: object
       required:
         - id
@@ -3711,7 +3773,7 @@ components:
         - createdAt
       properties:
         id: # typeId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
@@ -3867,18 +3929,18 @@ components:
       type: object
       required:
         - caption
-        - length
         - width
+        - height
       properties:
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
       description: DTO сохранения печатного формата
@@ -3893,10 +3955,10 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
       description: DTO - список печатных форматов
@@ -3920,8 +3982,8 @@ components:
         - id
         - tagVersion
         - caption
-        - length
         - width
+        - height
         - status
         - createdAt
       properties:
@@ -3934,10 +3996,10 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:

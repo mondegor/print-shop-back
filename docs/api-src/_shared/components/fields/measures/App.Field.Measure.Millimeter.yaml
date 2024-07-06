@@ -1,0 +1,6 @@
+App.Field.Measure.Millimeter:
+  description: Миллиметр (mm)
+  type: number
+  format: double
+  maxLength: 16
+  example: 1000 # 1m

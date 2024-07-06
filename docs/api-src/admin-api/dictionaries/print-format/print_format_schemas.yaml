@@ -3,18 +3,18 @@ Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
   type: object
   required:
     - caption
-    - length
     - width
+    - height
   properties:
     caption:
       allOf:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
 Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
   description: DTO сохранения печатного формата
@@ -29,10 +29,10 @@ Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
 Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
   description: DTO - список печатных форматов
@@ -56,8 +56,8 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
     - id
     - tagVersion
     - caption
-    - length
     - width
+    - height
     - status
     - createdAt
   properties:
@@ -70,10 +70,10 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
         - $ref: "#/components/schemas/App.Field.Caption"
         - maxLength: 64
         - example: "A4 (210 x 297 mm)"
-    length:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     width:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    height:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
     createdAt:

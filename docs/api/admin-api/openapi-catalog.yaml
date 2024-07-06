@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -77,8 +77,10 @@ paths:
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.DepthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -108,7 +110,9 @@ paths:
         - article: required,unique,min=3,max=32,pattern=article
         - caption: required,max=64
         - length: required,gte=1,lte=10000000
-        - depth: required,gte=1,lte=10000000
+        - width: required,gte=1,lte=10000000
+        - height: required,gte=1,lte=10000000
+        - weight: required,gte=1,lte=10000000
 
       operationId: createBox
       tags:
@@ -186,7 +190,9 @@ paths:
         - article: omitempty,unique,min=3,max=32,pattern=article
         - caption: omitempty,max=64
         - length: omitempty,gte=1,lte=10000000
-        - depth: omitempty,gte=1,lte=10000000
+        - width: omitempty,gte=1,lte=10000000
+        - height: omitempty,gte=1,lte=10000000
+        - weight: omitempty,gte=1,lte=10000000
 
       operationId: storeBox
       tags:
@@ -320,9 +326,11 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
-        - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -560,12 +568,13 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.DensityMin"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -887,25 +896,25 @@ components:
         maxLength: 10
       example: 100000 # 100 g/m2
 
-    Custom.Request.Query.Filter.DepthMin:
-      description: Минимальная глубина (µm)
-      name: depth-min
+    Custom.Request.Query.Filter.HeightMin:
+      description: Минимальная высота (µm)
+      name: height-min
       in: query
       required: false
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100 mm
+      example: 200000 # 100 mm
 
-    Custom.Request.Query.Filter.DepthMax:
-      description: Максимальная глубина (µm)
-      name: depth-max
+    Custom.Request.Query.Filter.HeightMax:
+      description: Максимальная высота (µm)
+      name: height-max
       in: query
       required: false
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100 mm
+      example: 200000 # 100 mm
 
     Custom.Request.Query.Filter.LengthMin:
       description: Минимальная длина (µm)
@@ -926,6 +935,15 @@ components:
         type: integer
         maxLength: 10
       example: 100000 # 100 mm
+
+    Custom.Request.Query.Filter.MaterialTypeIDs:
+      description: Список идентификаторов типов материала через ","
+      name: types
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "1,2,3"
 
     Custom.Request.Query.Filter.WeightMin:
       description: Минимальный вес (g/m2)
@@ -986,15 +1004,6 @@ components:
         type: integer
         minimum: 1
       example: 1000
-
-    Catalog.Laminates.AdminAPI.Request.Query.Filter.LaminateTypeIDs:
-      description: Список идентификаторов типов ламината через ","
-      name: types
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "1,2,3"
 
     Catalog.Papers.AdminAPI.Request.Path.PaperID:
       description: Идентификатор бумаги
@@ -1078,17 +1087,40 @@ components:
       minimum: 1
       example: 5
 
+    App.Field.Measure.Gram:
+      description: Грамм (g)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg
+
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100g/m2
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1kg/m2
+
+    App.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000000 # 1m
+
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
       description: |-
@@ -1205,8 +1237,8 @@ components:
       minimum: 1
       example: 2
 
-    Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+    Custom.Field.Dictionaries.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
       format: int32
       minimum: 1
@@ -1234,7 +1266,8 @@ components:
         - caption
         - length
         - width
-        - depth
+        - height
+        - weight
       properties:
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -1244,11 +1277,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
 
     Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       description: DTO сохранения упаковочной коробки
@@ -1266,11 +1301,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
 
     Catalog.Boxes.AdminAPI.Response.Model.BoxList:
       description: DTO - список упаковочных коробок
@@ -1297,7 +1334,8 @@ components:
         - caption
         - length
         - width
-        - depth
+        - height
+        - weight
         - status
         - createdAt
       properties:
@@ -1313,11 +1351,13 @@ components:
             - maxLength: 64
             - example: "СДЭК"
         length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        depth:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:
@@ -1333,8 +1373,9 @@ components:
         - caption
         - typeId
         - length
-        - weight
+        - width
         - thickness
+        - weight
       properties:
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -1344,13 +1385,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
       description: DTO сохранения ламината
@@ -1368,13 +1411,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
     Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
       description: DTO - список ламината
@@ -1401,13 +1446,14 @@ components:
         - caption
         - typeId
         - length
-        - weight
+        - width
         - thickness
+        - weight
         - status
         - createdAt
       properties:
         id: # laminateId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         article:
@@ -1418,13 +1464,15 @@ components:
             - maxLength: 64
             - example: "Глянцевый 450"
         typeId:
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         length:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
+        width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:
@@ -1438,12 +1486,13 @@ components:
       required:
         - article
         - caption
+        - typeId
         - colorId
         - factureId
-        - length
         - width
-        - density
+        - height
         - thickness
+        - density
         - sides
       properties:
         article:
@@ -1453,18 +1502,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -1483,18 +1534,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
 
@@ -1521,12 +1574,13 @@ components:
         - tagVersion
         - article
         - caption
+        - typeId
         - colorId
         - factureId
-        - length
         - width
-        - density
+        - height
         - thickness
+        - density
         - sides
         - status
         - createdAt
@@ -1542,18 +1596,20 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "Мелованная"
+        typeId:
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         colorId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
         factureId:
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         density:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         sides:
           $ref: "#/components/schemas/Custom.Enum.PaperSides"
         status:

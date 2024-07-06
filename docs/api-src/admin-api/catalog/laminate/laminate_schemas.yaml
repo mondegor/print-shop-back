@@ -6,8 +6,9 @@ Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
     - caption
     - typeId
     - length
-    - weight
+    - width
     - thickness
+    - weight
   properties:
     article:
       $ref: "#/components/schemas/App.Field.Article"
@@ -17,13 +18,15 @@ Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
         - maxLength: 64
         - example: "Глянцевый 450"
     typeId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
 Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
   description: DTO сохранения ламината
@@ -41,13 +44,15 @@ Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
         - maxLength: 64
         - example: "Глянцевый 450"
     typeId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
 
 Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
   description: DTO - список ламината
@@ -74,13 +79,14 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
     - caption
     - typeId
     - length
-    - weight
+    - width
     - thickness
+    - weight
     - status
     - createdAt
   properties:
     id: # laminateId
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"
     tagVersion:
       $ref: "#/components/schemas/App.Field.TagVersion"
     article:
@@ -91,13 +97,15 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
         - maxLength: 64
         - example: "Глянцевый 450"
     typeId:
-      $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+      $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
     length:
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
+    width:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
-    thickness:
-      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     status:
       $ref: "#/components/schemas/App.Enum.Status"
     createdAt:

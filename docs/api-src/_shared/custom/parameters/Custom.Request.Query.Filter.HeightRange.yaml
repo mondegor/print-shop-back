@@ -1,0 +1,19 @@
+Custom.Request.Query.Filter.HeightMin:
+  description: Минимальная высота (µm)
+  name: height-min
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 200000 # 100 mm
+
+Custom.Request.Query.Filter.HeightMax:
+  description: Максимальная высота (µm)
+  name: height-max
+  in: query
+  required: false
+  schema:
+    type: integer
+    maxLength: 10
+  example: 200000 # 100 mm

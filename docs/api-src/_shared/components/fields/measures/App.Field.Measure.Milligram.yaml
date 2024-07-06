@@ -1,0 +1,6 @@
+App.Field.Measure.Milligram:
+  description: Милиграмм (mg)
+  type: number
+  format: double
+  maxLength: 16
+  example: 1000000 # 1kg

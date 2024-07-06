@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Protected Providers API print-shop
   license:
     name: Apache-2.0
@@ -31,7 +31,7 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
-  - url: http://localhost:8080/providers
+  - url: http://localhost:8080/prov
     description: Local Host
 tags:
   - name: System
@@ -356,7 +356,8 @@ components:
       type: object
       required:
         - name
-        - tagVersion
+        - version
+        - environment
         - hostName
         - isDebug
         - logLevel
@@ -372,6 +373,11 @@ components:
           type: string
           maxLength: 16
           example: "v0.1.0"
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          maxLength: 16
+          example: "prod"
         hostName:
           description: Название хоста, на котором запущено приложение
           type: string

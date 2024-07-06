@@ -1,0 +1,8 @@
+Custom.Request.Query.Filter.MaterialTypeIDs:
+  description: Список идентификаторов типов материала через ","
+  name: types
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "1,2,3"

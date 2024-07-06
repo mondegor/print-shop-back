@@ -1,27 +1,52 @@
 ---
+app:
+  name: "Print Shop Service"
+  version: v0.0.0 # auto detection
+  environment: local # dev, prod
+
 debugging:
   debug: true
-  caller:
-    deep: 3
-    use_short_path: true
-    # root_path:
+  unexpected_http_status: 418 # http.StatusTeapot
+  error_caller:
+    enable: true
+    depth: 3
+    show_func_name: true
+    upper_bounds:
+      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).New
+      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).Wrap
+      - github.com/mondegor/go-webcore/mrcore.PrepareError
+      - github.com/mondegor/go-webcore/mrcore/mrcoreerr.(*ErrorHandler).Process
+      - github.com/mondegor/go-webcore/mrlog/zerolog.(*eventAdapter).Err
+      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
+      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
 
 logger:
-  level: trace # debug, info, warn, error, fatal, trace
+  level: TRACE # DEBUG, INFO, WARN, ERROR, FATAL, TRACE
   json_format: false
   timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
   console_color: true
 
+sentry:
+  enable: false
+  dsn: http://id@127.0.0.1:9980/1
+  traces_sample_rate: 1.0
+  flush_timeout: 2s
+
 servers:
   rest_server:
-    read_timeout: 30s
-    write_timeout: 30s
-    shutdown_timeout: 60s
+    read_timeout: 5s
+    write_timeout: 5s
+    shutdown_timeout: 15s
     listen:
-      type: port
-      sock_name: app.sock
       bind_ip: 0.0.0.0
       port: 8080
+  prometheus_server:
+    read_timeout: 5s
+    write_timeout: 5s
+    shutdown_timeout: 15s
+    listen:
+      bind_ip: 0.0.0.0
+      port: 8084
 
 storage:
   type: postgres
@@ -78,7 +103,7 @@ translation:
       - catalog/boxes
       - catalog/laminates
       - catalog/papers
-      - dictionaries/laminate-types
+      - dictionaries/material-types
       - dictionaries/paper-colors
       - dictionaries/paper-factures
       - dictionaries/print-formats
@@ -113,13 +138,16 @@ access_control:
     - apiProv
     - apiPub
   permissions:
+    - modCalculationsAlgo
+    - modCalculationsBox
+    - modCalculationsQueryHistory
     - modCatalogBox
     - modCatalogPaper
     - modCatalogLaminate
     - modControlsElementTemplate
     - modControlsSubmitForm
     - modControlsSubmitFormToPublish
-    - modDictionariesLaminateType
+    - modDictionariesMaterialType
     - modDictionariesPaperColor
     - modDictionariesPaperFacture
     - modDictionariesPrintFormat
@@ -136,5 +164,36 @@ modules_settings:
   file_station:
     image_proxy:
       host: http://127.0.0.1:8080/
-      base_url: /img
+      base_url: /img/{{path}}
       file_provider: imageStorage # file_providers.image_storage
+
+task_schedule:
+  settings_reloader:
+    caption: Settings reloader
+    startup: true
+    period: 15s
+    timeout: 30s
+
+mime_types:
+  - ext: psd
+    type: application/octet-stream
+  - ext: pdf
+    type: application/pdf
+  - ext: json
+    type: application/json
+  - ext: tgz
+    type: application/x-tar
+  - ext: zip
+    type: application/zip
+  - ext: gif
+    type: image/gif
+  - ext: jpeg
+    type: image/jpeg
+  - ext: jpe
+    type: image/jpeg
+  - ext: jpg
+    type: image/jpeg
+  - ext: png
+    type: image/png
+  - ext: xml
+    type: text/xml

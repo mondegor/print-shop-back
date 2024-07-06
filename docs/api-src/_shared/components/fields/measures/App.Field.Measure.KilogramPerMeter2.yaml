@@ -1,0 +1,6 @@
+App.Field.Measure.KilogramPerMeter2:
+  description: Поверхностная плотность (kg/m2)
+  type: number
+  format: double
+  maxLength: 16
+  example: 10

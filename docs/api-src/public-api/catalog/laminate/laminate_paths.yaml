@@ -28,3 +28,58 @@
               $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateList"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/laminates/types:
+  get:
+    summary: Метод получения списка ID типов ламината
+    description: |-
+      Метод предназначен для получения списка ID типов ламината, сохраненных в БД,
+      со следующими условиями:
+      - laminate.isEnabled = true;
+
+    operationId: getMaterialTypeIDList
+    tags:
+      - Catalog.Laminate
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список ID типов ламината
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateTypeIDList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/catalog/laminates/thicknesses:
+  get:
+    summary: Метод получения списка толщин ламината
+    description: |-
+      Метод предназначен для получения списка толщин ламината, сохраненных в БД,
+      со следующими условиями:
+      - laminate.isEnabled = true;
+
+      Порядок следования списка:
+      - thickness ASC
+
+    operationId: getLaminateThicknessList
+    tags:
+      - Catalog.Laminate
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    responses:
+      "200":
+        description: Получен список толщин ламината
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Catalog.Laminates.PublicAPI.Response.Model.LaminateThicknessList"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

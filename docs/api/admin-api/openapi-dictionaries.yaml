@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.2.3
+  version: v0.3.0
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -34,8 +34,8 @@ servers:
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
-  - name: Dictionaries.LaminateType
-    description: Private API Dictionary laminate types
+  - name: Dictionaries.MaterialType
+    description: Private API Dictionary material types
 
   - name: Dictionaries.PaperColor
     description: Private API Dictionary paper colors
@@ -47,11 +47,11 @@ tags:
     description: Private API Dictionary print formats
 
 paths:
-  /v1/dictionaries/laminate-types:
+  /v1/dictionaries/material-types:
     get:
-      summary: Метод получения списка типов ламината
+      summary: Метод получения списка типов материала
       description: |-
-        Метод предназначен для получения списка всех типов ламината, сохраненных в БД
+        Метод предназначен для получения списка всех типов материала, сохраненных в БД
 
         Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
         - caption;
@@ -64,9 +64,9 @@ paths:
         Возможные значения `App.Request.Query.ListPager.PageSize`:
         - от 1 до 1000 (default: 50)
 
-      operationId: getLaminateTypeList
+      operationId: getMaterialTypeList
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -83,11 +83,11 @@ paths:
 
       responses:
         "200":
-          description: Получен список типов ламината
+          description: Получен список типов материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -96,16 +96,16 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     post:
-      summary: Метод добавления нового типа ламината
+      summary: Метод добавления нового типа материала
       description: |-
-        Метод предназначен для создания информации о новом типе ламината в БД
+        Метод предназначен для создания информации о новом типе материала в БД
 
         **Ограничения и ошибки полей:**
         - caption: required,max=64
 
-      operationId: createLaminateType
+      operationId: createMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -119,11 +119,11 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType"
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType"
 
       responses:
         "201":
-          description: Информация о типе ламината успешно добавлена
+          description: Информация о типе материала успешно добавлена
           content:
             application/json;charset=UTF-8:
               schema:
@@ -137,13 +137,13 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types/{typeId}:
+  /v1/dictionaries/material-types/{typeId}:
     get:
-      summary: Метод получения типа ламината
-      description: Метод предназначен для получения информации о типе ламината из БД
-      operationId: getLaminateType
+      summary: Метод получения типа материала
+      description: Метод предназначен для получения информации о типе материала из БД
+      operationId: getMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -151,15 +151,15 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
         "200":
-          description: Получена информация о типе ламината
+          description: Получена информация о типе материала
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+                $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -170,16 +170,16 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     put:
-      summary: Метод сохранения типа ламината
+      summary: Метод сохранения типа материала
       description: |-
-        Метод предназначен для сохранения информации о типе ламината в БД
+        Метод предназначен для сохранения информации о типе материала в БД
 
         **Ограничения и ошибки полей:**
         - caption: required,max=64
 
-      operationId: storeLaminateType
+      operationId: storeMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -187,18 +187,18 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType"
+              $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType"
 
       responses:
         "204":
-          description: Информация о типе ламината успешно сохранена
+          description: Информация о типе материала успешно сохранена
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -211,11 +211,11 @@ paths:
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
     delete:
-      summary: Метод удаления типа ламината
-      description: Метод предназначен для удаления информации о типе ламината из БД
-      operationId: removeLaminateType
+      summary: Метод удаления типа материала
+      description: Метод предназначен для удаления информации о типе материала из БД
+      operationId: removeMaterialType
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -223,11 +223,11 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
         "204":
-          description: Информация о типе ламината успешно удалена
+          description: Информация о типе материала успешно удалена
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -237,19 +237,19 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/dictionaries/laminate-types/{typeId}/status:
+  /v1/dictionaries/material-types/{typeId}/status:
     patch:
-      summary: Метод изменения статуса типа ламината
+      summary: Метод изменения статуса типа материала
       description: |-
-        Метод предназначен для изменения статуса типа ламината в БД
+        Метод предназначен для изменения статуса типа материала в БД
 
         **Ограничения и ошибки полей:**
         - tagVersion: required,gte=1 | ErrVersionInvalid
         - status: required,enum | ErrSwitchStatusRejected
 
-      operationId: changeLaminateTypeStatus
+      operationId: changeMaterialTypeStatus
       tags:
-        - Dictionaries.LaminateType
+        - Dictionaries.MaterialType
 
       security:
         - bearerAuth: []
@@ -257,7 +257,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID"
+        - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
         required: true
@@ -268,7 +268,7 @@ paths:
 
       responses:
         "204":
-          description: Статус типа ламината успешно изменён
+          description: Статус типа материала успешно изменён
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -774,10 +774,10 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"
+        - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -1076,6 +1076,26 @@ components:
         default: "ASC"
       example: "DESC"
 
+    Custom.Request.Query.Filter.HeightMin:
+      description: Минимальная высота (µm)
+      name: height-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 200000 # 100 mm
+
+    Custom.Request.Query.Filter.HeightMax:
+      description: Максимальная высота (µm)
+      name: height-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 200000 # 100 mm
+
     Custom.Request.Query.Filter.LengthMin:
       description: Минимальная длина (µm)
       name: length-min
@@ -1096,28 +1116,8 @@ components:
         maxLength: 10
       example: 100000 # 100 mm
 
-    Custom.Request.Query.Filter.WidthMin:
-      description: Минимальная ширина (µm)
-      name: width-min
-      in: query
-      required: false
-      schema:
-        type: integer
-        maxLength: 10
-      example: 100000 # 100 mm
-
-    Custom.Request.Query.Filter.WidthMax:
-      description: Максимальная ширина (µm)
-      name: width-max
-      in: query
-      required: false
-      schema:
-        type: integer
-        maxLength: 10
-      example: 100000 # 100 mm
-
-    Dictionaries.LaminateTypes.AdminAPI.Request.Path.TypeID:
-      description: Идентификатор типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID:
+      description: Идентификатор типа материала
       name: typeId
       in: path
       required: true
@@ -1200,11 +1200,12 @@ components:
       minimum: 1
       example: 5
 
-    App.Field.Measure.Micrometer:
-      description: Микрометр (µm, 0.001mm)
-      type: integer
-      maxLength: 10
-      example: 100000 # 100mm
+    App.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: number
+      format: double
+      maxLength: 16
+      example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
       description: |-
@@ -1289,8 +1290,8 @@ components:
           format: int32
           example: 2147483647
 
-    Custom.Field.Dictionaries.LaminateTypeID:
-      description: Идентификатор типа ламината (модуль - Dictionaries.LaminateType)
+    Custom.Field.Dictionaries.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
       format: int32
       minimum: 1
@@ -1317,8 +1318,8 @@ components:
       minimum: 1
       example: 2
 
-    Dictionaries.LaminateTypes.AdminAPI.Request.Model.CreateLaminateType:
-      description: DTO добавления нового типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType:
+      description: DTO добавления нового типа материала
       type: object
       required:
         - caption
@@ -1329,8 +1330,8 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.LaminateTypes.AdminAPI.Request.Model.StoreLaminateType:
-      description: DTO сохранения типа ламината
+    Dictionaries.MaterialTypes.AdminAPI.Request.Model.StoreMaterialType:
+      description: DTO сохранения типа материала
       type: object
       required:
         - tagVersion
@@ -1344,8 +1345,8 @@ components:
             - maxLength: 64
             - example: "Глянцевый"
 
-    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateTypeList:
-      description: DTO - список типов ламината
+    Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialTypeList:
+      description: DTO - список типов материала
       type: object
       required:
         - items
@@ -1355,12 +1356,12 @@ components:
           description: Список записей ограниченный фильтром и pageSize
           type: array
           items:
-            $ref: "#/components/schemas/Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType"
+            $ref: "#/components/schemas/Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType"
         total:
           $ref: "#/components/schemas/App.Field.ListPager.Total"
 
-    Dictionaries.LaminateTypes.AdminAPI.Response.Model.LaminateType:
-      description: DTO - тип ламината
+    Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType:
+      description: DTO - тип материала
       type: object
       required:
         - id
@@ -1370,7 +1371,7 @@ components:
         - createdAt
       properties:
         id: # typeId
-          $ref: "#/components/schemas/Custom.Field.Dictionaries.LaminateTypeID"
+          $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
         tagVersion:
           $ref: "#/components/schemas/App.Field.TagVersion"
         caption:
@@ -1526,18 +1527,18 @@ components:
       type: object
       required:
         - caption
-        - length
         - width
+        - height
       properties:
         caption:
           allOf:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Request.Model.StorePrintFormat:
       description: DTO сохранения печатного формата
@@ -1552,10 +1553,10 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
 
     Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormatList:
       description: DTO - список печатных форматов
@@ -1579,8 +1580,8 @@ components:
         - id
         - tagVersion
         - caption
-        - length
         - width
+        - height
         - status
         - createdAt
       properties:
@@ -1593,10 +1594,10 @@ components:
             - $ref: "#/components/schemas/App.Field.Caption"
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
-        length:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        height:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         status:
           $ref: "#/components/schemas/App.Enum.Status"
         createdAt:

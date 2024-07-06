@@ -1,0 +1,22 @@
+Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
+  description: DTO параметров алгоритма "Количество резов"
+  type: object
+  required:
+    - fragments
+    - distance
+  properties:
+    fragments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.DoubleSize"
+    distance:
+      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+
+Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
+  description: DTO - результат алгоритма "Количество резов"
+  type: object
+  required:
+    - quantity
+  properties:
+    quantity:
+      $ref: "#/components/schemas/App.Field.Int32"

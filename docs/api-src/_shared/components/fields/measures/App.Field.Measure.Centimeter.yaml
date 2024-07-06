@@ -1,0 +1,6 @@
+App.Field.Measure.Centimeter:
+  description: Сантиметр (cm)
+  type: number
+  format: double
+  maxLength: 16
+  example: 100 # 1m
