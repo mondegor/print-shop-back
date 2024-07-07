@@ -1,0 +1,23 @@
+@startuml
+
+!include config/sd/theme.iuml
+!include config/sd/autonumber.iuml
+
+' title Получение результата вычислений другого пользователя
+
+participant "Owner" as owner order 10
+participant "User" as user order 20
+
+box "WebApp" #LightSteelBlue
+  participant "Controller" as app order 30
+  participant "QueryHistory" as query order 40
+end box
+
+owner -> user: отправляет ссылку по любому каналу связи
+user -> app: кликает полученную ссылку
+app -> query: запрашивает по переданному ID результаты расчёта
+query -> query: фиксирует обращение
+app <-- query: Success 200, возвращает расчёты алгоритма
+user <-- app: отображает расчёты алгоритма
+
+@enduml

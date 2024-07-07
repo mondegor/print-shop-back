@@ -1,0 +1,12 @@
+!theme mars
+
+skinparam {
+    MaxMessageSize 250
+}
+
+skinparam sequence {
+    ParticipantPadding 125
+    MessageAlign center
+}
+
+' left to right direction

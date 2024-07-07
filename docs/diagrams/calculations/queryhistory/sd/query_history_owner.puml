@@ -1,0 +1,25 @@
+@startuml
+
+!include config/sd/theme.iuml
+!include config/sd/autonumber.iuml
+
+' title Получение ссылки на результат вычислений
+
+participant "User" as user order 10
+
+box "WebApp" #LightSteelBlue
+  participant "Controller" as app order 20
+  participant "QueryHistory" as query order 30
+  participant "Calculator" as calc order 40
+end box
+
+user -> app: вводит данные для алгоритма
+app -> calc: отправляет запрос на расчёт алгоритма
+app <-- calc: Success 200, возвращает результаты расчёта
+user <-- app: отображает расчёты алгоритма
+user -> app: нажимает на кнопку "Сохранить" расчёт
+app -> query: сохраняет данные по запросу пользователя
+app <-- query: Success 200, возвращает ID сохранённого расчёта
+user <-- app: отображает ссылку на сохранённый расчёт
+
+@enduml
