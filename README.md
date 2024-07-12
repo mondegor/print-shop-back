@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.15.0
+# Описание Print Shop Back v0.15.1
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -17,8 +17,8 @@ Web сервис для расчёта стоимости и времени из
 - `mrcmd openapi build-all` - сборка документации всех API;
 
 ### Примеры запуска сборки документации из консоли Windows:
-- GitBash (cmd): `"C:\Program Files\Git\git-bash.exe" --cd=d:\mrwork\tn-docs mrcmd openapi build-all`;
-- WSL (PowerShell): `cd D:\workdir\go-sample; wsl -d Ubuntu-20.04 -e mrcmd openapi build-all`;
+- GitBash (cmd): `"C:\Program Files\Git\git-bash.exe" --cd=d:\mrwork\print-shop-back mrcmd openapi build-all`;
+- WSL (PowerShell): `cd D:\workdir\print-shop-back; wsl -d Ubuntu-20.04 -e mrcmd openapi build-all`;
 
 ## Разворачивание, установка и запуск сервиса
 
