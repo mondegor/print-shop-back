@@ -1,5 +1,6 @@
 App.Field.Int16:
   description: Целое 16-ти разрядное число
   type: integer
-  format: int16
+  format: int32
+  minimum: -32768
   example: 32767

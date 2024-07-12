@@ -1,0 +1,7 @@
+App.Field.Measure.Meter2:
+  description: Метр квадратный (m2)
+  type: number
+  format: double
+  maxLength: 16
+  minimum: 0
+  example: 43.08

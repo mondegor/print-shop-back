@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.3.0
+  version: v0.4.0
   title: Private API print-shop управления пользовательскими интерфейсами
   license:
     name: Apache-2.0
@@ -130,7 +130,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -405,7 +405,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -699,7 +699,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1027,6 +1027,7 @@ components:
       description: Целое 32-ти разрядное число
       type: integer
       format: int32
+      minimum: -2147483648
       example: 2147483647
 
     App.Field.ListPager.Total:
@@ -1156,8 +1157,8 @@ components:
       type: string
       maxLength: 1048576 # 1Mb
 
-    App.Response.Model.SuccessCreatedItemInt32:
-      description: DTO результата создания записи (int32 ID)
+    App.Response.Model.SuccessCreatedItemUint:
+      description: DTO результата создания записи (int64 ID)
       type: object
       required:
         - id
@@ -1165,8 +1166,7 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
-          format: int32
-          example: 2147483647
+          example: 9223372036854775807
 
     Custom.Enum.FormElementDetailing:
       description: |-

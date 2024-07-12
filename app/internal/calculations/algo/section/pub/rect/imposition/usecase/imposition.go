@@ -4,7 +4,10 @@ import (
 	"context"
 	"errors"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
 
@@ -50,10 +53,13 @@ func (uc *RectImposition) Calc(ctx context.Context, raw entity.RawData) (entity.
 	uc.emitEvent(ctx, "Calc", mrmsg.Data{"raw": parsedData})
 
 	return entity.Result{
-		Layout:    result.Layout,
+		Layout: rect.Format{
+			Width:  mrlib.RoundFloat4(result.Layout.Width),
+			Height: mrlib.RoundFloat4(result.Layout.Height),
+		},
 		Fragments: result.Fragments,
-		Total:     int32(result.Total),
-		Garbage:   result.RestArea,
+		Total:     result.Total,
+		Garbage:   mrlib.RoundFloat8(result.RestArea),
 	}, nil
 }
 
@@ -63,12 +69,12 @@ func (uc *RectImposition) parse(data entity.RawData) (entity.ParsedData, error) 
 		return entity.ParsedData{}, err // TODO: itemFormat error
 	}
 
-	itemBorderFormat := rect.Format{} // optional
+	itemDistance := rect.Format{} // optional
 
-	if data.ItemBorderFormat != "" {
-		itemBorderFormat, err = rect.ParseFormat(data.ItemBorderFormat)
+	if data.ItemDistance != "" {
+		itemDistance, err = rect.ParseFormat(data.ItemDistance)
 		if err != nil {
-			return entity.ParsedData{}, err // TODO: itemBorderFormat error
+			return entity.ParsedData{}, err // TODO: itemDistance error
 		}
 	}
 
@@ -79,10 +85,19 @@ func (uc *RectImposition) parse(data entity.RawData) (entity.ParsedData, error) 
 
 	return entity.ParsedData{
 		Item: rect.Item{
-			Format: itemFormat,
-			Border: itemBorderFormat,
+			Format: rect.Format{
+				Width:  itemFormat.Width * measure.OneThousandth,  // mm -> m
+				Height: itemFormat.Height * measure.OneThousandth, // mm -> m
+			},
+			Distance: rect.Format{
+				Width:  itemDistance.Width * measure.OneThousandth,  // mm -> m
+				Height: itemDistance.Height * measure.OneThousandth, // mm -> m
+			},
 		},
-		Out: outFormat,
+		Out: rect.Format{
+			Width:  outFormat.Width * measure.OneThousandth,  // mm -> m
+			Height: outFormat.Height * measure.OneThousandth, // mm -> m
+		},
 		Opts: imposition.Options{
 			AllowRotation: data.AllowRotation,
 			UseMirror:     data.UseMirror,

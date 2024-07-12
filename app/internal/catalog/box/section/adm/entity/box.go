@@ -23,6 +23,7 @@ type (
 		Length     measure.Meter     `json:"length" sort:"length" upd:"box_length"`
 		Width      measure.Meter     `json:"width" sort:"width" upd:"box_width"`
 		Height     measure.Meter     `json:"height" sort:"height" upd:"box_height"`
+		Thickness  measure.Meter     `json:"thickness" sort:"thickness" upd:"box_thickness"`
 		Weight     measure.Kilogram  `json:"weight" sort:"weight" upd:"box_weight"`
 		Status     mrenum.ItemStatus `json:"status"`
 		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`

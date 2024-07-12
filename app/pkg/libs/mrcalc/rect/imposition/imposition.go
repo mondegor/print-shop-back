@@ -63,7 +63,7 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 				"Calc(%s) :: Calculate count rect items of %s + %s on out format %s",
 				ri.algoType(opts),
 				item.Format,
-				item.Border,
+				item.Distance,
 				out,
 			)
 		},
@@ -75,7 +75,7 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 		// режется лист пополам по вертикали и размещаются на нём элементы
 		// таким образом алгоритм добивается четного и зеркального размещения элементов на весь лист
 		outWork = rect.Format{
-			Width:  (out.Width - item.Border.Max()) / 2,
+			Width:  (out.Width - item.Distance.Max()) / 2,
 			Height: out.Height,
 		}
 	}
@@ -130,7 +130,7 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 				"- calculated successfully: %d items of %s + %s on %s, image: %s, rest %.2fx%.2f ~= %.2f, fragments: %d",
 				fragments.Total(),
 				item.Format,
-				item.Border,
+				item.Distance,
 				out,
 				totalLayout,
 				item.Format.Width,
@@ -156,23 +156,23 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 func (ri *Algo) calcMainLayout(item rect.Item, out rect.Format) (base.Fragment, error) {
 	// добавляются фиктивные границы к внешнему формату,
 	// для того, чтобы поместить граничные элементы, у которых внешние края
-	// в реальности короче (т.к. item.Border выступает в качестве межэлементного расстояния)
-	outWithBorder := out.Sum(item.Border)
+	// в реальности короче (т.к. item.Distance выступает в качестве межэлементного расстояния)
+	outWithFictBorders := out.Sum(item.Distance)
 
-	layout, err := insideoutside.AlgoQuantity(item.WithBorder(), outWithBorder)
+	layout, err := insideoutside.AlgoQuantity(item.WithDistance(), outWithFictBorders)
 	if err != nil {
 		return base.Fragment{}, err
 	}
 
 	ri.logger.Debug().MsgFunc(
 		func() string {
-			inWithBorder := item.WithBorder()
+			inWithDistance := item.WithDistance()
 
 			return fmt.Sprintf(
-				"- placed item %s on out format %s with fict borders: %s, %s, %d * %d = %d",
-				inWithBorder,
+				"- placed item %s on out format %s with fict margins: %s, %s, %d * %d = %d",
+				inWithDistance,
 				out,
-				inWithBorder.OrientationType(),
+				inWithDistance.OrientationType(),
 				base.PositionTop,
 				layout.ByWidth,
 				layout.ByHeight,

@@ -22,7 +22,7 @@
 
     responses:
       "200":
-        description: Получен расчет количества размещений
+        description: Получен расчет количества размещений элементов
         content:
           application/json;charset=UTF-8:
             schema:

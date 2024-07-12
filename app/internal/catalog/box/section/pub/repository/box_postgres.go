@@ -34,7 +34,9 @@ func (re *BoxPostgres) Fetch(ctx context.Context, _ entity.BoxParams) ([]entity.
 			box_caption,
 			box_length,
 			box_width,
-			box_height
+			box_height,
+			box_thickness,
+			box_weight
         FROM
             ` + module.DBSchema + `.` + module.DBTableNameBoxes + `
         WHERE
@@ -65,6 +67,7 @@ func (re *BoxPostgres) Fetch(ctx context.Context, _ entity.BoxParams) ([]entity.
 			&row.Length,
 			&row.Width,
 			&row.Height,
+			&row.Thickness,
 			&row.Weight,
 		)
 		if err != nil {

@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.3.0
+  version: v0.4.0
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -127,7 +127,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -360,7 +360,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -593,7 +593,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -830,7 +830,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1202,9 +1202,9 @@ components:
 
     App.Field.Measure.Millimeter:
       description: Миллиметр (mm)
-      type: number
-      format: double
-      maxLength: 16
+      type: integer
+      maxLength: 8
+      minimum: 0
       example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
@@ -1278,8 +1278,8 @@ components:
           type: string
           example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
 
-    App.Response.Model.SuccessCreatedItemInt32:
-      description: DTO результата создания записи (int32 ID)
+    App.Response.Model.SuccessCreatedItemUint:
+      description: DTO результата создания записи (int64 ID)
       type: object
       required:
         - id
@@ -1287,8 +1287,7 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
-          format: int32
-          example: 2147483647
+          example: 9223372036854775807
 
     Custom.Field.Dictionaries.MaterialTypeID:
       description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)

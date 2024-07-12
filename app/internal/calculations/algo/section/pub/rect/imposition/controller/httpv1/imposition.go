@@ -48,11 +48,11 @@ func (ht *RectImposition) Calc(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	item := entity.RawData{
-		ItemFormat:       request.ItemFormat,
-		ItemBorderFormat: request.ItemBorderFormat,
-		OutFormat:        request.OutFormat,
-		AllowRotation:    !request.DisableRotation,
-		UseMirror:        request.UseMirror,
+		ItemFormat:    request.ItemFormat,
+		ItemDistance:  request.ItemDistance,
+		OutFormat:     request.OutFormat,
+		AllowRotation: !request.DisableRotation,
+		UseMirror:     request.UseMirror,
 	}
 
 	calcResponse, err := ht.useCase.Calc(r.Context(), item)

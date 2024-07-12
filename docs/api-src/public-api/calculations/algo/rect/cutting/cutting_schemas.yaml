@@ -8,9 +8,9 @@ Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
     fragments:
       type: array
       items:
-        $ref: "#/components/schemas/Custom.Field.DoubleSize"
+        $ref: "#/components/schemas/App.Field.DoubleSize"
     distance:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
 
 Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
   description: DTO - результат алгоритма "Количество резов"
@@ -19,4 +19,4 @@ Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
     - quantity
   properties:
     quantity:
-      $ref: "#/components/schemas/App.Field.Int32"
+      $ref: "#/components/schemas/App.Field.Uint"

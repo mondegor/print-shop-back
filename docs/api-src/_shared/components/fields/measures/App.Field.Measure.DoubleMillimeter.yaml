@@ -1,0 +1,7 @@
+App.Field.Measure.DoubleMillimeter:
+  description: Два целых числа {width}x{height} в миллиметрах (mm x mm)
+  type: string
+  # format: rect-format
+  maxLength: 16
+  minimum: 0
+  example: "100x200"

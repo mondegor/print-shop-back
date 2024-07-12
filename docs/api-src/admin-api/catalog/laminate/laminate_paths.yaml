@@ -32,8 +32,6 @@
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
-      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
-      - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
       - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -87,7 +85,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
       "400":
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":

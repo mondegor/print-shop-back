@@ -1,0 +1,10 @@
+App.Response.Model.SuccessCreatedItemUint:
+  description: DTO результата создания записи (int64 ID)
+  type: object
+  required:
+    - id
+  properties:
+    id:
+      description: Идентификатор созданной записи
+      type: integer
+      example: 9223372036854775807

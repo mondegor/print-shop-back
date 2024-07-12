@@ -8,7 +8,7 @@ Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
     - length
     - width
     - thickness
-    - weight
+    - weightM2
   properties:
     article:
       $ref: "#/components/schemas/App.Field.Article"
@@ -25,7 +25,7 @@ Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    weight:
+    weightM2:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
 
 Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
@@ -51,7 +51,7 @@ Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    weight:
+    weightM2:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
 
 Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
@@ -81,7 +81,7 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
     - length
     - width
     - thickness
-    - weight
+    - weightM2
     - status
     - createdAt
   properties:
@@ -104,7 +104,7 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     thickness:
       $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-    weight:
+    weightM2:
       $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
     status:
       $ref: "#/components/schemas/App.Enum.Status"

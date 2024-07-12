@@ -32,7 +32,7 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 		return base.Fragment{}, nil
 	}
 
-	remainingLayout, err := insideoutside.AlgoQuantity(item.WithBorder(), outRemaining)
+	remainingLayout, err := insideoutside.AlgoQuantity(item.WithDistance(), outRemaining)
 	if err != nil {
 		return base.Fragment{}, err
 	}
@@ -41,13 +41,13 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 	if remainingLayout.Total() > 0 {
 		ri.logger.Debug().MsgFunc(
 			func() string {
-				inWithBorder := item.WithBorder()
+				inWithDistance := item.WithDistance()
 
 				return fmt.Sprintf(
-					"- placed item %s on remaining out format %s with fict borders: %s, %s, %d * %d = %d",
-					inWithBorder,
+					"- placed item %s on remaining out format %s with fict margins: %s, %s, %d * %d = %d",
+					inWithDistance,
 					outRemaining,
-					inWithBorder.OrientationType(),
+					inWithDistance.OrientationType(),
 					remainingPosition,
 					remainingLayout.ByWidth,
 					remainingLayout.ByHeight,
@@ -59,8 +59,8 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 		ri.logger.Debug().MsgFunc(
 			func() string {
 				return fmt.Sprintf(
-					"- skipped: item format %s not on remaining format %s with fict borders",
-					item.WithBorder(),
+					"- skipped: item format %s not on remaining format %s with fict margins",
+					item.WithDistance(),
 					outRemaining,
 				)
 			},
@@ -72,26 +72,26 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 
 func (ri *AlgoRemaining) remainingFormat(item rect.Item, out rect.Format, layout base.Fragment) (format rect.Format, position string) {
 	correct := rect.Format{}
-	inWithBorder := item.WithBorder()
+	inWithDistance := item.WithDistance()
 
-	if inWithBorder.Width >= inWithBorder.Height {
+	if inWithDistance.Width >= inWithDistance.Height {
 		position = base.PositionLeft
 		format = rect.Format{
 			Width:  out.Height,
-			Height: out.Width + item.Border.Width,
+			Height: out.Width + item.Distance.Width,
 		}
-		correct.Height = inWithBorder.Width*float64(layout.ByWidth) + item.Border.Max()
+		correct.Height = inWithDistance.Width*float64(layout.ByWidth) + item.Distance.Max()
 	} else {
 		position = base.PositionBottom
 		format = rect.Format{
-			Width:  out.Height + item.Border.Height,
+			Width:  out.Height + item.Distance.Height,
 			Height: out.Width,
 		}
-		correct.Width = inWithBorder.Height*float64(layout.ByHeight) + item.Border.Max()
+		correct.Width = inWithDistance.Height*float64(layout.ByHeight) + item.Distance.Max()
 	}
 
 	// прибавляется фиктивная граница для учёта размещения граничных элементов
-	format = format.Sum(item.Border)
+	format = format.Sum(item.Distance)
 
 	// вычитается расстояние между вертикально ориентированными
 	// элементами и горизонтально ориентированными

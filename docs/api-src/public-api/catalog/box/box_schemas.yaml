@@ -14,6 +14,7 @@ Catalog.Boxes.PublicAPI.Response.Model.Box:
     - length
     - width
     - height
+    - thickness
     - weight
   properties:
     id: # boxId
@@ -31,5 +32,7 @@ Catalog.Boxes.PublicAPI.Response.Model.Box:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.Gram"

@@ -7,9 +7,9 @@ Custom.Field.Fragment:
   properties:
     byWidth:
       description: Кол-во элементов по ширине
-      format: double
-      example: 0.210
+      type: integer
+      example: 27
     byHeight:
       description: Кол-во элементов по высоте
-      format: double
-      example: 0.297
+      type: integer
+      example: 43

@@ -123,5 +123,9 @@ func NewValidator(ctx context.Context, _ config.Config) (*mrplayvalidator.Valida
 		return nil, err
 	}
 
+	if err := validator.Register("tag_triple_size", mrview.ValidateTripleSize); err != nil {
+		return nil, err
+	}
+
 	return validator, nil
 }

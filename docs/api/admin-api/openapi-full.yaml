@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.3.0
+  version: v0.4.0
   title: Private API print-shop
   license:
     name: Apache-2.0
@@ -196,7 +196,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -389,8 +389,6 @@ paths:
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMin"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.WeightMax"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
@@ -444,7 +442,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -688,7 +686,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -921,7 +919,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1154,7 +1152,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1387,7 +1385,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1624,7 +1622,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -1864,7 +1862,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -2139,7 +2137,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -2433,7 +2431,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -2800,24 +2798,24 @@ components:
       example: "1,2,3"
 
     Custom.Request.Query.Filter.WeightMin:
-      description: Минимальный вес (g/m2)
+      description: Минимальный вес (g)
       name: weight-min
       in: query
       required: false
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100 g/m2
+      example: 118
 
     Custom.Request.Query.Filter.WeightMax:
-      description: Максимальный вес (g/m2)
+      description: Максимальный вес (g)
       name: weight-max
       in: query
       required: false
       schema:
         type: integer
         maxLength: 10
-      example: 100000 # 100 g/m2
+      example: 314
 
     Custom.Request.Query.Filter.WidthMin:
       description: Минимальная ширина (µm)
@@ -3022,6 +3020,7 @@ components:
       description: Целое 32-ти разрядное число
       type: integer
       format: int32
+      minimum: -2147483648
       example: 2147483647
 
     App.Field.ListPager.Total:
@@ -3058,16 +3057,16 @@ components:
 
     App.Field.Measure.Gram:
       description: Грамм (g)
-      type: number
-      format: double
-      maxLength: 16
+      type: integer
+      maxLength: 8
+      minimum: 0
       example: 1000 # 1kg
 
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
-      type: number
-      format: double
-      maxLength: 16
+      type: integer
+      maxLength: 8
+      minimum: 0
       example: 1000 # 1kg/m2
 
     App.Field.Measure.Meter:
@@ -3075,20 +3074,21 @@ components:
       type: number
       format: double
       maxLength: 16
+      minimum: 0
       example: 10
 
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
-      type: number
-      format: double
-      maxLength: 16
+      type: integer
+      maxLength: 8
+      minimum: 0
       example: 1000000 # 1m
 
     App.Field.Measure.Millimeter:
       description: Миллиметр (mm)
-      type: number
-      format: double
-      maxLength: 16
+      type: integer
+      maxLength: 8
+      minimum: 0
       example: 1000 # 1m
 
     App.Request.Model.ChangeStatus:
@@ -3180,8 +3180,8 @@ components:
       type: string
       maxLength: 1048576 # 1Mb
 
-    App.Response.Model.SuccessCreatedItemInt32:
-      description: DTO результата создания записи (int32 ID)
+    App.Response.Model.SuccessCreatedItemUint:
+      description: DTO результата создания записи (int64 ID)
       type: object
       required:
         - id
@@ -3189,8 +3189,7 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
-          format: int32
-          example: 2147483647
+          example: 9223372036854775807
 
     Custom.Enum.FormElementDetailing:
       description: |-
@@ -3368,6 +3367,7 @@ components:
         - length
         - width
         - height
+        - thickness
         - weight
       properties:
         article:
@@ -3383,6 +3383,8 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -3407,6 +3409,8 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -3436,6 +3440,7 @@ components:
         - length
         - width
         - height
+        - thickness
         - weight
         - status
         - createdAt
@@ -3457,6 +3462,8 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         height:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         weight:
           $ref: "#/components/schemas/App.Field.Measure.Gram"
         status:
@@ -3476,7 +3483,7 @@ components:
         - length
         - width
         - thickness
-        - weight
+        - weightM2
       properties:
         article:
           $ref: "#/components/schemas/App.Field.Article"
@@ -3493,7 +3500,7 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        weight:
+        weightM2:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
 
     Catalog.Laminates.AdminAPI.Request.Model.StoreLaminate:
@@ -3519,7 +3526,7 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        weight:
+        weightM2:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
 
     Catalog.Laminates.AdminAPI.Response.Model.LaminateList:
@@ -3549,7 +3556,7 @@ components:
         - length
         - width
         - thickness
-        - weight
+        - weightM2
         - status
         - createdAt
       properties:
@@ -3572,7 +3579,7 @@ components:
           $ref: "#/components/schemas/App.Field.Measure.Millimeter"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        weight:
+        weightM2:
           $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
         status:
           $ref: "#/components/schemas/App.Enum.Status"

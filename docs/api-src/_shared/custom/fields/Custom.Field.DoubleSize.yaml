@@ -1,6 +1,0 @@
-Custom.Field.DoubleSize:
-  description: Два вещественных числа в формате {first}x{second}
-  type: string
-  # format: rect-format
-  maxLength: 16
-  example: "100x200"

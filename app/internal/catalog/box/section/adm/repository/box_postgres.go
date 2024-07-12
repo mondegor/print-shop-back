@@ -70,6 +70,8 @@ func (re *BoxPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectPara
 			box_length as length,
 			box_width as width,
 			box_height as height,
+			box_thickness as thickness,
+			box_weight as weight,
 			box_status,
 			created_at as createdAt,
 			updated_at as updatedAt
@@ -154,6 +156,8 @@ func (re *BoxPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (ent
 			box_length,
 			box_width,
 			box_height,
+			box_thickness,
+			box_weight,
 			box_status,
 			created_at,
 			updated_at
@@ -244,10 +248,12 @@ func (re *BoxPostgres) Insert(ctx context.Context, row entity.Box) (mrtype.KeyIn
 				box_length,
 				box_width,
 				box_height,
+				box_thickness,
+				box_weight,
 				box_status
 			)
 		VALUES
-			($1, $2, $3, $4, $5, $6)
+			($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING
 			box_id;`
 
@@ -259,6 +265,7 @@ func (re *BoxPostgres) Insert(ctx context.Context, row entity.Box) (mrtype.KeyIn
 		row.Length,
 		row.Width,
 		row.Height,
+		row.Thickness,
 		row.Weight,
 		row.Status,
 	).Scan(

@@ -1,6 +1,15 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-07-12
+### Added
+- Добавлены новые API компоненты `App.Field.*`, `App.Field.Measure.*`;
+- Добавлено поле `thickness` для коробки;
+- Добавлен алгоритм расчёта `PackInBox`;
+
+### Change
+- `laminate_weight` -> `laminate_weight_m2`; 
+
 ## 2024-07-07
 ### Added
 - Добавлена документация для модуля сохранения результатов вычислений;

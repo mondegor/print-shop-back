@@ -1,0 +1,7 @@
+App.Field.Measure.Meter3:
+  description: Метр кубический (m3)
+  type: number
+  format: double
+  maxLength: 16
+  minimum: 0
+  example: 178.2

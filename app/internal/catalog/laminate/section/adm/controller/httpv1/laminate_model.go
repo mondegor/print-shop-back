@@ -16,7 +16,7 @@ type (
 		Length    measure.Meter         `json:"length" validate:"required,gte=1,lte=1000"`
 		Width     measure.Millimeter    `json:"width" validate:"required,gte=1,lte=10000"`
 		Thickness measure.Micrometer    `json:"thickness" validate:"required,gte=1,lte=10000"`
-		Weight    measure.GramPerMeter2 `json:"weight" validate:"required,gte=1,lte=10000"`
+		WeightM2  measure.GramPerMeter2 `json:"weightM2" validate:"required,gte=1,lte=10000"`
 	}
 
 	// StoreLaminateRequest - comment struct.
@@ -28,7 +28,7 @@ type (
 		Length     measure.Meter         `json:"length" validate:"omitempty,gte=1,lte=1000"`
 		Width      measure.Millimeter    `json:"width" validate:"omitempty,gte=1,lte=10000"`
 		Thickness  measure.Micrometer    `json:"thickness" validate:"omitempty,gte=1,lte=10000"`
-		Weight     measure.GramPerMeter2 `json:"weight" validate:"omitempty,gte=1,lte=10000"`
+		WeightM2   measure.GramPerMeter2 `json:"weightM2" validate:"omitempty,gte=1,lte=10000"`
 	}
 
 	// LaminateListResponse - comment struct.

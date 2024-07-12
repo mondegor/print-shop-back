@@ -82,7 +82,6 @@ func (ht *Laminate) listParams(r *http.Request) entity.LaminateParams {
 			TypeIDs:    ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogMaterialTypeIDs),
 			Length:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange),
 			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange),
-			Weight:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterWeightRange),
 			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
 		Sorter: ht.parser.SortParams(r, ht.listSorter),
@@ -112,10 +111,10 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 		Article:   request.Article,
 		Caption:   request.Caption,
 		TypeID:    request.TypeID,
-		Length:    measure.Meter(request.Length * measure.OneThousandth),
+		Length:    request.Length,
 		Width:     measure.Meter(request.Width * measure.OneThousandth),
 		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
-		Weight:    measure.KilogramPerMeter2(request.Weight * measure.OneThousandth),
+		WeightM2:  measure.KilogramPerMeter2(request.WeightM2 * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -146,10 +145,10 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 		Article:    request.Article,
 		Caption:    request.Caption,
 		TypeID:     request.TypeID,
-		Length:     request.Length * measure.OneThousandth,
+		Length:     request.Length,
 		Width:      measure.Meter(request.Width * measure.OneThousandth),
 		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
-		Weight:     measure.KilogramPerMeter2(request.Weight * measure.OneThousandth),
+		WeightM2:   measure.KilogramPerMeter2(request.WeightM2 * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {

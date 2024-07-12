@@ -13,11 +13,11 @@ const (
 type (
 	// RawData - сырые данные поступившие с обработчика.
 	RawData struct {
-		ItemFormat       string
-		ItemBorderFormat string
-		OutFormat        string
-		AllowRotation    bool
-		UseMirror        bool
+		ItemFormat    string
+		ItemDistance  string
+		OutFormat     string
+		AllowRotation bool
+		UseMirror     bool
 	}
 
 	// ParsedData - разобранные валидные данные.
@@ -31,7 +31,7 @@ type (
 	Result struct {
 		Layout    rect.Format     `json:"layout"`
 		Fragments []base.Fragment `json:"fragments"`
-		Total     int32           `json:"total"`
-		Garbage   float64         `json:"garbage"` // (m2)
+		Total     uint64          `json:"total"`
+		Garbage   float64         `json:"garbage"`
 	}
 )

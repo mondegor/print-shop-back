@@ -68,10 +68,10 @@ github.com/mondegor/go-components v0.7.6 h1:TfVrht7LAFAF7Kn4JaAJv7Wju1JxdqZ/HOND
 github.com/mondegor/go-components v0.7.6/go.mod h1:9b+ebovEw6AppbhW0xBxYUS5VwQkf3OH6ATqH6vYe7Y=
 github.com/mondegor/go-storage v0.11.8 h1:eJtkE2tpkaqPJN4Ui2FqPFSHTF5pU/oKvs3olcKo9ck=
 github.com/mondegor/go-storage v0.11.8/go.mod h1:IEqPMGEkW+l3ct1sPGTaonsatYy0+lc90Wdm2YhZZzc=
-github.com/mondegor/go-sysmess v0.10.9 h1:W4dKwdIaStR0F0hleE7XEQXbsoOUGtQVkTy/NtqnQ+U=
-github.com/mondegor/go-sysmess v0.10.9/go.mod h1:lmtm83olOIDpxyfhjLT5ZTX4sQIUYH/Gv2A6pfbCSsc=
-github.com/mondegor/go-webcore v0.19.3 h1:r5qUvmrceFl7gxjJfkHy5Zx1jMfriEGJAz3yw/8VFiI=
-github.com/mondegor/go-webcore v0.19.3/go.mod h1:uDq5uJx8Gy5Qj79fFk+mC0/Vw+WgWSWyZSntrvbMg6s=
+github.com/mondegor/go-sysmess v0.10.10 h1:8BToVoThos2uzV3+2U+mhtWK8ywxb+nsIpw5smtJVA4=
+github.com/mondegor/go-sysmess v0.10.10/go.mod h1:lmtm83olOIDpxyfhjLT5ZTX4sQIUYH/Gv2A6pfbCSsc=
+github.com/mondegor/go-webcore v0.20.0 h1:UJU9bE6wjliKjTlXd30ebWGpv15PSTGIb6reNirn0iI=
+github.com/mondegor/go-webcore v0.20.0/go.mod h1:SuJbsWoMvz0jwKtDwe863bBGhHS8efxSSou688IEfRM=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/oklog/run v1.1.0 h1:GEenZ1cK0+q0+wsJew9qUg/DyD8k3JzYsZAi5gYi2mA=
@@ -90,8 +90,8 @@ github.com/prometheus/common v0.55.0 h1:KEi6DK7lXW/m7Ig5i47x0vRzuBsHuvJdi5ee6Y3G
 github.com/prometheus/common v0.55.0/go.mod h1:2SECS4xJG1kd8XF9IcM1gMX6510RAEL65zxzNImwdc8=
 github.com/prometheus/procfs v0.15.1 h1:YagwOFzUgYfKKHX6Dr+sHT7km/hxC76UB0learggepc=
 github.com/prometheus/procfs v0.15.1/go.mod h1:fB45yRUv8NstnjriLhBQLuOUt+WW4BsoGhij/e3PBqk=
-github.com/redis/go-redis/v9 v9.5.3 h1:fOAp1/uJG+ZtcITgZOfYFmTKPE7n4Vclj1wZFgRciUU=
-github.com/redis/go-redis/v9 v9.5.3/go.mod h1:hdY0cQFCN4fnSYT6TkisLufl/4W5UIXyv0b/CLO2V2M=
+github.com/redis/go-redis/v9 v9.5.4 h1:vOFYDKKVgrI5u++QvnMT7DksSMYg7Aw/Np4vLJLKLwY=
+github.com/redis/go-redis/v9 v9.5.4/go.mod h1:hdY0cQFCN4fnSYT6TkisLufl/4W5UIXyv0b/CLO2V2M=
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/rogpeppe/go-internal v1.10.0/go.mod h1:UQnix2H7Ngw/k4C5ijL5+65zddjncjaFoBhdsK/akog=
 github.com/rs/cors v1.11.0 h1:0B9GE/r9Bc2UxRMMtymBkHTenPkHDv0CW4Y98GBY+po=

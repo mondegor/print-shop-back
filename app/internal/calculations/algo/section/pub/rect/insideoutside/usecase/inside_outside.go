@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
 
@@ -80,8 +81,14 @@ func (uc *RectInsideOutside) parse(data entity.RawData) (entity.ParsedData, erro
 	}
 
 	return entity.ParsedData{
-		In:  inFormat,
-		Out: outFormat,
+		In: rect.Format{
+			Width:  inFormat.Width * measure.OneThousandth,  // mm -> m
+			Height: inFormat.Height * measure.OneThousandth, // mm -> m
+		},
+		Out: rect.Format{
+			Width:  outFormat.Width * measure.OneThousandth,  // mm -> m
+			Height: outFormat.Height * measure.OneThousandth, // mm -> m
+		},
 	}, nil
 }
 

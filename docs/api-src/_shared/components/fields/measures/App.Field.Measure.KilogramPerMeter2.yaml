@@ -3,4 +3,5 @@ App.Field.Measure.KilogramPerMeter2:
   type: number
   format: double
   maxLength: 16
+  minimum: 0
   example: 10

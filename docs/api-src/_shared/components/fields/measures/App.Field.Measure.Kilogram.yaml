@@ -3,4 +3,5 @@ App.Field.Measure.Kilogram:
   type: number
   format: double
   maxLength: 16
+  minimum: 0
   example: 10

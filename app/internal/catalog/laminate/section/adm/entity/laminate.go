@@ -24,7 +24,7 @@ type (
 		Length     measure.Meter             `json:"length" sort:"length" upd:"laminate_length"`
 		Width      measure.Meter             `json:"width" sort:"width" upd:"laminate_width"`
 		Thickness  measure.Meter             `json:"thickness" upd:"laminate_thickness"`
-		Weight     measure.KilogramPerMeter2 `json:"weight" sort:"weight" upd:"laminate_weight"`
+		WeightM2   measure.KilogramPerMeter2 `json:"weightM2" sort:"weightM2" upd:"laminate_weight_m2"`
 		Status     mrenum.ItemStatus         `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  *time.Time                `json:"updatedAt,omitempty" sort:"updatedAt"`
@@ -43,7 +43,6 @@ type (
 		TypeIDs    []mrtype.KeyInt32
 		Length     mrtype.RangeInt64
 		Width      mrtype.RangeInt64
-		Weight     mrtype.RangeInt64
 		Statuses   []mrenum.ItemStatus
 	}
 )

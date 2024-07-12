@@ -41,7 +41,6 @@ func (re *LaminatePostgres) NewSelectParams(params entity.LaminateParams) mrstor
 				w.FilterAnyOf("type_id", params.Filter.TypeIDs),
 				w.FilterRangeInt64("laminate_length", params.Filter.Length, 0),
 				w.FilterRangeInt64("laminate_width", params.Filter.Width, 0),
-				w.FilterRangeInt64("laminate_weight", params.Filter.Weight, 0),
 				w.FilterAnyOf("laminate_status", params.Filter.Statuses),
 			)
 		}),
@@ -71,7 +70,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelec
 			laminate_length as length,
 			laminate_width as width,
 			laminate_thickness,
-			laminate_weight as weight,
+			laminate_weight_m2 as weightM2,
 			laminate_status,
 			created_at as createdAt,
 			updated_at as updatedAt
@@ -107,7 +106,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelec
 			&row.Length,
 			&row.Width,
 			&row.Thickness,
-			&row.Weight,
+			&row.WeightM2,
 			&row.Status,
 			&row.CreatedAt,
 			&row.UpdatedAt,
@@ -158,7 +157,7 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 			laminate_length,
 			laminate_width,
 			laminate_thickness,
-			laminate_weight,
+			laminate_weight_m2,
 			laminate_status,
 			created_at,
 			updated_at
@@ -182,7 +181,7 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 		&row.Length,
 		&row.Width,
 		&row.Thickness,
-		&row.Weight,
+		&row.WeightM2,
 		&row.Status,
 		&row.CreatedAt,
 		&row.UpdatedAt,
@@ -251,7 +250,7 @@ func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mr
 				laminate_length,
 				laminate_width,
 				laminate_thickness,
-				laminate_weight,
+				laminate_weight_m2,
 				laminate_status
 			)
 		VALUES
@@ -268,7 +267,7 @@ func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mr
 		row.Length,
 		row.Width,
 		row.Thickness,
-		row.Weight,
+		row.WeightM2,
 		row.Status,
 	).Scan(
 		&row.ID,

@@ -6,9 +6,9 @@ Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
     - outFormat
   properties:
     inFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
     outFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
 
 Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
   description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
@@ -20,7 +20,7 @@ Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
     fragment:
       $ref: "#/components/schemas/Custom.Field.Fragment"
     total:
-      $ref: "#/components/schemas/App.Field.Int32"
+      $ref: "#/components/schemas/App.Field.Uint"
 
 Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
   description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
@@ -30,9 +30,9 @@ Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
     - outFormat
   properties:
     inFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
     outFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
 
 Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
   description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
@@ -46,4 +46,4 @@ Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
       items:
         $ref: "#/components/schemas/Custom.Field.Fragment"
     total:
-      $ref: "#/components/schemas/App.Field.Int32"
+      $ref: "#/components/schemas/App.Field.Uint"

@@ -38,7 +38,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, _ entity.LaminateParams) 
 			laminate_length,
 			laminate_width,
 			laminate_thickness,
-			laminate_weight
+			laminate_weight_m2
         FROM
             ` + module.DBSchema + `.` + module.DBTableNameLaminates + `
         WHERE

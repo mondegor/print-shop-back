@@ -43,7 +43,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		// WARNING: большинство данных совпадает с данными теста CalcTotal
 		{
 			name: "test1",
-			item: rect.Item{Format: rect.Format{Width: 88, Height: 48}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 88, Height: 48}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 435, Height: 300}, // 450x320 - frame 15x20
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 408, Height: 298},
@@ -54,7 +54,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test2",
-			item: rect.Item{Format: rect.Format{Width: 88, Height: 48}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 88, Height: 48}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 435, Height: 290}, // 450x320 - frame 15x30
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 408, Height: 268},
@@ -65,7 +65,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test3",
-			item: rect.Item{Format: rect.Format{Width: 48, Height: 88}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 48, Height: 88}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 435, Height: 300}, // 450x320 - frame 15x20
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 398, Height: 268},
@@ -76,7 +76,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test4",
-			item: rect.Item{Format: rect.Format{Width: 48, Height: 88}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 48, Height: 88}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 435, Height: 290}, // 450x320 - frame 15x30
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 398, Height: 268},
@@ -98,7 +98,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test6",
-			item: rect.Item{Format: rect.Format{Width: 210, Height: 297}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 210, Height: 297}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 435, Height: 300}, // 450x320 - frame 15x20
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 422, Height: 297},
@@ -110,7 +110,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		{
 			// данный тест не зависит от дистанции между изделиями, т.к. изделие всего одно
 			name: "test7",
-			item: rect.Item{Format: rect.Format{Width: 235, Height: 100}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 235, Height: 100}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 235, Height: 100}, // 450x320 - frame 15x20
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 235, Height: 100},
@@ -122,7 +122,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		{
 			// height = y = 2x + 1; width = x + y + 3; при x = 100 -> y = 201, height = 201, width = 304
 			name: "test8",
-			item: rect.Item{Format: rect.Format{Width: 201, Height: 100}, Border: rect.Format{Width: 3, Height: 1}},
+			item: rect.Item{Format: rect.Format{Width: 201, Height: 100}, Distance: rect.Format{Width: 3, Height: 1}},
 			out:  rect.Format{Width: 304, Height: 201},
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 304, Height: 201},
@@ -133,7 +133,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test9",
-			item: rect.Item{Format: rect.Format{Width: 201, Height: 100}, Border: rect.Format{Width: 1, Height: 1}},
+			item: rect.Item{Format: rect.Format{Width: 201, Height: 100}, Distance: rect.Format{Width: 1, Height: 1}},
 			out:  rect.Format{Width: 302, Height: 201},
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 302, Height: 201},
@@ -145,7 +145,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		{
 			// здесь расстояние между элементами не должно влиять
 			name: "test10",
-			item: rect.Item{Format: rect.Format{Width: 301, Height: 201}, Border: rect.Format{Width: 10, Height: 10}},
+			item: rect.Item{Format: rect.Format{Width: 301, Height: 201}, Distance: rect.Format{Width: 10, Height: 10}},
 			out:  rect.Format{Width: 302, Height: 201},
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 301, Height: 201},
@@ -156,7 +156,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 		{
 			name: "test11",
-			item: rect.Item{Format: rect.Format{Width: 301, Height: 202}, Border: rect.Format{Width: 10, Height: 10}},
+			item: rect.Item{Format: rect.Format{Width: 301, Height: 202}, Distance: rect.Format{Width: 10, Height: 10}},
 			out:  rect.Format{Width: 302, Height: 201},
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{},
@@ -168,7 +168,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		{
 			// bug fixed
 			name: "test12",
-			item: rect.Item{Format: rect.Format{Width: 100, Height: 200}, Border: rect.Format{Width: 2, Height: 2}},
+			item: rect.Item{Format: rect.Format{Width: 100, Height: 200}, Distance: rect.Format{Width: 2, Height: 2}},
 			out:  rect.Format{Width: 442, Height: 304}, // 450x320 - frame 8x16
 			want: imposition.AlgoResult{
 				Layout:    rect.Format{Width: 406, Height: 302},

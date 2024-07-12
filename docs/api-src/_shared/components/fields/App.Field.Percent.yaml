@@ -1,0 +1,6 @@
+App.Field.Percent:
+  description: Процент (%)
+  type: number
+  format: double
+  maxLength: 8
+  example: 93.17

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/cutting"
@@ -41,7 +42,7 @@ func (uc *RectCutting) CalcQuantity(ctx context.Context, raw entity.RawData) (en
 	uc.emitEvent(ctx, "CalcQuantity", mrmsg.Data{"raw": parsedData})
 
 	return entity.QuantityResult{
-		Quantity: int32(result),
+		Quantity: result,
 	}, nil
 }
 
@@ -63,8 +64,11 @@ func (uc *RectCutting) parse(data entity.RawData) (entity.ParsedData, error) {
 	}
 
 	return entity.ParsedData{
-		Fragments:      fragments,
-		DistanceFormat: distanceFormat,
+		Fragments: fragments,
+		DistanceFormat: rect.Format{
+			Width:  distanceFormat.Width * measure.OneThousandth,  // mm -> m
+			Height: distanceFormat.Height * measure.OneThousandth, // mm -> m
+		},
 	}, nil
 }
 

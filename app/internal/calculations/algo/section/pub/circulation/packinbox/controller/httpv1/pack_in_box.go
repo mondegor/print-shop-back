@@ -48,10 +48,11 @@ func (ht *PackInBox) Calc(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	item := entity.RawData{
-		Format: request.Format,
+		Product: entity.RawProduct(request.Product),
+		Box:     entity.RawBox(request.Box),
 	}
 
-	calcResponse, err := ht.useCase.CalcQuantity(r.Context(), item)
+	calcResponse, err := ht.useCase.Calc(r.Context(), item)
 	if err != nil {
 		return err
 	}

@@ -7,6 +7,7 @@ Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
     - length
     - width
     - height
+    - thickness
     - weight
   properties:
     article:
@@ -22,6 +23,8 @@ Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -46,6 +49,8 @@ Catalog.Boxes.AdminAPI.Request.Model.StoreBox:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.Gram"
 
@@ -75,6 +80,7 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
     - length
     - width
     - height
+    - thickness
     - weight
     - status
     - createdAt
@@ -96,6 +102,8 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
     height:
       $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
     weight:
       $ref: "#/components/schemas/App.Field.Measure.Gram"
     status:

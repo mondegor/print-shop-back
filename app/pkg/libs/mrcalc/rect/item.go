@@ -4,14 +4,14 @@ type (
 	// Item - прямоугольный элемент с технологическими границами.
 	Item struct {
 		Format
-		Border Format `json:"border"`
+		Distance Format `json:"margins"`
 	}
 )
 
-// WithBorder - возвращается прямоугольный элемент с учётом технологических границ.
-func (f *Item) WithBorder() Format {
+// WithDistance - возвращается прямоугольный элемент с учётом технологических границ.
+func (f *Item) WithDistance() Format {
 	return Format{
-		Width:  f.Width + f.Border.Width,
-		Height: f.Height + f.Border.Height,
+		Width:  f.Width + f.Distance.Width,
+		Height: f.Height + f.Distance.Height,
 	}
 }

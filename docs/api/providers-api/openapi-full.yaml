@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.3.0
+  version: v0.4.0
   title: Protected Providers API print-shop
   license:
     name: Apache-2.0

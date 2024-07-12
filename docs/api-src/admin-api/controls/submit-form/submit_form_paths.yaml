@@ -86,7 +86,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemInt32"
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
       "400":
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":

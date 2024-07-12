@@ -1,0 +1,6 @@
+App.Field.Measure.TripleMillimeter:
+  description: Три целых числа {first}x{second}x{third} в миллиметрах (mm x mm x mm)
+  type: string
+  # format: cube-format
+  maxLength: 16
+  example: "100x200x300"

@@ -24,6 +24,6 @@ type (
 
 	// QuantityResult - результат работы алгоритма AlgoQuantity.
 	QuantityResult struct {
-		Quantity int32 `json:"quantity"`
+		Quantity uint64 `json:"quantity"`
 	}
 )

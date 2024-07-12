@@ -1,0 +1,122 @@
+Calculations.Algo.PublicAPI.Request.Model.CirculationPackInBox:
+  description: DTO параметров алгоритма "Количество коробок"
+  type: object
+  required:
+    - product
+    - box
+  properties:
+    product:
+      $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.Product"
+    box:
+      allOf:
+        - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.Box"
+        - description: Параметры коробки, в которую помещаются изделия
+
+Calculations.Algo.PublicAPI.Request.Model.Product:
+  description: DTO изделия
+  type: object
+  required:
+    - format
+    - thickness
+    - weightM2
+    - quantity
+  properties:
+    format:
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    weightM2:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    quantity:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество изделий
+        - example: 315
+
+Calculations.Algo.PublicAPI.Request.Model.Box:
+  description: DTO коробки
+  type: object
+  required:
+    - format
+    - thickness
+    - margins
+    - weight
+  properties:
+    format:
+      $ref: "#/components/schemas/App.Field.Measure.TripleMillimeter"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    margins:
+      $ref: "#/components/schemas/App.Field.Measure.TripleMillimeter"
+    weight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Gram"
+        - description: Вес коробки
+    maxWeight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Gram"
+        - description: Максимальная грузоподъёмность коробки
+
+Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox:
+  description: DTO - результат алгоритма "Количество коробок"
+  type: object
+  required:
+    - box
+    - lastBox
+    - productsVolume
+    - boxesVolume
+    - boxesQuantity
+  properties:
+    box:
+      allOf:
+        - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
+        - description: Полностью заполенная коробка
+    lastBox:
+      allOf:
+        - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
+        - description: Коробка с остатком изделий
+    productsVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий объём тиража
+        - example: 18.3
+    boxesVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий объём коробок
+        - example: 19.6
+    boxesQuantity:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество коробок
+        - example: 17
+
+Calculations.Algo.PublicAPI.Response.Model.Box:
+  description: DTO коробки
+  type: object
+  required:
+    - productQuantity
+    - productVolume
+    - weight
+    - unusedVolume
+  properties:
+    productQuantity:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество изделий в коробке
+        - example: 15
+    productVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Объём изделий в коробке
+        - example: 4.21
+    weight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Gram"
+        - description: Вес коробки с изделиями
+        - example: 2450
+    unusedVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Percent"
+        - description: Незаполенный объём коробке
+        - example: 23.71

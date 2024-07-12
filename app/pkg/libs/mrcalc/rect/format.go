@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 )
 
@@ -17,7 +19,8 @@ type (
 
 // String - возвращает текущий формат в виде строки {width}x{height}.
 func (f Format) String() string {
-	return strconv.FormatFloat(f.Width, 'f', -1, 64) + "x" + strconv.FormatFloat(f.Height, 'f', -1, 64)
+	return strconv.FormatFloat(mrlib.RoundFloat8(f.Width), 'f', -1, 64) + "x" +
+		strconv.FormatFloat(mrlib.RoundFloat8(f.Height), 'f', -1, 64)
 }
 
 // IsValid - проверяет валиден ли текущий формат.

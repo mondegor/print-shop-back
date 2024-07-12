@@ -3,15 +3,17 @@ Calculations.Algo.PublicAPI.Request.Model.RectImposition:
   type: object
   required:
     - itemFormat
-    - itemBorderFormat
+    - itemDistance
     - outFormat
   properties:
     itemFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
-    itemBorderFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+    itemDistance:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+        - description: Дистанция между элементами
     outFormat:
-      $ref: "#/components/schemas/Custom.Field.DoubleSize"
+      $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
 
 Calculations.Algo.PublicAPI.Response.Model.RectImposition:
   description: DTO - расчёта алгоритма "Спуск полос"
@@ -29,6 +31,6 @@ Calculations.Algo.PublicAPI.Response.Model.RectImposition:
       items:
         $ref: "#/components/schemas/Custom.Field.Fragment"
     total:
-      $ref: "#/components/schemas/App.Field.Int32"
+      $ref: "#/components/schemas/App.Field.Uint"
     garbage:
       $ref: "#/components/schemas/App.Field.Float64"
