@@ -22,8 +22,8 @@ debugging:
 
 logger:
   level: trace # debug, info, warn, error, fatal, trace
-  json_format: false
   timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
+  json_format: false
   console_color: true
 
 sentry:
@@ -71,7 +71,7 @@ file_system:
 file_providers:
   image_storage:
     name: imageStorage
-    root_dir: "./img"
+    root_dir: "../img"
 
 cors:
   allowed_origins:
