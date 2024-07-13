@@ -21,7 +21,7 @@ debugging:
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
 
 logger:
-  level: TRACE # DEBUG, INFO, WARN, ERROR, FATAL, TRACE
+  level: trace # debug, info, warn, error, fatal, trace
   json_format: false
   timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
   console_color: true

@@ -8,10 +8,10 @@ CREATE TABLE printshop_catalog.papers (
     type_id int4 NOT NULL CHECK(type_id > 0),
     color_id int4 NOT NULL CHECK(color_id > 0),
     facture_id int4 NOT NULL CHECK(facture_id > 0),
-    paper_width double NOT NULL, -- meter
-    paper_height double NOT NULL, -- meter
-    paper_thickness double NOT NULL, -- meter
-    paper_density double NOT NULL, -- kg/m2
+    paper_width double precision NOT NULL, -- meter
+    paper_height double precision NOT NULL, -- meter
+    paper_thickness double precision NOT NULL, -- meter
+    paper_density double precision NOT NULL, -- kg/m2
     paper_sides int2 NOT NULL, -- 1=SAME, 2=DIFFERENT
     paper_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),

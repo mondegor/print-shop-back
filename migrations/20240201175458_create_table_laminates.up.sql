@@ -6,10 +6,10 @@ CREATE TABLE printshop_catalog.laminates (
     laminate_article character varying(32) NULL,
     laminate_caption character varying(64) NOT NULL,
     type_id int4 NOT NULL CHECK(type_id > 0),
-    laminate_length double NOT NULL, -- meter
-    laminate_width double NOT NULL, -- meter
-    laminate_thickness double NOT NULL, -- meter
-    laminate_weight_m2 double NOT NULL, -- kilogram
+    laminate_length double precision NOT NULL, -- meter
+    laminate_width double precision NOT NULL, -- meter
+    laminate_thickness double precision NOT NULL, -- meter
+    laminate_weight_m2 double precision NOT NULL, -- kilogram
     laminate_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NULL,

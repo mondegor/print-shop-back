@@ -3,6 +3,7 @@
 # REST API документация для Print Shop Back v0.4.0
 - [API документация в формате OpenAPI/Swagger](./api)
     - [AdminAPI](./api/admin-api)
+    - [ProvidersAPI](./api/providers-api)  
     - [PublicAPI](./api/public-api)
 - [Исходники, из которых собирается API документация](./api-src)
 - [Скрипты, которые собирают API документацию](../scripts/openapi)

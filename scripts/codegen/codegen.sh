@@ -1,6 +1,6 @@
 
 function mrcmd_plugins_codegen_method_init() {
-  readonly CODEGEN_CAPTION="PrintShop REST API Builder"
+  readonly CODEGEN_CAPTION="PrintShop code Generator"
 
   readonly CODEGEN_VARS=(
     "CODEGEN_SRC_DIR"
@@ -62,6 +62,6 @@ function mrcmd_plugins_codegen_method_exec() {
 function mrcmd_plugins_codegen_method_help() {
   #markup:"|-|-|---------|-------|-------|---------------------------------------|"
   echo -e "${CC_YELLOW}Commands:${CC_END}"
-  echo -e "    build-all         Builds all API docs"
-  echo -e "    build-adm-all     Builds all admin API docs"
+  echo -e "    build-all         Generate all code"
+  echo -e "    build-adm-all     Builds all admin code"
 }

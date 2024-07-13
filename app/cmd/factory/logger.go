@@ -1,6 +1,8 @@
 package factory
 
 import (
+	"strings"
+
 	"github.com/mondegor/print-shop-back/config"
 
 	"github.com/mondegor/go-webcore/mrcore"
@@ -12,7 +14,7 @@ import (
 func NewLogger(cfg config.Config) (*zerolog.LoggerAdapter, error) {
 	return factory.NewZeroLogAdapter(
 		factory.Options{
-			Level:            cfg.Log.Level,
+			Level:            strings.ToUpper(cfg.Log.Level),
 			JsonFormat:       cfg.Log.JsonFormat,
 			TimestampFormat:  cfg.Log.TimestampFormat,
 			ConsoleColor:     cfg.Log.ConsoleColor,

@@ -5,11 +5,11 @@ CREATE TABLE printshop_catalog.boxes (
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     box_article character varying(32) NULL,
     box_caption character varying(64) NOT NULL,
-    box_length double NOT NULL, -- meter
-    box_width double NOT NULL, -- meter
-    box_height double NOT NULL, -- meter
-    box_thickness double NOT NULL, -- meter
-    box_weight double NOT NULL, -- kilogram
+    box_length double precision NOT NULL, -- meter
+    box_width double precision NOT NULL, -- meter
+    box_height double precision NOT NULL, -- meter
+    box_thickness double precision NOT NULL, -- meter
+    box_weight double precision NOT NULL, -- kilogram
     box_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NULL,
