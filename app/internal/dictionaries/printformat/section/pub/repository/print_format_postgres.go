@@ -28,14 +28,14 @@ func NewPrintFormatPostgres(client mrstorage.DBConnManager) *PrintFormatPostgres
 func (re *PrintFormatPostgres) Fetch(ctx context.Context, _ entity.PrintFormatParams) ([]entity.PrintFormat, error) {
 	sql := `
         SELECT
-            facture_id,
-            facture_caption
+            format_id,
+            format_caption
         FROM
             ` + module.DBSchema + `.` + module.DBTableNamePrintFormats + `
         WHERE
-            facture_status = $1 AND deleted_at IS NULL
+            format_status = $1 AND deleted_at IS NULL
         ORDER BY
-            facture_caption ASC, facture_id ASC;`
+            format_caption ASC, format_id ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,

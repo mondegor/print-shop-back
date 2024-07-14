@@ -11,7 +11,7 @@ const (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct { // DB: printshop_dictionaries.print_formats
-		ID      mrtype.KeyInt32 `json:"id"` // facture_id
+		ID      mrtype.KeyInt32 `json:"id"` // format_id
 		Caption string          `json:"caption"`
 	}
 
