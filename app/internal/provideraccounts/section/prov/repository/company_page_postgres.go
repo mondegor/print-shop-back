@@ -119,26 +119,6 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 		conn := re.client.Conn(ctx)
 
 		sql := `
-        	SELECT
-        	    account_id
-    	    FROM
-	            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
-        	WHERE
-            	account_id = $1
-        	LIMIT 1;`
-
-		err := conn.QueryRow(
-			ctx,
-			sql,
-			row.AccountID,
-		).Scan(
-			&row.AccountID,
-		)
-		if err != nil {
-			return err
-		}
-
-		sql = `
 	        UPDATE
     	        ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
         	SET
@@ -149,7 +129,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
         	WHERE
             	account_id = $1;`
 
-		err = conn.Exec(
+		err := conn.Exec(
 			ctx,
 			sql,
 			row.AccountID,
@@ -157,11 +137,9 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.PageTitle,
 			row.SiteURL,
 		)
-		if err != nil {
-			// если это системная ошибка
-			if !mrcore.ErrStorageNoRowFound.Is(err) {
-				return err
-			}
+		// если сохранение удачное или если это системная ошибка
+		if err == nil || !mrcore.ErrStorageRowsNotAffected.Is(err) {
+			return err
 		}
 
 		sql = `

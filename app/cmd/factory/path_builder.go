@@ -13,7 +13,7 @@ func NewImageURLBuilder(cfg config.Config) (*placeholderpath.Builder, error) {
 	return placeholderpath.New(
 		strings.TrimRight(cfg.ModulesSettings.FileStation.ImageProxy.Host, "/")+
 			"/"+
-			strings.TrimLeft(cfg.ModulesSettings.FileStation.ImageProxy.BaseURL, "/"),
+			strings.TrimLeft(cfg.ModulesSettings.FileStation.ImageProxy.BasePath, "/"),
 		placeholderpath.Placeholder,
 	)
 }

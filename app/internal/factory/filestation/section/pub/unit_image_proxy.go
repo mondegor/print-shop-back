@@ -28,7 +28,7 @@ func newUnitImageProxy(_ context.Context, opts filestation.Options) (*httpv1.Ima
 		opts.RequestParser,
 		opts.ResponseSender,
 		useCase,
-		opts.UnitImageProxy.BaseURL,
+		opts.UnitImageProxy.BasePath,
 	)
 
 	return controller, nil

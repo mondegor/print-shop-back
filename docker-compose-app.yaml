@@ -4,3 +4,6 @@ services:
   web-app: # ${GO_DOCKER_SERVICE}
     volumes:
       - ${APPX_IMAGES_DIR}:/opt/img
+#    depends_on:
+#      - db-postgres # ${POSTGRES_DOCKER_SERVICE}
+#      - db-redis # ${REDIS_DOCKER_SERVICE}

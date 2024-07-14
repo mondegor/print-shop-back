@@ -16,7 +16,7 @@ const (
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct { // DB: printshop_providers.companies_pages
-		AccountID   uuid.UUID         // account_id
+		AccountID   uuid.UUID         `json:"-"` // account_id
 		RewriteName string            `json:"rewriteName"`
 		PageTitle   string            `json:"pageTitle"`
 		LogoURL     string            `json:"logoUrl,omitempty"` // logo_meta.path

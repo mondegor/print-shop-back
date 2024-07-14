@@ -1,10 +1,9 @@
 package httpv1
 
 import (
-	"fmt"
 	"net/http"
-	"strings"
 
+	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/filestation/section/pub"
@@ -25,13 +24,13 @@ func NewImageProxy(
 	parser mrserver.RequestParserString,
 	sender mrserver.FileResponseSender,
 	useCase pub.FileProviderAdapterUseCase,
-	basePath string, // TODO: to URL
+	basePath mrpath.PathBuilder,
 ) *ImageProxy {
 	return &ImageProxy{
 		parser:    parser,
 		sender:    sender,
 		useCase:   useCase,
-		imagesURL: fmt.Sprintf("/%s/"+mrserver.VarRestOfURL, strings.Trim(basePath, "/")),
+		imagesURL: basePath.BuildPath(mrserver.VarRestOfURL),
 	}
 }
 

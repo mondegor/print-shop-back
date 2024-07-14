@@ -3,6 +3,7 @@ package filestation
 import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 )
@@ -19,7 +20,7 @@ type (
 
 	// UnitImageProxyOptions - comment struct.
 	UnitImageProxyOptions struct {
-		FileAPI mrstorage.FileProviderAPI
-		BaseURL string
+		FileAPI  mrstorage.FileProviderAPI
+		BasePath mrpath.PathBuilder
 	}
 )

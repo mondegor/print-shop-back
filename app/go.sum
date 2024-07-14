@@ -70,8 +70,8 @@ github.com/mondegor/go-storage v0.11.8 h1:eJtkE2tpkaqPJN4Ui2FqPFSHTF5pU/oKvs3olc
 github.com/mondegor/go-storage v0.11.8/go.mod h1:IEqPMGEkW+l3ct1sPGTaonsatYy0+lc90Wdm2YhZZzc=
 github.com/mondegor/go-sysmess v0.10.10 h1:8BToVoThos2uzV3+2U+mhtWK8ywxb+nsIpw5smtJVA4=
 github.com/mondegor/go-sysmess v0.10.10/go.mod h1:lmtm83olOIDpxyfhjLT5ZTX4sQIUYH/Gv2A6pfbCSsc=
-github.com/mondegor/go-webcore v0.20.0 h1:UJU9bE6wjliKjTlXd30ebWGpv15PSTGIb6reNirn0iI=
-github.com/mondegor/go-webcore v0.20.0/go.mod h1:SuJbsWoMvz0jwKtDwe863bBGhHS8efxSSou688IEfRM=
+github.com/mondegor/go-webcore v0.20.1 h1:u7qHerGZQNHeLIv/PYssxZS3TsmLojiZL6DnaB5O1X0=
+github.com/mondegor/go-webcore v0.20.1/go.mod h1:SuJbsWoMvz0jwKtDwe863bBGhHS8efxSSou688IEfRM=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 h1:C3w9PqII01/Oq1c1nUAm88MOHcQC9l5mIlSMApZMrHA=
 github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822/go.mod h1:+n7T8mK8HuQTcFwEeznm/DIxMOiR9yIdICNftLE1DvQ=
 github.com/oklog/run v1.1.0 h1:GEenZ1cK0+q0+wsJew9qUg/DyD8k3JzYsZAi5gYi2mA=

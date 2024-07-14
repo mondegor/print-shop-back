@@ -9,7 +9,7 @@ require (
 	github.com/mondegor/go-components v0.7.6
 	github.com/mondegor/go-storage v0.11.8
 	github.com/mondegor/go-sysmess v0.10.10
-	github.com/mondegor/go-webcore v0.20.0
+	github.com/mondegor/go-webcore v0.20.1
 	github.com/oklog/run v1.1.0
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
