@@ -6,10 +6,10 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
-	github.com/mondegor/go-components v0.7.6
-	github.com/mondegor/go-storage v0.11.8
+	github.com/mondegor/go-components v0.7.7
+	github.com/mondegor/go-storage v0.11.9
 	github.com/mondegor/go-sysmess v0.10.10
-	github.com/mondegor/go-webcore v0.20.1
+	github.com/mondegor/go-webcore v0.20.2
 	github.com/oklog/run v1.1.0
 	github.com/prometheus/client_golang v1.19.1
 	github.com/stretchr/testify v1.9.0
@@ -41,7 +41,7 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/redis/go-redis/v9 v9.5.4 // indirect
+	github.com/redis/go-redis/v9 v9.6.0 // indirect
 	github.com/rs/cors v1.11.0 // indirect
 	github.com/rs/xid v1.5.0 // indirect
 	github.com/rs/zerolog v1.33.0 // indirect

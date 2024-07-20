@@ -33,7 +33,7 @@ func NewRestRouter(ctx context.Context, opts app.Options, translator *mrlang.Tra
 		return nil, err
 	}
 
-	observeRequest := mrprometheus.NewObserveRequest()
+	observeRequest := mrprometheus.NewObserveRequest("appx_http")
 	opts.Prometheus.MustRegister(
 		observeRequest.Collectors()...,
 	)

@@ -1,2 +1,4 @@
+- url: http://api.print-shop.local/prov
+  description: Local Domain
 - url: http://localhost:8080/prov
   description: Local Host

@@ -171,7 +171,7 @@ task_schedule:
   settings_reloader:
     caption: Settings reloader
     startup: true
-    period: 15s
+    period: 5m
     timeout: 30s
 
 mime_types:

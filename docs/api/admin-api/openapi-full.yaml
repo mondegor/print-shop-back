@@ -31,6 +31,8 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
+  - url: http://api.print-shop.local/adm
+    description: Local Domain
   - url: http://localhost:8080/adm
     description: Local Host
 tags:
