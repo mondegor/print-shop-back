@@ -41,13 +41,11 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 	if remainingLayout.Total() > 0 {
 		ri.logger.Debug().MsgFunc(
 			func() string {
-				inWithDistance := item.WithDistance()
-
 				return fmt.Sprintf(
 					"- placed item %s on remaining out format %s with fict margins: %s, %s, %d * %d = %d",
-					inWithDistance,
+					item.WithDistance(),
 					outRemaining,
-					inWithDistance.OrientationType(),
+					item.WithDistance().OrientationType(),
 					remainingPosition,
 					remainingLayout.ByWidth,
 					remainingLayout.ByHeight,

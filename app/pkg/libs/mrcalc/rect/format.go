@@ -24,22 +24,22 @@ func (f Format) String() string {
 }
 
 // IsValid - проверяет валиден ли текущий формат.
-func (f *Format) IsValid() bool {
+func (f Format) IsValid() bool {
 	return f.Width > 0 && f.Height > 0
 }
 
 // IsZero - проверяет что формат является нулевым.
-func (f *Format) IsZero() bool {
+func (f Format) IsZero() bool {
 	return f.Width == 0 && f.Height == 0
 }
 
 // Area - возвращает площадь формата.
-func (f *Format) Area() float64 {
+func (f Format) Area() float64 {
 	return f.Width * f.Height
 }
 
 // Max - возвращает самую длинную сторону формата.
-func (f *Format) Max() float64 {
+func (f Format) Max() float64 {
 	if f.Width > f.Height {
 		return f.Width
 	}
@@ -49,17 +49,17 @@ func (f *Format) Max() float64 {
 
 // Cast - возвращает формат в таком виде, чтобы ширина формата
 // была всегда больше или равна высоте формата.
-func (f *Format) Cast() Format {
+func (f Format) Cast() Format {
 	if f.Width < f.Height {
 		return f.Change()
 	}
 
-	return *f
+	return f
 }
 
 // Change - возвращает изменение сторон формата: ширину и высоту местами
 // (поворачивает формат на 90 градусов).
-func (f *Format) Change() Format {
+func (f Format) Change() Format {
 	return Format{
 		Width:  f.Height,
 		Height: f.Width,
@@ -67,7 +67,7 @@ func (f *Format) Change() Format {
 }
 
 // Sum - возвращает сумму текущего формата с указанным.
-func (f *Format) Sum(second Format) Format {
+func (f Format) Sum(second Format) Format {
 	return Format{
 		Width:  f.Width + second.Width,
 		Height: f.Height + second.Height,
@@ -77,43 +77,42 @@ func (f *Format) Sum(second Format) Format {
 // Diff - возвращает разницу текущего формата и указанного.
 // Если какая-то сторона указанного формата больше той же стороны текущего формата,
 // то эта сторона будет приравнена 0.
-func (f *Format) Diff(second Format) Format {
-	res := *f
+func (f Format) Diff(second Format) Format {
+	diff := func(first, second float64) float64 {
+		if first > second {
+			return first - second
+		}
 
-	if res.Width > second.Width {
-		res.Width -= second.Width
-	} else {
-		res.Width = 0
+		return 0
 	}
 
-	if res.Height > second.Height {
-		res.Height -= second.Height
-	} else {
-		res.Height = 0
+	return Format{
+		Width:  diff(f.Width, second.Width),
+		Height: diff(f.Height, second.Height),
 	}
-
-	return res
 }
 
 // DivBy - возвращает формат разделённый на указанную величину по широкой стороне.
-func (f *Format) DivBy(divisor uint64) (Format, error) {
+func (f Format) DivBy(divisor uint64) (Format, error) {
 	if divisor == 0 {
 		return Format{}, errors.New("divide by zero")
 	}
 
-	res := *f
-
-	if res.Height >= res.Width {
-		res.Height /= float64(divisor)
-	} else {
-		res.Width /= float64(divisor)
+	if f.Height >= f.Width {
+		return Format{
+			Width:  f.Width,
+			Height: f.Height / float64(divisor),
+		}, nil
 	}
 
-	return res, nil
+	return Format{
+		Width:  f.Width / float64(divisor),
+		Height: f.Height,
+	}, nil
 }
 
 // Compare - возвращает результат сравнения формата с указанным.
-func (f *Format) Compare(second Format) base.CompareType {
+func (f Format) Compare(second Format) base.CompareType {
 	first := f.Cast()
 	second = second.Cast()
 
@@ -133,7 +132,7 @@ func (f *Format) Compare(second Format) base.CompareType {
 }
 
 // OrientationType - возвращает тип ориентации формата (книжный, альбомный).
-func (f *Format) OrientationType() string {
+func (f Format) OrientationType() string {
 	if f.Width > f.Height {
 		return base.OrientationAlbum
 	}

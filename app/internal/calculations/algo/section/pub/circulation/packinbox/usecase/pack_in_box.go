@@ -43,8 +43,7 @@ func (uc *CirculationPackInBox) Calc(ctx context.Context, raw entity.RawData) (e
 
 	imp := imposition.New(mrlog.Ctx(ctx))
 
-	boxBottomFormat := parsedData.Box.Format.BottomFormat()
-	boxBottomFormat = boxBottomFormat.Diff(parsedData.Box.Margins.BottomFormat())
+	boxBottomFormat := parsedData.Box.Format.BottomFormat().Diff(parsedData.Box.Margins.BottomFormat())
 
 	// вычитается толщина стенки
 	const twoSides = 2
@@ -73,26 +72,32 @@ func (uc *CirculationPackInBox) Calc(ctx context.Context, raw entity.RawData) (e
 		return entity.AlgoResult{}, errors.New("total = 0") // коробка не подходит
 	}
 
-	// :WARNING: parsedData.Product.Thickness > 0 && parsedData.Product.WeightM2 > 0
+	// TODO: parsedData.Product.Thickness > 0 && parsedData.Product.WeightM2 > 0
 
 	var (
-		box     entity.BoxResult
-		lastBox entity.BoxResult
+		box         entity.BoxResult
+		restBox     entity.BoxResult
+		boxesWeight float64
 	)
 
+	const countBoxSides = 2
+	boxSidesThickness := parsedData.Box.Thickness * countBoxSides
+
+	// TODO: parsedData.Box.Format.Height > boxSidesThickness
+
 	// максимальное кол-во изделий в стопке (отбрасывается дробная часть)
-	maxProductQuantityInStack := uint64(parsedData.Box.Format.Height / parsedData.Product.Thickness)
+	maxProductQuantityInStack := uint64((parsedData.Box.Format.Height - boxSidesThickness) / parsedData.Product.Thickness)
 
 	// максимальное кол-во изделий в коробке
 	maxProductQuantityInBox := maxProductQuantityInStack * impResult.Total
 
-	// :WARNING: maxProductQuantityInBox > 0
+	// TODO: maxProductQuantityInBox > 0
 
 	// кол-во полностью заполненных коробок (отбрасывается дробная часть)
 	filledBoxQuantity := parsedData.Product.Quantity / maxProductQuantityInBox
 	totalBoxQuantity := filledBoxQuantity
 
-	// кол-во оставшихся изделий (последняя неполная коробка)
+	// кол-во оставшихся изделий (последняя незаполненная коробка)
 	restProductQuantity := parsedData.Product.Quantity - filledBoxQuantity*maxProductQuantityInBox
 
 	// площадь изделия
@@ -101,39 +106,54 @@ func (uc *CirculationPackInBox) Calc(ctx context.Context, raw entity.RawData) (e
 	// объём коробки
 	boxVolume := parsedData.Box.Format.Volume()
 
+	boxInnerVolume := parsedData.Box.Format.Diff(
+		parallelepiped.Format{
+			Length: boxSidesThickness,
+			Width:  boxSidesThickness,
+			Height: boxSidesThickness,
+		},
+	).Volume()
+
 	// объём одного изделия
 	productVolume := productArea * parsedData.Product.Thickness
 
 	if filledBoxQuantity > 0 {
 		box = entity.BoxResult{
-			ProductQuantity:     maxProductQuantityInBox,
-			ProductVolume:       mrlib.RoundFloat8(productVolume * float64(maxProductQuantityInBox)),
 			Weight:              mrlib.RoundFloat4(productArea*float64(maxProductQuantityInBox)*parsedData.Product.WeightM2 + parsedData.Box.Weight),
 			Volume:              mrlib.RoundFloat8(boxVolume),
-			UnusedVolumePercent: mrlib.RoundFloat2(100 - 100*productVolume*float64(maxProductQuantityInBox)/boxVolume),
+			InnerVolume:         mrlib.RoundFloat8(boxInnerVolume),
+			ProductQuantity:     maxProductQuantityInBox,
+			ProductVolume:       mrlib.RoundFloat8(productVolume * float64(maxProductQuantityInBox)),
+			UnusedVolumePercent: mrlib.RoundFloat2(100 - 100*productVolume*float64(maxProductQuantityInBox)/boxInnerVolume),
 		}
+
+		boxesWeight += box.Weight * float64(filledBoxQuantity)
 	}
 
 	if restProductQuantity > 0 {
-		lastBox = entity.BoxResult{
-			ProductQuantity:     restProductQuantity,
-			ProductVolume:       mrlib.RoundFloat8(productVolume * float64(restProductQuantity)),
+		restBox = entity.BoxResult{
 			Weight:              mrlib.RoundFloat4(productArea*float64(restProductQuantity)*parsedData.Product.WeightM2 + parsedData.Box.Weight),
 			Volume:              mrlib.RoundFloat8(boxVolume),
-			UnusedVolumePercent: mrlib.RoundFloat2(100 - 100*productVolume*float64(restProductQuantity)/boxVolume),
+			InnerVolume:         mrlib.RoundFloat8(boxInnerVolume),
+			ProductQuantity:     restProductQuantity,
+			ProductVolume:       mrlib.RoundFloat8(productVolume * float64(restProductQuantity)),
+			UnusedVolumePercent: mrlib.RoundFloat2(100 - 100*productVolume*float64(restProductQuantity)/boxInnerVolume),
 		}
 
 		totalBoxQuantity++
+		boxesWeight += restBox.Weight
 	}
 
 	uc.emitEvent(ctx, "Calc", mrmsg.Data{"raw": parsedData})
 
 	return entity.AlgoResult{
-		Box:            box,
-		LastBox:        lastBox,
-		ProductsVolume: mrlib.RoundFloat8(productVolume * float64(parsedData.Product.Quantity)),
-		BoxesQuantity:  totalBoxQuantity,
-		BoxesVolume:    mrlib.RoundFloat8(boxVolume * float64(totalBoxQuantity)),
+		Box:              box,
+		RestBox:          restBox,
+		BoxesQuantity:    totalBoxQuantity,
+		BoxesWeight:      mrlib.RoundFloat4(boxesWeight),
+		ProductsVolume:   mrlib.RoundFloat8(productVolume * float64(parsedData.Product.Quantity)),
+		BoxesVolume:      mrlib.RoundFloat8(boxVolume * float64(totalBoxQuantity)),
+		BoxesInnerVolume: mrlib.RoundFloat8(boxInnerVolume * float64(totalBoxQuantity)),
 	}, nil
 }
 
@@ -153,7 +173,7 @@ func (uc *CirculationPackInBox) parse(data entity.RawData) (entity.ParsedData, e
 		return entity.ParsedData{}, err
 	}
 
-	// TODO if boxMargins > boxFormat
+	// TODO: if boxMargins > boxFormat
 
 	return entity.ParsedData{
 		Product: entity.ParsedProduct{

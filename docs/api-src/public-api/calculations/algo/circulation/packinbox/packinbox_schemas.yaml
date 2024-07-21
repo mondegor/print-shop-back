@@ -62,50 +62,73 @@ Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox:
   type: object
   required:
     - box
-    - lastBox
-    - productsVolume
-    - boxVolumeInternal
-    - boxVolumeExternal
+    - restBox
     - boxesQuantity
+    - boxesWeight
+    - productsVolume
+    - boxesInnerVolume
+    - boxesVolume
   properties:
     box:
       allOf:
         - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
         - description: Полностью заполенная коробка
-    lastBox:
+    restBox:
       allOf:
         - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
         - description: Коробка с остатком изделий
-    productsVolume:
-      allOf:
-        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        - description: Общий объём тиража
-        - example: 18.3
-    boxVolumeInternal:
-      allOf:
-        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        - description: Общий внутренний объём коробок
-        - example: 18.1
-    boxVolumeExternal:
-      allOf:
-        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        - description: Общий внешний объём коробок
-        - example: 19.6
     boxesQuantity:
       allOf:
         - $ref: "#/components/schemas/App.Field.Uint"
         - description: Количество коробок
         - example: 17
+    boxesWeight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+        - description: Общий вес коробок с изделиями
+        - example: 371.25
+    productsVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий объём изделий
+        - example: 17.25
+    boxesVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий внешний объём коробок
+        - example: 19.6
+    boxesInnerVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий внутренний объём коробок
+        - example: 18.1
 
 Calculations.Algo.PublicAPI.Response.Model.Box:
   description: DTO коробки
   type: object
   required:
+    - weight
+    - volume
+    - innerVolume
     - productQuantity
     - productVolume
-    - weight
-    - unusedVolume
+    - unusedVolumePercent
   properties:
+    weight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+        - description: Вес коробки с изделиями
+        - example: 24.75
+    volume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Внешний объём коробки
+        - example: 0.4
+    innerVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Внутренний объём коробки
+        - example: 0.375
     productQuantity:
       allOf:
         - $ref: "#/components/schemas/App.Field.Uint"
@@ -116,13 +139,8 @@ Calculations.Algo.PublicAPI.Response.Model.Box:
         - $ref: "#/components/schemas/App.Field.Measure.Meter3"
         - description: Объём изделий в коробке
         - example: 4.21
-    weight:
-      allOf:
-        - $ref: "#/components/schemas/App.Field.Measure.Gram"
-        - description: Вес коробки с изделиями
-        - example: 2450
-    unusedVolume:
+    unusedVolumePercent:
       allOf:
         - $ref: "#/components/schemas/App.Field.Percent"
-        - description: Незаполенный объём коробке
+        - description: Незаполенный объём коробки в %
         - example: 23.71

@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.15.8
+# Описание Print Shop Back v0.15.9
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -12,7 +12,7 @@ Web сервис для расчёта стоимости и времени из
 > Перед запуском консольных скриптов сервиса необходимо скачать и установить утилиту Mrcmd.\
 > Инструкция по её установке находится [здесь](https://github.com/mondegor/mrcmd#readme)
 
-### Команды для сборки API документации v0.4.0
+### Команды для сборки API документации v0.4.1
 - `mrcmd openapi help` - помощь по командам плагина openapi;
 - `mrcmd openapi build-all` - сборка документации всех API;
 
@@ -65,10 +65,10 @@ Web сервис для расчёта стоимости и времени из
 > смотрите [здесь](https://github.com/mondegor/mrcmd#readme).
 
 ## Панели управления развёрнутой инфраструктуры
-- TRAEFIK: traefik.local (admin 12345678)
-- API: api.go-sample.local
+- TRAEFIK: http://traefik.local/ (admin 12345678);
+- API: http://api.go-sample.local/;
 
 ### Использование локальных доменов
 Необходимо в hosts добавить следующие записи:
-- 127.0.0.1 traefik.local
-- 127.0.0.1 api.print-shop.local
+- `127.0.0.1 traefik.local`
+- `127.0.0.1 api.print-shop.local`

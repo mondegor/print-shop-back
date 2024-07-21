@@ -10,7 +10,7 @@
   },
   "box": {
     "format": "630x320x340",
-    "thickness": 500,
+    "thickness": 500, # !5000
     "margins": "0x0x0",
     "weight": 500,
     "maxWeight": 25000

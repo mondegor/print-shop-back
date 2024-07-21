@@ -166,13 +166,11 @@ func (ri *Algo) calcMainLayout(item rect.Item, out rect.Format) (base.Fragment, 
 
 	ri.logger.Debug().MsgFunc(
 		func() string {
-			inWithDistance := item.WithDistance()
-
 			return fmt.Sprintf(
 				"- placed item %s on out format %s with fict margins: %s, %s, %d * %d = %d",
-				inWithDistance,
+				item.WithDistance(),
 				out,
-				inWithDistance.OrientationType(),
+				item.WithDistance().OrientationType(),
 				base.PositionTop,
 				layout.ByWidth,
 				layout.ByHeight,

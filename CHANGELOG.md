@@ -4,7 +4,19 @@
 ## 2024-07-21
 ### Added
 - Теперь к приложению можно обращаться через локальный домен (с помощью `traefik`).
-- В Open API документацию добавлены сервера с использованием домена;
+- Добавлен метод `parallelepiped.Diff()`;
+
+### Changed
+- В Open API документации были следующие изменения:
+    - добавлены сервера с использованием домена;
+    - В объекте `Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox`:
+        - `lastBox` -> `restBox`;
+        - `boxVolumeInternal` -> `boxesInnerVolume`;
+        - `boxVolumeExternal` -> `boxesVolume`;
+        - добавлено поле `boxesWeight`;
+    - В объекте `Calculations.Algo.PublicAPI.Response.Model.Box`:
+        - добавлены поля `volume`, `innerVolume`;
+        - `unusedVolume` -> `unusedVolumePercent`;
 
 ### Fixed
 - Заменено `PaperLength` -> `PaperWidth`;

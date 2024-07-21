@@ -58,19 +58,22 @@ type (
 
 	// AlgoResult - результат работы алгоритма Algo.
 	AlgoResult struct {
-		Box            BoxResult `json:"box"`
-		LastBox        BoxResult `json:"lastBox"`
-		ProductsVolume float64   `json:"productsVolume"`
-		BoxesVolume    float64   `json:"boxesVolume"`
-		BoxesQuantity  uint64    `json:"boxesQuantity"`
+		Box              BoxResult `json:"box"`
+		RestBox          BoxResult `json:"restBox"`
+		BoxesQuantity    uint64    `json:"boxesQuantity"`
+		BoxesWeight      float64   `json:"boxesWeight"`
+		ProductsVolume   float64   `json:"productsVolume"`
+		BoxesVolume      float64   `json:"boxesVolume"`
+		BoxesInnerVolume float64   `json:"boxesInnerVolume"`
 	}
 
 	// BoxResult - результаты вычислений параметров коробки.
 	BoxResult struct {
-		ProductQuantity     uint64  `json:"productQuantity"`
-		ProductVolume       float64 `json:"productVolume"`
 		Weight              float64 `json:"weight"`
 		Volume              float64 `json:"volume"`
+		InnerVolume         float64 `json:"innerVolume"`
+		ProductQuantity     uint64  `json:"productQuantity"`
+		ProductVolume       float64 `json:"productVolume"`
 		UnusedVolumePercent float64 `json:"unusedVolumePercent"`
 	}
 )

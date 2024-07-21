@@ -3,14 +3,14 @@
 
 {
   "product": {
-    "format": "210x297",
-    "thickness": 150,
+    "format": "210x297", # !change
+    "thickness": 150, # !100
     "weightM2": 100,
     "quantity": 3000
   },
   "box": {
     "format": "400x300x300",
-    "thickness": 300,
+    "thickness": 300, # !2000
     "margins": "0x0x0",
     "weight": 350,
     "maxWeight": 16150
