@@ -64,7 +64,8 @@ Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox:
     - box
     - lastBox
     - productsVolume
-    - boxesVolume
+    - boxVolumeInternal
+    - boxVolumeExternal
     - boxesQuantity
   properties:
     box:
@@ -80,10 +81,15 @@ Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox:
         - $ref: "#/components/schemas/App.Field.Measure.Meter3"
         - description: Общий объём тиража
         - example: 18.3
-    boxesVolume:
+    boxVolumeInternal:
       allOf:
         - $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        - description: Общий объём коробок
+        - description: Общий внутренний объём коробок
+        - example: 18.1
+    boxVolumeExternal:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий внешний объём коробок
         - example: 19.6
     boxesQuantity:
       allOf:
