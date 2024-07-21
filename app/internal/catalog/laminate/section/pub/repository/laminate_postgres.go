@@ -92,7 +92,8 @@ func (re *LaminatePostgres) FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32
         WHERE
             laminate_status = $1 AND deleted_at IS NULL
         GROUP BY
-            type_id ASC;`
+            type_id
+		ORDER BY type_id ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -133,7 +134,8 @@ func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Met
         WHERE
             laminate_status = $1 AND deleted_at IS NULL
         GROUP BY
-            laminate_thickness ASC;`
+            laminate_thickness
+		ORDER BY laminate_thickness ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,

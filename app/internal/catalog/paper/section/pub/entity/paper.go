@@ -20,7 +20,7 @@ type (
 		TypeID    mrtype.KeyInt32           `json:"typeId"`    // material_types::type_id
 		ColorID   mrtype.KeyInt32           `json:"colorId"`   // paper_colors::color_id
 		FactureID mrtype.KeyInt32           `json:"factureId"` // paper_factures::facture_id
-		Length    measure.Meter             `json:"length"`
+		Width     measure.Meter             `json:"width"`
 		Height    measure.Meter             `json:"height"`
 		Thickness measure.Meter             `json:"thickness"`
 		Density   measure.KilogramPerMeter2 `json:"density"`

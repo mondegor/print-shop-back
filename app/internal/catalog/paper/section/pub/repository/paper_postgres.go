@@ -36,7 +36,7 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 			type_id,
 			color_id,
 			facture_id,
-			paper_length,
+			paper_width,
 			paper_height,
 			paper_thickness,
 			paper_density,
@@ -71,7 +71,7 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 			&row.TypeID,
 			&row.ColorID,
 			&row.FactureID,
-			&row.Length,
+			&row.Width,
 			&row.Height,
 			&row.Thickness,
 			&row.Density,
@@ -97,7 +97,8 @@ func (re *PaperPostgres) FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32, e
         WHERE
             paper_status = $1 AND deleted_at IS NULL
         GROUP BY
-            type_id ASC;`
+            type_id
+		ORDER BY type_id ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -138,7 +139,8 @@ func (re *PaperPostgres) FetchColorIDs(ctx context.Context) ([]mrtype.KeyInt32, 
         WHERE
             paper_status = $1 AND deleted_at IS NULL
         GROUP BY
-            color_id ASC;`
+            color_id
+		ORDER BY color_id ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -179,7 +181,8 @@ func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.Kilogram
         WHERE
             paper_status = $1 AND deleted_at IS NULL
         GROUP BY
-            paper_density ASC;`
+            paper_density
+		ORDER BY paper_density ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -220,7 +223,8 @@ func (re *PaperPostgres) FetchFactureIDs(ctx context.Context) ([]mrtype.KeyInt32
         WHERE
             paper_status = $1 AND deleted_at IS NULL
         GROUP BY
-            facture_id ASC;`
+            facture_id
+		ORDER BY facture_id ASC;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,

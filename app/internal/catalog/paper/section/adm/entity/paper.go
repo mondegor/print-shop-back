@@ -24,7 +24,7 @@ type (
 		TypeID     mrtype.KeyInt32           `json:"typeId" upd:"type_id"`       // material_types::type_id
 		ColorID    mrtype.KeyInt32           `json:"colorId" upd:"color_id"`     // paper_colors::color_id
 		FactureID  mrtype.KeyInt32           `json:"factureId" upd:"facture_id"` // paper_factures::facture_id
-		Length     measure.Meter             `json:"length" sort:"length" upd:"paper_length"`
+		Width      measure.Meter             `json:"width" sort:"width" upd:"paper_width"`
 		Height     measure.Meter             `json:"height" sort:"height" upd:"paper_height"`
 		Thickness  measure.Meter             `json:"thickness" upd:"paper_thickness"`
 		Density    measure.KilogramPerMeter2 `json:"density" sort:"density" upd:"paper_density"`
@@ -47,7 +47,7 @@ type (
 		TypeIDs    []mrtype.KeyInt32
 		ColorIDs   []mrtype.KeyInt32
 		FactureIDs []mrtype.KeyInt32
-		Length     mrtype.RangeInt64
+		Width      mrtype.RangeInt64
 		Height     mrtype.RangeInt64
 		Density    mrtype.RangeInt64
 		Statuses   []mrenum.ItemStatus
