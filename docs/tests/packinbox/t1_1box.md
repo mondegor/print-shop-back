@@ -3,14 +3,14 @@
 
 {
   "product": {
-    "format": "210x297",
+    "format": "297x210",
     "thickness": 300,
     "weightM2": 300,
     "quantity": 1000
   },
   "box": {
     "format": "630x320x340",
-    "thickness": 500, # !5000
+    "thickness": 5000, 
     "margins": "0x0x0",
     "weight": 500,
     "maxWeight": 25000
@@ -25,8 +25,8 @@ impResult.Total = 2
 maxProductQuantityInBox = 2 * 1100 = 2200 шт
 totalBoxQuantity = 1
 restProductQuantity = 1000 - 0 * 2200 = 1000
-BoxVolumeInternal = 620 * 310 * 330 * 1 = 63_426_000
-boxVolumeExternal = 630 * 320 * 340 * 1 = 68_544_000
+boxesInnerVolume = 620 * 310 * 330 * 1 = 63_426_000
+boxesVolume = 630 * 320 * 340 * 1 = 68_544_000
 productVolume = 210 * 297 * 0.3 * 1000= 18_711_000
 Weight = 0.210 * 0.297 * 1000 * 300 + 500 = 19211 г
 UnusedVolumePercent = 100 - 100 * 18_711_000 / 63_426_000 = 70.5 %

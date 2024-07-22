@@ -1,7 +1,7 @@
 @startuml
 
-!include config/sd/theme.iuml
-!include config/sd/autonumber.iuml
+' !include config/sd/theme.iuml
+' !include config/sd/autonumber.iuml
 
 ' title Получение результата вычислений другого пользователя
 
