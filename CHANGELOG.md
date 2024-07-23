@@ -1,6 +1,14 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-07-23
+### Fixed
+- Поправлена и дополнена API документация:
+    - в Calculations.Algo.PublicAPI.Request.Model.RectImposition
+      добавлены пропущенные поля: `disableRotation` и `useMirror`;
+    - для v1/calculations/algo/rect/inside-on-outside-max добавлен пропущенный `Request`;
+    - operationId сделаны уникальными;
+
 ## 2024-07-21
 ### Added
 - Теперь к приложению можно обращаться через локальный домен (с помощью `traefik`).

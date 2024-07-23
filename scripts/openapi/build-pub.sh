@@ -130,7 +130,7 @@ mrcmd_func_openapi_build_pub() {
     # "${sharedDir}/components/enums/App.Enum.Status.yaml"
 
     "${sharedDir}/components/fields/App.Field.Article.yaml"
-    # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
+    "${sharedDir}/components/fields/App.Field.Boolean.yaml"
     "${sharedDir}/components/fields/App.Field.Caption.yaml"
     "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
@@ -162,7 +162,7 @@ mrcmd_func_openapi_build_pub() {
     "${sharedDir}/components/fields/measures/App.Field.Measure.DoubleMillimeter.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.Kilogram.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Kilogram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.KilogramPerMeter2.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.Meter.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter2.yaml"

@@ -37,7 +37,7 @@
       со следующими условиями:
       - paper.isEnabled = true;
 
-    operationId: getMaterialTypeIDList
+    operationId: getPaperTypeIDList
     tags:
       - Catalog.Paper
 

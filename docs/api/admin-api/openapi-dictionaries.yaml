@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.1
+  version: v0.4.2
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -1111,6 +1111,26 @@ components:
     Custom.Request.Query.Filter.LengthMax:
       description: Максимальная длина (µm)
       name: length-max
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100 mm
+
+    Custom.Request.Query.Filter.WidthMin:
+      description: Минимальная ширина (µm)
+      name: width-min
+      in: query
+      required: false
+      schema:
+        type: integer
+        maxLength: 10
+      example: 100000 # 100 mm
+
+    Custom.Request.Query.Filter.WidthMax:
+      description: Максимальная ширина (µm)
+      name: width-max
       in: query
       required: false
       schema:

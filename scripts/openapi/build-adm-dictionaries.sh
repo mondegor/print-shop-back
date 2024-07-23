@@ -54,7 +54,7 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.MaterialTypeIDs.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
     # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
+    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
 
     "${materialTypeDir}/material_type_parameters.yaml"
     "${paperColorDir}/paper_color_parameters.yaml"

@@ -11,9 +11,17 @@ Calculations.Algo.PublicAPI.Request.Model.RectImposition:
     itemDistance:
       allOf:
         - $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
-        - description: Дистанция между элементами
+        - description: Расстояние между элементами ({по горизонтали}x{по вертикали})
     outFormat:
       $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+    disableRotation:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Boolean"
+        - description: Запретить поворот остатка на 90 градусов
+    useMirror:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Boolean"
+        - description: Использовать зеркальное размешение элементов
 
 Calculations.Algo.PublicAPI.Response.Model.RectImposition:
   description: DTO - расчёта алгоритма "Спуск полос"

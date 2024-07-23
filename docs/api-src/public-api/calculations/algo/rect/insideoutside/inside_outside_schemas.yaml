@@ -1,5 +1,5 @@
 Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
-  description: DTO - параметров алгоритма "Количество размещений элементов на внешнем формате"
+  description: DTO - параметров алгоритмов размещений элементов на внешнем формате
   type: object
   required:
     - inFormat

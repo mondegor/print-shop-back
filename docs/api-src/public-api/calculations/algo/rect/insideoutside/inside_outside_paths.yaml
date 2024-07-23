@@ -51,6 +51,13 @@
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
 
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+
     responses:
       "200":
         description: Получен расчет максимального количества размещений
