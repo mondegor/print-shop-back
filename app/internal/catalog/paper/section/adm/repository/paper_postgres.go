@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 
@@ -41,9 +43,9 @@ func (re *PaperPostgres) NewSelectParams(params entity.PaperParams) mrstorage.SQ
 				w.FilterAnyOf("type_id", params.Filter.TypeIDs),
 				w.FilterAnyOf("color_id", params.Filter.ColorIDs),
 				w.FilterAnyOf("facture_id", params.Filter.FactureIDs),
-				w.FilterRangeInt64("paper_width", params.Filter.Width, 0),
-				w.FilterRangeInt64("paper_height", params.Filter.Height, 0),
-				w.FilterRangeInt64("paper_density", params.Filter.Density, 0),
+				w.FilterRangeFloat64("paper_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("paper_height", mrtype.RangeFloat64(params.Filter.Height), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("paper_density", mrtype.RangeFloat64(params.Filter.Density), 0, mrlib.EqualityThresholdE9),
 				w.FilterAnyOf("paper_status", params.Filter.Statuses),
 			)
 		}),

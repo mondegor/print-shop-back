@@ -47,9 +47,9 @@ type (
 		TypeIDs    []mrtype.KeyInt32
 		ColorIDs   []mrtype.KeyInt32
 		FactureIDs []mrtype.KeyInt32
-		Width      mrtype.RangeInt64
-		Height     mrtype.RangeInt64
-		Density    mrtype.RangeInt64
+		Width      measure.RangeMeter
+		Height     measure.RangeMeter
+		Density    measure.RangeKilogramPerMeter2
 		Statuses   []mrenum.ItemStatus
 	}
 )

@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.2
+  version: v0.4.3
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -1381,7 +1381,7 @@ components:
       description: DTO - результат алгоритма "Количество коробок"
       type: object
       required:
-        - box
+        - fullBox
         - restBox
         - boxesQuantity
         - boxesWeight
@@ -1389,10 +1389,10 @@ components:
         - boxesInnerVolume
         - boxesVolume
       properties:
-        box:
+        fullBox:
           allOf:
             - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
-            - description: Полностью заполенная коробка
+            - description: Полностью заполненная коробка
         restBox:
           allOf:
             - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Box"
@@ -1462,7 +1462,7 @@ components:
         unusedVolumePercent:
           allOf:
             - $ref: "#/components/schemas/App.Field.Percent"
-            - description: Незаполенный объём коробки в %
+            - description: Незаполненный объём коробки в %
             - example: 23.71
 
     Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
@@ -1507,11 +1507,11 @@ components:
         disableRotation:
           allOf:
             - $ref: "#/components/schemas/App.Field.Boolean"
-            - description: Без поворота остатка на 90 градусов
-        UseMirror:
+            - description: Запретить поворот остатка на 90 градусов
+        useMirror:
           allOf:
             - $ref: "#/components/schemas/App.Field.Boolean"
-            - description: Зеркальное размешение элементов
+            - description: Использовать зеркальное размешение элементов
 
     Calculations.Algo.PublicAPI.Response.Model.RectImposition:
       description: DTO - расчёта алгоритма "Спуск полос"

@@ -1,10 +1,24 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-08-03
+### Added
+- Добавлен дополнительный вывод ошибок для некоторых алгоритмов;
+
+### Changed
+- В API документации `Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox`
+  поле `box` переименовано в `fullBox`;
+- В API методах, если ни одного значения не было найдено, то возвращается пустой массив, а не nil, как это было ранее;
+- Все вспомогательные парсеры перенесены в слой контроллера (в которых происходит перевод значений в СИ);
+
+### Fixed
+- Все значения фильтров теперь приводятся к метрическим единицам измерения (СИ);
+- При выборке double значений из БД, теперь используется `FilterRangeFloat64`;
+
 ## 2024-07-23
 ### Fixed
 - Поправлена и дополнена API документация:
-    - в Calculations.Algo.PublicAPI.Request.Model.RectImposition
+    - в `Calculations.Algo.PublicAPI.Request.Model.RectImposition`
       добавлены пропущенные поля: `disableRotation` и `useMirror`;
     - для v1/calculations/algo/rect/inside-on-outside-max добавлен пропущенный `Request`;
     - operationId сделаны уникальными;

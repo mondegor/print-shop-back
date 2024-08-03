@@ -6,8 +6,6 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/entity"
 )
 
 const (
@@ -47,9 +45,9 @@ func (ht *PackInBox) Calc(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	item := entity.RawData{
-		Product: entity.RawProduct(request.Product),
-		Box:     entity.RawBox(request.Box),
+	item, err := ht.parseRequest(request)
+	if err != nil {
+		return err
 	}
 
 	calcResponse, err := ht.useCase.Calc(r.Context(), item)

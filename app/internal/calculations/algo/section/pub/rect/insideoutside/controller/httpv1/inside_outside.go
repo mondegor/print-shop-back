@@ -6,8 +6,6 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
 )
 
 const (
@@ -49,9 +47,9 @@ func (ht *RectInsideOutside) CalcQuantity(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	item := entity.RawData{
-		InFormat:  request.InFormat,
-		OutFormat: request.OutFormat,
+	item, err := ht.parseRequest(request)
+	if err != nil {
+		return err
 	}
 
 	calcResponse, err := ht.useCase.CalcQuantity(r.Context(), item)
@@ -70,9 +68,9 @@ func (ht *RectInsideOutside) CalcMax(w http.ResponseWriter, r *http.Request) err
 		return err
 	}
 
-	item := entity.RawData{
-		InFormat:  request.InFormat,
-		OutFormat: request.OutFormat,
+	item, err := ht.parseRequest(request)
+	if err != nil {
+		return err
 	}
 
 	calcResponse, err := ht.useCase.CalcMax(r.Context(), item)

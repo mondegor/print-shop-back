@@ -1,5 +1,7 @@
 package measure
 
+import "github.com/mondegor/go-webcore/mrtype"
+
 const (
 	DeltaThousand = 0.001     // DeltaThousand - дельта (одна десятитысячная) для сравнения float чисел
 	Thousand      = 1000.0    // Thousand - тысяча единиц
@@ -35,4 +37,13 @@ type (
 
 	// KilogramPerMeter2 - килограмм на метр квадратный (kg/m2, СИ).
 	KilogramPerMeter2 float64
+
+	// RangeMeter - интервал (m, СИ).
+	RangeMeter mrtype.RangeFloat64
+
+	// RangeKilogram - интервал (kg, СИ).
+	RangeKilogram mrtype.RangeFloat64
+
+	// RangeKilogramPerMeter2 - интервал (kg/m2, СИ).
+	RangeKilogramPerMeter2 mrtype.RangeFloat64
 )

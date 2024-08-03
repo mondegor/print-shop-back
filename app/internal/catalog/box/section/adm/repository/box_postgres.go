@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
 
@@ -38,10 +40,10 @@ func (re *BoxPostgres) NewSelectParams(params entity.BoxParams) mrstorage.SQLSel
 			return w.JoinAnd(
 				w.Expr("deleted_at IS NULL"),
 				w.FilterLikeFields([]string{"UPPER(box_article)", "UPPER(box_caption)"}, strings.ToUpper(params.Filter.SearchText)),
-				w.FilterRangeInt64("box_length", params.Filter.Length, 0),
-				w.FilterRangeInt64("box_width", params.Filter.Width, 0),
-				w.FilterRangeInt64("box_height", params.Filter.Height, 0),
-				w.FilterRangeInt64("box_weight", params.Filter.Weight, 0),
+				w.FilterRangeFloat64("box_length", mrtype.RangeFloat64(params.Filter.Length), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("box_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("box_height", mrtype.RangeFloat64(params.Filter.Height), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("box_weight", mrtype.RangeFloat64(params.Filter.Weight), 0, mrlib.EqualityThresholdE9),
 				w.FilterAnyOf("box_status", params.Filter.Statuses),
 			)
 		}),

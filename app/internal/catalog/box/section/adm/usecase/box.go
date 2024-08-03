@@ -47,7 +47,7 @@ func (uc *Box) GetList(ctx context.Context, params entity.BoxParams) ([]entity.B
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.Box, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

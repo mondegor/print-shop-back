@@ -78,10 +78,10 @@ func (ht *Box) listParams(r *http.Request) entity.BoxParams {
 	return entity.BoxParams{
 		Filter: entity.BoxListFilter{
 			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
-			Length:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange),
-			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange),
-			Height:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange),
-			Weight:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterWeightRange),
+			Length:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange).Transform(measure.OneThousandth)),    // mm -> m
+			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange).Transform(measure.OneThousandth)),     // mm -> m
+			Height:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange).Transform(measure.OneThousandth)),    // mm -> m
+			Weight:     measure.RangeKilogram(ht.parser.FilterRangeInt64(r, module.ParamNameFilterWeightRange).Transform(measure.OneThousandth)), // g -> kg
 			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
 		Sorter: ht.parser.SortParams(r, ht.listSorter),

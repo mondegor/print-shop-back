@@ -40,10 +40,10 @@ type (
 	// BoxListFilter - comment struct.
 	BoxListFilter struct {
 		SearchText string
-		Length     mrtype.RangeInt64
-		Width      mrtype.RangeInt64
-		Height     mrtype.RangeInt64
-		Weight     mrtype.RangeInt64
+		Length     measure.RangeMeter
+		Width      measure.RangeMeter
+		Height     measure.RangeMeter
+		Weight     measure.RangeKilogram
 		Statuses   []mrenum.ItemStatus
 	}
 )

@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
 
@@ -39,8 +41,8 @@ func (re *LaminatePostgres) NewSelectParams(params entity.LaminateParams) mrstor
 				w.Expr("deleted_at IS NULL"),
 				w.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(params.Filter.SearchText)),
 				w.FilterAnyOf("type_id", params.Filter.TypeIDs),
-				w.FilterRangeInt64("laminate_length", params.Filter.Length, 0),
-				w.FilterRangeInt64("laminate_width", params.Filter.Width, 0),
+				w.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(params.Filter.Length), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
 				w.FilterAnyOf("laminate_status", params.Filter.Statuses),
 			)
 		}),

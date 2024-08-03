@@ -80,8 +80,8 @@ func (ht *Laminate) listParams(r *http.Request) entity.LaminateParams {
 		Filter: entity.LaminateListFilter{
 			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
 			TypeIDs:    ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogMaterialTypeIDs),
-			Length:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange),
-			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange),
+			Length:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange).Transform(measure.OneThousandth)), // mm -> m
+			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange).Transform(measure.OneThousandth)),  // mm -> m
 			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
 		Sorter: ht.parser.SortParams(r, ht.listSorter),

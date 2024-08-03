@@ -82,10 +82,12 @@ func (ht *Paper) listParams(r *http.Request) entity.PaperParams {
 			TypeIDs:    ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperTypeIDs),
 			ColorIDs:   ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperColorIDs),
 			FactureIDs: ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperFactureIDs),
-			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange),
-			Height:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange),
-			Density:    ht.parser.FilterRangeInt64(r, module.ParamNameFilterDensityRange),
-			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
+			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange).Transform(measure.OneThousandth)), // mm -> m
+			Height:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange).Transform(measure.OneThousandth)), // mm -> m
+			Density: measure.RangeKilogramPerMeter2(
+				ht.parser.FilterRangeInt64(r, module.ParamNameFilterDensityRange).Transform(measure.OneThousandth), // g/m2 -> kg/m2
+			),
+			Statuses: ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
 		Sorter: ht.parser.SortParams(r, ht.listSorter),
 		Pager:  ht.parser.PageParams(r),

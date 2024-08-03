@@ -11,15 +11,6 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика.
-	RawData struct {
-		ItemFormat    string
-		ItemDistance  string
-		OutFormat     string
-		AllowRotation bool
-		UseMirror     bool
-	}
-
 	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		Item rect.Item
@@ -27,8 +18,8 @@ type (
 		Opts imposition.Options
 	}
 
-	// Result - результат вычислений спуска полос.
-	Result struct {
+	// AlgoResult - результат вычислений спуска полос.
+	AlgoResult struct {
 		Layout    rect.Format     `json:"layout"`
 		Fragments []base.Fragment `json:"fragments"`
 		Total     uint64          `json:"total"`

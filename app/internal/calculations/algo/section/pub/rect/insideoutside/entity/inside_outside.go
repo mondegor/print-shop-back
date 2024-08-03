@@ -10,12 +10,6 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика.
-	RawData struct {
-		InFormat  string
-		OutFormat string
-	}
-
 	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		In  rect.Format

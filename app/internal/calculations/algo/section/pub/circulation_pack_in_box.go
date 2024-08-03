@@ -9,6 +9,6 @@ import (
 type (
 	// CirculationPackInBoxUseCase - comment interface.
 	CirculationPackInBoxUseCase interface {
-		Calc(ctx context.Context, raw entity.RawData) (entity.AlgoResult, error)
+		Calc(ctx context.Context, data entity.ParsedData) (entity.AlgoResult, error)
 	}
 )

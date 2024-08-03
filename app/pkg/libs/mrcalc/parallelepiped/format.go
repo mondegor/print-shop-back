@@ -65,3 +65,12 @@ func (f Format) Diff(second Format) Format {
 		Height: diff(f.Height, second.Height),
 	}
 }
+
+// Transform - возвращает формат преобразованный к другой единице измерения.
+func (f Format) Transform(coefficient float64) Format {
+	return Format{
+		Length: f.Length * coefficient,
+		Width:  f.Width * coefficient,
+		Height: f.Height * coefficient,
+	}
+}

@@ -9,7 +9,7 @@ import (
 type (
 	// RectInsideOutsideUseCase - comment interface.
 	RectInsideOutsideUseCase interface {
-		CalcQuantity(ctx context.Context, raw entity.RawData) (entity.AlgoQuantityResult, error)
-		CalcMax(ctx context.Context, raw entity.RawData) (entity.AlgoMaxResult, error)
+		CalcQuantity(ctx context.Context, data entity.ParsedData) (entity.AlgoQuantityResult, error)
+		CalcMax(ctx context.Context, data entity.ParsedData) (entity.AlgoMaxResult, error)
 	}
 )

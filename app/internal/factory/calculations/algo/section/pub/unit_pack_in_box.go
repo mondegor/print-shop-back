@@ -3,7 +3,11 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/packinbox"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/usecase"
@@ -22,8 +26,12 @@ func createUnitCirculationPackInBox(ctx context.Context, opts algo.Options) ([]m
 	return list, nil
 }
 
-func newUnitCirculationPackInBox(_ context.Context, opts algo.Options) (*httpv1.PackInBox, error) { //nolint:unparam
-	useCase := usecase.NewCirculationPackInBox(opts.EventEmitter, opts.UsecaseHelper)
+func newUnitCirculationPackInBox(ctx context.Context, opts algo.Options) (*httpv1.PackInBox, error) { //nolint:unparam
+	logger := mrlog.Ctx(ctx)
+	impAlgo := imposition.New(logger)
+	packInBoxAlgo := packinbox.New(logger, impAlgo)
+
+	useCase := usecase.NewCirculationPackInBox(packInBoxAlgo, opts.EventEmitter, opts.UsecaseHelper)
 	controller := httpv1.NewPackInBox(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

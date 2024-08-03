@@ -9,6 +9,6 @@ import (
 type (
 	// RectImpositionUseCase - comment interface.
 	RectImpositionUseCase interface {
-		Calc(ctx context.Context, raw entity.RawData) (entity.Result, error)
+		Calc(ctx context.Context, data entity.ParsedData) (entity.AlgoResult, error)
 	}
 )

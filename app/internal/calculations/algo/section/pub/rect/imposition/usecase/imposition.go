@@ -2,12 +2,10 @@ package usecase
 
 import (
 	"context"
-	"errors"
 
 	"github.com/mondegor/go-webcore/mrlib"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
 
@@ -35,24 +33,19 @@ func NewRectImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter
 }
 
 // Calc - comment method.
-func (uc *RectImposition) Calc(ctx context.Context, raw entity.RawData) (entity.Result, error) {
-	parsedData, err := uc.parse(raw)
+func (uc *RectImposition) Calc(ctx context.Context, data entity.ParsedData) (entity.AlgoResult, error) {
+	result, err := uc.algo.Calc(data.Item, data.Out, data.Opts)
 	if err != nil {
-		return entity.Result{}, err
+		return entity.AlgoResult{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
 	}
 
-	result, err := uc.algo.Calc(parsedData.Item, parsedData.Out, parsedData.Opts)
-	if err != nil {
-		return entity.Result{}, err
+	uc.emitEvent(ctx, "Calc", mrmsg.Data{"data": data})
+
+	if result.Total == 0 {
+		return entity.AlgoResult{}, nil
 	}
 
-	if len(result.Fragments) == 0 {
-		return entity.Result{}, errors.New("error") // TODO: result NULL
-	}
-
-	uc.emitEvent(ctx, "Calc", mrmsg.Data{"raw": parsedData})
-
-	return entity.Result{
+	return entity.AlgoResult{
 		Layout: rect.Format{
 			Width:  mrlib.RoundFloat4(result.Layout.Width),
 			Height: mrlib.RoundFloat4(result.Layout.Height),
@@ -60,48 +53,6 @@ func (uc *RectImposition) Calc(ctx context.Context, raw entity.RawData) (entity.
 		Fragments: result.Fragments,
 		Total:     result.Total,
 		Garbage:   mrlib.RoundFloat8(result.RestArea),
-	}, nil
-}
-
-func (uc *RectImposition) parse(data entity.RawData) (entity.ParsedData, error) {
-	itemFormat, err := rect.ParseFormat(data.ItemFormat)
-	if err != nil {
-		return entity.ParsedData{}, err // TODO: itemFormat error
-	}
-
-	itemDistance := rect.Format{} // optional
-
-	if data.ItemDistance != "" {
-		itemDistance, err = rect.ParseFormat(data.ItemDistance)
-		if err != nil {
-			return entity.ParsedData{}, err // TODO: itemDistance error
-		}
-	}
-
-	outFormat, err := rect.ParseFormat(data.OutFormat)
-	if err != nil {
-		return entity.ParsedData{}, err // TODO: outFormat error
-	}
-
-	return entity.ParsedData{
-		Item: rect.Item{
-			Format: rect.Format{
-				Width:  itemFormat.Width * measure.OneThousandth,  // mm -> m
-				Height: itemFormat.Height * measure.OneThousandth, // mm -> m
-			},
-			Distance: rect.Format{
-				Width:  itemDistance.Width * measure.OneThousandth,  // mm -> m
-				Height: itemDistance.Height * measure.OneThousandth, // mm -> m
-			},
-		},
-		Out: rect.Format{
-			Width:  outFormat.Width * measure.OneThousandth,  // mm -> m
-			Height: outFormat.Height * measure.OneThousandth, // mm -> m
-		},
-		Opts: imposition.Options{
-			AllowRotation: data.AllowRotation,
-			UseMirror:     data.UseMirror,
-		},
 	}, nil
 }
 

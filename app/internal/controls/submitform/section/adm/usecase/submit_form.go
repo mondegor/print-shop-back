@@ -57,7 +57,7 @@ func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParam
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.SubmitForm, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

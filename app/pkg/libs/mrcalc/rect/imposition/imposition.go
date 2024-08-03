@@ -50,11 +50,11 @@ func New(logger mrlog.Logger) *Algo {
 // Calc - расчёт алгоритма.
 func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult, error) {
 	if !item.IsValid() {
-		return AlgoResult{}, fmt.Errorf("item format is incorrect: %s", item.Format.String())
+		return AlgoResult{}, fmt.Errorf("item format is not valid: %s", item.Format)
 	}
 
 	if !out.IsValid() {
-		return AlgoResult{}, fmt.Errorf("out format is incorrect: %s", out.String())
+		return AlgoResult{}, fmt.Errorf("out format is not valid: %s", out)
 	}
 
 	ri.logger.Debug().MsgFunc(
@@ -106,7 +106,7 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 	if opts.AllowRotation {
 		remainingLayout, err := ri.remaining.Calc(mainLayout, item, outWork)
 		if err != nil {
-			return AlgoResult{}, err
+			return AlgoResult{}, fmt.Errorf("opts.AllowRotation=true: %w", err)
 		}
 
 		if remainingLayout.Total() > 0 {
@@ -161,7 +161,7 @@ func (ri *Algo) calcMainLayout(item rect.Item, out rect.Format) (base.Fragment, 
 
 	layout, err := insideoutside.AlgoQuantity(item.WithDistance(), outWithFictBorders)
 	if err != nil {
-		return base.Fragment{}, err
+		return base.Fragment{}, fmt.Errorf("imposition.Algo.calcMainLayout[item=%+v, outWithFictBorders=%s]: %w", item, outWithFictBorders, err)
 	}
 
 	ri.logger.Debug().MsgFunc(

@@ -34,7 +34,7 @@ func (ri *AlgoRemaining) Calc(layout base.Fragment, item rect.Item, out rect.For
 
 	remainingLayout, err := insideoutside.AlgoQuantity(item.WithDistance(), outRemaining)
 	if err != nil {
-		return base.Fragment{}, err
+		return base.Fragment{}, fmt.Errorf("AlgoRemaining.Calc[item=%+v, outRemaining=%s]: %w", item, outRemaining, err)
 	}
 
 	// если хотя бы один элемент возможно разместить в остаточном формате

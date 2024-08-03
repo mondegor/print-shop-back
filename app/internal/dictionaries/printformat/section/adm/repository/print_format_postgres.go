@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-webcore/mrlib"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/shared/repository"
@@ -36,8 +38,8 @@ func (re *PrintFormatPostgres) NewSelectParams(params entity.PrintFormatParams) 
 			return w.JoinAnd(
 				w.Expr("deleted_at IS NULL"),
 				w.FilterLike("UPPER(format_caption)", strings.ToUpper(params.Filter.SearchText)),
-				w.FilterRangeInt64("format_width", params.Filter.Width, 0),
-				w.FilterRangeInt64("format_height", params.Filter.Height, 0),
+				w.FilterRangeFloat64("format_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
+				w.FilterRangeFloat64("format_height", mrtype.RangeFloat64(params.Filter.Height), 0, mrlib.EqualityThresholdE9),
 				w.FilterAnyOf("format_status", params.Filter.Statuses),
 			)
 		}),

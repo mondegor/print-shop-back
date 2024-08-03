@@ -55,7 +55,7 @@ func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.Laminate, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

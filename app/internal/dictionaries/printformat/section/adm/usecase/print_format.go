@@ -46,7 +46,7 @@ func (uc *PrintFormat) GetList(ctx context.Context, params entity.PrintFormatPar
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.PrintFormat, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

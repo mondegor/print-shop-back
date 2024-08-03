@@ -84,8 +84,8 @@ func (ht *PrintFormat) listParams(r *http.Request) entity.PrintFormatParams {
 	return entity.PrintFormatParams{
 		Filter: entity.PrintFormatListFilter{
 			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
-			Width:      ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange),
-			Height:     ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange),
+			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange).Transform(measure.OneThousandth)),  // mm -> m
+			Height:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange).Transform(measure.OneThousandth)), // mm -> m
 			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
 		},
 		Sorter: ht.parser.SortParams(r, ht.listSorter),

@@ -92,6 +92,14 @@ func (f Format) Diff(second Format) Format {
 	}
 }
 
+// Transform - возвращает формат преобразованный к другой единице измерения.
+func (f Format) Transform(coefficient float64) Format {
+	return Format{
+		Width:  f.Width * coefficient,
+		Height: f.Height * coefficient,
+	}
+}
+
 // DivBy - возвращает формат разделённый на указанную величину по широкой стороне.
 func (f Format) DivBy(divisor uint64) (Format, error) {
 	if divisor == 0 {

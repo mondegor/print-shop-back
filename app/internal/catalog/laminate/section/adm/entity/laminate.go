@@ -41,8 +41,8 @@ type (
 	LaminateListFilter struct {
 		SearchText string
 		TypeIDs    []mrtype.KeyInt32
-		Length     mrtype.RangeInt64
-		Width      mrtype.RangeInt64
+		Length     measure.RangeMeter
+		Width      measure.RangeMeter
 		Statuses   []mrenum.ItemStatus
 	}
 )

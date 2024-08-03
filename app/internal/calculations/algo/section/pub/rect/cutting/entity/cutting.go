@@ -10,12 +10,6 @@ const (
 )
 
 type (
-	// RawData - сырые данные поступившие с обработчика.
-	RawData struct {
-		Fragments      []string
-		DistanceFormat string
-	}
-
 	// ParsedData - разобранные валидные данные.
 	ParsedData struct {
 		Fragments      []base.Fragment

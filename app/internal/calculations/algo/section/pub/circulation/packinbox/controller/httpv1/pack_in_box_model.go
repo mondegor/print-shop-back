@@ -21,6 +21,6 @@ type (
 		Thickness uint64 `json:"thickness" validate:"required,gte=1,lte=1000000"`    // mkm
 		Margins   string `json:"margins" validate:"required,max=16,tag_triple_size"` // mm x mm x mm
 		Weight    uint64 `json:"weight" validate:"required,gte=1,lte=1000000"`       // g
-		MaxWeight uint64 `json:"maxWeight" validate:"gte=1,lte=1000000"`             // g
+		MaxWeight uint64 `json:"maxWeight" validate:"omitempty,gte=1,lte=1000000"`   // g
 	}
 )

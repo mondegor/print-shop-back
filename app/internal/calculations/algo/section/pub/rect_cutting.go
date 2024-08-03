@@ -9,6 +9,6 @@ import (
 type (
 	// RectCuttingUseCase - comment interface.
 	RectCuttingUseCase interface {
-		CalcQuantity(ctx context.Context, raw entity.RawData) (entity.QuantityResult, error)
+		CalcQuantity(ctx context.Context, data entity.ParsedData) (entity.QuantityResult, error)
 	}
 )

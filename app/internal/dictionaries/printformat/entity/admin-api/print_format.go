@@ -36,8 +36,8 @@ type (
 	// PrintFormatListFilter - comment struct.
 	PrintFormatListFilter struct {
 		SearchText string
-		Width      mrtype.RangeInt64
-		Height     mrtype.RangeInt64
+		Width      measure.RangeMeter
+		Height     measure.RangeMeter
 		Statuses   []mrenum.ItemStatus
 	}
 )

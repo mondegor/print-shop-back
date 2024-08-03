@@ -46,7 +46,7 @@ func (uc *PaperFacture) GetList(ctx context.Context, params entity.PaperFactureP
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.PaperFacture, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

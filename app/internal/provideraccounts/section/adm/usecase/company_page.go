@@ -38,7 +38,7 @@ func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPagePar
 	}
 
 	if total < 1 {
-		return nil, 0, nil
+		return make([]entity.CompanyPage, 0), 0, nil
 	}
 
 	items, err := uc.storage.Fetch(ctx, fetchParams)

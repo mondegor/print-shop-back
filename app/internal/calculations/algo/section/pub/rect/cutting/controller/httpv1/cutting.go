@@ -6,8 +6,6 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
 )
 
 const (
@@ -47,9 +45,9 @@ func (ht *RectCutting) CalcQuantity(w http.ResponseWriter, r *http.Request) erro
 		return err
 	}
 
-	item := entity.RawData{
-		Fragments:      request.Fragments,
-		DistanceFormat: request.DistanceFormat,
+	item, err := ht.parseRequest(request)
+	if err != nil {
+		return err
 	}
 
 	calcResponse, err := ht.useCase.CalcQuantity(r.Context(), item)

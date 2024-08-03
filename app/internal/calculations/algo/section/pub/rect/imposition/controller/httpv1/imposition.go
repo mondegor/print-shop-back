@@ -6,8 +6,6 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
 )
 
 const (
@@ -47,12 +45,9 @@ func (ht *RectImposition) Calc(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	item := entity.RawData{
-		ItemFormat:    request.ItemFormat,
-		ItemDistance:  request.ItemDistance,
-		OutFormat:     request.OutFormat,
-		AllowRotation: !request.DisableRotation,
-		UseMirror:     request.UseMirror,
+	item, err := ht.parseRequest(request)
+	if err != nil {
+		return err
 	}
 
 	calcResponse, err := ht.useCase.Calc(r.Context(), item)
