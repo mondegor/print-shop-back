@@ -4,56 +4,6 @@
     description: |-
       Возвращает количество коробок для упаковки тиража, вес коробок, процент заполнения.
 
-      1. Расчет раскладки по дну коробки Imposition (Box.width, Box.length, Product.length, Product.height)
-      Если результат раскладки items = 0, значит не помещается в коробку, останавливаем дальнейшие расчеты.
-
-      2. Расчет кол-ва коробок.
-      Высота всего тиража TotalHeight = Product.thickness * Product.quantity
-      QuantityBoxes =  TotalHeight / (Box.height * items)
-      Если QuantityBoxes < 1 значит неполная коробка, округляем до 1.
-      Если QuantityBoxes >= 1, то отбрасываем дробную часть получаем кол-во коробок. Дробная часть это + 1 неполная коробка.
-
-      3. Вес одной коробки
-      Вес одной детали:
-      productWeight = Product.weightM2 * Product.length * Product.height
-      BoxWeight = productWeight * Box.height * items + Box.weight
-
-      4. Вес коробки с остатком
-      BoxRestWeight = productWeight * (TotalHeight - QuantityBoxes * Box.height * items) + Box.weight
-
-      5. Общий вес упакованного тиража
-      TotalWeight = BoxWeight * QuantityBoxes + BoxRestWeight
-
-      6. Тираж в одной коробке
-      Тираж в коробке с остатком:
-      ProductsInRestBox = (TotalHeight - QuantityBoxes * Box.height * items) / Product.thickness
-      Тираж в каждой коробке:
-      ProductsInBox = (Product.quantity - ProductsInRestBox) / QuantityBoxes
-
-      7. Доля пустого места в коробках
-      Объем всего тиража:
-      TotalVolume = TotalHeight * Product.length * Product.height
-      Объем всех коробок:
-      BoxesVolume = Box.width * Box.height * Box.height
-      Доля пустого места:
-      UnusedVolume = (BoxesVolume - TotalVolume) / BoxesVolume
-
-      Пример_1:
-      Box.width = 630 мм
-      Box.length = 320 мм
-      Box.height = 340 мм
-      Box.weigth = 524 г
-      https://app.ronbel.ru/raschety/box_weight
-      https://gofro-karton.com/blog/rasschitat_ves_korobki/
-
-      Product.length = 210 мм
-      Product.height = 297 мм
-      Product.thickness = 0.3 мм
-      Product.quantity = 1000
-      marginX, marginY = 0
-      items = 3
-      QuantityBoxes = 0.3 мм * 1000 / (330 мм * 3) = 0.303 округлить до 1.
-
     operationId: calcAlgoCirculationPackInBox
     tags:
       - Calculations.Algo
