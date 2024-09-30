@@ -6,10 +6,6 @@ import (
 	"path"
 	"time"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
 	"github.com/mondegor/go-storage/mrstorage"
@@ -17,10 +13,12 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrlog"
-
 	"github.com/mondegor/go-webcore/mrsender"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
 )
 
 type (
@@ -30,7 +28,7 @@ type (
 		fileAPI      mrstorage.FileProviderAPI
 		locker       mrlock.Locker
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
@@ -40,7 +38,7 @@ func NewCompanyPageLogo(
 	fileAPI mrstorage.FileProviderAPI,
 	locker mrlock.Locker,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		storage:      storage,

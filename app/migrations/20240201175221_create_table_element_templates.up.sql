@@ -10,7 +10,7 @@ CREATE TABLE printshop_controls.element_templates (
     element_body jsonb NOT NULL,
     template_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     deleted_at timestamp with time zone NULL
 );
 
@@ -105,7 +105,7 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
         "caption": "Цифровая печать"
       }
     ]
-  }]', 2/*ENABLED*/, '2023-07-03 16:22:50.911157', NULL, NULL),
+  }]', 2/*ENABLED*/, '2023-07-03 16:22:50.911157', '2023-07-03 16:22:50.911157', NULL),
 (2, 1, 'ProcessMedia', 'Бумага', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_Type",
@@ -164,7 +164,7 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
       }
     ]
   }
-]', 2/*ENABLED*/, '2023-07-03 16:34:02.369491', NULL, NULL),
+]', 2/*ENABLED*/, '2023-07-03 16:34:02.369491', '2023-07-03 16:34:02.369491', NULL),
 (3, 1, 'ProcessPackaging', 'Упаковка', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_Type",
@@ -183,7 +183,7 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
       }
     ]
   }
-]', 2/*ENABLED*/, '2023-07-03 16:38:59.254920', NULL, NULL),
+]', 2/*ENABLED*/, '2023-07-03 16:38:59.254920', '2023-07-03 16:38:59.254920', NULL),
 (4, 1, 'ProcessPrinting', 'Печать', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_SideFace",
@@ -272,7 +272,7 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
       }
     ]
   }
-]', 2/*ENABLED*/, '2023-07-03 16:35:14.078093', NULL, NULL),
+]', 2/*ENABLED*/, '2023-07-03 16:35:14.078093', '2023-07-03 16:35:14.078093', NULL),
 (5, 1, 'ProcessLaminating', 'Ламинация', 1/*GROUP*/, 1/*NORMAL*/, '[
   {
     "id": "%parentId%_NumberOfSides",
@@ -322,6 +322,6 @@ VALUES (1, 1, 'Product', 'Поля листовой продукции', 2/*ELEM
     ],
     "measure": "мм"
   }
-]', 2/*ENABLED*/, '2023-07-03 16:36:48.626009', NULL, NULL);
+]', 2/*ENABLED*/, '2023-07-03 16:36:48.626009', '2023-07-03 16:36:48.626009', NULL);
 
 ALTER SEQUENCE printshop_controls.element_templates_template_id_seq RESTART WITH 6;

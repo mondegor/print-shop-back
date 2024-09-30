@@ -3,10 +3,10 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 const (
@@ -27,7 +27,7 @@ type (
 		WeightM2   measure.KilogramPerMeter2 `json:"weightM2" sort:"weightM2" upd:"laminate_weight_m2"`
 		Status     mrenum.ItemStatus         `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  *time.Time                `json:"updatedAt,omitempty" sort:"updatedAt"`
+		UpdatedAt  time.Time                 `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// LaminateParams - comment struct.

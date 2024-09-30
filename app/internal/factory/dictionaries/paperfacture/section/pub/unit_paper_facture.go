@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitPaperFacture(_ context.Context, opts paperfacture.Options) (*httpv1.
 	storage := repository.NewPaperFacturePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.UsecaseHelper)
+	useCase := usecase.NewPaperFacture(storage, opts.UseCaseHelper)
 	controller := httpv1.NewPaperFacture(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

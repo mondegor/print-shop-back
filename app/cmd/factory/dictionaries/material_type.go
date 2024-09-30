@@ -3,8 +3,6 @@ package dictionaries
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -12,6 +10,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 // NewMaterialTypeModuleOptions - создаёт объект materialtype.Options.
@@ -23,7 +22,7 @@ func NewMaterialTypeModuleOptions(_ context.Context, opts app.Options) (material
 
 	return materialtype.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: materialtype.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -44,7 +43,7 @@ func NewMaterialTypeModuleOptions(_ context.Context, opts app.Options) (material
 func NewMaterialTypeAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.MaterialType, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries laminate type availability API")
 
-	return availability.NewMaterialType(opts.PostgresConnManager, opts.UsecaseErrorWrapper), nil
+	return availability.NewMaterialType(opts.PostgresConnManager, opts.UseCaseErrorWrapper), nil
 }
 
 // RegisterMaterialTypeErrors - comment func.

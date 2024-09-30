@@ -1,10 +1,10 @@
 package factory
 
 import (
-	"github.com/mondegor/print-shop-back/config"
-
 	"github.com/mondegor/go-webcore/mrcore/mrcoreerr"
 	"github.com/mondegor/go-webcore/mrlog"
+
+	"github.com/mondegor/print-shop-back/config"
 )
 
 // NewErrorHandler - создаёт объект mrcoreerr.ErrorHandler.

@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/usecase"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
@@ -40,7 +40,7 @@ func newUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (*ht
 			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(storage, opts.UseCaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

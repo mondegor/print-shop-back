@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (

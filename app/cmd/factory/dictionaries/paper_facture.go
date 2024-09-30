@@ -3,8 +3,6 @@ package dictionaries
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -12,6 +10,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 // NewPaperFactureModuleOptions - создаёт объект paperfacture.Options.
@@ -23,7 +22,7 @@ func NewPaperFactureModuleOptions(_ context.Context, opts app.Options) (paperfac
 
 	return paperfacture.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: paperfacture.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -44,7 +43,7 @@ func NewPaperFactureModuleOptions(_ context.Context, opts app.Options) (paperfac
 func NewPaperFactureAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PaperFacture, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries paper facture availability API")
 
-	return availability.NewPaperFacture(opts.PostgresConnManager, opts.UsecaseErrorWrapper), nil
+	return availability.NewPaperFacture(opts.PostgresConnManager, opts.UseCaseErrorWrapper), nil
 }
 
 // RegisterPaperFactureErrors - comment func.

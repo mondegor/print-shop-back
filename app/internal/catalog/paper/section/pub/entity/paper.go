@@ -1,10 +1,10 @@
 package entity
 
 import (
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 const (

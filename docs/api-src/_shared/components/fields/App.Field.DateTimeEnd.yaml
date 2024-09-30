@@ -2,4 +2,4 @@ App.Field.DateTimeEnd:
   description: Дата и время завершения (UTC)
   type: string
   format: date-time
-  example: "2023-01-01T12:00:00.000+02:00"
+  example: "2023-01-01T12:00:00.000+03:00"

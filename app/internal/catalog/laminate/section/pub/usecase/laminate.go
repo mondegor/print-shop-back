@@ -3,12 +3,12 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
@@ -16,12 +16,12 @@ type (
 	// Laminate - comment struct.
 	Laminate struct {
 		storage      pub.LaminateStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewLaminate - создаёт объект Laminate.
-func NewLaminate(storage pub.LaminateStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Laminate {
+func NewLaminate(storage pub.LaminateStorage, errorWrapper mrcore.UseCaseErrorWrapper) *Laminate {
 	return &Laminate{
 		storage:      storage,
 		errorWrapper: errorWrapper,

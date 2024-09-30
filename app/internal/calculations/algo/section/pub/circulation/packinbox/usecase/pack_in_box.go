@@ -8,9 +8,8 @@ import (
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrsender"
 
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/packinbox"
-
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/packinbox"
 )
 
 type (
@@ -18,12 +17,12 @@ type (
 	CirculationPackInBox struct {
 		algo         *packinbox.Algo
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewCirculationPackInBox - создаёт объект CirculationPackInBox.
-func NewCirculationPackInBox(algo *packinbox.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *CirculationPackInBox {
+func NewCirculationPackInBox(algo *packinbox.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *CirculationPackInBox {
 	return &CirculationPackInBox{
 		algo:         algo,
 		eventEmitter: eventEmitter,

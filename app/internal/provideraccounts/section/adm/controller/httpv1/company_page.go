@@ -3,13 +3,13 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrview"
+
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
-
-	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 )
 
 const (

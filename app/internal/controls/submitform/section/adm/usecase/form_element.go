@@ -3,13 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-components/mrsort"
 	"github.com/mondegor/go-sysmess/mrmsg"
@@ -18,6 +11,12 @@ import (
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 type (
@@ -28,7 +27,7 @@ type (
 		elementTemplateAPI api.ElementTemplateHeader
 		ordererAPI         mrsort.Orderer
 		eventEmitter       mrsender.EventEmitter
-		errorWrapper       mrcore.UsecaseErrorWrapper
+		errorWrapper       mrcore.UseCaseErrorWrapper
 	}
 
 	// SubmitFormAPI - comment interface.
@@ -44,7 +43,7 @@ func NewFormElement(
 	elementTemplateAPI api.ElementTemplateHeader,
 	ordererAPI mrsort.Orderer,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *FormElement {
 	return &FormElement{
 		storage:            storage,

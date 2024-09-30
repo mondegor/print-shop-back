@@ -37,8 +37,16 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-all)
       mrcmd openapi build-adm-all
+      mrcmd openapi build-int-all
       mrcmd openapi build-prov-all
       mrcmd openapi build-pub-all
+      ;;
+
+    build-full)
+      mrcmd openapi build-adm
+      mrcmd openapi build-int
+      mrcmd openapi build-prov
+      mrcmd openapi build-pub
       ;;
 
     build-adm-all)
@@ -47,6 +55,10 @@ function mrcmd_plugins_openapi_method_exec() {
       mrcmd openapi build-adm-dictionaries
       mrcmd openapi build-adm-controls
       mrcmd openapi build-adm-prv-accounts
+      ;;
+
+    build-int-all)
+      mrcmd openapi build-int
       ;;
 
     build-prov-all)
@@ -60,6 +72,10 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-adm)
       sectionName="admin-api"
+      ;;
+
+    build-int)
+      sectionName="internal-api"
       ;;
 
     build-adm-catalog)
@@ -118,11 +134,13 @@ function mrcmd_plugins_openapi_method_help() {
   #markup:"|-|-|---------|-------|-------|---------------------------------------|"
   echo -e "${CC_YELLOW}Commands:${CC_END}"
   echo -e "    build-all                 Builds all API docs"
+  echo -e "    build-full                Builds only full API docs"
   echo -e "    build-adm-all             Builds all admin API docs"
   echo -e "    build-adm                 Builds only full admin API docs"
   echo -e "    build-adm-catalog         Builds admin Catalog API docs"
   echo -e "    build-adm-dictionaries    Builds admin Dictionaries API docs"
   echo -e "    build-adm-prv-accounts    Builds admin Provider accounts API docs"
+  echo -e "    build-int-all             Builds internal (system) API docs"
   echo -e "    build-prov-all            Builds all providers API docs"
   echo -e "    build-pub-all             Builds all public API docs"
 }

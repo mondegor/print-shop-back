@@ -21,6 +21,7 @@ Calculations.QueryHistory.PublicAPI.Response.Model.Query:
     - params
     - result
     - createdAt
+    - updatedAt
   properties:
     caption:
       $ref: "#/components/schemas/App.Field.Caption"

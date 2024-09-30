@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mondegor/print-shop-back/config"
-
 	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrlog"
+
+	"github.com/mondegor/print-shop-back/config"
 )
 
 // NewTranslator - создаёт объект mrlang.Translator.

@@ -3,10 +3,14 @@
 .idea
 .vscode
 
+/.cache
+
 /.env
+/.env-IDE
 
 /app/bin
+/app/test-coverage-full.html
+
 /img
 
-/golang
-/*dump*
+/Makefile.mk

@@ -8,5 +8,5 @@ CREATE TABLE printshop_providers.companies_pages (
     site_url character varying(512) NOT NULL,
     page_status int2 NOT NULL, -- 1=DRAFT, 2=HIDDEN', 3=PUBLISHED, 4=PUBLISHED_SHARED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW()
 );

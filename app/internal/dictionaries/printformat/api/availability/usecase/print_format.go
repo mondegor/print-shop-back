@@ -3,28 +3,26 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-
 	"github.com/mondegor/go-webcore/mrlog"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
 		storage      availability.PrintFormatStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(storage availability.PrintFormatStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PrintFormat {
+func NewPrintFormat(storage availability.PrintFormatStorage, errorWrapper mrcore.UseCaseErrorWrapper) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
 		errorWrapper: errorWrapper,

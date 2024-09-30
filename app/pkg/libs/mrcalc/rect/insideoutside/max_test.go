@@ -3,13 +3,12 @@ package insideoutside_test
 import (
 	"testing"
 
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
-
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
 )
 
 func TestMax(t *testing.T) {

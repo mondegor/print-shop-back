@@ -3,17 +3,16 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 )
 
 type (
@@ -21,13 +20,13 @@ type (
 	PrintFormat struct {
 		storage      adm.PrintFormatStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(storage adm.PrintFormatStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PrintFormat {
+func NewPrintFormat(storage adm.PrintFormatStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
 		eventEmitter: eventEmitter,

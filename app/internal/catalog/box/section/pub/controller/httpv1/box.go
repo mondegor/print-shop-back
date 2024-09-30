@@ -3,11 +3,11 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/validate"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 const (

@@ -4,15 +4,14 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/shared/repository"
-
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (

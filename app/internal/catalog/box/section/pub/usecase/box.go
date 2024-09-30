@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
-
-	"github.com/mondegor/go-webcore/mrcore"
 )
 
 type (
@@ -14,12 +14,12 @@ type (
 	// Box - comment struct.
 	Box struct {
 		storage      pub.BoxStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewBox - создаёт объект Box.
-func NewBox(storage pub.BoxStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Box {
+func NewBox(storage pub.BoxStorage, errorWrapper mrcore.UseCaseErrorWrapper) *Box {
 	return &Box{
 		storage:      storage,
 		errorWrapper: errorWrapper,

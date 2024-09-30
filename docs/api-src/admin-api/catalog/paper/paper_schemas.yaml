@@ -102,6 +102,7 @@ Catalog.Papers.AdminAPI.Response.Model.Paper:
     - sides
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # paperId
       $ref: "#/components/schemas/Custom.Field.Catalog.PaperID"

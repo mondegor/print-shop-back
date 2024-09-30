@@ -32,8 +32,6 @@ mrcmd_func_openapi_build_adm() {
   )
 
   OPENAPI_TAGS=(
-    "${sharedDir}/system/tags.yaml"
-
     "${boxDir}/tags.yaml"
     "${laminateDir}/tags.yaml"
     "${paperDir}/tags.yaml"
@@ -50,8 +48,6 @@ mrcmd_func_openapi_build_adm() {
   )
 
   OPENAPI_PATHS=(
-    "${sharedDir}/system/paths.yaml"
-
     "${boxDir}/box_paths.yaml"
     "${laminateDir}/laminate_paths.yaml"
     "${paperDir}/paper_paths.yaml"
@@ -189,8 +185,6 @@ mrcmd_func_openapi_build_adm() {
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.RectFormat.yaml"
-
-    "${sharedDir}/system/schemas.yaml"
 
     "${boxDir}/box_schemas.yaml"
     "${laminateDir}/laminate_schemas.yaml"

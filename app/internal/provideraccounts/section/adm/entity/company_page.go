@@ -3,10 +3,10 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 const (
@@ -23,7 +23,7 @@ type (
 		SiteURL     string            `json:"siteUrl" sort:"siteUrl"`
 		Status      enum.PublicStatus `json:"status"`
 		CreatedAt   time.Time         `json:"createdAt" sort:"createdAt"`
-		UpdatedAt   *time.Time        `json:"updatedAt,omitempty" sort:"updatedAt"`
+		UpdatedAt   time.Time         `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// CompanyPageParams - comment struct.

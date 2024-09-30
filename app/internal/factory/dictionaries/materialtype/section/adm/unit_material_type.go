@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitMaterialType(ctx context.Context, opts materialtype.Options) ([]mrserver.HttpController, error) {
@@ -40,7 +40,7 @@ func newUnitMaterialType(ctx context.Context, opts materialtype.Options) (*httpv
 			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewMaterialType(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewMaterialType(storage, opts.EventEmitter, opts.UseCaseHelper)
 	controller := httpv1.NewMaterialType(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

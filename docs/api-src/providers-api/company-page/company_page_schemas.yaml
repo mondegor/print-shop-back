@@ -36,6 +36,7 @@ CompanyPage.ProvidersAPI.Response.Model.CompanyPage:
     - pageTitle
     - status
     - createdAt
+    - updatedAt
   properties:
     rewriteName:
       description: Уникальное название страницы

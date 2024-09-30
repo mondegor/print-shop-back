@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 type (

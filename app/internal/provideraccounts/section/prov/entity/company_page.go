@@ -3,9 +3,9 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-
 	"github.com/google/uuid"
+
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 const (
@@ -23,6 +23,6 @@ type (
 		SiteURL     string            `json:"siteUrl"`
 		Status      enum.PublicStatus `json:"status"`
 		CreatedAt   time.Time         `json:"createdAt"`
-		UpdatedAt   *time.Time        `json:"updatedAt,omitempty"`
+		UpdatedAt   time.Time         `json:"updatedAt"`
 	}
 )

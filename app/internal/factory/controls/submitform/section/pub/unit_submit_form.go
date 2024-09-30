@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitSubmitForm(ctx context.Context, opts submitform.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitSubmitForm(_ context.Context, opts submitform.Options) (*httpv1.Subm
 	storage := repository.NewSubmitFormPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewSubmitForm(storage, opts.UsecaseHelper)
+	useCase := usecase.NewSubmitForm(storage, opts.UseCaseHelper)
 	controller := httpv1.NewSubmitForm(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

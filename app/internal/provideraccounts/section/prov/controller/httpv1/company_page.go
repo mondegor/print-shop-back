@@ -3,15 +3,14 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
 const (

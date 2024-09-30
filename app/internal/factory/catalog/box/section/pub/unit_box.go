@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitBox(ctx context.Context, opts box.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitBox(_ context.Context, opts box.Options) (*httpv1.Box, error) { //no
 	storage := repository.NewBoxPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewBox(storage, opts.UsecaseHelper)
+	useCase := usecase.NewBox(storage, opts.UseCaseHelper)
 	controller := httpv1.NewBox(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

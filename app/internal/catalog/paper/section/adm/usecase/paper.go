@@ -3,12 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -16,6 +10,11 @@ import (
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
+	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 type (
@@ -26,7 +25,7 @@ type (
 		paperColorAPI   api.PaperColorAvailability
 		paperFactureAPI api.PaperFactureAvailability
 		eventEmitter    mrsender.EventEmitter
-		errorWrapper    mrcore.UsecaseErrorWrapper
+		errorWrapper    mrcore.UseCaseErrorWrapper
 		statusFlow      mrstatus.Flow
 	}
 )
@@ -38,7 +37,7 @@ func NewPaper(
 	paperColorAPI api.PaperColorAvailability,
 	paperFactureAPI api.PaperFactureAvailability,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *Paper {
 	return &Paper{
 		storage:         storage,

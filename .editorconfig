@@ -29,12 +29,12 @@ insert_final_newline = false
 # Possible values - true, false
 trim_trailing_whitespace = true
 
-# nginx, js, shell, typescript, docker
-[{*.conf, *.js, *.sh, *.ts, Dockerfile}]
+# nginx, js, typescript, shell, protobuf, docker
+[{*.conf,*.js,*.ts,*.sh,*.proto,Dockerfile}]
 indent_size = 2
 insert_final_newline = true
 
-[{*.css, *.less, *.json, *.xml, *.xslt, *.yaml, *.puml}]
+[{*.css,*.less,*.json,*.xml,*.xslt,*.yml,*.yaml,*.puml,*.iuml}]
 indent_size = 2
 
 [*.go]
@@ -47,6 +47,6 @@ insert_final_newline = true
 max_line_length = 160
 trim_trailing_whitespace = false
 
-[Makefile]
+[{Makefile,*.mk}]
 indent_style = tab
 indent_size = unset

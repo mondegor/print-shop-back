@@ -3,14 +3,14 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/app"
-
 	"github.com/mondegor/go-components/factory/mrsettings"
 	"github.com/mondegor/go-components/mrsettings/component/lightgetter"
 	"github.com/mondegor/go-components/mrsettings/component/setter"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrworker/mrschedule"
+
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
 const (
@@ -25,7 +25,7 @@ func NewSettingsGetterAndTask(ctx context.Context, opts app.Options) (*lightgett
 	getter := mrsettings.NewComponentCacheGetter(
 		opts.PostgresConnManager,
 		mrsql.NewEntityMeta(settingsManagerTableName, settingsManagerPrimaryKey, nil),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		mrsettings.ComponentCacheGetterOptions{},
 	)
 
@@ -59,7 +59,7 @@ func NewSettingsSetter(ctx context.Context, opts app.Options) *setter.Component 
 		opts.PostgresConnManager,
 		mrsql.NewEntityMeta(settingsManagerTableName, settingsManagerPrimaryKey, nil),
 		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		mrsettings.ComponentSetterOptions{},
 	)
 }

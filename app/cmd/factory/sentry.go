@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mondegor/print-shop-back/config"
-
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsentry"
+
+	"github.com/mondegor/print-shop-back/config"
 )
 
 // NewSentry - создаёт объект mrsentry.Adapter.
@@ -16,7 +16,7 @@ func NewSentry(ctx context.Context, cfg config.Config) (*mrsentry.Adapter, error
 
 	client, err := mrsentry.New(
 		mrsentry.Options{
-			Dsn:              cfg.Sentry.Dsn,
+			DSN:              cfg.Sentry.DSN,
 			Environment:      cfg.App.Environment,
 			AppVersion:       cfg.App.Version,
 			TracesSampleRate: cfg.Sentry.TracesSampleRate,

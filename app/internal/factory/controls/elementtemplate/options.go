@@ -14,7 +14,7 @@ type (
 	// Options - comment struct.
 	Options struct {
 		EventEmitter   mrsender.EventEmitter
-		UsecaseHelper  mrcore.UsecaseErrorWrapper
+		UseCaseHelper  mrcore.UseCaseErrorWrapper
 		DBConnManager  mrstorage.DBConnManager
 		RequestParsers RequestParsers
 		ResponseSender mrserver.FileResponseSender

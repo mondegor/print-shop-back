@@ -3,24 +3,24 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrpath"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
 		storage      adm.CompanyPageStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		imgBaseURL   mrpath.PathBuilder
 	}
 )
 
 // NewCompanyPage - создаёт объект CompanyPage.
-func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UsecaseErrorWrapper, imgBaseURL mrpath.PathBuilder) *CompanyPage {
+func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UseCaseErrorWrapper, imgBaseURL mrpath.PathBuilder) *CompanyPage {
 	return &CompanyPage{
 		storage:      storage,
 		errorWrapper: errorWrapper,

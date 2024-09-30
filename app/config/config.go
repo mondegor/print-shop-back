@@ -1,21 +1,27 @@
 package config
 
 import (
-	"fmt"
+	"io"
 	"time"
 
-	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrlib"
 )
 
-const (
-	detectVersion = "v0.0.0"
-)
-
 type (
+	// Args - разобранные аргументы, которые передаются из командной строки.
+	// Эти аргументы более приоритетны аналогичным, которые определены в конфигурации или переданы через .env файл.
+	Args struct {
+		WorkDir     string // путь к рабочей директории приложения
+		ConfigPath  string // путь к файлу конфигурации приложения
+		DotEnvPath  string // путь к .env файлу (переменные из этого файла более приоритетны переменных из ConfigPath)
+		Environment string // внешнее окружение: local, dev, test, prod
+		LogLevel    string // уровень логирования: info, warn, error, fatal, debug, trace
+		Stdout      io.Writer
+	}
+
 	// Config - comment struct.
 	Config struct {
+		Os
 		App             `yaml:"app"`
 		Debugging       `yaml:"debugging"`
 		Log             `yaml:"logger"`
@@ -34,12 +40,19 @@ type (
 		TaskSchedule    `yaml:"task_schedule"`
 	}
 
+	// Os - comment struct.
+	Os struct {
+		Stdout io.Writer
+	}
+
 	// App - comment struct.
 	App struct {
 		Name        string `yaml:"name" env:"APPX_NAME"`
 		Version     string `yaml:"version" env:"APPX_VER"`
 		Environment string `yaml:"environment" env:"APPX_ENV"`
+		WorkDir     string
 		ConfigPath  string
+		DotEnvPath  string
 		StartedAt   time.Time
 	}
 
@@ -68,8 +81,7 @@ type (
 
 	// Sentry - comment struct.
 	Sentry struct {
-		Enable           bool          `yaml:"enable" env:"APPX_SENTRY_ENABLE"`
-		Dsn              string        `yaml:"dsn" env:"APPX_SENTRY_DSN"`
+		DSN              string        `yaml:"dsn" env:"APPX_SENTRY_DSN"`
 		TracesSampleRate float64       `yaml:"traces_sample_rate" env:"APPX_SENTRY_TRACES_SAMPLE_RATE"`
 		FlushTimeout     time.Duration `yaml:"flush_timeout"`
 	}
@@ -87,35 +99,40 @@ type (
 			} `yaml:"listen"`
 		} `yaml:"rest_server"`
 
-		// PrometheusServer - comment struct.
-		PrometheusServer struct {
-			ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_PROMETHEUS_SERVER_READ_TIMEOUT"`
-			WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_PROMETHEUS_SERVER_WRITE_TIMEOUT"`
-			ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_PROMETHEUS_SERVER_SHUTDOWN_TIMEOUT"`
+		// InternalServer - comment struct.
+		InternalServer struct {
+			ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_INTERNAL_SERVER_READ_TIMEOUT"`
+			WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_INTERNAL_SERVER_WRITE_TIMEOUT"`
+			ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_INTERNAL_SERVER_SHUTDOWN_TIMEOUT"`
 			Listen          struct {
-				BindIP string `yaml:"bind_ip" env:"APPX_PROMETHEUS_SERVER_LISTEN_BIND"`
-				Port   string `yaml:"port" env:"APPX_PROMETHEUS_SERVER_LISTEN_PORT"`
+				BindIP string `yaml:"bind_ip" env:"APPX_INTERNAL_SERVER_LISTEN_BIND"`
+				Port   string `yaml:"port" env:"APPX_INTERNAL_SERVER_LISTEN_PORT"`
 			} `yaml:"listen"`
-		} `yaml:"prometheus_server"`
+		} `yaml:"internal_server"`
 	}
 
 	// Storage - comment struct.
 	Storage struct {
-		Host        string        `yaml:"host" env:"APPX_DB_HOST"`
-		Port        string        `yaml:"port" env:"APPX_DB_PORT"`
-		Username    string        `yaml:"username" env:"APPX_DB_USER"`
-		Password    string        `yaml:"password" env:"APPX_DB_PASSWORD"`
-		Database    string        `yaml:"database" env:"APPX_DB_NAME"`
-		MaxPoolSize int           `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
-		Timeout     time.Duration `yaml:"timeout"`
+		Host            string        `yaml:"host" env:"APPX_DB_HOST"`
+		Port            string        `yaml:"port" env:"APPX_DB_PORT"`
+		Username        string        `yaml:"username" env:"APPX_DB_USER"`
+		Password        string        `yaml:"password" env:"APPX_DB_PASSWORD"`
+		Database        string        `yaml:"database" env:"APPX_DB_NAME"`
+		MigrationsDir   string        `yaml:"migrations_dir"`
+		MigrationsTable string        `yaml:"migrations_table" env:"APPX_DB_MIGRATIONS_TABLE"`
+		MaxPoolSize     int           `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
+		MaxConnLifetime time.Duration `yaml:"max_conn_lifetime" env:"APPX_DB_MAX_CONN_LIFETIME"`
+		MaxConnIdleTime time.Duration `yaml:"max_conn_idle_time" env:"APPX_DB_MAX_CONN_IDLE_TIME"`
+		Timeout         time.Duration `yaml:"timeout"`
 	}
 
 	// Redis - comment struct.
 	Redis struct {
-		Host     string        `yaml:"host" env:"APPX_REDIS_HOST"`
-		Port     string        `yaml:"port" env:"APPX_REDIS_PORT"`
-		Password string        `yaml:"password" env:"APPX_REDIS_PASSWORD"`
-		Timeout  time.Duration `yaml:"timeout"`
+		Host         string        `yaml:"host" env:"APPX_REDIS_HOST"`
+		Port         string        `yaml:"port" env:"APPX_REDIS_PORT"`
+		Password     string        `yaml:"password" env:"APPX_REDIS_PASSWORD"`
+		ReadTimeout  time.Duration `yaml:"read_timeout" env:"APPX_REDIS_READ_TIMEOUT"`
+		WriteTimeout time.Duration `yaml:"write_timeout" env:"APPX_REDIS_WRITE_TIMEOUT"`
 	}
 
 	// FileSystem - comment struct.
@@ -144,11 +161,11 @@ type (
 
 	// Translation - comment struct.
 	Translation struct {
-		DirPath   string   `yaml:"dir_path"`
+		DirPath   string   `yaml:"dir_path" env:"APPX_TRANSLATION_DIR_PATH"`
 		LangCodes []string `yaml:"lang_codes" env:"APPX_TRANSLATION_LANGS"` // items by "," separated
 		// Dictionaries - comment struct.
 		Dictionaries struct {
-			DirPath string   `yaml:"dir_path"`
+			DirPath string   `yaml:"dir_path" env:"APPX_TRANSLATION_DICTIONARIES_DIR_PATH"`
 			List    []string `yaml:"list"`
 		} `yaml:"dictionaries"`
 	}
@@ -190,7 +207,7 @@ type (
 
 	// Roles - comment struct.
 	Roles struct {
-		DirPath  string   `yaml:"dir_path"`
+		DirPath  string   `yaml:"dir_path" env:"APPX_ROLES_DIR_PATH"`
 		FileType string   `yaml:"file_type"`
 		List     []string `yaml:"list"`
 	}
@@ -236,31 +253,3 @@ type (
 	// MimeTypes - comment struct.
 	MimeTypes []mrlib.MimeType
 )
-
-// Create - создаёт, инициализирует и возвращает конфигурацию приложения.
-func Create(filePath string) (Config, error) {
-	cfg := Config{}
-
-	if err := cleanenv.ReadConfig(filePath, &cfg); err != nil {
-		return Config{}, fmt.Errorf("error parsing config file '%s': %w", filePath, err)
-	}
-
-	if err := cleanenv.ReadEnv(&cfg); err != nil {
-		return Config{}, fmt.Errorf("error reading ENV from config file '%s': %w", filePath, err)
-	}
-
-	if cfg.App.Version == detectVersion {
-		if ver := mrinit.Version(); ver != "" {
-			cfg.App.Version = ver
-		}
-	}
-
-	cfg.App.ConfigPath = filePath
-	cfg.App.StartedAt = time.Now().UTC()
-
-	if cfg.Debugging.UnexpectedHttpStatus < 400 || cfg.Debugging.UnexpectedHttpStatus > 599 {
-		return Config{}, fmt.Errorf("unexpected_http_status: min=400, max=599, got=%d", cfg.Debugging.UnexpectedHttpStatus)
-	}
-
-	return cfg, nil
-}

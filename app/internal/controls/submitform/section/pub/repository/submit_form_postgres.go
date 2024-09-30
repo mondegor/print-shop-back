@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrstorage"
+
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
-	"github.com/mondegor/go-storage/mrstorage"
 )
 
 type (

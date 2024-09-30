@@ -3,11 +3,11 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
-
 	"github.com/mondegor/go-webcore/mrfactory"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
+	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.

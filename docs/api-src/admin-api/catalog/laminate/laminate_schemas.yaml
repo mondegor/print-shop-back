@@ -84,6 +84,7 @@ Catalog.Laminates.AdminAPI.Response.Model.Laminate:
     - weightM2
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # laminateId
       $ref: "#/components/schemas/Custom.Field.Catalog.LaminateID"

@@ -1,7 +1,7 @@
-/v1/health:
+/health:
   get:
-    summary: Метод получения ответа приложения
-    description: Метод предназначен для проверки, что приложение запущено и отвечает
+    summary: Метод для ответа о работоспособности приложения и готовности к работе
+    description: Метод предназначен для проверки, что все сервисы приложения исправно работают и готовы к приёму запросов
     operationId: getHealthResponse
     tags:
       - System
@@ -12,10 +12,10 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/system-info:
+/system-info:
   get:
     summary: Метод получения системной информации приложения
-    description: Метод предназначен для получения системной информации о запущеном приложении
+    description: Метод предназначен для получения системной информации о работающим приложении
     operationId: getSystemInfo
     tags:
       - System

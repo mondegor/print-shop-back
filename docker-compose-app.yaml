@@ -2,8 +2,21 @@ version: "3.9"
 
 services:
   web-app: # ${GO_DOCKER_SERVICE}
+    expose:
+      - ${GO_WEBAPP_INTERNAL_PORT}
+      - ${APPX_INTERNAL_SERVER_LISTEN_PORT}
     volumes:
-      - ${APPX_IMAGES_DIR}:/opt/img
+      - ${APPX_IMAGES_DIR}:/opt/app/img
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${APPX_ID}-api.rule=(Host(`${APPX_ID}.local`) || Host(`api.${APPX_ID}.local`))
+      - traefik.http.routers.${APPX_ID}-api.entrypoints=web
+      - traefik.http.routers.${APPX_ID}-api.service=${APPX_ID}-api
+      - traefik.http.services.${APPX_ID}-api.loadbalancer.server.port=${GO_WEBAPP_INTERNAL_PORT}
+      - traefik.http.routers.${APPX_ID}-internal.rule=Host(`${APPX_ID}.internal`)
+      - traefik.http.routers.${APPX_ID}-internal.entrypoints=web
+      - traefik.http.routers.${APPX_ID}-internal.service=${APPX_ID}-internal
+      - traefik.http.services.${APPX_ID}-internal.loadbalancer.server.port=${APPX_INTERNAL_SERVER_LISTEN_PORT}
 #    depends_on:
 #      - db-postgres # ${POSTGRES_DOCKER_SERVICE}
 #      - db-redis # ${REDIS_DOCKER_SERVICE}

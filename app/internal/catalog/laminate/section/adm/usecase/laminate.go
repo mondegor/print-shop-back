@@ -3,12 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -16,6 +10,11 @@ import (
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
+	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 type (
@@ -24,7 +23,7 @@ type (
 		storage         adm.LaminateStorage
 		materialTypeAPI api.MaterialTypeAvailability
 		eventEmitter    mrsender.EventEmitter
-		errorWrapper    mrcore.UsecaseErrorWrapper
+		errorWrapper    mrcore.UseCaseErrorWrapper
 		statusFlow      mrstatus.Flow
 	}
 )
@@ -34,7 +33,7 @@ func NewLaminate(
 	storage adm.LaminateStorage,
 	materialTypeAPI api.MaterialTypeAvailability,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *Laminate {
 	return &Laminate{
 		storage:         storage,

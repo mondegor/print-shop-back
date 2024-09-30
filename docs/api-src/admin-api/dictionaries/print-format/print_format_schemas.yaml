@@ -60,6 +60,7 @@ Dictionaries.PrintFormats.AdminAPI.Response.Model.PrintFormat:
     - height
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # formatId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"

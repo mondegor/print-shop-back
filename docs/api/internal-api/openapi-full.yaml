@@ -1,0 +1,211 @@
+---
+openapi: 3.0.3
+info:
+  version: v0.4.3
+  title: Internal API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Andrey Nazarov
+  description: |-
+    Internal REST API проекта print-shop
+servers:
+  - url: http://print-shop.internal
+    description: Local Domain
+  - url: http://localhost:8084
+    description: Local Host
+tags:
+  - name: System
+    description: API System Methods
+
+paths:
+  /health:
+    get:
+      summary: Метод для ответа о работоспособности приложения и готовности к работе
+      description: Метод предназначен для проверки, что все сервисы приложения исправно работают и готовы к приёму запросов
+      operationId: getHealthResponse
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Возвращён ответ приложения 200 OK
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /system-info:
+    get:
+      summary: Метод получения системной информации приложения
+      description: Метод предназначен для получения системной информации о работающим приложении
+      operationId: getSystemInfo
+      tags:
+        - System
+
+      responses:
+        "200":
+          description: Получена системная информация о приложении
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+components:
+
+  parameters:
+    App.Request.Header.AcceptLanguage:
+      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+        default: "ru-RU"
+      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
+
+    App.Request.Header.CorrelationID:
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+  schemas:
+    App.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
+
+    App.Response.Model.ErrorDetails: # RFC 7807 (Problem Details for HTTP APIs)
+      description: DTO следующих ошибок - 401, 403, 404, 5XX
+      type: object
+      required:
+        - title
+        - details
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Resource not found"
+        details:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+03:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    App.System.Response.Model.SystemInfo:
+      description: DTO - системная информация о запущенном приложении
+      type: object
+      required:
+        - name
+        - version
+        - environment
+        - hostName
+        - isDebug
+        - logLevel
+        - startedAt
+        - processes
+      properties:
+        name:
+          description: Название приложения
+          type: string
+          maxLength: 64
+          example: "Sample App"
+        version:
+          description: Версия приложения
+          type: string
+          maxLength: 16
+          example: "v0.1.0"
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          maxLength: 16
+          example: "prod"
+        hostName:
+          description: Название хоста, на котором запущено приложение
+          type: string
+          maxLength: 64
+          example: "host-name"
+        isDebug:
+          description: Статус режима отладки
+          type: boolean
+          example: true
+        logLevel:
+          type: string
+          enum:
+            - DEBUG
+            - INFO
+            - WARN
+            - ERROR
+            - FATAL
+            - TRACE
+          example: "ERROR"
+        startedAt:
+          description: Время запуска приложения (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+03:00"
+        processes:
+          description: Процессы приложения со статусом работоспособности
+          type: object
+          additionalProperties:
+            description: Название процесса => статус работоспособности
+            type: string
+
+  responses:
+    App.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorList"
+
+    App.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"

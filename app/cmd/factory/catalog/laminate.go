@@ -19,7 +19,7 @@ func NewLaminateModuleOptions(_ context.Context, opts app.Options) (laminate.Opt
 
 	return laminate.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: laminate.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,

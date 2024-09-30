@@ -3,20 +3,18 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/flow"
-
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrstatus"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/flow"
 )
 
 type (
@@ -24,7 +22,7 @@ type (
 	CompanyPage struct {
 		storage      prov.CompanyPageStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		imgBaseURL   mrpath.PathBuilder
 		statusFlow   mrstatus.Flow
 	}
@@ -34,7 +32,7 @@ type (
 func NewCompanyPage(
 	storage prov.CompanyPageStorage,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 	imgBaseURL mrpath.PathBuilder,
 ) *CompanyPage {
 	return &CompanyPage{

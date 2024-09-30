@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]mrserver.HttpController, error) {
@@ -40,7 +40,7 @@ func newUnitPaperFacture(ctx context.Context, opts paperfacture.Options) (*httpv
 			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UseCaseHelper)
 	controller := httpv1.NewPaperFacture(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

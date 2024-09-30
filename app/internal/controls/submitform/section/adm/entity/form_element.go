@@ -3,10 +3,10 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (
@@ -28,6 +28,6 @@ type (
 		Detailing       enum.ElementDetailing `json:"detailing"`   // element_templates::element_detailing
 		Body            []byte                `json:"-"`           // element_templates::element_body
 		CreatedAt       time.Time             `json:"createdAt"`
-		UpdatedAt       *time.Time            `json:"updatedAt,omitempty"`
+		UpdatedAt       time.Time             `json:"updatedAt"`
 	}
 )

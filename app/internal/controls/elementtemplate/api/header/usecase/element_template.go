@@ -3,26 +3,26 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
+	"github.com/mondegor/print-shop-back/pkg/controls/api"
 )
 
 type (
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
 		storage      header.ElementTemplateStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewElementTemplate - создаёт объект ElementTemplate.
-func NewElementTemplate(storage header.ElementTemplateStorage, errorWrapper mrcore.UsecaseErrorWrapper) *ElementTemplate {
+func NewElementTemplate(storage header.ElementTemplateStorage, errorWrapper mrcore.UseCaseErrorWrapper) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,
 		errorWrapper: errorWrapper,

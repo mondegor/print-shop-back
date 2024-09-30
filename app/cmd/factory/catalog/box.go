@@ -3,11 +3,10 @@ package catalog
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 
 	"github.com/mondegor/print-shop-back/internal/app"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
 )
 
@@ -20,7 +19,7 @@ func NewBoxModuleOptions(_ context.Context, opts app.Options) (box.Options, erro
 
 	return box.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: box.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,

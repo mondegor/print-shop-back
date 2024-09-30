@@ -3,12 +3,12 @@ package prov
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/repository"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
@@ -31,7 +31,7 @@ func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (
 
 func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
 	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPage(storage, opts.EventEmitter, opts.UsecaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(storage, opts.EventEmitter, opts.UseCaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,
@@ -48,7 +48,7 @@ func newUnitCompanyPageLogo(_ context.Context, opts provideraccounts.Options) (*
 		opts.UnitCompanyPage.LogoFileAPI,
 		opts.Locker,
 		opts.EventEmitter,
-		opts.UsecaseHelper,
+		opts.UseCaseHelper,
 	)
 	controller := httpv1.NewCompanyPageLogo(
 		opts.RequestParsers.ModuleParser,

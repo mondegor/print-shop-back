@@ -3,9 +3,9 @@ package base_test
 import (
 	"testing"
 
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
-
 	"github.com/stretchr/testify/assert"
+
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 )
 
 func TestFragment_Total(t *testing.T) {

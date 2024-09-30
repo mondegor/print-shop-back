@@ -3,13 +3,13 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
+
+	"github.com/mondegor/print-shop-back/config"
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
 // CreateResponseSenders - создаются и возвращаются компоненты для отправки ответа клиенту.
@@ -34,7 +34,6 @@ func NewErrorResponseSender(ctx context.Context, opts app.Options) (*mrresp.Erro
 		mrserver.NewHttpErrorStatusGetter(
 			opts.Cfg.Debugging.UnexpectedHttpStatus,
 		),
-		opts.Cfg.Debugging.UnexpectedHttpStatus,
 		opts.Cfg.Debugging.Debug,
 	), nil
 }

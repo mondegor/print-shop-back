@@ -1,11 +1,11 @@
 package httpv1
 
 import (
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (

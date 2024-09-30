@@ -64,6 +64,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.Form:
     - detailing
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # formId
       $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
@@ -96,6 +97,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormVersion:
     - caption
     - activityStatus
     - createdAt
+    - updatedAt
   properties:
     version:
       $ref: "#/components/schemas/App.Field.Int32"

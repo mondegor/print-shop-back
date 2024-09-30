@@ -49,6 +49,7 @@ Dictionaries.MaterialTypes.AdminAPI.Response.Model.MaterialType:
     - caption
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # typeId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"

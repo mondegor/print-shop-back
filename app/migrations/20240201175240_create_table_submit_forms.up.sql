@@ -9,7 +9,7 @@ CREATE TABLE printshop_controls.submit_forms (
     form_detailing int2 NOT NULL, -- 1=NORMAL, 2=EXTENDED
     form_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     deleted_at timestamp with time zone NULL
 );
 
@@ -19,4 +19,4 @@ CREATE UNIQUE INDEX uk_submit_forms_param_name ON printshop_controls.submit_form
 -- --------------------------------------------------------------------------------------------------
 
 INSERT INTO printshop_controls.submit_forms (form_id, tag_version, rewrite_name, param_name, form_caption, form_detailing, form_status, created_at, updated_at, deleted_at)
-VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Flyers', 'Флаеры', 1/*NORMAL*/, 2/*ENABLED*/, '2023-07-03 19:33:28.945816', NULL, NULL);
+VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Flyers', 'Флаеры', 1/*NORMAL*/, 2/*ENABLED*/, '2023-07-03 19:33:28.945816', '2023-07-03 19:33:28.945816', NULL);

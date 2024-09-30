@@ -3,10 +3,10 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrreq"
+
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 type (

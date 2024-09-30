@@ -1,10 +1,10 @@
 package flow
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 // PublicStatusFlow - возвращает стандартную карту возможных переходов PublicStatus.

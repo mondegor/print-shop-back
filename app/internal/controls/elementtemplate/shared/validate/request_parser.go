@@ -1,11 +1,11 @@
 package validate
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/controls/validate"
-	pkgvalidate "github.com/mondegor/print-shop-back/pkg/validate"
-
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
+
+	"github.com/mondegor/print-shop-back/pkg/controls/validate"
+	pkgvalidate "github.com/mondegor/print-shop-back/pkg/validate"
 )
 
 type (

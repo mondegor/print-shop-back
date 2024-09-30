@@ -3,19 +3,18 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/view"
-
 	"github.com/mondegor/go-components/mrsort"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
+	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"github.com/mondegor/print-shop-back/pkg/view"
 )
 
 const (

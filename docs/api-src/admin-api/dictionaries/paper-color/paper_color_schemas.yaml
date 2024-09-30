@@ -49,6 +49,7 @@ Dictionaries.PaperColors.AdminAPI.Response.Model.PaperColor:
     - caption
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # colorId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"

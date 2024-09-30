@@ -3,9 +3,9 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/google/uuid"
+
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (
@@ -24,7 +24,7 @@ type (
 		Body           []byte                `json:"-"`
 		ActivityStatus enum.ActivityStatus   `json:"activityStatus"`
 		CreatedAt      time.Time             `json:"createdAt"`
-		UpdatedAt      *time.Time            `json:"updatedAt,omitempty"`
+		UpdatedAt      time.Time             `json:"updatedAt"`
 	}
 
 	// PrimaryKey - comment struct.

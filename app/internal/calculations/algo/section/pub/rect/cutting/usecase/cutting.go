@@ -3,24 +3,24 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/cutting"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrsender"
+
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/cutting"
 )
 
 type (
 	// RectCutting - comment struct.
 	RectCutting struct {
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewRectCutting - создаёт объект RectCutting.
-func NewRectCutting(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *RectCutting {
+func NewRectCutting(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectCutting {
 	return &RectCutting{
 		eventEmitter: eventEmitter,
 		errorWrapper: errorWrapper,

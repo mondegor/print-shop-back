@@ -1,14 +1,14 @@
 package factory
 
 import (
-	"github.com/mondegor/print-shop-back/internal/app"
-
 	"github.com/mondegor/go-sysmess/mrcaller"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/features"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrserver/mrparser/mrparserinit"
 	"github.com/mondegor/go-webcore/mrserver/mrreq/mrreqinit"
+
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
 // NewErrorManager - создаёт объект mrinit.ErrorManager.
@@ -18,9 +18,9 @@ func NewErrorManager(opts app.Options) *mrinit.ErrorManager {
 	// create Caller for Errors
 	if opts.Cfg.Debugging.ErrorCaller.Enable {
 		caller := mrcaller.New(
-			mrcaller.DepthOption(opts.Cfg.Debugging.ErrorCaller.Depth),
-			mrcaller.ShowFuncNameOption(opts.Cfg.Debugging.ErrorCaller.ShowFuncName),
-			mrcaller.FilterStackTraceOption(
+			mrcaller.WithDepth(opts.Cfg.Debugging.ErrorCaller.Depth),
+			mrcaller.WithShowFuncName(opts.Cfg.Debugging.ErrorCaller.ShowFuncName),
+			mrcaller.WithFilterStackTrace(
 				mrcaller.FilterStackTraceTrimUpper(opts.Cfg.Debugging.ErrorCaller.UpperBounds),
 			),
 		)

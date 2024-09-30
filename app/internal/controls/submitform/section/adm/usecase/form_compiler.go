@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"strings"
 
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
-
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (

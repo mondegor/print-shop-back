@@ -1,5 +1,5 @@
 App.System.Response.Model.SystemInfo:
-  description: DTO - системная информация о запущеном приложении
+  description: DTO - системная информация о запущенном приложении
   type: object
   required:
     - name
@@ -9,6 +9,7 @@ App.System.Response.Model.SystemInfo:
     - isDebug
     - logLevel
     - startedAt
+    - processes
   properties:
     name:
       description: Название приложения
@@ -48,4 +49,10 @@ App.System.Response.Model.SystemInfo:
       description: Время запуска приложения (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
+    processes:
+      description: Процессы приложения со статусом работоспособности
+      type: object
+      additionalProperties:
+        description: Название процесса => статус работоспособности
+        type: string

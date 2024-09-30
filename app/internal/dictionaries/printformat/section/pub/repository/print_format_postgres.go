@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/entity"
-
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/entity"
 )
 
 type (

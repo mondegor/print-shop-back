@@ -84,6 +84,7 @@ Catalog.Boxes.AdminAPI.Response.Model.Box:
     - weight
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # boxId
       $ref: "#/components/schemas/Custom.Field.Catalog.BoxID"

@@ -5,11 +5,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrstorage"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-
-	"github.com/mondegor/go-storage/mrstorage"
 )
 
 type (

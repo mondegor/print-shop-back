@@ -3,28 +3,26 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-
 	"github.com/mondegor/go-webcore/mrlog"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
 		storage      availability.MaterialTypeStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(storage availability.MaterialTypeStorage, errorWrapper mrcore.UsecaseErrorWrapper) *MaterialType {
+func NewMaterialType(storage availability.MaterialTypeStorage, errorWrapper mrcore.UseCaseErrorWrapper) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
 		errorWrapper: errorWrapper,

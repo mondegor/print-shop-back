@@ -17,14 +17,10 @@ mrcmd_func_openapi_build_prov() {
   )
 
   OPENAPI_TAGS=(
-    "${sharedDir}/system/tags.yaml"
-
     "${companyPageDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
-    "${sharedDir}/system/paths.yaml"
-
     "${companyPageDir}/company_page_paths.yaml"
   )
 
@@ -135,8 +131,6 @@ mrcmd_func_openapi_build_prov() {
     # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.RectFormat.yaml"
-
-    "${sharedDir}/system/schemas.yaml"
 
     "${companyPageDir}/company_page_schemas.yaml"
   )

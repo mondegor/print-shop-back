@@ -3,18 +3,18 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-webcore/mrview"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
-
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
-	"github.com/mondegor/go-webcore/mrview"
 )
 
 const (

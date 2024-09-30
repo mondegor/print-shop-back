@@ -3,11 +3,11 @@ package prov
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-
 	"github.com/mondegor/go-webcore/mrfactory"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.

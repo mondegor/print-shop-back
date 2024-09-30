@@ -3,9 +3,9 @@ package header
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (

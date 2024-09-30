@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
 	"github.com/mondegor/go-storage/mrstorage"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 )
 
 type (

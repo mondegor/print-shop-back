@@ -3,17 +3,16 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
 )
 
 type (
@@ -21,13 +20,13 @@ type (
 	PaperColor struct {
 		storage      adm.PaperColorStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
 
 // NewPaperColor - создаёт объект PaperColor.
-func NewPaperColor(storage adm.PaperColorStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperColor {
+func NewPaperColor(storage adm.PaperColorStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
 		eventEmitter: eventEmitter,

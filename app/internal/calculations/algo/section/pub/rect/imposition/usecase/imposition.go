@@ -3,15 +3,14 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/go-sysmess/mrmsg"
+	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-webcore/mrsender"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
-
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrsender"
 )
 
 type (
@@ -19,12 +18,12 @@ type (
 	RectImposition struct {
 		algo         *imposition.Algo
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewRectImposition - создаёт объект RectImposition.
-func NewRectImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *RectImposition {
+func NewRectImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectImposition {
 	return &RectImposition{
 		algo:         algo,
 		eventEmitter: eventEmitter,

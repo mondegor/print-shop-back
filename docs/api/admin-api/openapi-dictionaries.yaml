@@ -1202,13 +1202,13 @@ components:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
 
     App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
 
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
@@ -1294,7 +1294,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: "2023-01-01T12:00:00.000+02:00"
+          example: "2023-01-01T12:00:00.000+03:00"
         errorTraceId:
           description: Идентификатор конкретного возникновения ошибки
           type: string
@@ -1390,6 +1390,7 @@ components:
         - caption
         - status
         - createdAt
+        - updatedAt
       properties:
         id: # typeId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.MaterialTypeID"
@@ -1458,6 +1459,7 @@ components:
         - caption
         - status
         - createdAt
+        - updatedAt
       properties:
         id: # colorId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperColorID"
@@ -1526,6 +1528,7 @@ components:
         - caption
         - status
         - createdAt
+        - updatedAt
       properties:
         id: # factureId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"
@@ -1605,6 +1608,7 @@ components:
         - height
         - status
         - createdAt
+        - updatedAt
       properties:
         id: # formatId
           $ref: "#/components/schemas/Custom.Field.Dictionaries.PrintFormatID"

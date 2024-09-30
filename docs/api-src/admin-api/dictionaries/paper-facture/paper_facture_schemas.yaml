@@ -49,6 +49,7 @@ Dictionaries.PaperFactures.AdminAPI.Response.Model.PaperFacture:
     - caption
     - status
     - createdAt
+    - updatedAt
   properties:
     id: # factureId
       $ref: "#/components/schemas/Custom.Field.Dictionaries.PaperFactureID"

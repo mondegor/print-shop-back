@@ -4,12 +4,12 @@ import (
 	"context"
 	"os"
 
-	"github.com/mondegor/print-shop-back/config"
-
 	"github.com/mondegor/go-storage/mrfilestorage"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlog"
+
+	"github.com/mondegor/print-shop-back/config"
 )
 
 // NewFileSystem - создаёт объект mrfilestorage.FileSystem.
@@ -19,7 +19,7 @@ func NewFileSystem(ctx context.Context, cfg config.Config) *mrfilestorage.FileSy
 	return mrfilestorage.New(
 		os.FileMode(cfg.FileSystem.DirMode),
 		cfg.FileSystem.CreateDirs,
-		mrlib.NewMimeTypeList(cfg.MimeTypes), // TODO: можно вынести в общую переменную
+		mrlib.NewMimeTypeList(mrlog.Ctx(ctx), cfg.MimeTypes), // TODO: можно вынести в общую переменную
 	)
 }
 

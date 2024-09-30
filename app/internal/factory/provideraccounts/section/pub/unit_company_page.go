@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/usecase"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
@@ -25,7 +25,7 @@ func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (
 
 func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
 	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPage(storage, opts.UsecaseHelper)
+	useCase := usecase.NewCompanyPage(storage, opts.UseCaseHelper)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

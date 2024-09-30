@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 )
 

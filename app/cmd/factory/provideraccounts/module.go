@@ -11,7 +11,7 @@ import (
 
 // NewModuleOptions - создаёт объект provideraccounts.Options.
 func NewModuleOptions(_ context.Context, opts app.Options) (provideraccounts.Options, error) {
-	fileAPI, err := opts.FileProviderPool.Provider(
+	fileAPI, err := opts.FileProviderPool.ProviderAPI(
 		opts.Cfg.ModulesSettings.ProviderAccount.CompanyPageLogo.FileProvider,
 	)
 	if err != nil {
@@ -20,7 +20,7 @@ func NewModuleOptions(_ context.Context, opts app.Options) (provideraccounts.Opt
 
 	return provideraccounts.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		Locker:        opts.Locker,
 		RequestParsers: provideraccounts.RequestParsers{

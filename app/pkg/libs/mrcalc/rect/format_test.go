@@ -3,12 +3,12 @@ package rect_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestFormat_Cast(t *testing.T) {

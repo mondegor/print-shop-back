@@ -3,24 +3,24 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (
 	// Paper - comment struct.
 	Paper struct {
 		storage      pub.PaperStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewPaper - создаёт объект Paper.
-func NewPaper(storage pub.PaperStorage, errorWrapper mrcore.UsecaseErrorWrapper) *Paper {
+func NewPaper(storage pub.PaperStorage, errorWrapper mrcore.UseCaseErrorWrapper) *Paper {
 	return &Paper{
 		storage:      storage,
 		errorWrapper: errorWrapper,

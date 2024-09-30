@@ -3,13 +3,13 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 type (

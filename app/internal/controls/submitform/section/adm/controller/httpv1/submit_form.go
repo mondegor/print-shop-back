@@ -6,18 +6,18 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
+	"github.com/mondegor/print-shop-back/pkg/view"
 )
 
 const (

@@ -3,10 +3,6 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
@@ -14,11 +10,16 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrview"
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
+
+	"github.com/mondegor/print-shop-back/config"
+	"github.com/mondegor/print-shop-back/internal/app"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
 func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestParsers, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init base request parser")
+	logger := mrlog.Ctx(ctx)
+	logger.Info().Msg("Create and init base request parsers")
 
 	validator, err := NewValidator(ctx, cfg)
 	if err != nil {
@@ -29,14 +30,14 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 	// поэтому её можно менять только при смене самого роутера
 	pathFunc := mrchi.URLPathParam
 
-	registeredMimeTypes := mrlib.NewMimeTypeList(cfg.MimeTypes)
+	registeredMimeTypes := mrlib.NewMimeTypeList(logger, cfg.MimeTypes)
 
-	jsonMimeTypeList, err := registeredMimeTypes.NewListByExts(".json")
+	jsonMimeTypeList, err := registeredMimeTypes.NewListByExts(logger, ".json")
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
-	imageMimeTypeList, err := registeredMimeTypes.NewListByExts(".jpeg", ".jpg", ".png")
+	imageMimeTypeList, err := registeredMimeTypes.NewListByExts(logger, ".jpeg", ".jpg", ".png")
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -58,6 +59,7 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		UUID:      mrparser.NewUUID(pathFunc),
 		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
 		FileJson: mrparser.NewFile(
+			logger,
 			mrparser.FileOptions{
 				AllowedMimeTypes:        jsonMimeTypeList,
 				MinSize:                 1,
@@ -67,6 +69,7 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 			},
 		),
 		ImageLogo: mrparser.NewImage(
+			logger,
 			mrparser.ImageOptions{
 				File: mrparser.FileOptions{
 					AllowedMimeTypes:        imageMimeTypeList,

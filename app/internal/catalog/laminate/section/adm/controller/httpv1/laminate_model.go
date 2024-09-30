@@ -1,10 +1,10 @@
 package httpv1
 
 import (
+	"github.com/mondegor/go-webcore/mrtype"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 type (

@@ -5,10 +5,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -16,6 +12,10 @@ import (
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 	ElementTemplate struct {
 		storage      adm.ElementTemplateStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
@@ -33,7 +33,7 @@ type (
 func NewElementTemplate(
 	storage adm.ElementTemplateStorage,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,

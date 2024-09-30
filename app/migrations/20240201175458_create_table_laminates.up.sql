@@ -12,7 +12,7 @@ CREATE TABLE printshop_catalog.laminates (
     laminate_weight_m2 double precision NOT NULL, -- kilogram
     laminate_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     deleted_at timestamp with time zone NULL
 );
 
@@ -24,6 +24,6 @@ CREATE INDEX ix_laminates_laminate_thickness ON printshop_catalog.laminates (lam
 
 INSERT INTO printshop_catalog.laminates (laminate_id, tag_version, laminate_article, laminate_caption, type_id, laminate_length, laminate_width, laminate_thickness, laminate_weight_m2, laminate_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 1, 'lam-1', 'Глянцевый 450', 8, 10.0, 0.450, 0.00003, 1.0, 2/*ENABLED*/, '2023-07-26 21:08:40.908057', NULL, NULL);
+    (1, 1, 'lam-1', 'Глянцевый 450', 8, 10.0, 0.450, 0.00003, 1.0, 2/*ENABLED*/, '2023-07-26 21:08:40.908057', '2023-07-26 21:08:40.908057', NULL);
 
 ALTER SEQUENCE printshop_catalog.laminates_laminate_id_seq RESTART WITH 2;

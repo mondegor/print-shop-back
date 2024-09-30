@@ -3,17 +3,16 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 )
 
 type (
@@ -21,13 +20,13 @@ type (
 	PaperFacture struct {
 		storage      adm.PaperFactureStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
 
 // NewPaperFacture - создаёт объект PaperFacture.
-func NewPaperFacture(storage adm.PaperFactureStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
+func NewPaperFacture(storage adm.PaperFactureStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
 		eventEmitter: eventEmitter,

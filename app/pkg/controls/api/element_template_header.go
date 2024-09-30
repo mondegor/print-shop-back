@@ -3,11 +3,11 @@ package api
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mrerrfactory"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (

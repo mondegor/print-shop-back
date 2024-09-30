@@ -3,11 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
@@ -15,6 +10,10 @@ import (
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 )
 
 type (
@@ -24,7 +23,7 @@ type (
 		storageElement adm.FormElementStorage
 		storageVersion adm.FormVersionStorage
 		eventEmitter   mrsender.EventEmitter
-		errorWrapper   mrcore.UsecaseErrorWrapper
+		errorWrapper   mrcore.UseCaseErrorWrapper
 		statusFlow     mrstatus.Flow
 	}
 )
@@ -35,7 +34,7 @@ func NewSubmitForm(
 	storageElement adm.FormElementStorage,
 	storageVersion adm.FormVersionStorage,
 	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UsecaseErrorWrapper,
+	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *SubmitForm {
 	return &SubmitForm{
 		storage:        storage,

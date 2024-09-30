@@ -3,13 +3,13 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
-
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-webcore/mrfactory"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
+	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
 )
 
 type (

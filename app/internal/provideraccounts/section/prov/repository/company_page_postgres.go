@@ -3,14 +3,13 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 type (

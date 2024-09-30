@@ -3,22 +3,22 @@ package usecase
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/entity"
-
-	"github.com/mondegor/go-webcore/mrcore"
 )
 
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
 		storage      pub.PrintFormatStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(storage pub.PrintFormatStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PrintFormat {
+func NewPrintFormat(storage pub.PrintFormatStorage, errorWrapper mrcore.UseCaseErrorWrapper) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
 		errorWrapper: errorWrapper,

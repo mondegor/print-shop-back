@@ -3,11 +3,11 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
-
 	"github.com/mondegor/go-webcore/mrfactory"
 	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
+	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.

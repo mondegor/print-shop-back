@@ -2,21 +2,21 @@ package factory
 
 import (
 	"context"
+	"strconv"
 	"time"
 
-	"github.com/mondegor/print-shop-back/internal/app"
-
-	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrprometheus"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 	"github.com/mondegor/go-webcore/mrserver/mrrscors"
+
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
 // NewRestRouter - создаёт объект mrchi.RouterAdapter.
-func NewRestRouter(ctx context.Context, opts app.Options, translator *mrlang.Translator) (*mrchi.RouterAdapter, error) {
+func NewRestRouter(ctx context.Context, opts app.Options) (*mrchi.RouterAdapter, error) {
 	logger := mrlog.Ctx(ctx)
 
 	corsOptions := mrrscors.Options{
@@ -33,7 +33,7 @@ func NewRestRouter(ctx context.Context, opts app.Options, translator *mrlang.Tra
 		return nil, err
 	}
 
-	observeRequest := mrprometheus.NewObserveRequest("appx_http")
+	observeRequest := mrprometheus.NewObserveRequest("rest_api", "go")
 	opts.Prometheus.MustRegister(
 		observeRequest.Collectors()...,
 	)
@@ -41,24 +41,55 @@ func NewRestRouter(ctx context.Context, opts app.Options, translator *mrlang.Tra
 	router := mrchi.New(
 		logger.With().Str("router", "chi").Logger(),
 		mrserver.MiddlewareHandlerAdapter(errorSender),
-		mrresp.HandlerGetNotFoundAsJSON(opts.Cfg.Debugging.UnexpectedHttpStatus),
-		mrresp.HandlerGetMethodNotAllowedAsJSON(opts.Cfg.Debugging.UnexpectedHttpStatus),
+		mrresp.HandlerGetNotFoundAsJSON(),
+		mrresp.HandlerGetMethodNotAllowedAsJSON(),
 	)
 
 	router.RegisterMiddleware(
 		mrrscors.Middleware(corsOptions),
 		mrserver.MiddlewareGeneral(
-			translator,
+			opts.Translator,
 			func(l mrlog.Logger, start time.Time, sr *mrserver.StatRequest, sw *mrserver.StatResponseWriter) {
-				observeRequest.SendMetrics(l, start, sr, sw)
+				method := sr.Request().Method
+				location := sr.Request().URL.Path
+
+				observeRequest.
+					SetStatusWithTime(method, location, strconv.Itoa(sw.StatusCode()), start).
+					IncrementRequestSize(method, location, sr.Bytes()).
+					IncrementResponseSize(method, location, sw.Bytes())
 				mrresp.TraceRequest(l, start, sr, sw)
 			},
 		),
 		mrserver.MiddlewareRecoverHandler(
 			opts.Cfg.Debugging.Debug,
-			mrresp.HandlerGetFatalErrorAsJSON(opts.Cfg.Debugging.UnexpectedHttpStatus),
+			mrresp.HandlerGetFatalErrorAsJSON(),
 		),
 	)
+
+	return router, nil
+}
+
+// NewRestRouterWithRegisterHandlers - создаёт объект mrchi.RouterAdapter и регистрирует в нём http обработчики.
+func NewRestRouterWithRegisterHandlers(ctx context.Context, opts app.Options) (*mrchi.RouterAdapter, error) {
+	router, err := NewRestRouter(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = RegisterRestRouterAdmHandlers(ctx, router, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = RegisterRestRouterProvHandlers(ctx, router, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = RegisterRestRouterPubHandlers(ctx, router, opts)
+	if err != nil {
+		return nil, err
+	}
 
 	return router, nil
 }

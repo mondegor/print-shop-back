@@ -26,7 +26,7 @@ func createUnitRectImposition(ctx context.Context, opts algo.Options) ([]mrserve
 
 func newUnitRectImposition(ctx context.Context, opts algo.Options) (*httpv1.RectImposition, error) { //nolint:unparam
 	algoComponent := imposition.New(mrlog.Ctx(ctx))
-	useCase := usecase.NewRectImposition(algoComponent, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewRectImposition(algoComponent, opts.EventEmitter, opts.UseCaseHelper)
 	controller := httpv1.NewRectImposition(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

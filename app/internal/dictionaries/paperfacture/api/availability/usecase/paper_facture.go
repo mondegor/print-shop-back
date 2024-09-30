@@ -3,28 +3,26 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
-
 	"github.com/mondegor/go-webcore/mrlog"
-
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// PaperFacture - comment struct.
 	PaperFacture struct {
 		storage      availability.PaperFactureStorage
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewPaperFacture - создаёт объект PaperFacture.
-func NewPaperFacture(storage availability.PaperFactureStorage, errorWrapper mrcore.UsecaseErrorWrapper) *PaperFacture {
+func NewPaperFacture(storage availability.PaperFactureStorage, errorWrapper mrcore.UseCaseErrorWrapper) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
 		errorWrapper: errorWrapper,

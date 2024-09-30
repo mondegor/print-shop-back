@@ -4,17 +4,14 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
+	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
-
+	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
-
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 const (

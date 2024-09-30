@@ -11,7 +11,7 @@ import (
 
 // NewModuleOptions - создаёт объект filestation.Options.
 func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options, error) {
-	fileAPI, err := opts.FileProviderPool.Provider(
+	fileAPI, err := opts.FileProviderPool.ProviderAPI(
 		opts.Cfg.ModulesSettings.FileStation.ImageProxy.FileProvider,
 	)
 	if err != nil {
@@ -27,7 +27,7 @@ func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options,
 	}
 
 	return filestation.Options{
-		UsecaseHelper:  opts.UsecaseErrorWrapper,
+		UseCaseHelper:  opts.UseCaseErrorWrapper,
 		RequestParser:  opts.RequestParsers.String,
 		ResponseSender: opts.ResponseSenders.FileSender,
 

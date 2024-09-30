@@ -3,11 +3,11 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
+	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 const (
@@ -31,7 +31,7 @@ type (
 		Sides      enum.PaperSide            `json:"sides" upd:"paper_sides"`
 		Status     mrenum.ItemStatus         `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  *time.Time                `json:"updatedAt,omitempty" sort:"updatedAt"`
+		UpdatedAt  time.Time                 `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// PaperParams - comment struct.

@@ -5,13 +5,11 @@ import (
 
 	"github.com/golang/mock/gomock"
 	mock_mrlog "github.com/mondegor/go-webcore/mrlog/mock"
-
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
-
-	"github.com/stretchr/testify/assert"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition"
 )
 
 // TODO: ДОБАВИТЬ ТЕСТ MIRROR

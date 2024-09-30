@@ -3,11 +3,11 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/app"
-
 	"github.com/mondegor/go-components/factory/mrsort"
 	"github.com/mondegor/go-components/mrsort/component/orderer"
 	"github.com/mondegor/go-webcore/mrlog"
+
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
 // NewOrdererAPI - создаёт объект orderer.Component.

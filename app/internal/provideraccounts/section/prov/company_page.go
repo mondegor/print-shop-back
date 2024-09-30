@@ -3,11 +3,10 @@ package prov
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"github.com/google/uuid"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-
-	"github.com/google/uuid"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 type (

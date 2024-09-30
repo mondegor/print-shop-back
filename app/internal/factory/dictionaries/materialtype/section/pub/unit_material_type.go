@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitMaterialType(ctx context.Context, opts materialtype.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitMaterialType(_ context.Context, opts materialtype.Options) (*httpv1.
 	storage := repository.NewMaterialTypePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewMaterialType(storage, opts.UsecaseHelper)
+	useCase := usecase.NewMaterialType(storage, opts.UseCaseHelper)
 	controller := httpv1.NewMaterialType(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

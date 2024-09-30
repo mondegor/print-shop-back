@@ -4,15 +4,13 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrlog"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
-
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsender"
+
+	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
+	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (
@@ -20,12 +18,12 @@ type (
 	QueryHistory struct {
 		storage      pub.QueryResultStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewQueryHistory - создаёт объект QueryHistory.
-func NewQueryHistory(storage pub.QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *QueryHistory {
+func NewQueryHistory(storage pub.QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *QueryHistory {
 	return &QueryHistory{
 		storage:      storage,
 		eventEmitter: eventEmitter,

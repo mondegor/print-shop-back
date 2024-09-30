@@ -6,7 +6,7 @@ CREATE TABLE printshop_dictionaries.paper_factures (
     facture_caption character varying(64) NOT NULL,
     facture_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     deleted_at timestamp with time zone NULL
 );
 
@@ -14,8 +14,8 @@ CREATE TABLE printshop_dictionaries.paper_factures (
 
 INSERT INTO printshop_dictionaries.paper_factures (facture_id, tag_version, facture_caption, facture_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 2, 'глянцевая', 2/*ENABLED*/, '2023-07-26 20:53:18.942332', NULL, NULL),
-    (2, 2, 'матовая', 2/*ENABLED*/, '2023-07-26 20:53:39.478106', NULL, NULL),
-    (3, 1, 'гладкая', 2/*ENABLED*/, '2023-07-29 13:30:58.387279', NULL, NULL);
+    (1, 2, 'глянцевая', 2/*ENABLED*/, '2023-07-26 20:53:18.942332', '2023-07-26 20:53:18.942332', NULL),
+    (2, 2, 'матовая', 2/*ENABLED*/, '2023-07-26 20:53:39.478106', '2023-07-26 20:53:39.478106', NULL),
+    (3, 1, 'гладкая', 2/*ENABLED*/, '2023-07-29 13:30:58.387279', '2023-07-29 13:30:58.387279', NULL);
 
 ALTER SEQUENCE printshop_dictionaries.paper_factures_facture_id_seq RESTART WITH 4;

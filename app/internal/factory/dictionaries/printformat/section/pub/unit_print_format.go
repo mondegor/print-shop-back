@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitPrintFormat(_ context.Context, opts printformat.Options) (*httpv1.Pr
 	storage := repository.NewPrintFormatPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.UsecaseHelper)
+	useCase := usecase.NewPrintFormat(storage, opts.UseCaseHelper)
 	controller := httpv1.NewPrintFormat(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

@@ -1,0 +1,9 @@
+version: v0.4.3
+title: Internal API print-shop
+license:
+  name: Apache-2.0
+  url: https://www.apache.org/licenses/LICENSE-2.0
+contact:
+  name: Andrey Nazarov
+description: |-
+  Internal REST API проекта print-shop

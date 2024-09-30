@@ -7,7 +7,7 @@ CREATE TABLE printshop_controls.submit_form_versions (
     compiled_body jsonb NOT NULL,
     activity_status int2 NOT NULL, -- 1=DRAFT, 2=TESTING, 3=PUBLISHED, 4=ARCHIVED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     CONSTRAINT pk_submit_form_versions_form_id_version PRIMARY KEY (form_id, version)
 );
 
@@ -16,5 +16,5 @@ CREATE UNIQUE INDEX uk_submit_form_versions_rewrite_name_activity_status ON prin
 -- --------------------------------------------------------------------------------------------------
 
 INSERT INTO printshop_controls.submit_form_versions (form_id, version, rewrite_name, form_caption, form_detailing, compiled_body, activity_status, created_at, updated_at)
-VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 3/*PUBLISHED*/, '2023-07-03 19:33:28.945816', NULL),
-       ('aa22434f-f09d-4b20-89c0-0785948cdc04', 2, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 2/*TESTING*/, '2023-07-03 19:33:28.945816', NULL);
+VALUES ('aa22434f-f09d-4b20-89c0-0785948cdc04', 1, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 3/*PUBLISHED*/, '2023-07-03 19:33:28.945816', '2023-07-03 19:33:28.945816'),
+       ('aa22434f-f09d-4b20-89c0-0785948cdc04', 2, 'flyers-001', 'Флаеры', 1/*NORMAL*/, '[]', 2/*TESTING*/, '2023-07-03 19:33:28.945816', '2023-07-03 19:33:28.945816');

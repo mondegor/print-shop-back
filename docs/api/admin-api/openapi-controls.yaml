@@ -1017,13 +1017,13 @@ components:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
 
     App.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
 
     App.Field.Int32:
       description: Целое 32-ти разрядное число
@@ -1148,7 +1148,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: "2023-01-01T12:00:00.000+02:00"
+          example: "2023-01-01T12:00:00.000+03:00"
         errorTraceId:
           description: Идентификатор конкретного возникновения ошибки
           type: string
@@ -1395,6 +1395,7 @@ components:
         - detailing
         - status
         - createdAt
+        - updatedAt
       properties:
         id: # formId
           $ref: "#/components/schemas/Custom.Field.Controls.SubmitFormID"
@@ -1427,6 +1428,7 @@ components:
         - caption
         - activityStatus
         - createdAt
+        - updatedAt
       properties:
         version:
           $ref: "#/components/schemas/App.Field.Int32"

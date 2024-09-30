@@ -3,9 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-
 	"github.com/mondegor/go-storage/mrstorage"
+
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (

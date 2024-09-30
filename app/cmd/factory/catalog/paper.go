@@ -19,7 +19,7 @@ func NewPaperModuleOptions(_ context.Context, opts app.Options) (paper.Options, 
 
 	return paper.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: paper.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,

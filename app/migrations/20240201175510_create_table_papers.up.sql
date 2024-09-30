@@ -15,7 +15,7 @@ CREATE TABLE printshop_catalog.papers (
     paper_sides int2 NOT NULL, -- 1=SAME, 2=DIFFERENT
     paper_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    updated_at timestamp with time zone NULL,
+    updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
     deleted_at timestamp with time zone NULL
 );
 
@@ -29,10 +29,10 @@ CREATE INDEX ix_papers_paper_density ON printshop_catalog.papers (paper_density)
 
 INSERT INTO printshop_catalog.papers (paper_id, tag_version, paper_article, paper_caption, type_id, color_id, facture_id, paper_width, paper_height, paper_thickness, paper_density, paper_sides, paper_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 3, 'mel130-64х90', 'мелованная', 3, 1, 2, 0.064, 0.090, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:08:45.348283', NULL, NULL),
-    (2, 1, 'v130-70х100', 'мелованная', 3, 1, 2, 0.070, 0.100, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:13:23.991912', NULL, NULL),
-    (3, 1, 'offset-80-70х100', 'офсетная', 5, 1, 3, 0.070, 0.100, 0.0001, 0.080, 1/*SAME*/, 2/*ENABLED*/, '2023-07-29 13:38:24.199768', NULL, NULL),
-    (4, 1, 'offset-170-70х100', 'мелованная', 6, 1, 2, 0.070, 0.100, 0.00013, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:41:25.813125', NULL, NULL),
-    (5, 1, 'coatGlossy-170-70х100', 'мелованная', 4, 1, 1, 0.070, 0.100, 0.00012, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:43:54.456152', NULL, NULL);
+    (1, 3, 'mel130-64х90', 'мелованная', 3, 1, 2, 0.064, 0.090, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:08:45.348283', '2023-07-29 13:08:45.348283', NULL),
+    (2, 1, 'v130-70х100', 'мелованная', 3, 1, 2, 0.070, 0.100, 0.0001, 0.130, 2/*DIFFERENT*/, 2/*ENABLED*/, '2023-07-29 13:13:23.991912', '2023-07-29 13:13:23.991912', NULL),
+    (3, 1, 'offset-80-70х100', 'офсетная', 5, 1, 3, 0.070, 0.100, 0.0001, 0.080, 1/*SAME*/, 2/*ENABLED*/, '2023-07-29 13:38:24.199768', '2023-07-29 13:38:24.199768', NULL),
+    (4, 1, 'offset-170-70х100', 'мелованная', 6, 1, 2, 0.070, 0.100, 0.00013, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:41:25.813125', '2023-07-30 12:41:25.813125', NULL),
+    (5, 1, 'coatGlossy-170-70х100', 'мелованная', 4, 1, 1, 0.070, 0.100, 0.00012, 0.170, 1/*SAME*/, 2/*ENABLED*/, '2023-07-30 12:43:54.456152', '2023-07-30 12:43:54.456152', NULL);
 
 ALTER SEQUENCE printshop_catalog.papers_paper_id_seq RESTART WITH 6;

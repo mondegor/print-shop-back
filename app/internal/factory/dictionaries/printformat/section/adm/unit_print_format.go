@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
@@ -40,7 +40,7 @@ func newUnitPrintFormat(ctx context.Context, opts printformat.Options) (*httpv1.
 			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseHelper)
+	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UseCaseHelper)
 	controller := httpv1.NewPrintFormat(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

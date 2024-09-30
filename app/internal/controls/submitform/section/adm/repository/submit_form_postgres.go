@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
+
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 )
 
 type (

@@ -3,21 +3,21 @@ package controls
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore/mrinit"
+
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
 	"github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate/api/header"
 	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
 	pkgvalidate "github.com/mondegor/print-shop-back/pkg/controls/validate"
-
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
 )
 
 // NewSubmitFormModuleOptions - создаёт объект submitform.Options.
 func NewSubmitFormModuleOptions(_ context.Context, opts app.Options) (submitform.Options, error) {
 	return submitform.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		Locker:        opts.Locker,
 		RequestParsers: submitform.RequestParsers{
@@ -31,7 +31,7 @@ func NewSubmitFormModuleOptions(_ context.Context, opts app.Options) (submitform
 		},
 		ResponseSender: opts.ResponseSenders.FileSender,
 
-		ElementTemplateAPI: header.NewElementTemplate(opts.PostgresConnManager, opts.UsecaseErrorWrapper),
+		ElementTemplateAPI: header.NewElementTemplate(opts.PostgresConnManager, opts.UseCaseErrorWrapper),
 		OrdererAPI:         opts.OrdererAPI,
 
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,

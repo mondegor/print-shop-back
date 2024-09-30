@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
-
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitLaminate(ctx context.Context, opts laminate.Options) ([]mrserver.HttpController, error) {
@@ -27,7 +27,7 @@ func newUnitLaminate(_ context.Context, opts laminate.Options) (*httpv1.Laminate
 	storage := repository.NewLaminatePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewLaminate(storage, opts.UsecaseHelper)
+	useCase := usecase.NewLaminate(storage, opts.UseCaseHelper)
 	controller := httpv1.NewLaminate(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

@@ -37,8 +37,6 @@ mrcmd_func_openapi_build_pub() {
   )
 
   OPENAPI_TAGS=(
-    "${sharedDir}/system/tags.yaml"
-
     "${calculationsAlgoDir}/tags.yaml"
     "${calculationsQueryHistoryDir}/tags.yaml"
 
@@ -59,8 +57,6 @@ mrcmd_func_openapi_build_pub() {
   )
 
   OPENAPI_PATHS=(
-    "${sharedDir}/system/paths.yaml"
-
     "${calculationsAlgoDir}/circulation/packinbox/packinbox_paths.yaml"
     "${calculationsAlgoDir}/rect/cutting/cutting_paths.yaml"
     "${calculationsAlgoDir}/rect/imposition/imposition_paths.yaml"
@@ -206,8 +202,6 @@ mrcmd_func_openapi_build_pub() {
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
     "${sharedDir}/custom/fields/Custom.Field.RectFormat.yaml"
-
-    "${sharedDir}/system/schemas.yaml"
 
     "${calculationsAlgoDir}/circulation/packinbox/packinbox_schemas.yaml"
     "${calculationsAlgoDir}/rect/cutting/cutting_schemas.yaml"

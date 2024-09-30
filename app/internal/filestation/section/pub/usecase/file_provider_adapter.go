@@ -13,12 +13,12 @@ type (
 	// FileProviderAdapter - comment struct.
 	FileProviderAdapter struct {
 		fileAPI      mrstorage.FileProviderAPI
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewFileProviderAdapter - создаёт объект FileProviderAdapter.
-func NewFileProviderAdapter(fileAPI mrstorage.FileProviderAPI, errorWrapper mrcore.UsecaseErrorWrapper) *FileProviderAdapter {
+func NewFileProviderAdapter(fileAPI mrstorage.FileProviderAPI, errorWrapper mrcore.UseCaseErrorWrapper) *FileProviderAdapter {
 	return &FileProviderAdapter{
 		fileAPI:      fileAPI,
 		errorWrapper: errorWrapper,

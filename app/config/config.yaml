@@ -2,7 +2,7 @@
 app:
   name: "Print Shop Service"
   version: v0.0.0 # auto detection
-  environment: local # dev, prod
+  environment: local # local, dev, test, prod
 
 debugging:
   debug: true
@@ -21,27 +21,26 @@ debugging:
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
 
 logger:
-  level: trace # debug, info, warn, error, fatal, trace
+  level: trace # info, warn, error, fatal, debug, trace
   timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
   json_format: false
   console_color: true
 
 sentry:
-  enable: false
-  dsn: http://id@127.0.0.1:9980/1
+  # dsn: http://id@127.0.0.1:9980/1
   traces_sample_rate: 1.0
   flush_timeout: 2s
 
 servers:
   rest_server:
-    read_timeout: 5s
+    read_timeout: 3s
     write_timeout: 5s
     shutdown_timeout: 15s
     listen:
       bind_ip: 0.0.0.0
       port: 8080
-  prometheus_server:
-    read_timeout: 5s
+  internal_server:
+    read_timeout: 3s
     write_timeout: 5s
     shutdown_timeout: 15s
     listen:
@@ -55,14 +54,19 @@ storage:
   username: user_pg
   password: 123456
   database: db_pg
-  max_pool_size: 2
-  timeout: 30s
+  migrations_dir: "./migrations" # if empty automatic migration will be disabled
+  migrations_table: print_shop_migrations
+  max_pool_size: 10
+  max_conn_lifetime: 1h
+  max_conn_idle_time: 15m
+  timeout: 60s
 
 redis:
   host: db-redis
   port: 6379
   password: 123456
-  timeout: 30s
+  read_timeout: 15s
+  write_timeout: 15s
 
 file_system:
   dir_mode: 0775
@@ -75,6 +79,7 @@ file_providers:
 
 cors:
   allowed_origins:
+    - http://print-shop.local
     - http://localhost:3000
     - http://127.0.0.1:3000
   allowed_methods:
@@ -163,7 +168,7 @@ modules_settings:
       file_provider: imageStorage # file_providers.image_storage
   file_station:
     image_proxy:
-      host: http://127.0.0.1:8080/
+      host: http://print-shop.local
       base_path: /img/{{path}}
       file_provider: imageStorage # file_providers.image_storage
 

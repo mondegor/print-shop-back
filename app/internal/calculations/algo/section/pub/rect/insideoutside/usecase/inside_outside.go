@@ -3,24 +3,24 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrsender"
+
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
+	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
 )
 
 type (
 	// RectInsideOutside - comment struct.
 	RectInsideOutside struct {
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 	}
 )
 
 // NewRectInsideOutside - создаёт объект RectInsideOutside.
-func NewRectInsideOutside(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *RectInsideOutside {
+func NewRectInsideOutside(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectInsideOutside {
 	return &RectInsideOutside{
 		eventEmitter: eventEmitter,
 		errorWrapper: errorWrapper,

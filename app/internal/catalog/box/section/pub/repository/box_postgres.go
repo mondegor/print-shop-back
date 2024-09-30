@@ -3,15 +3,14 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
-
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
+
+	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
 )
 
 type (
-	// BoxPostgres - comment struct.
 	// BoxPostgres - comment struct.
 	BoxPostgres struct {
 		client mrstorage.DBConnManager

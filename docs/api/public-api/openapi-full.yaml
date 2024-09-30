@@ -36,9 +36,6 @@ servers:
   - url: http://localhost:8080
     description: Local Host
 tags:
-  - name: System
-    description: API System Methods
-
   - name: Calculations.Algo
     description: Public API Calculations algorithms
 
@@ -76,38 +73,6 @@ tags:
     description: Public API Files and images
 
 paths:
-  /v1/health:
-    get:
-      summary: Метод получения ответа приложения
-      description: Метод предназначен для проверки, что приложение запущено и отвечает
-      operationId: getHealthResponse
-      tags:
-        - System
-
-      responses:
-        "200":
-          description: Возвращён ответ приложения 200 OK
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
-  /v1/system-info:
-    get:
-      summary: Метод получения системной информации приложения
-      description: Метод предназначен для получения системной информации о запущеном приложении
-      operationId: getSystemInfo
-      tags:
-        - System
-
-      responses:
-        "200":
-          description: Получена системная информация о приложении
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: "#/components/schemas/App.System.Response.Model.SystemInfo"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
   /v1/calculations/algo/circulation/pack-in-box:
     post:
       summary: Метод расчёта количества и веса коробок для тиража
@@ -990,7 +955,7 @@ components:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+02:00"
+      example: "2023-01-01T12:00:00.000+03:00"
 
     App.Field.DoubleSize:
       description: Два целых числа в формате {first}x{second}
@@ -1155,7 +1120,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: "2023-01-01T12:00:00.000+02:00"
+          example: "2023-01-01T12:00:00.000+03:00"
         errorTraceId:
           description: Идентификатор конкретного возникновения ошибки
           type: string
@@ -1265,58 +1230,6 @@ components:
           type: number
           format: double
           example: 0.297
-
-    App.System.Response.Model.SystemInfo:
-      description: DTO - системная информация о запущеном приложении
-      type: object
-      required:
-        - name
-        - version
-        - environment
-        - hostName
-        - isDebug
-        - logLevel
-        - startedAt
-      properties:
-        name:
-          description: Название приложения
-          type: string
-          maxLength: 64
-          example: "Sample App"
-        version:
-          description: Версия приложения
-          type: string
-          maxLength: 16
-          example: "v0.1.0"
-        environment:
-          description: Окружение, на котором запущено приложение
-          type: string
-          maxLength: 16
-          example: "prod"
-        hostName:
-          description: Название хоста, на котором запущено приложение
-          type: string
-          maxLength: 64
-          example: "host-name"
-        isDebug:
-          description: Статус режима отладки
-          type: boolean
-          example: true
-        logLevel:
-          type: string
-          enum:
-            - DEBUG
-            - INFO
-            - WARN
-            - ERROR
-            - FATAL
-            - TRACE
-          example: "ERROR"
-        startedAt:
-          description: Время запуска приложения (UTC)
-          type: string
-          format: date-time
-          example: "2023-01-01T12:00:00.000+02:00"
 
     Calculations.Algo.PublicAPI.Request.Model.CirculationPackInBox:
       description: DTO параметров алгоритма "Количество коробок"
@@ -1606,6 +1519,7 @@ components:
         - params
         - result
         - createdAt
+        - updatedAt
       properties:
         caption:
           $ref: "#/components/schemas/App.Field.Caption"

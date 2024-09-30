@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/mondegor/go-webcore/mrlog"
+
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition/remaining"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/imposition/total"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
-
-	"github.com/mondegor/go-webcore/mrlog"
 )
 
 type (

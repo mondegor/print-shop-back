@@ -1,72 +1,87 @@
 package main
 
 import (
-	"flag"
-	"log"
-
-	"github.com/mondegor/print-shop-back/cmd/factory"
+	"context"
+	"errors"
+	"fmt"
+	"io"
+	"os"
 
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/oklog/run"
+
+	"github.com/mondegor/print-shop-back/cmd/factory"
 )
 
 // go get -u github.com/oklog/run
 
 func main() {
-	ctx, opts, err := factory.CreateAppEnvironment(parseFlags())
-	if err != nil {
-		log.Fatal(err)
-	}
+	ctx := context.Background()
+	if err := runApp(ctx, os.Args, os.Stdout); err != nil {
+		if errors.Is(err, factory.ErrParseArgsHelp) {
+			os.Exit(0)
+		}
 
-	logger := mrlog.Ctx(ctx)
-
-	opts, err = factory.InitAppEnvironment(ctx, opts)
-	if err != nil {
-		logger.Fatal().Err(err).Msg("factory.InitAppEnvironment() error")
-	}
-
-	// close opened resources when app shutdown (db, redis, etc...)
-	defer mrlib.CallEachFunc(ctx, opts.OpenedResources)
-
-	appRunner := run.Group{}
-	appRunner.Add(mrserver.PrepareAppToStart(ctx))
-
-	// init task scheduler
-	if scheduler, err := factory.NewTaskScheduler(ctx, opts); err != nil {
-		logger.Fatal().Err(err).Msg("factory.NewScheduler() error")
-	} else {
-		appRunner.Add(scheduler.PrepareToStart(ctx))
-	}
-
-	// init app servers
-	if restServer, err := factory.NewRestServer(ctx, opts); err != nil {
-		logger.Fatal().Err(err).Msg("factory.NewRestServer() error")
-	} else {
-		appRunner.Add(restServer.PrepareToStart(ctx))
-	}
-
-	if prometheusServer, err := factory.NewPrometheusServer(ctx, opts); err != nil {
-		logger.Fatal().Err(err).Msg("factory.NewPrometheusServer() error")
-	} else {
-		appRunner.Add(prometheusServer.PrepareToStart(ctx))
-	}
-
-	// run app and its servers
-	logger.Info().Msg("Running the application...")
-
-	if err = appRunner.Run(); err != nil {
-		logger.Error().Err(err).Msg("The application has been stopped with error")
-	} else {
-		logger.Info().Msg("The application has been stopped")
+		fmt.Fprintf(os.Stderr, "%s\n", err)
+		os.Exit(1)
 	}
 }
 
-func parseFlags() (configPath, logLevel string) {
-	flag.StringVar(&configPath, "config-path", "./config/config.yaml", "Path to application config file")
-	flag.StringVar(&logLevel, "log-level", "", "Logging level")
-	flag.Parse()
+func runApp(ctx context.Context, args []string, stdout io.Writer) error {
+	ctx, opts, err := factory.InitApp(ctx, args, stdout)
+	if err != nil {
+		return err
+	}
 
-	return configPath, logLevel
+	// close opened shared resources when app shutdown (db, redis, etc...)
+	defer mrlib.CallEachFunc(ctx, opts.OpenedResources)
+
+	appRunner := mrrun.NewAppRunner(&run.Group{})
+	ctx, chLast := appRunner.AddSignalHandler(ctx)
+
+	// init task scheduler
+	{
+		scheduler, err := factory.NewTaskScheduler(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("factory.NewScheduler(): %w", err)
+		}
+
+		chLast = appRunner.AddNextProcess(ctx, scheduler, chLast)
+	}
+
+	// init app servers
+	{
+		restServer, err := factory.NewRestServer(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("factory.NewRestServer(): %w", err)
+		}
+
+		chLast = appRunner.AddNextProcess(ctx, restServer, chLast)
+
+		internalServer, err := factory.NewInternalServer(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("factory.NewInternalServer(): %w", err)
+		}
+
+		appRunner.AddNextProcess(ctx, internalServer, chLast)
+	}
+
+	// run app and its servers
+	logger := mrlog.Ctx(ctx)
+	logger.Info().Msg("Starting the application...")
+
+	onStartup := func() {
+		logger.Info().Msg("The application started, waiting for requests. To exit press CTRL+C")
+		opts.AppHealth.StartupCompleted()
+	}
+
+	if err = appRunner.Run(onStartup); err != nil {
+		return fmt.Errorf("the application has been stopped with error: %w", err)
+	}
+
+	logger.Info().Msg("The application has been stopped")
+
+	return nil
 }

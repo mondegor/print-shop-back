@@ -3,11 +3,6 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
-
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
-
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -15,6 +10,10 @@ import (
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
+	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
 )
 
 type (
@@ -22,13 +21,13 @@ type (
 	Box struct {
 		storage      adm.BoxStorage
 		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UsecaseErrorWrapper
+		errorWrapper mrcore.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
 
 // NewBox - создаёт объект Box.
-func NewBox(storage adm.BoxStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UsecaseErrorWrapper) *Box {
+func NewBox(storage adm.BoxStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *Box {
 	return &Box{
 		storage:      storage,
 		eventEmitter: eventEmitter,

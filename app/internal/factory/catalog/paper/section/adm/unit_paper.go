@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func createUnitPaper(ctx context.Context, opts paper.Options) ([]mrserver.HttpController, error) {
@@ -56,7 +56,7 @@ func newUnitPaper(ctx context.Context, opts paper.Options) (*httpv1.Paper, error
 		opts.PaperColorAPI,
 		opts.PaperFactureAPI,
 		opts.EventEmitter,
-		opts.UsecaseHelper,
+		opts.UseCaseHelper,
 	)
 	controller := httpv1.NewPaper(
 		opts.RequestParsers.ExtendParser,

@@ -3,11 +3,11 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-
 	"github.com/google/uuid"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
+
+	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (
@@ -25,7 +25,7 @@ type (
 		Detailing   enum.ElementDetailing `json:"detailing"`
 		Status      mrenum.ItemStatus     `json:"status"`
 		CreatedAt   time.Time             `json:"createdAt" sort:"createdAt"`
-		UpdatedAt   *time.Time            `json:"updatedAt,omitempty" sort:"updatedAt"`
+		UpdatedAt   time.Time             `json:"updatedAt" sort:"updatedAt"`
 
 		Elements []FormElement `json:"elements,omitempty"`
 		Versions []FormVersion `json:"versions,omitempty"`

@@ -2,23 +2,9 @@ package app
 
 import (
 	"context"
+	"net/http"
 
-	"github.com/mondegor/print-shop-back/config"
-	calculationsalgo "github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
-	calculationsquery "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
-	catalogbox "github.com/mondegor/print-shop-back/internal/factory/catalog/box"
-	cataloglaminate "github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
-	catalogpaper "github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
-	controlselementtemplate "github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
-	controlssubmitform "github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
-	dictionariesmaterialtype "github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
-	dictionariespapercolor "github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
-	dictionariespaperfacture "github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
-	dictionariesprintformat "github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
-	"github.com/mondegor/print-shop-back/internal/factory/filestation"
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/go-webcore/mrrun"
 
 	"github.com/mondegor/go-components/mrsettings"
 	"github.com/mondegor/go-components/mrsort"
@@ -37,19 +23,38 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/prometheus/client_golang/prometheus"
+
+	"github.com/mondegor/print-shop-back/config"
+	calculationsalgo "github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
+	calculationsquery "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
+	catalogbox "github.com/mondegor/print-shop-back/internal/factory/catalog/box"
+	cataloglaminate "github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
+	catalogpaper "github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
+	controlselementtemplate "github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
+	controlssubmitform "github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
+	dictionariesmaterialtype "github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
+	dictionariespapercolor "github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
+	dictionariespaperfacture "github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
+	dictionariesprintformat "github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
+	"github.com/mondegor/print-shop-back/internal/factory/filestation"
+	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
 type (
 	// Options - comment struct.
 	Options struct {
-		Cfg          config.Config
-		ErrorHandler mrcore.ErrorHandler
-		EventEmitter mrsender.EventEmitter
-
-		Sentry              *mrsentry.Adapter
-		Prometheus          *prometheus.Registry
+		Cfg                 config.Config
+		AppHealth           *mrrun.AppHealth
+		ErrorHandler        mrcore.ErrorHandler
+		EventEmitter        mrsender.EventEmitter
 		ErrorManager        *mrinit.ErrorManager
-		UsecaseErrorWrapper mrcore.UsecaseErrorWrapper
+		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
+
+		InternalRouter *http.ServeMux
+		Sentry         *mrsentry.Adapter
+		Prometheus     *prometheus.Registry
 
 		PostgresConnManager *mrpostgres.ConnManager
 		RedisAdapter        *mrredis.ConnAdapter

@@ -3,8 +3,6 @@ package dictionaries
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrlog"
 
@@ -12,6 +10,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/api/availability/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor/api/availability"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 // NewPaperColorModuleOptions - создаёт объект papercolor.Options.
@@ -23,7 +22,7 @@ func NewPaperColorModuleOptions(_ context.Context, opts app.Options) (papercolor
 
 	return papercolor.Options{
 		EventEmitter:  opts.EventEmitter,
-		UsecaseHelper: opts.UsecaseErrorWrapper,
+		UseCaseHelper: opts.UseCaseErrorWrapper,
 		DBConnManager: opts.PostgresConnManager,
 		RequestParsers: papercolor.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -44,7 +43,7 @@ func NewPaperColorModuleOptions(_ context.Context, opts app.Options) (papercolor
 func NewPaperColorAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PaperColor, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries paper color availability API")
 
-	return availability.NewPaperColor(opts.PostgresConnManager, opts.UsecaseErrorWrapper), nil
+	return availability.NewPaperColor(opts.PostgresConnManager, opts.UseCaseErrorWrapper), nil
 }
 
 // RegisterPaperColorErrors - comment func.

@@ -3,15 +3,15 @@ package adm
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrserver"
+
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
-
-	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrserver"
 )
 
 func initUnitFormElementEnvironment(ctx context.Context, opts submitform.Options) (formElementOptions, error) {
@@ -56,7 +56,7 @@ func newUnitFormElement(_ context.Context, opts moduleOptions) (*httpv1.FormElem
 		opts.ElementTemplateAPI,
 		opts.OrdererAPI,
 		opts.EventEmitter,
-		opts.UsecaseHelper,
+		opts.UseCaseHelper,
 	)
 	controller := httpv1.NewFormElement(
 		opts.RequestParsers.ModuleParser,
