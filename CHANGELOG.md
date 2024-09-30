@@ -26,6 +26,7 @@
 - Директория с `./migrations` перенесена в `./app/migrations`;
 - Переименовано `Usecase` -> `UseCase`;
 - Поле `UpdatedAt` сделано обязательным;
+- Отсортированы `imports`;
 
 ## 2024-08-03
 ### Added

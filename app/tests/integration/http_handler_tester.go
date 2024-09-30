@@ -8,16 +8,14 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-webcore/mrtests/helpers"
-
-	"github.com/mondegor/print-shop-back/tests"
-
 	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mondegor/print-shop-back/cmd/factory"
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/app"
+	"github.com/mondegor/print-shop-back/tests"
 )
 
 type (

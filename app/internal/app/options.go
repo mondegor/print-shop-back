@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrrun"
-
 	"github.com/mondegor/go-components/mrsettings"
 	"github.com/mondegor/go-components/mrsort"
 	"github.com/mondegor/go-storage/mrpostgres"
@@ -17,6 +15,7 @@ import (
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrperms"
+	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrsentry"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"

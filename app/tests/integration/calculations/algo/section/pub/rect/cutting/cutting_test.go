@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/mondegor/go-webcore/mrtests/helpers"
-
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/controller/httpv1"

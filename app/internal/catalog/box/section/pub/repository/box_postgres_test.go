@@ -6,13 +6,11 @@ import (
 
 	"github.com/mondegor/go-storage/mrtests/infra"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
-
-	"github.com/mondegor/print-shop-back/tests"
-
 	"github.com/stretchr/testify/suite"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/repository"
+	"github.com/mondegor/print-shop-back/tests"
 )
 
 type BoxPostgresTestSuite struct {
