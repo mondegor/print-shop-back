@@ -3,10 +3,9 @@ package catalog
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/mrapp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
 )
 
@@ -18,9 +17,9 @@ func NewLaminateModuleOptions(_ context.Context, opts app.Options) (laminate.Opt
 	}
 
 	return laminate.Options{
-		EventEmitter:  opts.EventEmitter,
-		UseCaseHelper: opts.UseCaseErrorWrapper,
-		DBConnManager: opts.PostgresConnManager,
+		EventEmitter:        opts.EventEmitter,
+		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: laminate.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
 			ExtendParser: opts.RequestParsers.ExtendParser,
@@ -36,9 +35,4 @@ func NewLaminateModuleOptions(_ context.Context, opts app.Options) (laminate.Opt
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
 	}, nil
-}
-
-// RegisterLaminateErrors - comment func.
-func RegisterLaminateErrors(em *mrinit.ErrorManager) {
-	em.RegisterList(mrinit.WrapProtoList(module.Errors()))
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
@@ -44,7 +45,7 @@ func NewCompanyPageLogo(
 		storage:      storage,
 		fileAPI:      fileAPI,
 		locker:       locker,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPageLogo),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -94,7 +95,7 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
 	}
 
-	uc.emitEvent(ctx, "StoreFile", mrmsg.Data{"accountId": accountID, "path": newLogoPath, "old-path": oldLogoMeta.Path})
+	uc.eventEmitter.Emit(ctx, "StoreFile", mrmsg.Data{"accountId": accountID, "path": newLogoPath, "old-path": oldLogoMeta.Path})
 	uc.removeLogoFile(ctx, oldLogoMeta.Path, newLogoPath)
 
 	return nil
@@ -121,7 +122,7 @@ func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID uuid.UUID) 
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
 	}
 
-	uc.emitEvent(ctx, "RemoveFile", mrmsg.Data{"accountId": accountID, "meta": logoMeta})
+	uc.eventEmitter.Emit(ctx, "RemoveFile", mrmsg.Data{"accountId": accountID, "meta": logoMeta})
 	uc.removeLogoFile(ctx, logoMeta.Path, "")
 
 	return nil
@@ -153,13 +154,4 @@ func (uc *CompanyPageLogo) removeLogoFile(ctx context.Context, filePath, prevFil
 	if err := uc.fileAPI.Remove(ctx, filePath); err != nil {
 		mrlog.Ctx(ctx).Error().Err(err).Msg("fileAPI.Remove()")
 	}
-}
-
-func (uc *CompanyPageLogo) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameCompanyPageLogo,
-		data,
-	)
 }

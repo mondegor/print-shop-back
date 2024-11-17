@@ -1,9 +1,5 @@
 package entity
 
-import (
-	"github.com/mondegor/go-webcore/mrtype"
-)
-
 const (
 	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat" // ModelNamePrintFormat - название сущности
 )
@@ -11,8 +7,10 @@ const (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct { // DB: printshop_dictionaries.print_formats
-		ID      mrtype.KeyInt32 `json:"id"` // format_id
-		Caption string          `json:"caption"`
+		ID      uint64 `json:"id"` // format_id
+		Caption string `json:"caption"`
+		Width   uint64 `json:"width"`
+		Height  uint64 `json:"height"`
 	}
 
 	// PrintFormatParams - comment struct.

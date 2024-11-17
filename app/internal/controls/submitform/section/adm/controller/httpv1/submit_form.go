@@ -216,7 +216,7 @@ func (ht *SubmitForm) GetVersionJson(w http.ResponseWriter, r *http.Request) err
 			FileInfo: mrtype.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, primary.FormID, primary.Version),
-				Size:         int64(len(body)),
+				Size:         uint64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -246,7 +246,7 @@ func (ht *SubmitForm) getItemID(r *http.Request) uuid.UUID {
 }
 
 func (ht *SubmitForm) getItemVersion(r *http.Request) int32 {
-	return int32(ht.parser.PathParamInt64(r, "version"))
+	return int32(ht.parser.PathParamUint64(r, "version"))
 }
 
 func (ht *SubmitForm) getRawItemID(r *http.Request) string {

@@ -18,7 +18,7 @@ type (
 	// SubmitForm - comment struct.
 	SubmitForm struct { // DB: printshop_controls.submit_forms
 		ID          uuid.UUID             `json:"id"` // form_id
-		TagVersion  int32                 `json:"tagVersion"`
+		TagVersion  uint32                `json:"tagVersion"`
 		RewriteName string                `json:"rewriteName" sort:"rewriteName" upd:"rewrite_name"`
 		ParamName   string                `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption     string                `json:"caption" sort:"caption,default" upd:"form_caption"`

@@ -32,7 +32,7 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
             COALESCE(logo_meta ->> 'path', '') as logoUrl,
             site_url
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
+            ` + module.DBTableNameCompaniesPages + `
         WHERE
             rewrite_name = $1 AND page_status IN ($2, $3)
         LIMIT 1;`

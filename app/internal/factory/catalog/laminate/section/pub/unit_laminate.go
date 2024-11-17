@@ -27,7 +27,7 @@ func newUnitLaminate(_ context.Context, opts laminate.Options) (*httpv1.Laminate
 	storage := repository.NewLaminatePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewLaminate(storage, opts.UseCaseHelper)
+	useCase := usecase.NewLaminate(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewLaminate(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

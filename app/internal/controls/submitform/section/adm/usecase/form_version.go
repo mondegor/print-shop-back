@@ -12,6 +12,7 @@ import (
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -46,7 +47,7 @@ func NewFormVersion(
 		formComponent: formComponent,
 		formCompiler:  formCompiler,
 		locker:        locker,
-		eventEmitter:  eventEmitter,
+		eventEmitter:  decorator.NewSourceEmitter(eventEmitter, entity.ModelNameFormVersion),
 		errorWrapper:  errorWrapper,
 	}
 }
@@ -137,7 +138,7 @@ func (uc *FormVersion) PrepareForTest(ctx context.Context, formID uuid.UUID) err
 		}
 	}
 
-	uc.emitEvent(ctx, eventName, mrmsg.Data{"formId": item.ID, "version": item.Version})
+	uc.eventEmitter.Emit(ctx, eventName, mrmsg.Data{"formId": item.ID, "version": item.Version})
 
 	return nil
 }
@@ -174,7 +175,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormVersion)
 	}
 
-	uc.emitEvent(ctx, "Publish", mrmsg.Data{"formId": formID, "version": item.Version})
+	uc.eventEmitter.Emit(ctx, "Publish", mrmsg.Data{"formId": formID, "version": item.Version})
 
 	return nil
 }
@@ -230,13 +231,4 @@ func (uc *FormVersion) createFormVersionForTest(ctx context.Context, formID uuid
 		Body:           body,
 		ActivityStatus: enum.ActivityStatusTesting,
 	}, nil
-}
-
-func (uc *FormVersion) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameFormVersion,
-		data,
-	)
 }

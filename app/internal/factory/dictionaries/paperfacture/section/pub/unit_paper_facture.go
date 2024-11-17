@@ -27,7 +27,7 @@ func newUnitPaperFacture(_ context.Context, opts paperfacture.Options) (*httpv1.
 	storage := repository.NewPaperFacturePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.UseCaseHelper)
+	useCase := usecase.NewPaperFacture(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPaperFacture(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

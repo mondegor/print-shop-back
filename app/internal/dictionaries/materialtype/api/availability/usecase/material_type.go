@@ -7,7 +7,6 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -30,10 +29,10 @@ func NewMaterialType(storage availability.MaterialTypeStorage, errorWrapper mrco
 }
 
 // CheckingAvailability - comment method.
-func (uc *MaterialType) CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error {
+func (uc *MaterialType) CheckingAvailability(ctx context.Context, itemID uint64) error {
 	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
 
-	if itemID < 1 {
+	if itemID == 0 {
 		return api.ErrMaterialTypeRequired.New()
 	}
 

@@ -7,11 +7,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-storage/mrredislock"
-	"github.com/mondegor/go-webcore/mrcore/mrcoreerr"
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
-	"github.com/mondegor/go-webcore/mrsender/mrlogadapter"
 
 	"github.com/mondegor/print-shop-back/cmd/factory/calculations"
 	"github.com/mondegor/print-shop-back/cmd/factory/catalog"
@@ -80,15 +78,11 @@ func InitAppEnvironment(ctx context.Context, opts app.Options) (context.Context,
 
 	opts.AppHealth = mrrun.NewAppHealth()
 	opts.ErrorHandler = NewErrorHandler(logger, opts.Cfg)
-	opts.EventEmitter = mrlogadapter.NewEventEmitter(logger)
 
 	opts, err = createAppEnvironment(ctx, opts)
 	if err != nil {
 		return nil, app.Options{}, err
 	}
-
-	// Register errors (!!! only after create environment)
-	registerAppErrors(opts)
 
 	// Shared APIs init section (!!! only after create environment)
 	if opts, err = createAppAPI(ctx, opts); err != nil {
@@ -105,10 +99,6 @@ func InitAppEnvironment(ctx context.Context, opts app.Options) (context.Context,
 
 // createAppEnvironment - создаёт, и настраивает внешнее окружение приложения.
 func createAppEnvironment(ctx context.Context, opts app.Options) (enrichedOpts app.Options, err error) {
-	opts.ErrorManager = NewErrorManager(opts)
-	opts.UseCaseErrorWrapper = mrcoreerr.NewUseCaseErrorWrapper()
-	opts.InternalRouter = http.NewServeMux()
-
 	if opts.Cfg.Sentry.DSN != "" {
 		sentry, err := NewSentry(ctx, opts.Cfg)
 		if err != nil {
@@ -119,7 +109,12 @@ func createAppEnvironment(ctx context.Context, opts app.Options) (enrichedOpts a
 		opts.Sentry = sentry
 	}
 
+	opts.InternalRouter = http.NewServeMux()
 	opts.Prometheus = NewPrometheusRegistry(ctx, opts)
+
+	// !!! only after init Sentry and Prometheus
+	InitProtoAppErrors(opts)
+	opts.EventEmitter = NewEventEmitter(opts)
 
 	if opts.PostgresConnManager == nil {
 		postgresAdapter, err := NewPostgres(ctx, opts)
@@ -185,30 +180,17 @@ func createAppEnvironment(ctx context.Context, opts app.Options) (enrichedOpts a
 	return opts, nil
 }
 
-func registerAppErrors(opts app.Options) {
-	calculations.RegisterAlgoErrors(opts.ErrorManager)
-	calculations.RegisterQueryHistoryErrors(opts.ErrorManager)
-	catalog.RegisterBoxErrors(opts.ErrorManager)
-	catalog.RegisterLaminateErrors(opts.ErrorManager)
-	catalog.RegisterPaperErrors(opts.ErrorManager)
-	controls.RegisterElementTemplateErrors(opts.ErrorManager)
-	controls.RegisterSubmitFormErrors(opts.ErrorManager)
-	dictionaries.RegisterMaterialTypeErrors(opts.ErrorManager)
-	dictionaries.RegisterPaperColorErrors(opts.ErrorManager)
-	dictionaries.RegisterPaperFactureErrors(opts.ErrorManager)
-	dictionaries.RegisterPrintFormatErrors(opts.ErrorManager)
-}
-
 func createAppAPI(ctx context.Context, opts app.Options) (enrichedOpts app.Options, err error) {
-	opts.OrdererAPI = NewOrdererAPI(ctx, opts)
-
 	{
-		getter, task := NewSettingsGetterAndTask(ctx, opts)
+		getter, task := NewSettingsGetterAPI(ctx, opts)
 		opts.SettingsGetterAPI = getter
 		opts.SchedulerTasks = append(opts.SchedulerTasks, task)
+
+		opts.SettingsSetterAPI = NewSettingsSetterAPI(ctx, opts)
 	}
 
-	opts.SettingsSetterAPI = NewSettingsSetter(ctx, opts)
+	opts.MailerAPI = NewMailerAPI(ctx, opts)
+	opts.NotifierAPI = NewNotifierAPI(ctx, opts)
 
 	if opts.DictionariesMaterialTypeAPI, err = dictionaries.NewMaterialTypeAvailabilityAPI(ctx, opts); err != nil {
 		return app.Options{}, err

@@ -50,7 +50,7 @@ func (p *DetailingParser) FilterElementDetailingList(r *http.Request, key string
 }
 
 func (p *DetailingParser) parseList(r *http.Request, key string) ([]enum.ElementDetailing, error) {
-	enumList, err := mrreq.ParseEnumList(r, key)
+	enumList, err := mrreq.ParseEnumList(r.URL.Query(), key)
 	if err != nil {
 		return nil, err
 	}

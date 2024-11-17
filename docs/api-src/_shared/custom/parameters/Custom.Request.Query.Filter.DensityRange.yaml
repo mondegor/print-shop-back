@@ -5,6 +5,7 @@ Custom.Request.Query.Filter.DensityMin:
   required: false
   schema:
     type: integer
+    # format: uint64
     maxLength: 10
   example: 100000 # 100 g/m2
 
@@ -15,5 +16,6 @@ Custom.Request.Query.Filter.DensityMax:
   required: false
   schema:
     type: integer
+    # format: uint64
     maxLength: 10
   example: 100000 # 100 g/m2

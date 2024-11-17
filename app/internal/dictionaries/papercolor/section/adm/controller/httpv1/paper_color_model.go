@@ -12,13 +12,13 @@ type (
 
 	// StorePaperColorRequest - comment struct.
 	StorePaperColorRequest struct {
-		TagVersion int32  `json:"tagVersion" validate:"required,gte=1"`
+		TagVersion uint32 `json:"tagVersion" validate:"required,gte=1"`
 		Caption    string `json:"caption" validate:"required,max=64"`
 	}
 
 	// PaperColorListResponse - comment struct.
 	PaperColorListResponse struct {
 		Items []entity.PaperColor `json:"items"`
-		Total int64               `json:"total"`
+		Total uint64              `json:"total"`
 	}
 )

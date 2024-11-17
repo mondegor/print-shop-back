@@ -20,7 +20,7 @@ type (
 	// CompanyPageStorage - comment interface.
 	CompanyPageStorage interface {
 		FetchOne(ctx context.Context, accountID uuid.UUID) (entity.CompanyPage, error)
-		FetchAccountIDByRewriteName(ctx context.Context, rewriteName string) (uuid.UUID, error)
+		FetchAccountIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error)
 		FetchStatus(ctx context.Context, accountID uuid.UUID) (enum.PublicStatus, error)
 		InsertOrUpdate(ctx context.Context, row entity.CompanyPage) error
 		UpdateStatus(ctx context.Context, row entity.CompanyPage) error

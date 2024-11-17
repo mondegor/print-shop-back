@@ -36,7 +36,7 @@ type (
 		AppSections     `yaml:"app_sections"`
 		AccessControl   `yaml:"access_control"`
 		ModulesSettings `yaml:"modules_settings"`
-		MimeTypes       `yaml:"mime_types"`
+		Validation      `yaml:"validation"`
 		TaskSchedule    `yaml:"task_schedule"`
 	}
 
@@ -66,7 +66,7 @@ type (
 	// ErrorCaller - comment struct.
 	ErrorCaller struct {
 		Enable       bool     `yaml:"enable" env:"APPX_ERR_CALLER_ENABLE"`
-		Depth        int      `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
+		Depth        uint8    `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
 		ShowFuncName bool     `yaml:"show_func_name"`
 		UpperBounds  []string `yaml:"upper_bounds"`
 	}
@@ -237,9 +237,70 @@ type (
 		} `yaml:"file_station"`
 	}
 
+	// Validation - comment struct.
+	Validation struct {
+		Files struct {
+			Json FileType `yaml:"json"`
+		} `yaml:"files"`
+		Images struct {
+			Logo ImageType `yaml:"logo"`
+		} `yaml:"images"`
+		MimeTypes []mrlib.MimeType `yaml:"mime_types"`
+	}
+
+	// FileType - comment struct.
+	FileType struct {
+		MinSize                 uint64   `yaml:"min_size"`
+		MaxSize                 uint64   `yaml:"max_size"`
+		MaxFiles                uint32   `yaml:"max_files"`
+		CheckRequestContentType bool     `yaml:"check_request_content_type"`
+		Extensions              []string `yaml:"extensions"`
+	}
+
+	// ImageType - comment struct.
+	ImageType struct {
+		MaxWidth  uint64   `yaml:"max_width"`
+		MaxHeight uint64   `yaml:"max_height"`
+		CheckBody bool     `yaml:"check_body"`
+		File      FileType `yaml:"file"`
+	}
+
 	// TaskSchedule - comment struct.
 	TaskSchedule struct {
-		SettingsReloader SchedulerTask `yaml:"settings_reloader"`
+		ReloadSettings SchedulerTask `yaml:"reload_settings"`
+		Mailer         struct {
+			SendProcessor       MessageProcessor `yaml:"send_processor"`
+			ChangeFromToRetry   SchedulerTask    `yaml:"change_from_to_retry"`
+			CleanQueue          SchedulerTask    `yaml:"clean_queue"`
+			SendRetryAttempts   uint32           `yaml:"send_retry_attempts"`
+			SendDelayCorrection time.Duration    `yaml:"send_delay_correction"`
+			ChangeQueueLimit    uint32           `yaml:"change_queue_limit"`
+			ChangeRetryTimeout  time.Duration    `yaml:"change_retry_timeout"`
+			ChangeRetryDelayed  time.Duration    `yaml:"change_retry_delayed"`
+			CleanQueueLimit     uint32           `yaml:"clean_queue_limit"`
+		} `yaml:"mailer"`
+		Notifier struct {
+			SendProcessor      MessageProcessor `yaml:"send_processor"`
+			ChangeFromToRetry  SchedulerTask    `yaml:"change_from_to_retry"`
+			CleanQueue         SchedulerTask    `yaml:"clean_queue"`
+			SendRetryAttempts  uint32           `yaml:"send_retry_attempts"`
+			ChangeQueueLimit   uint32           `yaml:"change_queue_limit"`
+			ChangeRetryTimeout time.Duration    `yaml:"change_retry_timeout"`
+			ChangeRetryDelayed time.Duration    `yaml:"change_retry_delayed"`
+			CleanQueueLimit    uint32           `yaml:"clean_queue_limit"`
+		} `yaml:"notifier"`
+	}
+
+	// MessageProcessor - comment struct.
+	MessageProcessor struct {
+		Caption           string        `yaml:"caption"`
+		ReadyTimeout      time.Duration `yaml:"ready_timeout"`
+		ReadPeriod        time.Duration `yaml:"read_period"`
+		BusyReadPeriod    time.Duration `yaml:"busy_read_period"`
+		CancelReadTimeout time.Duration `yaml:"cancel_read_timeout"`
+		HandlerTimeout    time.Duration `yaml:"handler_timeout"`
+		QueueSize         uint32        `yaml:"queue_size"`
+		WorkersCount      uint16        `yaml:"workers_count"`
 	}
 
 	// SchedulerTask - comment struct.
@@ -249,7 +310,4 @@ type (
 		Period  time.Duration `yaml:"period"`
 		Timeout time.Duration `yaml:"timeout"`
 	}
-
-	// MimeTypes - comment struct.
-	MimeTypes []mrlib.MimeType
 )

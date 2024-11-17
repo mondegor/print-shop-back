@@ -12,13 +12,13 @@ type (
 
 	// StoreMaterialTypeRequest - comment struct.
 	StoreMaterialTypeRequest struct {
-		TagVersion int32  `json:"tagVersion" validate:"required,gte=1"`
+		TagVersion uint32 `json:"tagVersion" validate:"required,gte=1"`
 		Caption    string `json:"caption" validate:"required,max=64"`
 	}
 
 	// MaterialTypeListResponse - comment struct.
 	MaterialTypeListResponse struct {
 		Items []entity.MaterialType `json:"items"`
-		Total int64                 `json:"total"`
+		Total uint64                `json:"total"`
 	}
 )

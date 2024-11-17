@@ -4,56 +4,86 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/shared/repository"
 )
 
 type (
 	// PaperColorPostgres - comment struct.
 	PaperColorPostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
+		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewPaperColorPostgres - создаёт объект PaperColorPostgres.
-func NewPaperColorPostgres(client mrstorage.DBConnManager, sqlSelect mrstorage.SQLBuilderSelect) *PaperColorPostgres {
+func NewPaperColorPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *PaperColorPostgres {
 	return &PaperColorPostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNamePaperColors,
+			"color_id",
+			module.DBFieldTagVersion,
+			"color_status",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNamePaperColors,
+			"color_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNamePaperColors,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *PaperColorPostgres) NewSelectParams(params entity.PaperColorParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLike("UPPER(color_caption)", strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("color_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("color_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *PaperColorPostgres) FetchWithTotal(ctx context.Context, params entity.PaperColorParams) (rows []entity.PaperColor, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.PaperColor, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *PaperColorPostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.PaperColor, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
         SELECT
@@ -64,11 +94,11 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
             created_at as createdAt,
 			updated_at as updatedAt
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
+            ` + module.DBTableNamePaperColors + `
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + params.OrderBy.String() + params.Limit.String() + `;`
+            ` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -81,7 +111,7 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
 
 	defer cursor.Close()
 
-	rows := make([]entity.PaperColor, 0)
+	rows := make([]entity.PaperColor, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.PaperColor
@@ -104,33 +134,8 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *PaperColorPostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-        SELECT
-            COUNT(*)
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
-        WHERE
-            ` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
-func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperColor, error) {
+func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID uint64) (entity.PaperColor, error) {
 	sql := `
         SELECT
             tag_version,
@@ -139,7 +144,7 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt3
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
+            ` + module.DBTableNamePaperColors + `
         WHERE
             color_id = $1 AND deleted_at IS NULL
         LIMIT 1;`
@@ -163,14 +168,14 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt3
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	return repository.PaperColorFetchStatusPostgres(ctx, re.client, rowID)
+func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor) (mrtype.KeyInt32, error) {
+func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor) (rowID uint64, err error) {
 	sql := `
-        INSERT INTO ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
+        INSERT INTO ` + module.DBTableNamePaperColors + `
             (
                 color_caption,
                 color_status
@@ -180,7 +185,7 @@ func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor)
         RETURNING
             color_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.Caption,
@@ -193,10 +198,10 @@ func (re *PaperColorPostgres) Insert(ctx context.Context, row entity.PaperColor)
 }
 
 // Update - comment method.
-func (re *PaperColorPostgres) Update(ctx context.Context, row entity.PaperColor) (int32, error) {
+func (re *PaperColorPostgres) Update(ctx context.Context, row entity.PaperColor) (tagVersion uint32, err error) {
 	sql := `
         UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
+            ` + module.DBTableNamePaperColors + `
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -206,9 +211,7 @@ func (re *PaperColorPostgres) Update(ctx context.Context, row entity.PaperColor)
 		RETURNING
 			tag_version;`
 
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.ID,
@@ -222,48 +225,34 @@ func (re *PaperColorPostgres) Update(ctx context.Context, row entity.PaperColor)
 }
 
 // UpdateStatus - comment method.
-func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row entity.PaperColor) (int32, error) {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
-        SET
-            tag_version = tag_version + 1,
-			updated_at = NOW(),
-            color_status = $3
-        WHERE
-            color_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row entity.PaperColor) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
-func (re *PaperColorPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
-        SET
-            tag_version = tag_version + 1,
-			deleted_at = NOW()
-        WHERE
-            color_id = $1 AND deleted_at IS NULL;`
+func (re *PaperColorPostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *PaperColorPostgres) fetchCondition(filter entity.PaperColorListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(color_caption)", strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("color_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *PaperColorPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("color_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

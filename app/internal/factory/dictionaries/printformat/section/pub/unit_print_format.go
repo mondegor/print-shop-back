@@ -27,7 +27,7 @@ func newUnitPrintFormat(_ context.Context, opts printformat.Options) (*httpv1.Pr
 	storage := repository.NewPrintFormatPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.UseCaseHelper)
+	useCase := usecase.NewPrintFormat(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPrintFormat(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

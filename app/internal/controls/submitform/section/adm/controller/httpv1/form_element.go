@@ -3,11 +3,10 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-components/mrsort"
+	"github.com/mondegor/go-components/mrordering"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -141,8 +140,8 @@ func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *FormElement) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *FormElement) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *FormElement) getRawItemID(r *http.Request) string {
@@ -180,7 +179,7 @@ func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrsort.ErrAfterNodeNotFound.Is(err) {
+	if mrordering.ErrAfterNodeNotFound.Is(err) {
 		return mrerr.NewCustomError("afterNodeId", err)
 	}
 

@@ -1,6 +1,7 @@
 App.Field.Measure.Gram:
   description: Грамм (g)
   type: integer
+  format: int64
   maxLength: 8
   minimum: 0
   example: 1000 # 1kg

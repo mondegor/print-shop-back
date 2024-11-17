@@ -50,7 +50,7 @@ func (p *PublicStatusParser) FilterPublicStatusList(r *http.Request, key string)
 }
 
 func (p *PublicStatusParser) parseList(r *http.Request, key string) ([]enum.PublicStatus, error) {
-	enumList, err := mrreq.ParseEnumList(r, key)
+	enumList, err := mrreq.ParseEnumList(r.URL.Query(), key)
 	if err != nil {
 		return nil, err
 	}

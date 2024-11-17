@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mrerrfactory"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 const (
@@ -20,29 +18,20 @@ type (
 		//	  - ErrPaperFactureNotAvailable
 		//	  - ErrPaperFactureNotFound
 		//	  - Failed
-		CheckingAvailability(ctx context.Context, itemID mrtype.KeyInt32) error
+		CheckingAvailability(ctx context.Context, itemID uint64) error
 	}
 )
 
 var (
 	// ErrPaperFactureRequired - paper facture ID is required.
-	ErrPaperFactureRequired = mrerrfactory.NewProtoAppErrorByDefault(
-		"errDictionariesPaperFactureRequired", mrerr.ErrorKindUser, "paper facture ID is required")
+	ErrPaperFactureRequired = mrerr.NewProto(
+		"dictionaries.errPaperFactureRequired", mrerr.ErrorKindUser, "paper facture ID is required")
 
 	// ErrPaperFactureNotAvailable - paper facture with ID is not available.
-	ErrPaperFactureNotAvailable = mrerrfactory.NewProtoAppErrorByDefault(
-		"errDictionariesPaperFactureNotAvailable", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} is not available")
+	ErrPaperFactureNotAvailable = mrerr.NewProto(
+		"dictionaries.errPaperFactureNotAvailable", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} is not available")
 
 	// ErrPaperFactureNotFound - paper facture with ID not found.
-	ErrPaperFactureNotFound = mrerrfactory.NewProtoAppErrorByDefault(
-		"errDictionariesPaperFactureNotFound", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} not found")
+	ErrPaperFactureNotFound = mrerr.NewProto(
+		"dictionaries.errPaperFactureNotFound", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} not found")
 )
-
-// PaperFactureErrors - comment func.
-func PaperFactureErrors() []*mrerr.ProtoAppError {
-	return []*mrerr.ProtoAppError{
-		ErrPaperFactureRequired,
-		ErrPaperFactureNotAvailable,
-		ErrPaperFactureNotFound,
-	}
-}

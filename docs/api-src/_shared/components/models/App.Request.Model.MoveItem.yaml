@@ -9,4 +9,5 @@ App.Request.Model.MoveItem:
         Идентификатор записи, после которой необходимо вставить указанную запись.\
         При afterId = 0 запись вставляется в начало списка.
       type: integer
+      # format: uint64
       example: 7

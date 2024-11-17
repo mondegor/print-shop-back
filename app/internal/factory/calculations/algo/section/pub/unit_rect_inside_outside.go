@@ -23,7 +23,7 @@ func createUnitRectInsideOutside(ctx context.Context, opts algo.Options) ([]mrse
 }
 
 func newUnitRectInsideOutside(_ context.Context, opts algo.Options) (*httpv1.RectInsideOutside, error) { //nolint:unparam
-	useCase := usecase.NewRectInsideOutside(opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewRectInsideOutside(opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewRectInsideOutside(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

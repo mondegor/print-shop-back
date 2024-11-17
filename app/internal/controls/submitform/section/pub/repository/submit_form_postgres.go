@@ -32,7 +32,7 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, _ entity.SubmitFormPara
 			rewrite_name,
 			form_caption
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+            ` + module.DBTableNameSubmitFormVersions + `
         WHERE
             activity_status = $1 AND form_detailing = $2
         ORDER BY
@@ -78,7 +78,7 @@ func (re *SubmitFormPostgres) FetchByRewriteName(ctx context.Context, rewriteNam
 			rewrite_name,
 			form_caption
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+            ` + module.DBTableNameSubmitFormVersions + `
         WHERE
             rewrite_name = $1 AND activity_status = $2 AND form_detailing = $3
         LIMIT 1;`

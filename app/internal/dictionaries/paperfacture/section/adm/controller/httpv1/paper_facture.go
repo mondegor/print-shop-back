@@ -6,7 +6,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
@@ -177,8 +176,8 @@ func (ht *PaperFacture) Remove(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *PaperFacture) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *PaperFacture) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *PaperFacture) getRawItemID(r *http.Request) string {

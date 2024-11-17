@@ -17,8 +17,8 @@ const (
 type (
 	// ElementTemplate - comment struct.
 	ElementTemplate struct { // DB: printshop_controls.element_templates
-		ID         mrtype.KeyInt32       `json:"id"` // template_id
-		TagVersion int32                 `json:"tagVersion"`
+		ID         uint64                `json:"id"` // template_id
+		TagVersion uint32                `json:"tagVersion"`
 		ParamName  string                `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption    string                `json:"caption" sort:"caption,default" upd:"template_caption"`
 		Type       enum.ElementType      `json:"elementType"`

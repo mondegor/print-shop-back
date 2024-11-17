@@ -4,14 +4,14 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/mondegor/go-components/mrmailer"
+	"github.com/mondegor/go-components/mrnotifier"
 	"github.com/mondegor/go-components/mrsettings"
-	"github.com/mondegor/go-components/mrsort"
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrlang"
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrlock"
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrperms"
@@ -44,12 +44,10 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		Cfg                 config.Config
-		AppHealth           *mrrun.AppHealth
-		ErrorHandler        mrcore.ErrorHandler
-		EventEmitter        mrsender.EventEmitter
-		ErrorManager        *mrinit.ErrorManager
-		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
+		Cfg          config.Config
+		AppHealth    *mrrun.AppHealth
+		ErrorHandler mrcore.ErrorHandler
+		EventEmitter mrsender.EventEmitter
 
 		InternalRouter *http.ServeMux
 		Sentry         *mrsentry.Adapter
@@ -70,7 +68,8 @@ type (
 		DictionariesPaperColorAPI   api.PaperColorAvailability
 		DictionariesPaperFactureAPI api.PaperFactureAvailability
 		DictionariesPrintFormatAPI  api.PrintFormatAvailability
-		OrdererAPI                  mrsort.Orderer
+		MailerAPI                   mrmailer.MessageProducer
+		NotifierAPI                 mrnotifier.NoticeProducer
 		SettingsGetterAPI           mrsettings.DefaultValueGetter
 		SettingsSetterAPI           mrsettings.Setter
 
@@ -99,7 +98,7 @@ type (
 		// DateTime   *mrparser.DateTime
 		Int64      *mrparser.Int64
 		ItemStatus *mrparser.ItemStatus
-		KeyInt32   *mrparser.KeyInt32
+		Uint64     *mrparser.Uint64
 		ListSorter *mrparser.ListSorter
 		ListPager  *mrparser.ListPager
 		String     *mrparser.String

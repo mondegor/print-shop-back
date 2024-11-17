@@ -14,8 +14,8 @@ const (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct { // DB: printshop_dictionaries.material_types
-		ID         mrtype.KeyInt32   `json:"id"` // type_id
-		TagVersion int32             `json:"tagVersion"`
+		ID         uint64            `json:"id"` // type_id
+		TagVersion uint32            `json:"tagVersion"`
 		Caption    string            `json:"caption" sort:"caption,default"`
 		Status     mrenum.ItemStatus `json:"status"`
 		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`

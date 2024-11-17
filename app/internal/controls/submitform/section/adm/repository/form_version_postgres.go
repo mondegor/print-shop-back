@@ -39,7 +39,7 @@ func (re *FormVersionPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+            ` + module.DBTableNameSubmitFormVersions + `
         WHERE
             form_id = $1
         ORDER BY
@@ -99,7 +99,7 @@ func (re *FormVersionPostgres) FetchOne(ctx context.Context, primary entity.Prim
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+            ` + module.DBTableNameSubmitFormVersions + `
         WHERE
             form_id = $1 AND version = $2
         LIMIT 1;`
@@ -140,7 +140,7 @@ func (re *FormVersionPostgres) FetchOneLastVersion(ctx context.Context, formID u
 			version,
 			activity_status
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+			` + module.DBTableNameSubmitFormVersions + `
 		WHERE
 			form_id = $1
 		ORDER BY
@@ -164,7 +164,7 @@ func (re *FormVersionPostgres) FetchOneLastVersion(ctx context.Context, formID u
 // Insert - comment method.
 func (re *FormVersionPostgres) Insert(ctx context.Context, row entity.FormVersion) error {
 	sql := `
-		INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+		INSERT INTO ` + module.DBTableNameSubmitFormVersions + `
 			(
 				form_id,
 				version,
@@ -194,7 +194,7 @@ func (re *FormVersionPostgres) Insert(ctx context.Context, row entity.FormVersio
 func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersion) error {
 	sql := `
         UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+            ` + module.DBTableNameSubmitFormVersions + `
         SET
 			updated_at = NOW(),
 			rewrite_name = $4,
@@ -225,7 +225,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 		// архивирование старой версии со статусом toStatus, если она имеется
 		sql := `
 			UPDATE
-				` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+				` + module.DBTableNameSubmitFormVersions + `
 			SET
 				rewrite_name = NULL,
 				activity_status = $4,
@@ -251,7 +251,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 		// переключение только указанной версии в указанный статус
 		sql = `
 			UPDATE
-				` + module.DBSchema + `.` + module.DBTableNameSubmitFormVersions + `
+				` + module.DBTableNameSubmitFormVersions + `
 			SET
 				activity_status = $4,
 				updated_at = NOW()

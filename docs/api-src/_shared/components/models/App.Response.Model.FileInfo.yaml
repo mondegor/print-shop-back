@@ -28,6 +28,7 @@ App.Response.Model.FileInfo:
     size:
       description: Размер файла в байтах
       type: integer
+      # format: uint64
       example: 7
     createdAt:
       description: Дата и время создания файла (UTC)

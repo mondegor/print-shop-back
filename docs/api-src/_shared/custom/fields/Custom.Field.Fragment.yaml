@@ -8,8 +8,10 @@ Custom.Field.Fragment:
     byWidth:
       description: Кол-во элементов по ширине
       type: integer
+      # format: uint64
       example: 27
     byHeight:
       description: Кол-во элементов по высоте
       type: integer
+      # format: uint64
       example: 43

@@ -5,12 +5,17 @@ messages:
   msgElementTemplateSuccessCreated: Шаблон поля формы был успешно добавлен (eng)
 
 errors:
-  # Ошибки создаваемые AppErrorFactory
+  # Ошибки создаваемые AppError
 
-  errInternal:
+  errUnexpectedInternal: # 418
+    reason: "Internal server error [problem]"
+    details:
+      - "unexpected error"
+
+  errInternal: # 500
     reason: "Internal server error"
 
-  errSystem:
+  errSystem: # 503
     reason: "System server error"
 
   errHttpClientUnauthorized: # 401
@@ -22,13 +27,15 @@ errors:
   errHttpResourceNotFound: # 404
     reason: "Resource Not Found"
 
-  errHttpRequestParseData:
-    reason: "Request body is not valid"
+  errHttpRequestParseData: # 422
+    reason: "Request body is not valid: '{{ .reason }}'"
+    details:
+      - "проверьте параметры запроса, правильность формата json и соответствующих ему типов"
 
-  errUseCaseTemporarilyUnavailable:
+  errUseCaseTemporarilyUnavailable: # 503
     reason: "The system is temporarily unable to process your request. Please try again later"
 
-  # Ошибки генерируемые валидатором.
+  # Ошибки генерируемые валидатором (400).
   # ID формируется из "validator_err" и имени валидатора, которое указано
   # в `` поля структуры (например: min, max, required).
   # Можно использовать следующие переменные:
@@ -37,20 +44,20 @@ errors:
   #   {{ .value }} - текущее значение поля;
   #   {{ .param }} - параметр валидатора (например: max=16 -> param=16);
 
-  validator_err_required:
+  validator.err_required:
     reason: "The field is required"
 
-  validator_err_min:
+  validator.err_min:
     reason: "The field value must be at least {{ .param }} characters (current value: {{ .value }})"
 
-  validator_err_max:
+  validator.err_max:
     reason: "The field value must be no more than {{ .param }} characters"
 
-  validator_err_gte:
+  validator.err_gte:
     reason: "The field value must be greater than or equal to {{ .param }} (current value: {{ .value }})"
 
-  validator_err_lte:
+  validator.err_lte:
     reason: "The field value must be less than or equal to {{ .param }} (current value: {{ .value }})"
 
-  validator_err_http_url:
-    reason: "The field value must be URL (current value: {{ .value }})"
+  validator.err_http_url:
+    reason: "The field value must be URL address (current value: {{ .value }})"

@@ -13,8 +13,9 @@ ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage:
   type: object
   properties:
     accountId:
-      type: integer
-      example: 1000
+      type: string
+      format: uuid
+      example: "3ba22bd7-c7c9-4a8f-b48e-565f97c3082f"
     updatedAt:
       description: Дата и время обновления записи
       type: string

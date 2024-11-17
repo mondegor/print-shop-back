@@ -134,7 +134,7 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  put:
+  patch:
     summary: Метод сохранения упаковочной коробки
     description: |-
       Метод предназначен для сохранения информации об упаковочной коробке в БД

@@ -3,8 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/controller/httpv1"
@@ -27,25 +28,24 @@ func createUnitPaperColor(ctx context.Context, opts papercolor.Options) ([]mrser
 }
 
 func newUnitPaperColor(ctx context.Context, opts papercolor.Options) (*httpv1.PaperColor, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.PaperColor{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.PaperColor{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewPaperColorPostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderSelect(
-			mrpostgres.NewSQLBuilderWhere(),
-			mrpostgres.NewSQLBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
+		builder.NewSQL(
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewPaperColor(storage, opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewPaperColor(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPaperColor(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,
 		useCase,
-		metaOrderBy,
+		entityMeta.MetaOrderBy(),
 	)
 
 	return controller, nil

@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/circulation/packinbox/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/packinbox"
@@ -25,7 +26,7 @@ type (
 func NewCirculationPackInBox(algo *packinbox.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *CirculationPackInBox {
 	return &CirculationPackInBox{
 		algo:         algo,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameCirculationPackInBox),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -64,7 +65,7 @@ func (uc *CirculationPackInBox) Calc(ctx context.Context, data entity.ParsedData
 		}
 	}
 
-	uc.emitEvent(ctx, "Calc", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", mrmsg.Data{"data": data})
 
 	return entity.AlgoResult{
 		FullBox:          fullBox,
@@ -75,13 +76,4 @@ func (uc *CirculationPackInBox) Calc(ctx context.Context, data entity.ParsedData
 		BoxesVolume:      mrlib.RoundFloat8(result.BoxesVolume),
 		BoxesInnerVolume: mrlib.RoundFloat8(result.BoxesInnerVolume),
 	}, nil
-}
-
-func (uc *CirculationPackInBox) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameCirculationPackInBox,
-		data,
-	)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
@@ -30,10 +29,10 @@ func NewElementTemplate(storage header.ElementTemplateStorage, errorWrapper mrco
 }
 
 // GetItemHeader - comment method.
-func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID mrtype.KeyInt32) (api.ElementTemplateDTO, error) {
+func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (api.ElementTemplateDTO, error) {
 	uc.debugCmd(ctx, "GetHead", mrmsg.Data{"id": itemID})
 
-	if itemID < 1 {
+	if itemID == 0 {
 		return api.ElementTemplateDTO{}, api.ErrElementTemplateRequired.New()
 	}
 

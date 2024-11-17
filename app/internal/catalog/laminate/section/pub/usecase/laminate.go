@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
@@ -39,7 +38,7 @@ func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (
 }
 
 // GetTypeList - comment method.
-func (uc *Laminate) GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error) {
+func (uc *Laminate) GetTypeList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchTypeIDs(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)

@@ -1,6 +1,7 @@
 App.Field.Measure.GramPerMeter2:
   description: Поверхностная плотность (g/m2)
   type: integer
+  format: int64
   maxLength: 8
   minimum: 0
   example: 1000 # 1kg/m2

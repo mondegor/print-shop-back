@@ -3,9 +3,7 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 )
@@ -13,24 +11,22 @@ import (
 type (
 	// PrintFormatUseCase - comment interface.
 	PrintFormatUseCase interface {
-		GetList(ctx context.Context, params entity.PrintFormatParams) ([]entity.PrintFormat, int64, error)
-		GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.PrintFormat, error)
-		Create(ctx context.Context, item entity.PrintFormat) (mrtype.KeyInt32, error)
+		GetList(ctx context.Context, params entity.PrintFormatParams) (items []entity.PrintFormat, countItems uint64, err error)
+		GetItem(ctx context.Context, itemID uint64) (entity.PrintFormat, error)
+		Create(ctx context.Context, item entity.PrintFormat) (itemID uint64, err error)
 		Store(ctx context.Context, item entity.PrintFormat) error
 		ChangeStatus(ctx context.Context, item entity.PrintFormat) error
-		Remove(ctx context.Context, itemID mrtype.KeyInt32) error
+		Remove(ctx context.Context, itemID uint64) error
 	}
 
 	// PrintFormatStorage - comment interface.
 	PrintFormatStorage interface {
-		NewSelectParams(params entity.PrintFormatParams) mrstorage.SQLSelectParams
-		Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.PrintFormat, error)
-		FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error)
-		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PrintFormat, error)
-		FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error)
-		Insert(ctx context.Context, row entity.PrintFormat) (mrtype.KeyInt32, error)
-		Update(ctx context.Context, row entity.PrintFormat) (int32, error)
-		UpdateStatus(ctx context.Context, row entity.PrintFormat) (int32, error)
-		Delete(ctx context.Context, rowID mrtype.KeyInt32) error
+		FetchWithTotal(ctx context.Context, params entity.PrintFormatParams) (rows []entity.PrintFormat, countRows uint64, err error)
+		FetchOne(ctx context.Context, rowID uint64) (entity.PrintFormat, error)
+		FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error)
+		Insert(ctx context.Context, row entity.PrintFormat) (rowID uint64, err error)
+		Update(ctx context.Context, row entity.PrintFormat) (tagVersion uint32, err error)
+		UpdateStatus(ctx context.Context, row entity.PrintFormat) (tagVersion uint32, err error)
+		Delete(ctx context.Context, rowID uint64) error
 	}
 )

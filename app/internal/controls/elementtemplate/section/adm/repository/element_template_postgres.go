@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -16,51 +17,77 @@ import (
 type (
 	// ElementTemplatePostgres - comment struct.
 	ElementTemplatePostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
-		sqlUpdate mrstorage.SQLBuilderUpdate
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
+		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewElementTemplatePostgres - создаёт объект ElementTemplatePostgres.
-func NewElementTemplatePostgres(
-	client mrstorage.DBConnManager,
-	sqlSelect mrstorage.SQLBuilderSelect,
-	sqlUpdate mrstorage.SQLBuilderUpdate,
-) *ElementTemplatePostgres {
+func NewElementTemplatePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *ElementTemplatePostgres {
 	return &ElementTemplatePostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
-		sqlUpdate: sqlUpdate,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNameElementTemplates,
+			"template_id",
+			module.DBFieldTagVersion,
+			"template_status",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNameElementTemplates,
+			"template_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNameElementTemplates,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *ElementTemplatePostgres) NewSelectParams(params entity.ElementTemplateParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLikeFields([]string{"UPPER(param_name)", "UPPER(template_caption)"}, strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("element_detailing", params.Filter.Detailing),
-				w.FilterAnyOf("template_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("template_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *ElementTemplatePostgres) FetchWithTotal(
+	ctx context.Context,
+	params entity.ElementTemplateParams,
+) (rows []entity.ElementTemplate, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.ElementTemplate, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *ElementTemplatePostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.ElementTemplate, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
         SELECT
@@ -74,11 +101,11 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
             created_at as createdAt,
 			updated_at as updatedAt
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
+            ` + module.DBTableNameElementTemplates + `
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + params.OrderBy.String() + params.Limit.String() + `;`
+            ` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -91,7 +118,7 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
 
 	defer cursor.Close()
 
-	rows := make([]entity.ElementTemplate, 0)
+	rows := make([]entity.ElementTemplate, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.ElementTemplate
@@ -117,33 +144,8 @@ func (re *ElementTemplatePostgres) Fetch(ctx context.Context, params mrstorage.S
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *ElementTemplatePostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-        SELECT
-            COUNT(*)
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
-        WHERE
-            ` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
-func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.ElementTemplate, error) {
+func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID uint64) (entity.ElementTemplate, error) {
 	sql := `
         SELECT
             tag_version,
@@ -156,7 +158,7 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.Ke
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
+            ` + module.DBTableNameElementTemplates + `
         WHERE
             template_id = $1 AND deleted_at IS NULL
         LIMIT 1;`
@@ -184,33 +186,14 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID mrtype.Ke
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            template_status
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
-        WHERE
-            template_id = $1 AND deleted_at IS NULL
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rowID,
-	).Scan(
-		&status,
-	)
-
-	return status, err
+func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.ElementTemplate) (mrtype.KeyInt32, error) {
+func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.ElementTemplate) (rowID uint64, err error) {
 	sql := `
-        INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
+        INSERT INTO ` + module.DBTableNameElementTemplates + `
             (
                 param_name,
                 template_caption,
@@ -224,7 +207,7 @@ func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.Elemen
         RETURNING
             template_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.ParamName,
@@ -241,9 +224,8 @@ func (re *ElementTemplatePostgres) Insert(ctx context.Context, row entity.Elemen
 }
 
 // Update - comment method.
-func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.ElementTemplate) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
+func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.ElementTemplate) (tagVersion uint32, err error) {
+	set, err := re.sqlBuilder.Set().BuildEntity(row)
 	if err != nil || set.Empty() {
 		return 0, err
 	}
@@ -253,11 +235,11 @@ func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.Elemen
 		row.TagVersion,
 	}
 
-	setStr, setArgs := set.WithParam(len(args) + 1).ToSQL()
+	setStr, setArgs := set.WithStartArg(len(args) + 1).ToSQL()
 
 	sql := `
         UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
+            ` + module.DBTableNameElementTemplates + `
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -266,8 +248,6 @@ func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.Elemen
             template_id = $1 AND tag_version = $2 AND deleted_at IS NULL
 		RETURNING
 			tag_version;`
-
-	var tagVersion int32
 
 	err = re.client.Conn(ctx).QueryRow(
 		ctx,
@@ -281,48 +261,35 @@ func (re *ElementTemplatePostgres) Update(ctx context.Context, row entity.Elemen
 }
 
 // UpdateStatus - comment method.
-func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row entity.ElementTemplate) (int32, error) {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
-        SET
-            tag_version = tag_version + 1,
-			updated_at = NOW(),
-			template_status = $3
-        WHERE
-            template_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row entity.ElementTemplate) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
-func (re *ElementTemplatePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
-        SET
-            tag_version = tag_version + 1,
-			deleted_at = NOW()
-        WHERE
-            template_id = $1 AND deleted_at IS NULL;`
+func (re *ElementTemplatePostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *ElementTemplatePostgres) fetchCondition(filter entity.ElementTemplateListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(param_name)", "UPPER(template_caption)"}, strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("element_detailing", filter.Detailing),
+				c.FilterAnyOf("template_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *ElementTemplatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("template_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

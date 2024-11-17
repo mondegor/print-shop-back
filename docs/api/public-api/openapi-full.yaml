@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.3
+  version: v0.4.4
   title: Public API print-shop
   license:
     name: Apache-2.0
@@ -15,7 +15,7 @@ info:
 
     #### Ограничения полей
     - required - поле обязательно для заполнения;
-    - omitempty - поле может быть не указано (не будет использоваться методом, в который было передано);
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
     - unique - уникальное значение поля;
     - min=N - поле должно быть не менее N символов;
     - max=N - поле должно быть не более N символов;
@@ -997,6 +997,7 @@ components:
     App.Field.Uint:
       description: Целое положительное число
       type: integer
+      # format: uint64
       minimum: 0
       example: 9223372036854775807
 
@@ -1011,6 +1012,7 @@ components:
     App.Field.Measure.Gram:
       description: Грамм (g)
       type: integer
+      format: int64
       maxLength: 8
       minimum: 0
       example: 1000 # 1kg
@@ -1018,6 +1020,7 @@ components:
     App.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
       type: integer
+      format: int64
       maxLength: 8
       minimum: 0
       example: 1000 # 1kg/m2
@@ -1049,6 +1052,7 @@ components:
     App.Field.Measure.Micrometer:
       description: Микрометр (µm, 0.001mm)
       type: integer
+      format: int64
       maxLength: 8
       minimum: 0
       example: 1000000 # 1m
@@ -1056,6 +1060,7 @@ components:
     App.Field.Measure.Millimeter:
       description: Миллиметр (mm)
       type: integer
+      format: int64
       maxLength: 8
       minimum: 0
       example: 1000 # 1m
@@ -1151,49 +1156,49 @@ components:
     Custom.Field.Catalog.BoxID:
       description: Идентификатор коробки (модуль - Catalog.Box)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Catalog.LaminateID:
       description: Идентификатор ламината (модуль - Catalog.Laminate)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Catalog.PaperID:
       description: Идентификатор бумаги (модуль - Catalog.Paper)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.MaterialTypeID:
       description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PaperColorID:
       description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PaperFactureID:
       description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PrintFormatID:
       description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
@@ -1207,10 +1212,12 @@ components:
         byWidth:
           description: Кол-во элементов по ширине
           type: integer
+          # format: uint64
           example: 27
         byHeight:
           description: Кол-во элементов по высоте
           type: integer
+          # format: uint64
           example: 43
 
     Custom.Field.RectFormat:

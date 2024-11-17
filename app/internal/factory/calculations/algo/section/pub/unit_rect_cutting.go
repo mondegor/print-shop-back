@@ -23,7 +23,7 @@ func createUnitRectCutting(ctx context.Context, opts algo.Options) ([]mrserver.H
 }
 
 func newUnitRectCutting(_ context.Context, opts algo.Options) (*httpv1.RectCutting, error) { //nolint:unparam
-	useCase := usecase.NewRectCutting(opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewRectCutting(opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewRectCutting(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

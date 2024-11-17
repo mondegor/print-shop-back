@@ -7,9 +7,9 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
@@ -29,36 +29,29 @@ type (
 func NewPaperColor(storage adm.PaperColorStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNamePaperColor),
 		errorWrapper: errorWrapper,
 		statusFlow:   mrflow.ItemStatusFlow(),
 	}
 }
 
 // GetList - comment method.
-func (uc *PaperColor) GetList(ctx context.Context, params entity.PaperColorParams) ([]entity.PaperColor, int64, error) {
-	fetchParams := uc.storage.NewSelectParams(params)
-
-	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
+func (uc *PaperColor) GetList(ctx context.Context, params entity.PaperColorParams) (items []entity.PaperColor, countItems uint64, err error) {
+	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaperColor)
 	}
 
-	if total < 1 {
+	if countItems == 0 {
 		return make([]entity.PaperColor, 0), 0, nil
 	}
 
-	items, err := uc.storage.Fetch(ctx, fetchParams)
-	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaperColor)
-	}
-
-	return items, total, nil
+	return items, countItems, nil
 }
 
 // GetItem - comment method.
-func (uc *PaperColor) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.PaperColor, error) {
-	if itemID < 1 {
+func (uc *PaperColor) GetItem(ctx context.Context, itemID uint64) (entity.PaperColor, error) {
+	if itemID == 0 {
 		return entity.PaperColor{}, mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -71,26 +64,26 @@ func (uc *PaperColor) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (enti
 }
 
 // Create - comment method.
-func (uc *PaperColor) Create(ctx context.Context, item entity.PaperColor) (mrtype.KeyInt32, error) {
+func (uc *PaperColor) Create(ctx context.Context, item entity.PaperColor) (itemID uint64, err error) {
 	item.Status = mrenum.ItemStatusDraft
 
-	itemID, err := uc.storage.Insert(ctx, item)
+	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
 		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaperColor)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
 
 	return itemID, nil
 }
 
 // Store - comment method.
 func (uc *PaperColor) Store(ctx context.Context, item entity.PaperColor) error {
-	if item.ID < 1 {
+	if item.ID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -109,18 +102,18 @@ func (uc *PaperColor) Store(ctx context.Context, item entity.PaperColor) error {
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaperColor)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
 
 // ChangeStatus - comment method.
 func (uc *PaperColor) ChangeStatus(ctx context.Context, item entity.PaperColor) error {
-	if item.ID < 1 {
+	if item.ID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -146,14 +139,14 @@ func (uc *PaperColor) ChangeStatus(ctx context.Context, item entity.PaperColor) 
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaperColor)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }
 
 // Remove - comment method.
-func (uc *PaperColor) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
-	if itemID < 1 {
+func (uc *PaperColor) Remove(ctx context.Context, itemID uint64) error {
+	if itemID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -161,16 +154,7 @@ func (uc *PaperColor) Remove(ctx context.Context, itemID mrtype.KeyInt32) error 
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaperColor, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
-}
-
-func (uc *PaperColor) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNamePaperColor,
-		data,
-	)
 }

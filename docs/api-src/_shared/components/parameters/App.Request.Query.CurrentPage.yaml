@@ -5,5 +5,6 @@ App.Request.Query.CurrentPage:
   required: false
   schema:
     type: integer
+    # format: uint64
     default: 0
   example: 1

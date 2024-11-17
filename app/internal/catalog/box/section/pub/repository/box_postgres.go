@@ -37,7 +37,7 @@ func (re *BoxPostgres) Fetch(ctx context.Context, _ entity.BoxParams) ([]entity.
 			box_thickness,
 			box_weight
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameBoxes + `
+            ` + module.DBTableNameBoxes + `
         WHERE
             box_status = $1 AND deleted_at IS NULL
         ORDER BY

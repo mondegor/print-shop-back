@@ -7,4 +7,5 @@ App.Response.Model.SuccessCreatedItemUint:
     id:
       description: Идентификатор созданной записи
       type: integer
+      # format: uint64
       example: 9223372036854775807

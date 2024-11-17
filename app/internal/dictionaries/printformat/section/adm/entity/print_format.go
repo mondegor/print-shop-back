@@ -16,8 +16,8 @@ const (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct { // DB: printshop_dictionaries.print_format
-		ID         mrtype.KeyInt32   `json:"id"` // format_id
-		TagVersion int32             `json:"tagVersion"`
+		ID         uint64            `json:"id"` // format_id
+		TagVersion uint32            `json:"tagVersion"`
 		Caption    string            `json:"caption" sort:"caption,default"`
 		Width      measure.Meter     `json:"width" sort:"width"`
 		Height     measure.Meter     `json:"height" sort:"height"`

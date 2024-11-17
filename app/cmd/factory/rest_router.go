@@ -49,15 +49,15 @@ func NewRestRouter(ctx context.Context, opts app.Options) (*mrchi.RouterAdapter,
 		mrrscors.Middleware(corsOptions),
 		mrserver.MiddlewareGeneral(
 			opts.Translator,
-			func(l mrlog.Logger, start time.Time, sr *mrserver.StatRequest, sw *mrserver.StatResponseWriter) {
+			func(l mrlog.Logger, start time.Time, sr *mrserver.StatRequestReader, sw *mrserver.StatResponseWriter) {
 				method := sr.Request().Method
 				location := sr.Request().URL.Path
 
-				observeRequest.
-					SetStatusWithTime(method, location, strconv.Itoa(sw.StatusCode()), start).
-					IncrementRequestSize(method, location, sr.Bytes()).
-					IncrementResponseSize(method, location, sw.Bytes())
-				mrresp.TraceRequest(l, start, sr, sw)
+				observeRequest.SetStatusWithTime(method, location, strconv.Itoa(sw.StatusCode()), start)
+				observeRequest.IncrementRequestSize(method, location, sr.Size())
+				observeRequest.IncrementResponseSize(method, location, sw.Size())
+
+				mrserver.TraceRequest(l, start, sr, sw)
 			},
 		),
 		mrserver.MiddlewareRecoverHandler(

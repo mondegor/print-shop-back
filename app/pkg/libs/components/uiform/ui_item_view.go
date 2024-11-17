@@ -69,7 +69,7 @@ func (e *UIItemView) ParseAndSet(value string) error {
 // 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIItemView)
 // }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e UIItemView) String() string {
 	return uiItemViewName[e]
 }

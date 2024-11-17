@@ -61,6 +61,7 @@ func (e *PublicStatus) Set(value uint8) error {
 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNamePublicStatus)
 }
 
+// String - возвращает значение в виде строки.
 func (e PublicStatus) String() string {
 	return publicStatusName[e]
 }

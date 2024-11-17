@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
@@ -14,9 +14,10 @@ import (
 
 type (
 	// LaminatePostgres - comment struct.
-	// LaminatePostgres - comment struct.
 	LaminatePostgres struct {
-		client mrstorage.DBConnManager
+		client          mrstorage.DBConnManager
+		repoTypeIDs     db.ColumnFetcher[mrenum.ItemStatus, uint64]
+		repoThicknesses db.ColumnFetcher[mrenum.ItemStatus, measure.Meter]
 	}
 )
 
@@ -24,6 +25,20 @@ type (
 func NewLaminatePostgres(client mrstorage.DBConnManager) *LaminatePostgres {
 	return &LaminatePostgres{
 		client: client,
+		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+			client,
+			module.DBTableNameLaminates,
+			"type_id",
+			"laminate_status",
+			module.DBFieldDeletedAt,
+		),
+		repoThicknesses: db.NewColumnFetcher[mrenum.ItemStatus, measure.Meter](
+			client,
+			module.DBTableNameLaminates,
+			"laminate_thickness",
+			"laminate_status",
+			module.DBFieldDeletedAt,
+		),
 	}
 }
 
@@ -40,7 +55,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, _ entity.LaminateParams) 
 			laminate_thickness,
 			laminate_weight_m2
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameLaminates + `
+            ` + module.DBTableNameLaminates + `
         WHERE
             laminate_status = $1 AND deleted_at IS NULL
         ORDER BY
@@ -83,85 +98,11 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, _ entity.LaminateParams) 
 }
 
 // FetchTypeIDs - comment method.
-func (re *LaminatePostgres) FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32, error) {
-	sql := `
-        SELECT
-			type_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-        WHERE
-            laminate_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            type_id
-		ORDER BY type_id ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]mrtype.KeyInt32, 0)
-
-	for cursor.Next() {
-		var typeID mrtype.KeyInt32
-
-		err = cursor.Scan(
-			&typeID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, typeID)
-	}
-
-	return rows, cursor.Err()
+func (re *LaminatePostgres) FetchTypeIDs(ctx context.Context) ([]uint64, error) {
+	return re.repoTypeIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
 }
 
 // FetchThicknesses - comment method.
 func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Meter, error) {
-	sql := `
-        SELECT
-			laminate_thickness
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-        WHERE
-            laminate_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            laminate_thickness
-		ORDER BY laminate_thickness ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]measure.Meter, 0)
-
-	for cursor.Next() {
-		var thickness measure.Meter
-
-		err = cursor.Scan(
-			&thickness,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, thickness)
-	}
-
-	return rows, cursor.Err()
+	return re.repoThicknesses.Fetch(ctx, mrenum.ItemStatusEnabled)
 }

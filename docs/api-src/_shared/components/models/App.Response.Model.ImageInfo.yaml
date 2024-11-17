@@ -28,14 +28,17 @@ App.Response.Model.ImageInfo:
     width:
       description: Ширина изображения (px)
       type: integer
+      # format: uint64
       example: 1024
     height:
       description: Высота изображения (px)
       type: integer
+      # format: uint64
       example: 768
     size:
       description: Размер файла изображения в байтах
       type: integer
+      # format: uint64
       example: 7
     createdAt:
       description: Дата и время создания изображения (UTC)

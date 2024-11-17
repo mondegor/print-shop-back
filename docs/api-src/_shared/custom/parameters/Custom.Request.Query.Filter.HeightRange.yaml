@@ -5,6 +5,7 @@ Custom.Request.Query.Filter.HeightMin:
   required: false
   schema:
     type: integer
+    # format: uint64
     maxLength: 10
   example: 200000 # 100 mm
 
@@ -15,5 +16,6 @@ Custom.Request.Query.Filter.HeightMax:
   required: false
   schema:
     type: integer
+    # format: uint64
     maxLength: 10
   example: 200000 # 100 mm

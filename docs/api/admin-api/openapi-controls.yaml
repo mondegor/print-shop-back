@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.3
+  version: v0.4.4
   title: Private API print-shop управления пользовательскими интерфейсами
   license:
     name: Apache-2.0
@@ -900,6 +900,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 0
         maximum: 1024
         default: 0
@@ -912,6 +913,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 1
         maximum: 1024
         default: 50
@@ -960,6 +962,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -980,6 +983,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint32
         minimum: 0
       example: 1000
 
@@ -990,6 +994,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -1035,6 +1040,7 @@ components:
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
       type: integer
+      # format: uint64
       minimum: 0
       example: 584
 
@@ -1051,6 +1057,7 @@ components:
     App.Field.TagVersion:
       description: Текущая версия записи
       type: integer
+      # format: uint32
       minimum: 1
       example: 5
 
@@ -1093,6 +1100,7 @@ components:
             Идентификатор записи, после которой необходимо вставить указанную запись.\
             При afterId = 0 запись вставляется в начало списка.
           type: integer
+          # format: uint64
           example: 7
 
     App.Response.Model.BinaryImage:
@@ -1168,6 +1176,7 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
+          # format: uint64
           example: 9223372036854775807
 
     Custom.Enum.FormElementDetailing:
@@ -1208,14 +1217,14 @@ components:
     Custom.Field.Controls.ElementTemplateID:
       description: Идентификатор шаблона элемента формы (модуль - Controls.ElementTemplate)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Controls.FormElementID:
       description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
@@ -1526,6 +1535,7 @@ components:
         templateVersion:
           description: Последняя актуальная версия шаблона
           type: integer
+          # format: uint32
           minimum: 1
           example: 5
         elementRequired:

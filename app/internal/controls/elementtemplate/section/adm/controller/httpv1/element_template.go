@@ -124,7 +124,7 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 			FileInfo: mrtype.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, itemID),
-				Size:         int64(len(body)),
+				Size:         uint64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -231,8 +231,8 @@ func (ht *ElementTemplate) Remove(w http.ResponseWriter, r *http.Request) error 
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *ElementTemplate) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *ElementTemplate) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *ElementTemplate) getRawItemID(r *http.Request) string {

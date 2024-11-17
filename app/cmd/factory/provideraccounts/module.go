@@ -3,6 +3,8 @@ package provideraccounts
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore/mrapp"
+
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
@@ -20,7 +22,7 @@ func NewModuleOptions(_ context.Context, opts app.Options) (provideraccounts.Opt
 
 	return provideraccounts.Options{
 		EventEmitter:  opts.EventEmitter,
-		UseCaseHelper: opts.UseCaseErrorWrapper,
+		UseCaseHelper: mrapp.NewUseCaseErrorWrapper(),
 		DBConnManager: opts.PostgresConnManager,
 		Locker:        opts.Locker,
 		RequestParsers: provideraccounts.RequestParsers{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -17,49 +18,82 @@ import (
 type (
 	// LaminatePostgres - comment struct.
 	LaminatePostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
-		sqlUpdate mrstorage.SQLBuilderUpdate
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		repoIDByArticle db.FieldFetcher[string, uint64]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
+		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewLaminatePostgres - создаёт объект LaminatePostgres.
-func NewLaminatePostgres(client mrstorage.DBConnManager, sqlSelect mrstorage.SQLBuilderSelect, sqlUpdate mrstorage.SQLBuilderUpdate) *LaminatePostgres {
+func NewLaminatePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *LaminatePostgres {
 	return &LaminatePostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
-		sqlUpdate: sqlUpdate,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNameLaminates,
+			"laminate_id",
+			module.DBFieldTagVersion,
+			"laminate_status",
+			module.DBFieldDeletedAt,
+		),
+		repoIDByArticle: db.NewFieldFetcher[string, uint64](
+			client,
+			module.DBTableNameLaminates,
+			"laminate_article",
+			"laminate_id",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNameLaminates,
+			"laminate_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNameLaminates,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *LaminatePostgres) NewSelectParams(params entity.LaminateParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("type_id", params.Filter.TypeIDs),
-				w.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(params.Filter.Length), 0, mrlib.EqualityThresholdE9),
-				w.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
-				w.FilterAnyOf("laminate_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("laminate_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *LaminatePostgres) FetchWithTotal(ctx context.Context, params entity.LaminateParams) (rows []entity.Laminate, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.Laminate, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *LaminatePostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.Laminate, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
 		SELECT
@@ -76,11 +110,11 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelec
 			created_at as createdAt,
 			updated_at as updatedAt
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
+			` + module.DBTableNameLaminates + `
 		WHERE
 			` + whereStr + `
 		ORDER BY
-			` + params.OrderBy.String() + params.Limit.String() + `;`
+			` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -93,7 +127,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelec
 
 	defer cursor.Close()
 
-	rows := make([]entity.Laminate, 0)
+	rows := make([]entity.Laminate, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.Laminate
@@ -122,33 +156,8 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelec
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *LaminatePostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-		SELECT
-			COUNT(*)
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-		WHERE
-			` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
-func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.Laminate, error) {
+func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID uint64) (entity.Laminate, error) {
 	sql := `
 		SELECT
 			tag_version,
@@ -163,7 +172,7 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 			created_at,
 			updated_at
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
+			` + module.DBTableNameLaminates + `
 		WHERE
 			laminate_id = $1 AND deleted_at IS NULL
 		LIMIT 1;`
@@ -192,58 +201,20 @@ func (re *LaminatePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32)
 }
 
 // FetchIDByArticle - comment method.
-func (re *LaminatePostgres) FetchIDByArticle(ctx context.Context, article string) (mrtype.KeyInt32, error) {
-	sql := `
-		SELECT
-			laminate_id
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-		WHERE
-			laminate_article = $1 AND deleted_at IS NULL
-		LIMIT 1;`
-
-	var rowID mrtype.KeyInt32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		article,
-	).Scan(
-		&rowID,
-	)
-
-	return rowID, err
+func (re *LaminatePostgres) FetchIDByArticle(ctx context.Context, article string) (rowID uint64, err error) {
+	return re.repoIDByArticle.Fetch(ctx, article)
 }
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	sql := `
-		SELECT
-			laminate_status
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-		WHERE
-			laminate_id = $1 AND deleted_at IS NULL
-		LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rowID,
-	).Scan(
-		&status,
-	)
-
-	return status, err
+func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mrtype.KeyInt32, error) {
+func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (rowID uint64, err error) {
 	sql := `
-		INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameLaminates + `
+		INSERT INTO ` + module.DBTableNameLaminates + `
 			(
 				laminate_article,
 				laminate_caption,
@@ -255,11 +226,11 @@ func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mr
 				laminate_status
 			)
 		VALUES
-			($1, $2, $3, $4, $5, $6, $7)
+			($1, $2, $3, $4, $5, $6, $7, $8)
 		RETURNING
 			laminate_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.Article,
@@ -278,9 +249,8 @@ func (re *LaminatePostgres) Insert(ctx context.Context, row entity.Laminate) (mr
 }
 
 // Update - comment method.
-func (re *LaminatePostgres) Update(ctx context.Context, row entity.Laminate) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
+func (re *LaminatePostgres) Update(ctx context.Context, row entity.Laminate) (tagVersion uint32, err error) {
+	set, err := re.sqlBuilder.Set().BuildEntity(row)
 	if err != nil || set.Empty() {
 		return 0, err
 	}
@@ -290,11 +260,11 @@ func (re *LaminatePostgres) Update(ctx context.Context, row entity.Laminate) (in
 		row.TagVersion,
 	}
 
-	setStr, setArgs := set.WithParam(len(args) + 1).ToSQL()
+	setStr, setArgs := set.WithStartArg(len(args) + 1).ToSQL()
 
 	sql := `
 		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
+			` + module.DBTableNameLaminates + `
 		SET
 			tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -303,8 +273,6 @@ func (re *LaminatePostgres) Update(ctx context.Context, row entity.Laminate) (in
 			laminate_id = $1 AND tag_version = $2 AND deleted_at IS NULL
 		RETURNING
 			tag_version;`
-
-	var tagVersion int32
 
 	err = re.client.Conn(ctx).QueryRow(
 		ctx,
@@ -318,48 +286,37 @@ func (re *LaminatePostgres) Update(ctx context.Context, row entity.Laminate) (in
 }
 
 // UpdateStatus - comment method.
-func (re *LaminatePostgres) UpdateStatus(ctx context.Context, row entity.Laminate) (int32, error) {
-	sql := `
-		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-		SET
-			tag_version = tag_version + 1,
-			updated_at = NOW(),
-			laminate_status = $3
-		WHERE
-			laminate_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *LaminatePostgres) UpdateStatus(ctx context.Context, row entity.Laminate) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
-func (re *LaminatePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNameLaminates + `
-		SET
-			tag_version = tag_version + 1,
-			deleted_at = NOW()
-		WHERE
-			laminate_id = $1 AND deleted_at IS NULL;`
+func (re *LaminatePostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *LaminatePostgres) fetchCondition(filter entity.LaminateListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("type_id", filter.TypeIDs),
+				c.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(filter.Length), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
+				c.FilterAnyOf("laminate_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *LaminatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("laminate_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

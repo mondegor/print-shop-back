@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"github.com/mondegor/go-webcore/mrtype"
-
 	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
@@ -14,12 +12,12 @@ const (
 type (
 	// Paper - comment struct.
 	Paper struct { // DB: printshop_catalog.papers
-		ID        mrtype.KeyInt32           `json:"id"` // paper_id
+		ID        uint64                    `json:"id"` // paper_id
 		Article   string                    `json:"article"`
 		Caption   string                    `json:"caption"`
-		TypeID    mrtype.KeyInt32           `json:"typeId"`    // material_types::type_id
-		ColorID   mrtype.KeyInt32           `json:"colorId"`   // paper_colors::color_id
-		FactureID mrtype.KeyInt32           `json:"factureId"` // paper_factures::facture_id
+		TypeID    uint64                    `json:"typeId"`    // material_types::type_id
+		ColorID   uint64                    `json:"colorId"`   // paper_colors::color_id
+		FactureID uint64                    `json:"factureId"` // paper_factures::facture_id
 		Width     measure.Meter             `json:"width"`
 		Height    measure.Meter             `json:"height"`
 		Thickness measure.Meter             `json:"thickness"`

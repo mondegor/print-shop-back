@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
@@ -26,7 +25,7 @@ func NewElementTemplatePostgres(client mrstorage.DBConnManager) *ElementTemplate
 }
 
 // FetchOneHead - comment method.
-func (re *ElementTemplatePostgres) FetchOneHead(ctx context.Context, rowID mrtype.KeyInt32) (entity.ElementTemplateHead, error) {
+func (re *ElementTemplatePostgres) FetchOneHead(ctx context.Context, rowID uint64) (entity.ElementTemplateHead, error) {
 	sql := `
         SELECT
 			tag_version,
@@ -35,7 +34,7 @@ func (re *ElementTemplatePostgres) FetchOneHead(ctx context.Context, rowID mrtyp
 			element_detailing,
 			template_status
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + `
+            ` + module.DBTableNameElementTemplates + `
         WHERE
             template_id = $1 AND deleted_at IS NULL
         LIMIT 1;`

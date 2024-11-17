@@ -16,11 +16,11 @@ const (
 type (
 	// Laminate - comment struct.
 	Laminate struct { // DB: printshop_catalog.laminates
-		ID         mrtype.KeyInt32           `json:"id"` // laminate_id
-		TagVersion int32                     `json:"tagVersion"`
+		ID         uint64                    `json:"id"` // laminate_id
+		TagVersion uint32                    `json:"tagVersion"`
 		Article    string                    `json:"article" sort:"article" upd:"laminate_article"`
 		Caption    string                    `json:"caption" sort:"caption,default" upd:"laminate_caption"`
-		TypeID     mrtype.KeyInt32           `json:"typeId" upd:"type_id"` // material_types::type_id
+		TypeID     uint64                    `json:"typeId" upd:"type_id"` // material_types::type_id
 		Length     measure.Meter             `json:"length" sort:"length" upd:"laminate_length"`
 		Width      measure.Meter             `json:"width" sort:"width" upd:"laminate_width"`
 		Thickness  measure.Meter             `json:"thickness" upd:"laminate_thickness"`
@@ -40,7 +40,7 @@ type (
 	// LaminateListFilter - comment struct.
 	LaminateListFilter struct {
 		SearchText string
-		TypeIDs    []mrtype.KeyInt32
+		TypeIDs    []uint64
 		Length     measure.RangeMeter
 		Width      measure.RangeMeter
 		Statuses   []mrenum.ItemStatus

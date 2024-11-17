@@ -15,7 +15,7 @@ type (
 
 	// StorePrintFormatRequest - comment struct.
 	StorePrintFormatRequest struct {
-		TagVersion int32              `json:"tagVersion" validate:"required,gte=1"`
+		TagVersion uint32             `json:"tagVersion" validate:"required,gte=1"`
 		Caption    string             `json:"caption" validate:"omitempty,max=64"`
 		Width      measure.Millimeter `json:"width" validate:"omitempty,gte=1,lte=10000"`
 		Height     measure.Millimeter `json:"height" validate:"omitempty,gte=1,lte=10000"`
@@ -24,6 +24,6 @@ type (
 	// PrintFormatListResponse - comment struct.
 	PrintFormatListResponse struct {
 		Items []entity.PrintFormat `json:"items"`
-		Total int64                `json:"total"`
+		Total uint64               `json:"total"`
 	}
 )

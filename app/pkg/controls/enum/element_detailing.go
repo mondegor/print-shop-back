@@ -56,7 +56,7 @@ func (e *ElementDetailing) Set(value uint8) error {
 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementDetailing)
 }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e ElementDetailing) String() string {
 	return elementDetailingName[e]
 }

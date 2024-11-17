@@ -3,14 +3,13 @@ package dictionaries
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/mrapp"
 	"github.com/mondegor/go-webcore/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability/usecase"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 )
 
 // NewPrintFormatModuleOptions - создаёт объект printformat.Options.
@@ -21,9 +20,9 @@ func NewPrintFormatModuleOptions(_ context.Context, opts app.Options) (printform
 	}
 
 	return printformat.Options{
-		EventEmitter:  opts.EventEmitter,
-		UseCaseHelper: opts.UseCaseErrorWrapper,
-		DBConnManager: opts.PostgresConnManager,
+		EventEmitter:        opts.EventEmitter,
+		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: printformat.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
 			ExtendParser: opts.RequestParsers.ExtendParser,
@@ -43,10 +42,5 @@ func NewPrintFormatModuleOptions(_ context.Context, opts app.Options) (printform
 func NewPrintFormatAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PrintFormat, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries print format availability API")
 
-	return availability.NewPrintFormat(opts.PostgresConnManager, opts.UseCaseErrorWrapper), nil
-}
-
-// RegisterPrintFormatErrors - comment func.
-func RegisterPrintFormatErrors(em *mrinit.ErrorManager) {
-	em.RegisterList(mrinit.WrapProtoList(api.PrintFormatErrors()))
+	return availability.NewPrintFormat(opts.PostgresConnManager), nil
 }

@@ -3,8 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
@@ -15,32 +16,22 @@ import (
 )
 
 func initUnitSubmitFormEnvironment(ctx context.Context, opts submitform.Options) (submitFormOptions, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.SubmitForm{})
-	if err != nil {
-		return submitFormOptions{}, err
-	}
-
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.SubmitForm{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.SubmitForm{})
 	if err != nil {
 		return submitFormOptions{}, err
 	}
 
 	storage := repository.NewSubmitFormPostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderSelect(
-			mrpostgres.NewSQLBuilderWhere(),
-			mrpostgres.NewSQLBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
-		),
-		mrpostgres.NewSQLBuilderUpdateWithMeta(
-			entityMetaUpdate,
-			mrpostgres.NewSQLBuilderSet(),
-			nil,
+		builder.NewSQL(
+			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
 
 	return submitFormOptions{
-		metaOrderBy: metaOrderBy,
+		metaOrderBy: entityMeta.MetaOrderBy(),
 		storage:     storage,
 	}, nil
 }
@@ -63,7 +54,7 @@ func newUnitSubmitForm(_ context.Context, opts moduleOptions) (*httpv1.SubmitFor
 		opts.formElement.storage,
 		opts.formVersion.storage,
 		opts.EventEmitter,
-		opts.UseCaseHelper,
+		opts.UseCaseErrorWrapper,
 	)
 	useCaseVersion := usecase.NewFormVersion(
 		opts.formVersion.storage,
@@ -71,7 +62,7 @@ func newUnitSubmitForm(_ context.Context, opts moduleOptions) (*httpv1.SubmitFor
 		usecase.NewFormCompilerJson(),
 		opts.Locker,
 		opts.EventEmitter,
-		opts.UseCaseHelper,
+		opts.UseCaseErrorWrapper,
 	)
 	controller := httpv1.NewSubmitForm(
 		opts.RequestParsers.ModuleParser,

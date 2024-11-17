@@ -31,7 +31,7 @@ func (re *PaperFacturePostgres) Fetch(ctx context.Context, _ entity.PaperFacture
             facture_id,
             facture_caption
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePaperFactures + `
+            ` + module.DBTableNamePaperFactures + `
         WHERE
             facture_status = $1 AND deleted_at IS NULL
         ORDER BY

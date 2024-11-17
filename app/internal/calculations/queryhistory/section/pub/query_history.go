@@ -12,7 +12,7 @@ type (
 	// QueryResultUseCase - comment interface.
 	QueryResultUseCase interface {
 		GetItem(ctx context.Context, itemID uuid.UUID) (entity.QueryHistoryItem, error)
-		Create(ctx context.Context, item entity.QueryHistoryItem) (uuid.UUID, error)
+		Create(ctx context.Context, item entity.QueryHistoryItem) (itemID uuid.UUID, err error)
 	}
 
 	// QueryResultStorage - comment interface.

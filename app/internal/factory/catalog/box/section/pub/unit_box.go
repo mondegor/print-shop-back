@@ -27,7 +27,7 @@ func newUnitBox(_ context.Context, opts box.Options) (*httpv1.Box, error) { //no
 	storage := repository.NewBoxPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewBox(storage, opts.UseCaseHelper)
+	useCase := usecase.NewBox(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewBox(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

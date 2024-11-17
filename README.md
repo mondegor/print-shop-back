@@ -1,4 +1,4 @@
-# Описание Print Shop Back v0.16.1
+# Описание Print Shop Back v0.17.0
 Этот репозиторий содержит описание сервиса Print Shop Back.
 
 ## Статус сервиса
@@ -31,7 +31,7 @@ Web сервис для расчёта стоимости и времени из
 - `mrcmd config` // проверка установленных переменных сервиса
 - `mrcmd go deps` // загрузка зависимостей проекта
 - Для работы утилит `gofumpt`, `goimports` (и других) необходимо в `.env` проверить
-  значения переменных `GO_DEV_TOOLS_INSTALL_*` и запустить `mrcmd go install-tools`
+  значения переменных `GO_TOOLS_INSTALL_*` и запустить `mrcmd go install-tools`
 
 ### Установка сервиса и его первый запуск
 - `mrcmd docker ps` // убеждаемся, что Docker daemon запущен
@@ -58,7 +58,7 @@ Web сервис для расчёта стоимости и времени из
 - `mrcmd postgres help` // все команды сервиса postgres;
 - `mrcmd go help` // выводит список всех доступных go команд;
 - `mrcmd go gofumpt-fix` // исправляет форматирование кода (`gofumpt -l -w -extra ./`);
-- `mrcmd go goimports-fix` // исправляет imports, если это требуется (`goimports -d -local ${GO_DEV_IMPORTS_LOCAL_PREFIXES} ./`);
+- `mrcmd go goimports-fix` // исправляет imports, если это требуется (`goimports -d -local ${GO_IMPORTS_LOCAL_PREFIXES} ./`);
 - `mrcmd go test` // запускает тестов библиотеки;
 - `mrcmd go test-report` // запускает тесты библиотеки с формированием отчёта о покрытии кода (`test-coverage-full.html`);
 - `mrcmd golangci-lint check` // запускает линтеров для проверки кода (на основе `.golangci.yaml`);

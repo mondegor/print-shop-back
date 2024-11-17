@@ -61,7 +61,7 @@ func (e *ActivityStatus) Set(value uint8) error {
 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameActivityStatus)
 }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e ActivityStatus) String() string {
 	return activityStatusName[e]
 }

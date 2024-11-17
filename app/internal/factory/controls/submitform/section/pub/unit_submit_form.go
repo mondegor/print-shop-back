@@ -27,7 +27,7 @@ func newUnitSubmitForm(_ context.Context, opts submitform.Options) (*httpv1.Subm
 	storage := repository.NewSubmitFormPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewSubmitForm(storage, opts.UseCaseHelper)
+	useCase := usecase.NewSubmitForm(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewSubmitForm(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

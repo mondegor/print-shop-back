@@ -5,6 +5,7 @@ Catalog.Papers.AdminAPI.Request.Path.PaperID:
   required: true
   schema:
     type: integer
+    # format: uint64
     minimum: 1
   example: 1000
 

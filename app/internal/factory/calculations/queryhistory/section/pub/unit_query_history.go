@@ -27,7 +27,7 @@ func newUnitCalcResult(_ context.Context, opts queryhistory.Options) (*httpv1.Qu
 	storage := repository.NewQueryHistoryPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewQueryHistory(storage, opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewQueryHistory(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewQueryHistory(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

@@ -6,7 +6,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
@@ -79,7 +78,7 @@ func (ht *Laminate) listParams(r *http.Request) entity.LaminateParams {
 	return entity.LaminateParams{
 		Filter: entity.LaminateListFilter{
 			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
-			TypeIDs:    ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogMaterialTypeIDs),
+			TypeIDs:    ht.parser.FilterUint64List(r, module.ParamNameFilterCatalogMaterialTypeIDs),
 			Length:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange).Transform(measure.OneThousandth)), // mm -> m
 			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterWidthRange).Transform(measure.OneThousandth)),  // mm -> m
 			Statuses:   ht.parser.FilterStatusList(r, module.ParamNameFilterStatuses),
@@ -188,8 +187,8 @@ func (ht *Laminate) Remove(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Laminate) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *Laminate) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *Laminate) getRawItemID(r *http.Request) string {

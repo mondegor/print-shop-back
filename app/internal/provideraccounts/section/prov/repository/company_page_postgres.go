@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore"
 
@@ -15,7 +16,9 @@ import (
 type (
 	// CompanyPagePostgres - comment struct.
 	CompanyPagePostgres struct {
-		client mrstorage.DBConnManager
+		client            mrstorage.DBConnManager
+		repoByRewriteName db.FieldFetcher[string, uuid.UUID]
+		repoStatus        db.FieldUpdater[uuid.UUID, enum.PublicStatus]
 	}
 )
 
@@ -23,6 +26,20 @@ type (
 func NewCompanyPagePostgres(client mrstorage.DBConnManager) *CompanyPagePostgres {
 	return &CompanyPagePostgres{
 		client: client,
+		repoByRewriteName: db.NewFieldFetcher[string, uuid.UUID](
+			client,
+			module.DBTableNameCompaniesPages,
+			"rewrite_name",
+			"account_id",
+			module.DBFieldWithoutDeletedAt,
+		),
+		repoStatus: db.NewFieldUpdater[uuid.UUID, enum.PublicStatus](
+			client,
+			module.DBTableNameCompaniesPages,
+			"account_id",
+			"page_status",
+			module.DBFieldWithoutDeletedAt,
+		),
 	}
 }
 
@@ -38,7 +55,7 @@ func (re *CompanyPagePostgres) FetchOne(ctx context.Context, accountID uuid.UUID
 			created_at,
             updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
+            ` + module.DBTableNameCompaniesPages + `
         WHERE
             account_id = $1
         LIMIT 1;`
@@ -63,52 +80,14 @@ func (re *CompanyPagePostgres) FetchOne(ctx context.Context, accountID uuid.UUID
 }
 
 // FetchAccountIDByRewriteName - comment method.
-func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, rewriteName string) (uuid.UUID, error) {
-	sql := `
-        SELECT
-            account_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
-        WHERE
-            rewrite_name = $1
-        LIMIT 1;`
-
-	var accountID uuid.UUID
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rewriteName,
-	).Scan(
-		&accountID,
-	)
-
-	return accountID, err
+func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error) {
+	return re.repoByRewriteName.Fetch(ctx, rewriteName)
 }
 
 // FetchStatus - comment method.
 // result: enums.PublicStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
 func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (enum.PublicStatus, error) {
-	sql := `
-        SELECT
-            page_status
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
-        WHERE
-            account_id = $1
-        LIMIT 1;`
-
-	var status enum.PublicStatus
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		accountID,
-	).Scan(
-		&status,
-	)
-
-	return status, err
+	return re.repoStatus.Fetch(ctx, accountID)
 }
 
 // InsertOrUpdate - comment method.
@@ -119,7 +98,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 
 		sql := `
 	        UPDATE
-    	        ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
+    	        ` + module.DBTableNameCompaniesPages + `
         	SET
             	updated_at = NOW(),
             	rewrite_name = $2,
@@ -142,7 +121,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 		}
 
 		sql = `
-            INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
+            INSERT INTO ` + module.DBTableNameCompaniesPages + `
                 (
                     account_id,
                     rewrite_name,
@@ -167,19 +146,5 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 
 // UpdateStatus - comment method.
 func (re *CompanyPagePostgres) UpdateStatus(ctx context.Context, row entity.CompanyPage) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameCompaniesPages + `
-        SET
-            updated_at = NOW(),
-            page_status = $2
-        WHERE
-            account_id = $1;`
-
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		row.AccountID,
-		row.Status,
-	)
+	return re.repoStatus.Update(ctx, row.AccountID, row.Status)
 }

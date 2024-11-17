@@ -3,8 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/controller/httpv1"
@@ -27,25 +28,24 @@ func createUnitMaterialType(ctx context.Context, opts materialtype.Options) ([]m
 }
 
 func newUnitMaterialType(ctx context.Context, opts materialtype.Options) (*httpv1.MaterialType, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.MaterialType{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.MaterialType{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewMaterialTypePostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderSelect(
-			mrpostgres.NewSQLBuilderWhere(),
-			mrpostgres.NewSQLBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
+		builder.NewSQL(
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewMaterialType(storage, opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewMaterialType(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewMaterialType(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,
 		useCase,
-		metaOrderBy,
+		entityMeta.MetaOrderBy(),
 	)
 
 	return controller, nil

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
@@ -38,7 +37,7 @@ func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) ([]enti
 }
 
 // GetTypeList - comment method.
-func (uc *Paper) GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error) {
+func (uc *Paper) GetTypeList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchTypeIDs(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
@@ -48,7 +47,7 @@ func (uc *Paper) GetTypeList(ctx context.Context) ([]mrtype.KeyInt32, error) {
 }
 
 // GetColorList - comment method.
-func (uc *Paper) GetColorList(ctx context.Context) ([]mrtype.KeyInt32, error) {
+func (uc *Paper) GetColorList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchColorIDs(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
@@ -68,7 +67,7 @@ func (uc *Paper) GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter
 }
 
 // GetFactureList - comment method.
-func (uc *Paper) GetFactureList(ctx context.Context) ([]mrtype.KeyInt32, error) {
+func (uc *Paper) GetFactureList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchFactureIDs(ctx)
 	if err != nil {
 		return nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)

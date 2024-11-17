@@ -3,10 +3,9 @@ package catalog
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/mrapp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
 )
 
@@ -18,9 +17,9 @@ func NewBoxModuleOptions(_ context.Context, opts app.Options) (box.Options, erro
 	}
 
 	return box.Options{
-		EventEmitter:  opts.EventEmitter,
-		UseCaseHelper: opts.UseCaseErrorWrapper,
-		DBConnManager: opts.PostgresConnManager,
+		EventEmitter:        opts.EventEmitter,
+		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: box.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
 			ExtendParser: opts.RequestParsers.ExtendParser,
@@ -34,9 +33,4 @@ func NewBoxModuleOptions(_ context.Context, opts app.Options) (box.Options, erro
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
 	}, nil
-}
-
-// RegisterBoxErrors - comment func.
-func RegisterBoxErrors(em *mrinit.ErrorManager) {
-	em.RegisterList(mrinit.WrapProtoList(module.Errors()))
 }

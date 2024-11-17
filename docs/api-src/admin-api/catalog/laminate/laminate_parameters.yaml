@@ -5,5 +5,6 @@ Catalog.Laminates.AdminAPI.Request.Path.LaminateID:
   required: true
   schema:
     type: integer
+    # format: uint64
     minimum: 1
   example: 1000

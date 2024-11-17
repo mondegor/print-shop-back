@@ -27,7 +27,7 @@ func newUnitPaper(_ context.Context, opts paper.Options) (*httpv1.Paper, error) 
 	storage := repository.NewPaperPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPaper(storage, opts.UseCaseHelper)
+	useCase := usecase.NewPaper(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPaper(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

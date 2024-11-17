@@ -4,56 +4,89 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/shared/repository"
 )
 
 type (
 	// MaterialTypePostgres - comment struct.
 	MaterialTypePostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
+		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewMaterialTypePostgres - создаёт объект MaterialTypePostgres.
-func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlSelect mrstorage.SQLBuilderSelect) *MaterialTypePostgres {
+func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *MaterialTypePostgres {
 	return &MaterialTypePostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNameMaterialTypes,
+			"type_id",
+			module.DBFieldTagVersion,
+			"type_status",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNameMaterialTypes,
+			"type_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNameMaterialTypes,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *MaterialTypePostgres) NewSelectParams(params entity.MaterialTypeParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLike("UPPER(type_caption)", strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("type_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("type_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *MaterialTypePostgres) FetchWithTotal(
+	ctx context.Context,
+	params entity.MaterialTypeParams,
+) (rows []entity.MaterialType, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *MaterialTypePostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.MaterialType, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *MaterialTypePostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.MaterialType, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
         SELECT
@@ -64,11 +97,11 @@ func (re *MaterialTypePostgres) Fetch(ctx context.Context, params mrstorage.SQLS
             created_at as createdAt,
 			updated_at as updatedAt
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
+            ` + module.DBTableNameMaterialTypes + `
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + params.OrderBy.String() + params.Limit.String() + `;`
+            ` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -81,7 +114,7 @@ func (re *MaterialTypePostgres) Fetch(ctx context.Context, params mrstorage.SQLS
 
 	defer cursor.Close()
 
-	rows := make([]entity.MaterialType, 0)
+	rows := make([]entity.MaterialType, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.MaterialType
@@ -104,33 +137,8 @@ func (re *MaterialTypePostgres) Fetch(ctx context.Context, params mrstorage.SQLS
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *MaterialTypePostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-        SELECT
-            COUNT(*)
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
-        WHERE
-            ` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
-func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.MaterialType, error) {
+func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID uint64) (entity.MaterialType, error) {
 	sql := `
         SELECT
             tag_version,
@@ -139,7 +147,7 @@ func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
+            ` + module.DBTableNameMaterialTypes + `
         WHERE
             type_id = $1 AND deleted_at IS NULL
         LIMIT 1;`
@@ -163,14 +171,14 @@ func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID mrtype.KeyIn
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	return repository.MaterialTypeFetchStatusPostgres(ctx, re.client, rowID)
+func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *MaterialTypePostgres) Insert(ctx context.Context, row entity.MaterialType) (mrtype.KeyInt32, error) {
+func (re *MaterialTypePostgres) Insert(ctx context.Context, row entity.MaterialType) (rowID uint64, err error) {
 	sql := `
-        INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
+        INSERT INTO ` + module.DBTableNameMaterialTypes + `
             (
                 type_caption,
                 type_status
@@ -180,7 +188,7 @@ func (re *MaterialTypePostgres) Insert(ctx context.Context, row entity.MaterialT
         RETURNING
             type_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.Caption,
@@ -193,77 +201,39 @@ func (re *MaterialTypePostgres) Insert(ctx context.Context, row entity.MaterialT
 }
 
 // Update - comment method.
-func (re *MaterialTypePostgres) Update(ctx context.Context, row entity.MaterialType) (int32, error) {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
-        SET
-            tag_version = tag_version + 1,
-			updated_at = NOW(),
-            type_caption = $3
-        WHERE
-            type_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Caption,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *MaterialTypePostgres) Update(ctx context.Context, row entity.MaterialType) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // UpdateStatus - comment method.
-func (re *MaterialTypePostgres) UpdateStatus(ctx context.Context, row entity.MaterialType) (int32, error) {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
-        SET
-            tag_version = tag_version + 1,
-			updated_at = NOW(),
-            type_status = $3
-        WHERE
-            type_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *MaterialTypePostgres) UpdateStatus(ctx context.Context, row entity.MaterialType) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
-func (re *MaterialTypePostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
-        SET
-            tag_version = tag_version + 1,
-			deleted_at = NOW()
-        WHERE
-            type_id = $1 AND deleted_at IS NULL;`
+func (re *MaterialTypePostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *MaterialTypePostgres) fetchCondition(filter entity.MaterialTypeListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(type_caption)", strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("type_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *MaterialTypePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("type_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

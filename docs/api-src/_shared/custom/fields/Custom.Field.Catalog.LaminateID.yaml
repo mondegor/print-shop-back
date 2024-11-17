@@ -1,6 +1,6 @@
 Custom.Field.Catalog.LaminateID:
   description: Идентификатор ламината (модуль - Catalog.Laminate)
   type: integer
-  format: int32
+  # format: uint64
   minimum: 1
   example: 2

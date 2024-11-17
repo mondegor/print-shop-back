@@ -29,28 +29,21 @@ func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UseCaseE
 }
 
 // GetList - comment method.
-func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) ([]entity.CompanyPage, int64, error) {
-	fetchParams := uc.storage.NewSelectParams(params)
-
-	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
+func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) (items []entity.CompanyPage, countItems uint64, err error) {
+	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
 	}
 
-	if total < 1 {
+	if countItems == 0 {
 		return make([]entity.CompanyPage, 0), 0, nil
-	}
-
-	items, err := uc.storage.Fetch(ctx, fetchParams)
-	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
 	}
 
 	for i := range items {
 		uc.prepareItem(&items[i])
 	}
 
-	return items, total, nil
+	return items, countItems, nil
 }
 
 func (uc *CompanyPage) prepareItem(item *entity.CompanyPage) {

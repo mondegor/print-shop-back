@@ -16,7 +16,7 @@ type (
 
 	// StoreElementTemplateRequest - comment struct.
 	StoreElementTemplateRequest struct {
-		TagVersion int32  `json:"tagVersion" validate:"required,gte=1"`
+		TagVersion uint32 `json:"tagVersion" validate:"required,gte=1"`
 		ParamName  string `json:"paramName" validate:"omitempty,min=4,max=32,tag_variable"`
 		Caption    string `json:"caption" validate:"omitempty,max=64"`
 	}
@@ -24,6 +24,6 @@ type (
 	// ElementTemplateListResponse - comment struct.
 	ElementTemplateListResponse struct {
 		Items []entity.ElementTemplate `json:"items"`
-		Total int64                    `json:"total"`
+		Total uint64                   `json:"total"`
 	}
 )

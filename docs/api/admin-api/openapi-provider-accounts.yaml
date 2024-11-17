@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.3
+  version: v0.4.4
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0
@@ -135,6 +135,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 0
         maximum: 1024
         default: 0
@@ -147,6 +148,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 1
         maximum: 1024
         default: 50
@@ -256,8 +258,9 @@ components:
       type: object
       properties:
         accountId:
-          type: integer
-          example: 1000
+          type: string
+          format: uuid
+          example: "3ba22bd7-c7c9-4a8f-b48e-565f97c3082f"
         updatedAt:
           description: Дата и время обновления записи
           type: string

@@ -8,6 +8,7 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
@@ -26,7 +27,7 @@ type (
 func NewQueryHistory(storage pub.QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *QueryHistory {
 	return &QueryHistory{
 		storage:      storage,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameQueryHistory),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -54,22 +55,13 @@ func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Q
 }
 
 // Create - comment method.
-func (uc *QueryHistory) Create(ctx context.Context, item entity.QueryHistoryItem) (uuid.UUID, error) {
-	itemID, err := uc.storage.Insert(ctx, item)
+func (uc *QueryHistory) Create(ctx context.Context, item entity.QueryHistoryItem) (itemID uuid.UUID, err error) {
+	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
 		return uuid.Nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameQueryHistory)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
 
 	return itemID, nil
-}
-
-func (uc *QueryHistory) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameQueryHistory,
-		data,
-	)
 }

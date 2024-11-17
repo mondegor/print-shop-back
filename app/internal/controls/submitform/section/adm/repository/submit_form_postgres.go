@@ -5,9 +5,11 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
@@ -16,47 +18,90 @@ import (
 type (
 	// SubmitFormPostgres - comment struct.
 	SubmitFormPostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
-		sqlUpdate mrstorage.SQLBuilderUpdate
+		client              mrstorage.DBConnManager
+		sqlBuilder          mrstorage.SQLBuilder
+		repoIDByRewriteName db.FieldFetcher[string, uuid.UUID]
+		repoIDByParamName   db.FieldFetcher[string, uuid.UUID]
+		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, mrenum.ItemStatus]
+		repoSoftDeleter     db.RowSoftDeleter[uuid.UUID]
+		repoTotalRows       db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewSubmitFormPostgres - создаёт объект SubmitFormPostgres.
-func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlSelect mrstorage.SQLBuilderSelect, sqlUpdate mrstorage.SQLBuilderUpdate) *SubmitFormPostgres {
+func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *SubmitFormPostgres {
 	return &SubmitFormPostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
-		sqlUpdate: sqlUpdate,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoIDByRewriteName: db.NewFieldFetcher[string, uuid.UUID](
+			client,
+			module.DBTableNameSubmitForms,
+			"rewrite_name",
+			"form_id",
+			module.DBFieldDeletedAt,
+		),
+		repoIDByParamName: db.NewFieldFetcher[string, uuid.UUID](
+			client,
+			module.DBTableNameSubmitForms,
+			"param_name",
+			"form_id",
+			module.DBFieldDeletedAt,
+		),
+		repoStatus: db.NewFieldWithVersionUpdater[uuid.UUID, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNameSubmitForms,
+			"form_id",
+			module.DBFieldTagVersion,
+			"form_status",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uuid.UUID](
+			client,
+			module.DBTableNameSubmitForms,
+			"form_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNameSubmitForms,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *SubmitFormPostgres) NewSelectParams(params entity.SubmitFormParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(param_name)", "UPPER(form_caption)"}, strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("form_detailing", params.Filter.Detailing),
-				w.FilterAnyOf("form_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("form_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *SubmitFormPostgres) FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.SubmitForm, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *SubmitFormPostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.SubmitForm, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
         SELECT
@@ -70,11 +115,11 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
             created_at as createdAt,
 			updated_at as updatedAt
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
+            ` + module.DBTableNameSubmitForms + `
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + params.OrderBy.String() + params.Limit.String() + `;`
+            ` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -87,7 +132,7 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
 
 	defer cursor.Close()
 
-	rows := make([]entity.SubmitForm, 0)
+	rows := make([]entity.SubmitForm, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.SubmitForm
@@ -113,31 +158,6 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, params mrstorage.SQLSel
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *SubmitFormPostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-        SELECT
-            COUNT(*)
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        WHERE
-            ` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
 func (re *SubmitFormPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (entity.SubmitForm, error) {
 	sql := `
@@ -151,7 +171,7 @@ func (re *SubmitFormPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (en
             created_at,
 			updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
+            ` + module.DBTableNameSubmitForms + `
         WHERE
             form_id = $1 AND deleted_at IS NULL
         LIMIT 1;`
@@ -177,82 +197,25 @@ func (re *SubmitFormPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (en
 }
 
 // FetchIDByRewriteName - comment method.
-func (re *SubmitFormPostgres) FetchIDByRewriteName(ctx context.Context, rewriteName string) (uuid.UUID, error) {
-	sql := `
-        SELECT
-            form_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        WHERE
-            rewrite_name = $1 AND deleted_at IS NULL
-        LIMIT 1;`
-
-	var rowID uuid.UUID
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rewriteName,
-	).Scan(
-		&rowID,
-	)
-
-	return rowID, err
+func (re *SubmitFormPostgres) FetchIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error) {
+	return re.repoIDByRewriteName.Fetch(ctx, rewriteName)
 }
 
 // FetchIDByParamName - comment method.
-func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName string) (uuid.UUID, error) {
-	sql := `
-        SELECT
-            form_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        WHERE
-            param_name = $1 AND deleted_at IS NULL
-        LIMIT 1;`
-
-	var rowID uuid.UUID
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		paramName,
-	).Scan(
-		&rowID,
-	)
-
-	return rowID, err
+func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName string) (rowID uuid.UUID, err error) {
+	return re.repoIDByParamName.Fetch(ctx, paramName)
 }
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
 func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (mrenum.ItemStatus, error) {
-	sql := `
-        SELECT
-            form_status
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        WHERE
-            form_id = $1 AND deleted_at IS NULL
-        LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rowID,
-	).Scan(
-		&status,
-	)
-
-	return status, err
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *SubmitFormPostgres) Insert(ctx context.Context, row entity.SubmitForm) (uuid.UUID, error) {
+func (re *SubmitFormPostgres) Insert(ctx context.Context, row entity.SubmitForm) (rowID uuid.UUID, err error) {
 	sql := `
-        INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
+        INSERT INTO ` + module.DBTableNameSubmitForms + `
             (
 				form_id,
 				rewrite_name,
@@ -266,7 +229,7 @@ func (re *SubmitFormPostgres) Insert(ctx context.Context, row entity.SubmitForm)
         RETURNING
             form_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.RewriteName,
@@ -282,9 +245,8 @@ func (re *SubmitFormPostgres) Insert(ctx context.Context, row entity.SubmitForm)
 }
 
 // Update - comment method.
-func (re *SubmitFormPostgres) Update(ctx context.Context, row entity.SubmitForm) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
+func (re *SubmitFormPostgres) Update(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error) {
+	set, err := re.sqlBuilder.Set().BuildEntity(row)
 	if err != nil || set.Empty() {
 		return 0, err
 	}
@@ -294,11 +256,11 @@ func (re *SubmitFormPostgres) Update(ctx context.Context, row entity.SubmitForm)
 		row.TagVersion,
 	}
 
-	setStr, setArgs := set.WithParam(len(args) + 1).ToSQL()
+	setStr, setArgs := set.WithStartArg(len(args) + 1).ToSQL()
 
 	sql := `
         UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
+            ` + module.DBTableNameSubmitForms + `
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -307,8 +269,6 @@ func (re *SubmitFormPostgres) Update(ctx context.Context, row entity.SubmitForm)
             form_id = $1 AND tag_version = $2 AND deleted_at IS NULL
 		RETURNING
 			tag_version;`
-
-	var tagVersion int32
 
 	err = re.client.Conn(ctx).QueryRow(
 		ctx,
@@ -322,48 +282,35 @@ func (re *SubmitFormPostgres) Update(ctx context.Context, row entity.SubmitForm)
 }
 
 // UpdateStatus - comment method.
-func (re *SubmitFormPostgres) UpdateStatus(ctx context.Context, row entity.SubmitForm) (int32, error) {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        SET
-            tag_version = tag_version + 1,
-			updated_at = NOW(),
-            form_status = $3
-        WHERE
-            form_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *SubmitFormPostgres) UpdateStatus(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
 func (re *SubmitFormPostgres) Delete(ctx context.Context, rowID uuid.UUID) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitForms + `
-        SET
-            tag_version = tag_version + 1,
-			deleted_at = NOW()
-        WHERE
-            form_id = $1 AND deleted_at IS NULL;`
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *SubmitFormPostgres) fetchCondition(filter entity.SubmitFormListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(param_name)", "UPPER(form_caption)"}, strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("form_detailing", filter.Detailing),
+				c.FilterAnyOf("form_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *SubmitFormPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("form_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

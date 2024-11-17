@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
@@ -15,9 +14,9 @@ import (
 type (
 	// SubmitFormUseCase - comment interface.
 	SubmitFormUseCase interface {
-		GetList(ctx context.Context, params entity.SubmitFormParams) ([]entity.SubmitForm, int64, error)
+		GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems uint64, err error)
 		GetItem(ctx context.Context, itemID uuid.UUID) (entity.SubmitForm, error)
-		Create(ctx context.Context, item entity.SubmitForm) (uuid.UUID, error)
+		Create(ctx context.Context, item entity.SubmitForm) (itemID uuid.UUID, err error)
 		Store(ctx context.Context, item entity.SubmitForm) error
 		ChangeStatus(ctx context.Context, item entity.SubmitForm) error
 		Remove(ctx context.Context, itemID uuid.UUID) error
@@ -44,16 +43,14 @@ type (
 
 	// SubmitFormStorage - comment interface.
 	SubmitFormStorage interface {
-		NewSelectParams(params entity.SubmitFormParams) mrstorage.SQLSelectParams
-		Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.SubmitForm, error)
-		FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error)
+		FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows uint64, err error)
 		FetchOne(ctx context.Context, rowID uuid.UUID) (entity.SubmitForm, error)
-		FetchIDByRewriteName(ctx context.Context, rewriteName string) (uuid.UUID, error)
-		FetchIDByParamName(ctx context.Context, paramName string) (uuid.UUID, error)
+		FetchIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error)
+		FetchIDByParamName(ctx context.Context, paramName string) (rowID uuid.UUID, err error)
 		FetchStatus(ctx context.Context, rowID uuid.UUID) (mrenum.ItemStatus, error)
-		Insert(ctx context.Context, row entity.SubmitForm) (uuid.UUID, error)
-		Update(ctx context.Context, row entity.SubmitForm) (int32, error)
-		UpdateStatus(ctx context.Context, row entity.SubmitForm) (int32, error)
+		Insert(ctx context.Context, row entity.SubmitForm) (rowID uuid.UUID, err error)
+		Update(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)
+		UpdateStatus(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)
 		Delete(ctx context.Context, rowID uuid.UUID) error
 	}
 

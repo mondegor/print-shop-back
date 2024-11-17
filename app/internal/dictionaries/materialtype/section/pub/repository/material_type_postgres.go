@@ -31,7 +31,7 @@ func (re *MaterialTypePostgres) Fetch(ctx context.Context, _ entity.MaterialType
             type_id,
             type_caption
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameMaterialTypes + `
+            ` + module.DBTableNameMaterialTypes + `
         WHERE
             type_status = $1 AND deleted_at IS NULL
         ORDER BY

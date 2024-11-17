@@ -6,7 +6,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
@@ -79,9 +78,9 @@ func (ht *Paper) listParams(r *http.Request) entity.PaperParams {
 	return entity.PaperParams{
 		Filter: entity.PaperListFilter{
 			SearchText: ht.parser.FilterString(r, module.ParamNameFilterSearchText),
-			TypeIDs:    ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperTypeIDs),
-			ColorIDs:   ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperColorIDs),
-			FactureIDs: ht.parser.FilterKeyInt32List(r, module.ParamNameFilterCatalogPaperFactureIDs),
+			TypeIDs:    ht.parser.FilterUint64List(r, module.ParamNameFilterCatalogPaperTypeIDs),
+			ColorIDs:   ht.parser.FilterUint64List(r, module.ParamNameFilterCatalogPaperColorIDs),
+			FactureIDs: ht.parser.FilterUint64List(r, module.ParamNameFilterCatalogPaperFactureIDs),
 			Width:      measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterLengthRange).Transform(measure.OneThousandth)), // mm -> m
 			Height:     measure.RangeMeter(ht.parser.FilterRangeInt64(r, module.ParamNameFilterHeightRange).Transform(measure.OneThousandth)), // mm -> m
 			Density: measure.RangeKilogramPerMeter2(
@@ -199,8 +198,8 @@ func (ht *Paper) Remove(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Paper) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *Paper) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *Paper) getRawItemID(r *http.Request) string {

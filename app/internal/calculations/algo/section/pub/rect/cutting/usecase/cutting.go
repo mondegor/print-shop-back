@@ -6,6 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/cutting"
@@ -22,7 +23,7 @@ type (
 // NewRectCutting - создаёт объект RectCutting.
 func NewRectCutting(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectCutting {
 	return &RectCutting{
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameRectCutting),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -31,18 +32,9 @@ func NewRectCutting(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseC
 func (uc *RectCutting) CalcQuantity(ctx context.Context, data entity.ParsedData) (entity.QuantityResult, error) {
 	result := cutting.AlgoQuantity(data.Fragments, data.DistanceFormat)
 
-	uc.emitEvent(ctx, "CalcQuantity", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcQuantity", mrmsg.Data{"data": data})
 
 	return entity.QuantityResult{
 		Quantity: result,
 	}, nil
-}
-
-func (uc *RectCutting) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameRectCutting,
-		data,
-	)
 }

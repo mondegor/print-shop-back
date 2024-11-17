@@ -3,29 +3,35 @@ package repository
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/shared/repository"
+	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 )
 
 type (
 	// MaterialTypePostgres - comment struct.
 	MaterialTypePostgres struct {
-		client mrstorage.DBConnManager
+		repoStatus db.FieldFetcher[uint64, mrenum.ItemStatus]
 	}
 )
 
 // NewMaterialTypePostgres - создаёт объект MaterialTypePostgres.
 func NewMaterialTypePostgres(client mrstorage.DBConnManager) *MaterialTypePostgres {
 	return &MaterialTypePostgres{
-		client: client,
+		repoStatus: db.NewFieldFetcher[uint64, mrenum.ItemStatus](
+			client,
+			module.DBTableNameMaterialTypes,
+			"type_id",
+			"type_status",
+			module.DBFieldDeletedAt,
+		),
 	}
 }
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	return repository.MaterialTypeFetchStatusPostgres(ctx, re.client, rowID)
+func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }

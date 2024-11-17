@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"github.com/mondegor/go-webcore/mrtype"
-
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
@@ -13,7 +11,7 @@ const (
 type (
 	// Box - comment struct.
 	Box struct { // DB: printshop_catalog.boxes
-		ID        mrtype.KeyInt32  `json:"id"` // box_id
+		ID        uint64           `json:"id"` // box_id
 		Article   string           `json:"article"`
 		Caption   string           `json:"caption"`
 		Length    measure.Meter    `json:"length"`

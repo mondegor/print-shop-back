@@ -9,9 +9,9 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
@@ -37,36 +37,29 @@ func NewElementTemplate(
 ) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameElementTemplate),
 		errorWrapper: errorWrapper,
 		statusFlow:   mrflow.ItemStatusFlow(),
 	}
 }
 
 // GetList - comment method.
-func (uc *ElementTemplate) GetList(ctx context.Context, params entity.ElementTemplateParams) ([]entity.ElementTemplate, int64, error) {
-	fetchParams := uc.storage.NewSelectParams(params)
-
-	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
+func (uc *ElementTemplate) GetList(ctx context.Context, params entity.ElementTemplateParams) (items []entity.ElementTemplate, countItems uint64, err error) {
+	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	if total < 1 {
+	if countItems == 0 {
 		return make([]entity.ElementTemplate, 0), 0, nil
 	}
 
-	items, err := uc.storage.Fetch(ctx, fetchParams)
-	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
-	}
-
-	return items, total, nil
+	return items, countItems, nil
 }
 
 // GetItem - comment method.
-func (uc *ElementTemplate) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.ElementTemplate, error) {
-	if itemID < 1 {
+func (uc *ElementTemplate) GetItem(ctx context.Context, itemID uint64) (entity.ElementTemplate, error) {
+	if itemID == 0 {
 		return entity.ElementTemplate{}, mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -82,8 +75,8 @@ func (uc *ElementTemplate) GetItem(ctx context.Context, itemID mrtype.KeyInt32) 
 }
 
 // GetItemJson - comment method.
-func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID mrtype.KeyInt32, pretty bool) ([]byte, error) {
-	if itemID < 1 {
+func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID uint64, pretty bool) ([]byte, error) {
+	if itemID == 0 {
 		return nil, mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -107,26 +100,26 @@ func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID mrtype.KeyInt
 }
 
 // Create - comment method.
-func (uc *ElementTemplate) Create(ctx context.Context, item entity.ElementTemplate) (mrtype.KeyInt32, error) {
+func (uc *ElementTemplate) Create(ctx context.Context, item entity.ElementTemplate) (itemID uint64, err error) {
 	item.Status = mrenum.ItemStatusDraft
 
-	itemID, err := uc.storage.Insert(ctx, item)
+	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
 		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
 
 	return itemID, nil
 }
 
 // Store - comment method.
 func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplate) error {
-	if item.ID < 1 {
+	if item.ID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -145,18 +138,18 @@ func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplat
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
 
 // ChangeStatus - comment method.
 func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.ElementTemplate) error {
-	if item.ID < 1 {
+	if item.ID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -182,14 +175,14 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameElementTemplate)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }
 
 // Remove - comment method.
-func (uc *ElementTemplate) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
-	if itemID < 1 {
+func (uc *ElementTemplate) Remove(ctx context.Context, itemID uint64) error {
+	if itemID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -197,16 +190,7 @@ func (uc *ElementTemplate) Remove(ctx context.Context, itemID mrtype.KeyInt32) e
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameElementTemplate, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
-}
-
-func (uc *ElementTemplate) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameElementTemplate,
-		data,
-	)
 }

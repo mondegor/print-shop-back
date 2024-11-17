@@ -64,7 +64,7 @@ func (e *UIDataType) ParseAndSet(value string) error {
 // 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
 // }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e UIDataType) String() string {
 	return uiDataTypeName[e]
 }

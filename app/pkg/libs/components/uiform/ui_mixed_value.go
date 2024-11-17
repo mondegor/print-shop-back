@@ -20,7 +20,7 @@ type (
 	}
 )
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (v UIMixedValue) String() string {
 	if v.IsString {
 		return v.StringValue

@@ -27,7 +27,7 @@ func newUnitMaterialType(_ context.Context, opts materialtype.Options) (*httpv1.
 	storage := repository.NewMaterialTypePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewMaterialType(storage, opts.UseCaseHelper)
+	useCase := usecase.NewMaterialType(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewMaterialType(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

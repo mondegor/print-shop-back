@@ -30,14 +30,14 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 	// поэтому её можно менять только при смене самого роутера
 	pathFunc := mrchi.URLPathParam
 
-	registeredMimeTypes := mrlib.NewMimeTypeList(logger, cfg.MimeTypes)
+	registeredMimeTypes := mrlib.NewMimeTypeList(logger, cfg.Validation.MimeTypes)
 
-	jsonMimeTypeList, err := registeredMimeTypes.NewListByExts(logger, ".json")
+	jsonMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfg.Validation.Files.Json.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
-	imageMimeTypeList, err := registeredMimeTypes.NewListByExts(logger, ".jpeg", ".jpg", ".png")
+	logoMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfg.Validation.Images.Logo.File.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -47,7 +47,7 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		// DateTime:   mrparser.NewDateTime(),
 		Int64:      mrparser.NewInt64(pathFunc),
 		ItemStatus: mrparser.NewItemStatus(),
-		KeyInt32:   mrparser.NewKeyInt32(pathFunc),
+		Uint64:     mrparser.NewUint64(pathFunc),
 		ListSorter: mrparser.NewListSorter(mrparser.ListSorterOptions{}),
 		ListPager: mrparser.NewListPager(
 			mrparser.ListPagerOptions{
@@ -60,33 +60,30 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
 		FileJson: mrparser.NewFile(
 			logger,
-			mrparser.FileOptions{
-				AllowedMimeTypes:        jsonMimeTypeList,
-				MinSize:                 1,
-				MaxSize:                 512 * 1024, // 512Kb
-				MaxFiles:                4,
-				CheckRequestContentType: true,
-			},
+			mrparser.WithFileMinSize(cfg.Validation.Files.Json.MinSize),
+			mrparser.WithFileMaxSize(cfg.Validation.Files.Json.MaxSize),
+			mrparser.WithFileMaxFiles(cfg.Validation.Files.Json.MaxFiles),
+			mrparser.WithFileCheckRequestContentType(cfg.Validation.Files.Json.CheckRequestContentType),
+			mrparser.WithFileAllowedMimeTypes(jsonMimeTypes),
 		),
 		ImageLogo: mrparser.NewImage(
 			logger,
-			mrparser.ImageOptions{
-				File: mrparser.FileOptions{
-					AllowedMimeTypes:        imageMimeTypeList,
-					MinSize:                 512,
-					MaxSize:                 128 * 1024, // 128Kb
-					CheckRequestContentType: true,
-				},
-				MaxWidth:  1024,
-				MaxHeight: 1024,
-				CheckBody: true,
-			},
+			mrparser.WithImageMaxWidth(cfg.Validation.Images.Logo.MaxWidth),
+			mrparser.WithImageMaxHeight(cfg.Validation.Images.Logo.MaxHeight),
+			mrparser.WithImageCheckBody(cfg.Validation.Images.Logo.CheckBody),
+			mrparser.WithImageFileOptions(
+				mrparser.WithFileMinSize(cfg.Validation.Images.Logo.File.MinSize),
+				mrparser.WithFileMaxSize(cfg.Validation.Images.Logo.File.MaxSize),
+				mrparser.WithFileMaxFiles(cfg.Validation.Images.Logo.File.MaxFiles),
+				mrparser.WithFileCheckRequestContentType(cfg.Validation.Images.Logo.File.CheckRequestContentType),
+				mrparser.WithFileAllowedMimeTypes(logoMimeTypes),
+			),
 		),
 	}
 
 	parsers.Parser = validate.NewParser(
 		parsers.Int64,
-		parsers.KeyInt32,
+		parsers.Uint64,
 		parsers.String,
 		parsers.UUID,
 		parsers.Validator,

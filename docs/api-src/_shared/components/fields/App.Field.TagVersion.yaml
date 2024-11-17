@@ -1,5 +1,6 @@
 App.Field.TagVersion:
   description: Текущая версия записи
   type: integer
+  # format: uint32
   minimum: 1
   example: 5

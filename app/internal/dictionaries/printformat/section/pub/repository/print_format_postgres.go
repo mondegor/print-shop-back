@@ -29,9 +29,11 @@ func (re *PrintFormatPostgres) Fetch(ctx context.Context, _ entity.PrintFormatPa
 	sql := `
         SELECT
             format_id,
-            format_caption
+            format_caption,
+            format_width,
+            format_height
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePrintFormats + `
+            ` + module.DBTableNamePrintFormats + `
         WHERE
             format_status = $1 AND deleted_at IS NULL
         ORDER BY
@@ -56,6 +58,8 @@ func (re *PrintFormatPostgres) Fetch(ctx context.Context, _ entity.PrintFormatPa
 		err = cursor.Scan(
 			&row.ID,
 			&row.Caption,
+			&row.Width,
+			&row.Height,
 		)
 		if err != nil {
 			return nil, err

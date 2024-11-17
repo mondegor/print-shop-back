@@ -30,7 +30,7 @@ func newUnitCirculationPackInBox(ctx context.Context, opts algo.Options) (*httpv
 	impAlgo := imposition.New(logger)
 	packInBoxAlgo := packinbox.New(logger, impAlgo)
 
-	useCase := usecase.NewCirculationPackInBox(packInBoxAlgo, opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewCirculationPackInBox(packInBoxAlgo, opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPackInBox(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

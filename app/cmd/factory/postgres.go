@@ -10,6 +10,7 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/mondegor/go-storage/mrmigrate/gomigrate"
 	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/logger"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrstorage/mrprometheus"
 	"github.com/mondegor/go-webcore/mrlog"
@@ -33,6 +34,7 @@ func NewPostgres(ctx context.Context, opts app.Options) (*mrpostgres.ConnAdapter
 		MaxConnIdleTime: cfg.Storage.MaxConnIdleTime,
 		ConnAttempts:    1,
 		ConnTimeout:     cfg.Storage.Timeout,
+		QueryTracer:     logger.NewQueryTracer(cfg.Storage.Host, cfg.Storage.Port, cfg.Storage.Database),
 	}
 
 	conn := mrpostgres.New()

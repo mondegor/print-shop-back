@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/imposition/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
@@ -26,7 +27,7 @@ type (
 func NewRectImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectImposition {
 	return &RectImposition{
 		algo:         algo,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameRectImposition),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -38,7 +39,7 @@ func (uc *RectImposition) Calc(ctx context.Context, data entity.ParsedData) (ent
 		return entity.AlgoResult{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
 	}
 
-	uc.emitEvent(ctx, "Calc", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", mrmsg.Data{"data": data})
 
 	if result.Total == 0 {
 		return entity.AlgoResult{}, nil
@@ -53,13 +54,4 @@ func (uc *RectImposition) Calc(ctx context.Context, data entity.ParsedData) (ent
 		Total:     result.Total,
 		Garbage:   mrlib.RoundFloat8(result.RestArea),
 	}, nil
-}
-
-func (uc *RectImposition) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameRectImposition,
-		data,
-	)
 }

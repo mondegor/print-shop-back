@@ -31,7 +31,13 @@ func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (
 
 func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
 	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPage(storage, opts.EventEmitter, opts.UseCaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(
+		opts.DBConnManager,
+		storage,
+		opts.EventEmitter,
+		opts.UseCaseHelper,
+		opts.UnitCompanyPage.LogoURLBuilder,
+	)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

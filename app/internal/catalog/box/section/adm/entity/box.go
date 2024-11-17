@@ -16,8 +16,8 @@ const (
 type (
 	// Box - comment struct.
 	Box struct { // DB: printshop_catalog.boxes
-		ID         mrtype.KeyInt32   `json:"id"` // box_id
-		TagVersion int32             `json:"tagVersion"`
+		ID         uint64            `json:"id"` // box_id
+		TagVersion uint32            `json:"tagVersion"`
 		Article    string            `json:"article" sort:"article" upd:"box_article"`
 		Caption    string            `json:"caption" sort:"caption,default" upd:"box_caption"`
 		Length     measure.Meter     `json:"length" sort:"length" upd:"box_length"`

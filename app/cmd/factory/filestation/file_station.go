@@ -3,6 +3,7 @@ package filestation
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore/mrapp"
 	"github.com/mondegor/go-webcore/mrpath/placeholderpath"
 
 	"github.com/mondegor/print-shop-back/internal/app"
@@ -27,7 +28,7 @@ func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options,
 	}
 
 	return filestation.Options{
-		UseCaseHelper:  opts.UseCaseErrorWrapper,
+		UseCaseHelper:  mrapp.NewUseCaseErrorWrapper(),
 		RequestParser:  opts.RequestParsers.String,
 		ResponseSender: opts.ResponseSenders.FileSender,
 

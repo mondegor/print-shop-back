@@ -14,8 +14,8 @@ const (
 type (
 	// PaperColor - comment struct.
 	PaperColor struct { // DB: printshop_dictionaries.paper_colors
-		ID         mrtype.KeyInt32   `json:"id"` // color_id
-		TagVersion int32             `json:"tagVersion"`
+		ID         uint64            `json:"id"` // color_id
+		TagVersion uint32            `json:"tagVersion"`
 		Caption    string            `json:"caption" sort:"caption,default"`
 		Status     mrenum.ItemStatus `json:"status"`
 		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`

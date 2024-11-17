@@ -55,7 +55,7 @@ func (e *PaperSide) Set(value uint8) error {
 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNamePaperSide)
 }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e PaperSide) String() string {
 	return paperSideName[e]
 }

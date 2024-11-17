@@ -1,10 +1,10 @@
 -- --------------------------------------------------------------------------------------------------
 
 CREATE TABLE printshop_global.settings (
-    setting_id int4 NOT NULL CONSTRAINT pk_settings PRIMARY KEY,
+    setting_id int8 NOT NULL CONSTRAINT pk_settings PRIMARY KEY,
     setting_name character varying(64) NOT NULL,
     setting_type int2 NOT NULL, -- 1=STRING, 2=STRING_LIST, 3=INTEGER, 4=INTEGER_LIST, 5=BOOLEAN
-    setting_value character varying(65536) NOT NULL,
+    setting_value text NOT NULL,
     setting_description character varying(1024) NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NOT NULL DEFAULT NOW()

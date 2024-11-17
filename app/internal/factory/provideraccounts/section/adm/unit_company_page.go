@@ -3,8 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
@@ -27,17 +28,16 @@ func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (
 }
 
 func newUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.CompanyPage{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.CompanyPage{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewCompanyPagePostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderSelect(
-			mrpostgres.NewSQLBuilderWhere(),
-			mrpostgres.NewSQLBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
+		builder.NewSQL(
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
 	useCase := usecase.NewCompanyPage(storage, opts.UseCaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
@@ -45,7 +45,7 @@ func newUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (*ht
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,
 		useCase,
-		metaOrderBy,
+		entityMeta.MetaOrderBy(),
 	)
 
 	return controller, nil

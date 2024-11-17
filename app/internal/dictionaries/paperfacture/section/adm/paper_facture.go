@@ -3,9 +3,7 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 )
@@ -13,24 +11,22 @@ import (
 type (
 	// PaperFactureUseCase - comment interface.
 	PaperFactureUseCase interface {
-		GetList(ctx context.Context, params entity.PaperFactureParams) ([]entity.PaperFacture, int64, error)
-		GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.PaperFacture, error)
-		Create(ctx context.Context, item entity.PaperFacture) (mrtype.KeyInt32, error)
+		GetList(ctx context.Context, params entity.PaperFactureParams) (items []entity.PaperFacture, countItems uint64, err error)
+		GetItem(ctx context.Context, itemID uint64) (entity.PaperFacture, error)
+		Create(ctx context.Context, item entity.PaperFacture) (itemID uint64, err error)
 		Store(ctx context.Context, item entity.PaperFacture) error
 		ChangeStatus(ctx context.Context, item entity.PaperFacture) error
-		Remove(ctx context.Context, itemID mrtype.KeyInt32) error
+		Remove(ctx context.Context, itemID uint64) error
 	}
 
 	// PaperFactureStorage - comment interface.
 	PaperFactureStorage interface {
-		NewSelectParams(params entity.PaperFactureParams) mrstorage.SQLSelectParams
-		Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.PaperFacture, error)
-		FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error)
-		FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.PaperFacture, error)
-		FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error)
-		Insert(ctx context.Context, row entity.PaperFacture) (mrtype.KeyInt32, error)
-		Update(ctx context.Context, row entity.PaperFacture) (int32, error)
-		UpdateStatus(ctx context.Context, row entity.PaperFacture) (int32, error)
-		Delete(ctx context.Context, rowID mrtype.KeyInt32) error
+		FetchWithTotal(ctx context.Context, params entity.PaperFactureParams) (rows []entity.PaperFacture, countRows uint64, err error)
+		FetchOne(ctx context.Context, rowID uint64) (entity.PaperFacture, error)
+		FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error)
+		Insert(ctx context.Context, row entity.PaperFacture) (rowID uint64, err error)
+		Update(ctx context.Context, row entity.PaperFacture) (tagVersion uint32, err error)
+		UpdateStatus(ctx context.Context, row entity.PaperFacture) (tagVersion uint32, err error)
+		Delete(ctx context.Context, rowID uint64) error
 	}
 )

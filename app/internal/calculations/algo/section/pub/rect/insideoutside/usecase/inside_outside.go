@@ -6,6 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/insideoutside/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect/insideoutside"
@@ -22,7 +23,7 @@ type (
 // NewRectInsideOutside - создаёт объект RectInsideOutside.
 func NewRectInsideOutside(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *RectInsideOutside {
 	return &RectInsideOutside{
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameRectInsideOutside),
 		errorWrapper: errorWrapper,
 	}
 }
@@ -34,7 +35,7 @@ func (uc *RectInsideOutside) CalcQuantity(ctx context.Context, data entity.Parse
 		return entity.AlgoQuantityResult{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
 	}
 
-	uc.emitEvent(ctx, "CalcQuantity", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcQuantity", mrmsg.Data{"data": data})
 
 	return entity.AlgoQuantityResult{
 		Fragment: result,
@@ -49,19 +50,10 @@ func (uc *RectInsideOutside) CalcMax(ctx context.Context, data entity.ParsedData
 		return entity.AlgoMaxResult{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
 	}
 
-	uc.emitEvent(ctx, "CalcMax", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcMax", mrmsg.Data{"data": data})
 
 	return entity.AlgoMaxResult{
 		Fragments: result,
 		Total:     result.Total(),
 	}, nil
-}
-
-func (uc *RectInsideOutside) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameRectInsideOutside,
-		data,
-	)
 }

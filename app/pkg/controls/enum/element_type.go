@@ -56,7 +56,7 @@ func (e *ElementType) Set(value uint8) error {
 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementType)
 }
 
-// String - comment method.
+// String - возвращает значение в виде строки.
 func (e ElementType) String() string {
 	return elementTypeName[e]
 }

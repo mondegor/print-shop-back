@@ -1,6 +1,7 @@
 App.Field.Measure.Micrometer:
   description: Микрометр (µm, 0.001mm)
   type: integer
+  format: int64
   maxLength: 8
   minimum: 0
   example: 1000000 # 1m

@@ -3,10 +3,13 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-components/factory/mrordering"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
@@ -15,20 +18,15 @@ import (
 )
 
 func initUnitFormElementEnvironment(ctx context.Context, opts submitform.Options) (formElementOptions, error) {
-	entityMetaUpdate, err := mrsql.NewEntityMetaUpdate(ctx, entity.FormElement{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.FormElement{})
 	if err != nil {
 		return formElementOptions{}, err
 	}
 
 	storage := repository.NewFormElementPostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderCondition(
-			mrpostgres.NewSQLBuilderWhere(),
-		),
-		mrpostgres.NewSQLBuilderUpdateWithMeta(
-			entityMetaUpdate,
-			mrpostgres.NewSQLBuilderSet(),
-			nil,
+		builder.NewSQL(
+			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 		),
 	)
 
@@ -54,9 +52,16 @@ func newUnitFormElement(_ context.Context, opts moduleOptions) (*httpv1.FormElem
 		opts.formElement.storage,
 		opts.submitForm.storage,
 		opts.ElementTemplateAPI,
-		opts.OrdererAPI,
+		mrordering.NewComponentMover(
+			opts.DBConnManager,
+			mrsql.DBTableInfo{
+				Name:       module.DBTableNameSubmitFormElements,
+				PrimaryKey: "form_id",
+			},
+			opts.EventEmitter,
+		),
 		opts.EventEmitter,
-		opts.UseCaseHelper,
+		opts.UseCaseErrorWrapper,
 	)
 	controller := httpv1.NewFormElement(
 		opts.RequestParsers.ModuleParser,

@@ -1,6 +1,6 @@
 Custom.Field.Catalog.BoxID:
   description: Идентификатор коробки (модуль - Catalog.Box)
   type: integer
-  format: int32
+  # format: uint64
   minimum: 1
   example: 2

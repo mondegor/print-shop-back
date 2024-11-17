@@ -34,7 +34,7 @@ func (re *QueryHistoryPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (
 			query_result,
 			created_at
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNameQueryHistory + `
+			` + module.DBTableNameQueryHistory + `
 		WHERE
 			query_id = $1 AND deleted_at IS NULL
 		LIMIT 1;`
@@ -58,7 +58,7 @@ func (re *QueryHistoryPostgres) FetchOne(ctx context.Context, rowID uuid.UUID) (
 // Insert - comment method.
 func (re *QueryHistoryPostgres) Insert(ctx context.Context, row entity.QueryHistoryItem) (id uuid.UUID, err error) {
 	sql := `
-		INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameQueryHistory + `
+		INSERT INTO ` + module.DBTableNameQueryHistory + `
 			(
 				query_id,
 				query_caption,
@@ -87,7 +87,7 @@ func (re *QueryHistoryPostgres) Insert(ctx context.Context, row entity.QueryHist
 func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.UUID) error {
 	sql := `
 		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNameQueryHistory + `
+			` + module.DBTableNameQueryHistory + `
 		SET
 			used_count = used_count + 1,
 			used_at = NOW()
@@ -103,10 +103,10 @@ func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.U
 }
 
 // Delete - comment method.
-func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration, limit uint64) error {
+func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration, limit uint32) error {
 	sql := `
 		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNameQueryHistory + `
+			` + module.DBTableNameQueryHistory + `
 		SET
 			deleted_at = NOW()
 		WHERE

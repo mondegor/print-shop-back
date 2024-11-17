@@ -8,6 +8,7 @@ import (
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 
@@ -40,31 +41,24 @@ func NewSubmitForm(
 		storage:        storage,
 		storageElement: storageElement,
 		storageVersion: storageVersion,
-		eventEmitter:   eventEmitter,
+		eventEmitter:   decorator.NewSourceEmitter(eventEmitter, entity.ModelNameSubmitForm),
 		errorWrapper:   errorWrapper,
 		statusFlow:     mrflow.ItemStatusFlow(),
 	}
 }
 
 // GetList - comment method.
-func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParams) ([]entity.SubmitForm, int64, error) {
-	fetchParams := uc.storage.NewSelectParams(params)
-
-	total, err := uc.storage.FetchTotal(ctx, fetchParams.Where)
+func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems uint64, err error) {
+	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	if total < 1 {
+	if countItems == 0 {
 		return make([]entity.SubmitForm, 0), 0, nil
 	}
 
-	items, err := uc.storage.Fetch(ctx, fetchParams)
-	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
-	}
-
-	return items, total, nil
+	return items, countItems, nil
 }
 
 // GetItem - comment method.
@@ -82,19 +76,19 @@ func (uc *SubmitForm) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Sub
 }
 
 // Create - comment method.
-func (uc *SubmitForm) Create(ctx context.Context, item entity.SubmitForm) (uuid.UUID, error) {
-	if err := uc.checkItem(ctx, &item); err != nil {
+func (uc *SubmitForm) Create(ctx context.Context, item entity.SubmitForm) (itemID uuid.UUID, err error) {
+	if err = uc.checkItem(ctx, &item); err != nil {
 		return uuid.Nil, err
 	}
 
 	item.Status = mrenum.ItemStatusDraft
 
-	itemID, err := uc.storage.Insert(ctx, item)
+	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
 		return uuid.Nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
 
 	return itemID, nil
 }
@@ -105,7 +99,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -128,7 +122,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -139,7 +133,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -165,7 +159,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameSubmitForm)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }
@@ -180,7 +174,7 @@ func (uc *SubmitForm) Remove(ctx context.Context, itemID uuid.UUID) error {
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameSubmitForm, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
 }
@@ -287,13 +281,4 @@ func (uc *SubmitForm) setVersions(ctx context.Context, form *entity.SubmitForm) 
 	form.Versions = versions
 
 	return nil
-}
-
-func (uc *SubmitForm) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameSubmitForm,
-		data,
-	)
 }

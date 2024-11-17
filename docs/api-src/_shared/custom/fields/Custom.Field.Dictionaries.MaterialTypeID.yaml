@@ -1,6 +1,6 @@
 Custom.Field.Dictionaries.MaterialTypeID:
   description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
   type: integer
-  format: int32
+  # format: uint64
   minimum: 1
   example: 2

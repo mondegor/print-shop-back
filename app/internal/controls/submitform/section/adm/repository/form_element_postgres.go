@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
@@ -15,35 +15,40 @@ import (
 type (
 	// FormElementPostgres - comment struct.
 	FormElementPostgres struct {
-		client    mrstorage.DBConnManager
-		condition mrstorage.SQLBuilderCondition
-		sqlUpdate mrstorage.SQLBuilderUpdate
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		rowExistChecker db.RowExistsChecker[uint64]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
 	}
 )
 
 // NewFormElementPostgres - создаёт объект FormElementPostgres.
-func NewFormElementPostgres(
-	client mrstorage.DBConnManager,
-	condition mrstorage.SQLBuilderCondition,
-	sqlUpdate mrstorage.SQLBuilderUpdate,
-) *FormElementPostgres {
+func NewFormElementPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *FormElementPostgres {
 	return &FormElementPostgres{
-		client:    client,
-		condition: condition,
-		sqlUpdate: sqlUpdate,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		rowExistChecker: db.NewRowExistsChecker[uint64](
+			client,
+			module.DBTableNameSubmitFormElements,
+			"element_id",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNameSubmitFormElements,
+			"element_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
 	}
 }
 
-// NewOrderMeta - comment method.
-func (re *FormElementPostgres) NewOrderMeta(formID uuid.UUID) mrstorage.MetaGetter {
-	return mrsql.NewEntityMeta(
-		module.DBSchema+"."+module.DBTableNameSubmitFormElements,
-		"element_id",
-		re.condition.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Equal("form_id", formID),
-			)
-		}),
+// NewCondition - comment method.
+func (re *FormElementPostgres) NewCondition(formID uuid.UUID) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.Equal("form_id", formID)
+		},
 	)
 }
 
@@ -65,9 +70,9 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
             fe.created_at,
 			fe.updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + ` fe
+            ` + module.DBTableNameSubmitFormElements + ` fe
         JOIN
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + ` et
+            ` + module.DBTableNameElementTemplates + ` et
         ON
             fe.template_id = et.template_id
         WHERE
@@ -117,7 +122,7 @@ func (re *FormElementPostgres) Fetch(ctx context.Context, formID uuid.UUID) ([]e
 }
 
 // FetchOne - comment method.
-func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.FormElement, error) {
+func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID uint64) (entity.FormElement, error) {
 	sql := `
         SELECT
             fe.tag_version,
@@ -133,9 +138,9 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
             fe.created_at,
 			fe.updated_at
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + ` fe
+            ` + module.DBTableNameSubmitFormElements + ` fe
         JOIN
-            ` + module.DBSchema + `.` + module.DBTableNameElementTemplates + ` et
+            ` + module.DBTableNameElementTemplates + ` et
         ON
             fe.template_id = et.template_id
         WHERE
@@ -167,19 +172,17 @@ func (re *FormElementPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt
 }
 
 // FetchIDByParamName - comment method.
-func (re *FormElementPostgres) FetchIDByParamName(ctx context.Context, formID uuid.UUID, paramName string) (mrtype.KeyInt32, error) {
+func (re *FormElementPostgres) FetchIDByParamName(ctx context.Context, formID uuid.UUID, paramName string) (rowID uint64, err error) {
 	sql := `
         SELECT
             element_id
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + `
+            ` + module.DBTableNameSubmitFormElements + `
         WHERE
             form_id = $1 AND param_name = $2 AND deleted_at IS NULL
         LIMIT 1;`
 
-	var rowID mrtype.KeyInt32
-
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		formID,
@@ -193,29 +196,14 @@ func (re *FormElementPostgres) FetchIDByParamName(ctx context.Context, formID uu
 
 // IsExist - comment method.
 // result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
-func (re *FormElementPostgres) IsExist(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        SELECT
-            element_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + `
-        WHERE
-            element_id = $1 AND deleted_at IS NULL
-        LIMIT 1;`
-
-	return re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rowID,
-	).Scan(
-		&rowID,
-	)
+func (re *FormElementPostgres) IsExist(ctx context.Context, rowID uint64) error {
+	return re.rowExistChecker.IsExist(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElement) (mrtype.KeyInt32, error) {
+func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElement) (rowID uint64, err error) {
 	sql := `
-        INSERT INTO ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + `
+        INSERT INTO ` + module.DBTableNameSubmitFormElements + `
             (
                 form_id,
                 param_name,
@@ -229,7 +217,7 @@ func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElemen
         RETURNING
             element_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.FormID,
@@ -246,9 +234,8 @@ func (re *FormElementPostgres) Insert(ctx context.Context, row entity.FormElemen
 }
 
 // Update - comment method.
-func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElement) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
+func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElement) (tagVersion uint32, err error) {
+	set, err := re.sqlBuilder.Set().BuildEntity(row)
 	if err != nil || set.Empty() {
 		return 0, err
 	}
@@ -258,11 +245,11 @@ func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElemen
 		row.TagVersion,
 	}
 
-	setStr, setArgs := set.WithParam(len(args) + 1).ToSQL()
+	setStr, setArgs := set.WithStartArg(len(args) + 1).ToSQL()
 
 	sql := `
         UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + `
+            ` + module.DBTableNameSubmitFormElements + `
         SET
             tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -271,8 +258,6 @@ func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElemen
             element_id = $1 AND tag_version = $2 AND deleted_at IS NULL
 		RETURNING
 			tag_version;`
-
-	var tagVersion int32
 
 	err = re.client.Conn(ctx).QueryRow(
 		ctx,
@@ -286,19 +271,6 @@ func (re *FormElementPostgres) Update(ctx context.Context, row entity.FormElemen
 }
 
 // Delete - comment method.
-func (re *FormElementPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-        UPDATE
-            ` + module.DBSchema + `.` + module.DBTableNameSubmitFormElements + `
-        SET
-            tag_version = tag_version + 1,
-			deleted_at = NOW()
-        WHERE
-            element_id = $1 AND deleted_at IS NULL;`
-
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
-	)
+func (re *FormElementPostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
 }

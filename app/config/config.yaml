@@ -15,10 +15,15 @@ debugging:
       - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).New
       - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).Wrap
       - github.com/mondegor/go-webcore/mrcore.PrepareError
-      - github.com/mondegor/go-webcore/mrcore/mrcoreerr.(*ErrorHandler).Process
+      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).Perform
+      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).PerformWithCommit
       - github.com/mondegor/go-webcore/mrlog/zerolog.(*eventAdapter).Err
       - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
+      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Exec
+      - github.com/mondegor/go-storage/mrpostgres.(*queryRow).Scan
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
+      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Err
+      - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
 
 logger:
   level: trace # info, warn, error, fatal, debug, trace
@@ -94,7 +99,7 @@ cors:
     - X-Correlation-Id
     - X-Idempotency-Key
   exposed_headers:
-    - X-Correlation-Id
+    - X-Request-Id
   allow_credentials: true
 
 translation:
@@ -172,33 +177,109 @@ modules_settings:
       base_path: /img/{{path}}
       file_provider: imageStorage # file_providers.image_storage
 
+validation:
+  files:
+    json:
+      min_size: 1 # 1b
+      max_size: 524288 # 512Kb
+      max_files: 4
+      check_request_content_type: true
+      extensions:
+        - json
+
+  images:
+    logo:
+      max_width: 1920 # pixels
+      max_height: 1080 # pixels
+      check_body: true
+      file:
+        min_size: 512 # 512b
+        max_size: 131072 # 128Kb
+        max_files: 4
+        check_request_content_type: true
+        extensions:
+          - jpeg
+          - jpg
+          - png
+
+  mime_types:
+    - type: "application/octet-stream"
+      ext: psd
+    - type: "application/pdf"
+      ext: pdf
+    - type: "application/json"
+      ext: json
+    - type: "application/x-tar"
+      ext: tgz
+    - type: "application/zip"
+      ext: zip
+    - type: "image/gif"
+      ext: gif
+    - type: "image/jpeg"
+      ext: jpeg
+    - type: "image/jpeg"
+      ext: jpe
+    - type: "image/jpeg"
+      ext: jpg
+    - type: "image/png"
+      ext: png
+    - type: "text/xml"
+      ext: xml
+
 task_schedule:
-  settings_reloader:
-    caption: Settings reloader
+  reload_settings:
+    caption: "Settings.Reload"
     startup: true
     period: 5m
-    timeout: 30s
-
-mime_types:
-  - ext: psd
-    type: application/octet-stream
-  - ext: pdf
-    type: application/pdf
-  - ext: json
-    type: application/json
-  - ext: tgz
-    type: application/x-tar
-  - ext: zip
-    type: application/zip
-  - ext: gif
-    type: image/gif
-  - ext: jpeg
-    type: image/jpeg
-  - ext: jpe
-    type: image/jpeg
-  - ext: jpg
-    type: image/jpeg
-  - ext: png
-    type: image/png
-  - ext: xml
-    type: text/xml
+    timeout: 15s
+  mailer:
+    send_processor:
+      caption: "Mailer.SendProcessor"
+      ready_timeout: 60s
+      read_period: 30s
+      busy_read_period: 15s
+      cancel_read_timeout: 5s
+      handler_timeout: 30s
+      queue_size: 25
+      workers_count: 1
+    change_from_to_retry:
+      caption: "Mailer.ChangeFromToRetry"
+      # startup: false
+      period: 30s
+      timeout: 60s
+    clean_queue:
+      caption: "Mailer.CleanQueue"
+      # startup: false
+      period: 40s # 45m
+      timeout: 60s
+    send_retry_attempts: 3
+    send_delay_correction: 15s
+    change_queue_limit: 100
+    change_retry_timeout: 60s
+    change_retry_delayed: 0s
+    clean_queue_limit: 100
+  notifier:
+    send_processor:
+      caption: "Notifier.SendProcessor"
+      ready_timeout: 60s
+      read_period: 30s
+      busy_read_period: 15s
+      cancel_read_timeout: 5s
+      handler_timeout: 30s
+      queue_size: 25
+      workers_count: 1
+    change_from_to_retry:
+      caption: "Notifier.ChangeFromToRetry"
+      # startup: false
+      period: 30s
+      timeout: 60s
+    clean_queue:
+      caption: "Notifier.CleanQueue"
+      # startup: false
+      period: 40m # 45m
+      timeout: 60s
+    send_retry_attempts: 3
+    change_queue_limit: 100
+    change_retry_timeout: 60s
+    change_retry_delayed: 30s
+    clean_queue_limit: 100

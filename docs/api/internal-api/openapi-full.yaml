@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.3
+  version: v0.4.4
   title: Internal API print-shop
   license:
     name: Apache-2.0

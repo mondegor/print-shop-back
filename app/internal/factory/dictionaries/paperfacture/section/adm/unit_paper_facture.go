@@ -3,8 +3,9 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/controller/httpv1"
@@ -27,25 +28,24 @@ func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]m
 }
 
 func newUnitPaperFacture(ctx context.Context, opts paperfacture.Options) (*httpv1.PaperFacture, error) {
-	metaOrderBy, err := mrsql.NewEntityMetaOrderBy(ctx, entity.PaperFacture{})
+	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.PaperFacture{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewPaperFacturePostgres(
 		opts.DBConnManager,
-		mrpostgres.NewSQLBuilderSelect(
-			mrpostgres.NewSQLBuilderWhere(),
-			mrpostgres.NewSQLBuilderOrderBy(ctx, metaOrderBy.DefaultSort()),
-			mrpostgres.NewSQLBuilderLimit(opts.PageSizeMax),
+		builder.NewSQL(
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UseCaseHelper)
+	useCase := usecase.NewPaperFacture(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPaperFacture(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,
 		useCase,
-		metaOrderBy,
+		entityMeta.MetaOrderBy(),
 	)
 
 	return controller, nil

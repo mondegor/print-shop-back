@@ -31,7 +31,7 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, _ entity.PaperColorPara
             color_id,
             color_caption
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePaperColors + `
+            ` + module.DBTableNamePaperColors + `
         WHERE
             color_status = $1 AND deleted_at IS NULL
         ORDER BY

@@ -27,7 +27,7 @@ func newUnitPaperColor(_ context.Context, opts papercolor.Options) (*httpv1.Pape
 	storage := repository.NewPaperColorPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPaperColor(storage, opts.UseCaseHelper)
+	useCase := usecase.NewPaperColor(storage, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewPaperColor(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

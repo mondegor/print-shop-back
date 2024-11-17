@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrstatus"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
@@ -20,6 +22,7 @@ import (
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
+		txManager    mrstorage.DBTxManager
 		storage      prov.CompanyPageStorage
 		eventEmitter mrsender.EventEmitter
 		errorWrapper mrcore.UseCaseErrorWrapper
@@ -30,14 +33,16 @@ type (
 
 // NewCompanyPage - создаёт объект CompanyPage.
 func NewCompanyPage(
+	txManager mrstorage.DBTxManager,
 	storage prov.CompanyPageStorage,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UseCaseErrorWrapper,
 	imgBaseURL mrpath.PathBuilder,
 ) *CompanyPage {
 	return &CompanyPage{
+		txManager:    txManager,
 		storage:      storage,
-		eventEmitter: eventEmitter,
+		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPage),
 		errorWrapper: errorWrapper,
 		imgBaseURL:   imgBaseURL,
 		statusFlow:   flow.PublicStatusFlow(),
@@ -72,13 +77,15 @@ func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error
 
 	item.Status = enum.PublicStatusDraft // only for insert
 
-	if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
-	}
+	return uc.txManager.Do(ctx, func(ctx context.Context) error {
+		if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
+			return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"accountId": item.AccountID})
+		uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"accountId": item.AccountID})
 
-	return nil
+		return nil
+	})
 }
 
 // ChangeStatus - comment method.
@@ -104,7 +111,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
 	}
 
-	uc.emitEvent(ctx, "ChangeStatus", mrmsg.Data{"accountId": item.AccountID, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"accountId": item.AccountID, "status": item.Status})
 
 	return nil
 }
@@ -128,13 +135,4 @@ func (uc *CompanyPage) checkRewriteName(ctx context.Context, item *entity.Compan
 	}
 
 	return nil
-}
-
-func (uc *CompanyPage) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameCompanyPage,
-		data,
-	)
 }

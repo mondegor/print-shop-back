@@ -65,6 +65,7 @@ Controls.SubmitForms.AdminAPI.Response.Model.FormElement:
     templateVersion:
       description: Последняя актуальная версия шаблона
       type: integer
+      # format: uint32
       minimum: 1
       example: 5
     elementRequired:

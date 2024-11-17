@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
@@ -17,52 +18,82 @@ import (
 type (
 	// PaperPostgres - comment struct.
 	PaperPostgres struct {
-		client    mrstorage.DBConnManager
-		sqlSelect mrstorage.SQLBuilderSelect
-		sqlUpdate mrstorage.SQLBuilderUpdate
+		client          mrstorage.DBConnManager
+		sqlBuilder      mrstorage.SQLBuilder
+		repoIDByArticle db.FieldFetcher[string, uint64]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoSoftDeleter db.RowSoftDeleter[uint64]
+		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
 )
 
 // NewPaperPostgres - создаёт объект PaperPostgres.
-func NewPaperPostgres(client mrstorage.DBConnManager, sqlSelect mrstorage.SQLBuilderSelect, sqlUpdate mrstorage.SQLBuilderUpdate) *PaperPostgres {
+func NewPaperPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *PaperPostgres {
 	return &PaperPostgres{
-		client:    client,
-		sqlSelect: sqlSelect,
-		sqlUpdate: sqlUpdate,
+		client:     client,
+		sqlBuilder: sqlBuilder,
+		repoIDByArticle: db.NewFieldFetcher[string, uint64](
+			client,
+			module.DBTableNamePapers,
+			"paper_article",
+			"paper_id",
+			module.DBFieldDeletedAt,
+		),
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+			client,
+			module.DBTableNamePapers,
+			"paper_id",
+			module.DBFieldTagVersion,
+			"paper_status",
+			module.DBFieldDeletedAt,
+		),
+		repoSoftDeleter: db.NewRowSoftDeleter[uint64](
+			client,
+			module.DBTableNamePapers,
+			"paper_id",
+			module.DBFieldTagVersion,
+			module.DBFieldDeletedAt,
+		),
+		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+			client,
+			module.DBTableNamePapers,
+		),
 	}
 }
 
-// NewSelectParams - comment method.
-func (re *PaperPostgres) NewSelectParams(params entity.PaperParams) mrstorage.SQLSelectParams {
-	return mrstorage.SQLSelectParams{
-		Where: re.sqlSelect.Where(func(w mrstorage.SQLBuilderWhere) mrstorage.SQLBuilderPartFunc {
-			return w.JoinAnd(
-				w.Expr("deleted_at IS NULL"),
-				w.FilterLikeFields([]string{"UPPER(paper_article)", "UPPER(paper_caption)"}, strings.ToUpper(params.Filter.SearchText)),
-				w.FilterAnyOf("type_id", params.Filter.TypeIDs),
-				w.FilterAnyOf("color_id", params.Filter.ColorIDs),
-				w.FilterAnyOf("facture_id", params.Filter.FactureIDs),
-				w.FilterRangeFloat64("paper_width", mrtype.RangeFloat64(params.Filter.Width), 0, mrlib.EqualityThresholdE9),
-				w.FilterRangeFloat64("paper_height", mrtype.RangeFloat64(params.Filter.Height), 0, mrlib.EqualityThresholdE9),
-				w.FilterRangeFloat64("paper_density", mrtype.RangeFloat64(params.Filter.Density), 0, mrlib.EqualityThresholdE9),
-				w.FilterAnyOf("paper_status", params.Filter.Statuses),
-			)
-		}),
-		OrderBy: re.sqlSelect.OrderBy(func(s mrstorage.SQLBuilderOrderBy) mrstorage.SQLBuilderPartFunc {
-			return s.Join(
-				s.Field(params.Sorter.FieldName, params.Sorter.Direction),
-				s.Field("paper_id", mrenum.SortDirectionASC),
-			)
-		}),
-		Limit: re.sqlSelect.Limit(func(p mrstorage.SQLBuilderLimit) mrstorage.SQLBuilderPartFunc {
-			return p.OffsetLimit(params.Pager.Index, params.Pager.Size)
-		}),
+// FetchWithTotal - comment method.
+func (re *PaperPostgres) FetchWithTotal(ctx context.Context, params entity.PaperParams) (rows []entity.Paper, countRows uint64, err error) {
+	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+
+	total, err := re.repoTotalRows.Fetch(ctx, condition)
+	if err != nil || total == 0 {
+		return nil, 0, err
 	}
+
+	if params.Pager.Size > total {
+		params.Pager.Size = total
+	}
+
+	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
+
+	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return rows, total, nil
 }
 
 // Fetch - comment method.
-func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectParams) ([]entity.Paper, error) {
-	whereStr, whereArgs := params.Where.ToSQL()
+func (re *PaperPostgres) fetch(
+	ctx context.Context,
+	condition mrstorage.SQLPart,
+	orderBy mrstorage.SQLPart,
+	limit mrstorage.SQLPart,
+	maxRows uint64,
+) ([]entity.Paper, error) {
+	whereStr, whereArgs := condition.ToSQL()
 
 	sql := `
 		SELECT
@@ -82,11 +113,11 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectPa
 			created_at as createdAt,
 			updated_at as updatedAt
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
+			` + module.DBTableNamePapers + `
 		WHERE
 			` + whereStr + `
 		ORDER BY
-			` + params.OrderBy.String() + params.Limit.String() + `;`
+			` + orderBy.String() + limit.String() + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -99,7 +130,7 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectPa
 
 	defer cursor.Close()
 
-	rows := make([]entity.Paper, 0)
+	rows := make([]entity.Paper, 0, maxRows)
 
 	for cursor.Next() {
 		var row entity.Paper
@@ -131,33 +162,8 @@ func (re *PaperPostgres) Fetch(ctx context.Context, params mrstorage.SQLSelectPa
 	return rows, cursor.Err()
 }
 
-// FetchTotal - comment method.
-func (re *PaperPostgres) FetchTotal(ctx context.Context, where mrstorage.SQLBuilderPart) (int64, error) {
-	whereStr, whereArgs := where.ToSQL()
-
-	sql := `
-		SELECT
-			COUNT(*)
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
-		WHERE
-			` + whereStr + `;`
-
-	var totalRow int64
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		whereArgs...,
-	).Scan(
-		&totalRow,
-	)
-
-	return totalRow, err
-}
-
 // FetchOne - comment method.
-func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (entity.Paper, error) {
+func (re *PaperPostgres) FetchOne(ctx context.Context, rowID uint64) (entity.Paper, error) {
 	sql := `
 		SELECT
 			tag_version,
@@ -175,7 +181,7 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 			created_at,
 			updated_at
 		FROM
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
+			` + module.DBTableNamePapers + `
 		WHERE
 			paper_id = $1 AND deleted_at IS NULL
 		LIMIT 1;`
@@ -207,58 +213,20 @@ func (re *PaperPostgres) FetchOne(ctx context.Context, rowID mrtype.KeyInt32) (e
 }
 
 // FetchIDByArticle - comment method.
-func (re *PaperPostgres) FetchIDByArticle(ctx context.Context, article string) (mrtype.KeyInt32, error) {
-	sql := `
-		SELECT
-			paper_id
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
-		WHERE
-			paper_article = $1 AND deleted_at IS NULL
-		LIMIT 1;`
-
-	var rowID mrtype.KeyInt32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		article,
-	).Scan(
-		&rowID,
-	)
-
-	return rowID, err
+func (re *PaperPostgres) FetchIDByArticle(ctx context.Context, article string) (rowID uint64, err error) {
+	return re.repoIDByArticle.Fetch(ctx, article)
 }
 
 // FetchStatus - comment method.
 // result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID mrtype.KeyInt32) (mrenum.ItemStatus, error) {
-	sql := `
-		SELECT
-			paper_status
-		FROM
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
-		WHERE
-			paper_id = $1 AND deleted_at IS NULL
-		LIMIT 1;`
-
-	var status mrenum.ItemStatus
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		rowID,
-	).Scan(
-		&status,
-	)
-
-	return status, err
+func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+	return re.repoStatus.Fetch(ctx, rowID)
 }
 
 // Insert - comment method.
-func (re *PaperPostgres) Insert(ctx context.Context, row entity.Paper) (mrtype.KeyInt32, error) {
+func (re *PaperPostgres) Insert(ctx context.Context, row entity.Paper) (rowID uint64, err error) {
 	sql := `
-		INSERT INTO ` + module.DBSchema + `.` + module.DBTableNamePapers + `
+		INSERT INTO ` + module.DBTableNamePapers + `
 			(
 				paper_article,
 				paper_caption,
@@ -277,7 +245,7 @@ func (re *PaperPostgres) Insert(ctx context.Context, row entity.Paper) (mrtype.K
 		RETURNING
 			paper_id;`
 
-	err := re.client.Conn(ctx).QueryRow(
+	err = re.client.Conn(ctx).QueryRow(
 		ctx,
 		sql,
 		row.Article,
@@ -299,9 +267,8 @@ func (re *PaperPostgres) Insert(ctx context.Context, row entity.Paper) (mrtype.K
 }
 
 // Update - comment method.
-func (re *PaperPostgres) Update(ctx context.Context, row entity.Paper) (int32, error) {
-	set, err := re.sqlUpdate.SetFromEntity(row)
-
+func (re *PaperPostgres) Update(ctx context.Context, row entity.Paper) (tagVersion uint32, err error) {
+	set, err := re.sqlBuilder.Set().BuildEntity(row)
 	if err != nil || set.Empty() {
 		return 0, err
 	}
@@ -311,11 +278,11 @@ func (re *PaperPostgres) Update(ctx context.Context, row entity.Paper) (int32, e
 		row.TagVersion,
 	}
 
-	setStr, setArgs := set.WithParam(len(args) + 1).ToSQL()
+	setStr, setArgs := set.WithStartArg(len(args) + 1).ToSQL()
 
 	sql := `
 		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
+			` + module.DBTableNamePapers + `
 		SET
 			tag_version = tag_version + 1,
 			updated_at = NOW(),
@@ -324,8 +291,6 @@ func (re *PaperPostgres) Update(ctx context.Context, row entity.Paper) (int32, e
 			paper_id = $1 AND tag_version = $2 AND deleted_at IS NULL
 		RETURNING
 			tag_version;`
-
-	var tagVersion int32
 
 	err = re.client.Conn(ctx).QueryRow(
 		ctx,
@@ -339,48 +304,40 @@ func (re *PaperPostgres) Update(ctx context.Context, row entity.Paper) (int32, e
 }
 
 // UpdateStatus - comment method.
-func (re *PaperPostgres) UpdateStatus(ctx context.Context, row entity.Paper) (int32, error) {
-	sql := `
-		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
-		SET
-			tag_version = tag_version + 1,
-			updated_at = NOW(),
-			paper_status = $3
-		WHERE
-			paper_id = $1 AND tag_version = $2 AND deleted_at IS NULL
-		RETURNING
-			tag_version;`
-
-	var tagVersion int32
-
-	err := re.client.Conn(ctx).QueryRow(
-		ctx,
-		sql,
-		row.ID,
-		row.TagVersion,
-		row.Status,
-	).Scan(
-		&tagVersion,
-	)
-
-	return tagVersion, err
+func (re *PaperPostgres) UpdateStatus(ctx context.Context, row entity.Paper) (tagVersion uint32, err error) {
+	return re.repoStatus.Update(ctx, row.ID, row.TagVersion, row.Status)
 }
 
 // Delete - comment method.
-func (re *PaperPostgres) Delete(ctx context.Context, rowID mrtype.KeyInt32) error {
-	sql := `
-		UPDATE
-			` + module.DBSchema + `.` + module.DBTableNamePapers + `
-		SET
-			tag_version = tag_version + 1,
-			deleted_at = NOW()
-		WHERE
-			paper_id = $1 AND deleted_at IS NULL;`
+func (re *PaperPostgres) Delete(ctx context.Context, rowID uint64) error {
+	return re.repoSoftDeleter.Delete(ctx, rowID)
+}
 
-	return re.client.Conn(ctx).Exec(
-		ctx,
-		sql,
-		rowID,
+func (re *PaperPostgres) fetchCondition(filter entity.PaperListFilter) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.Condition().HelpFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(paper_article)", "UPPER(paper_caption)"}, strings.ToUpper(filter.SearchText)),
+				c.FilterAnyOf("type_id", filter.TypeIDs),
+				c.FilterAnyOf("color_id", filter.ColorIDs),
+				c.FilterAnyOf("facture_id", filter.FactureIDs),
+				c.FilterRangeFloat64("paper_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("paper_height", mrtype.RangeFloat64(filter.Height), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("paper_density", mrtype.RangeFloat64(filter.Density), 0, mrlib.EqualityThresholdE9),
+				c.FilterAnyOf("paper_status", filter.Statuses),
+			)
+		},
+	)
+}
+
+func (re *PaperPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
+	return re.sqlBuilder.OrderBy().HelpFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(sorter.FieldName, sorter.Direction),
+				o.Field("paper_id", mrenum.SortDirectionASC),
+			)
+		},
 	)
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
 	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
@@ -50,7 +49,7 @@ func (ht *Box) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: boxListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: boxItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: boxItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: boxItemURL, Func: ht.Store},
 		{Method: http.MethodDelete, URL: boxItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: boxItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -186,8 +185,8 @@ func (ht *Box) Remove(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.SendNoContent(w)
 }
 
-func (ht *Box) getItemID(r *http.Request) mrtype.KeyInt32 {
-	return ht.parser.PathKeyInt32(r, "id")
+func (ht *Box) getItemID(r *http.Request) uint64 {
+	return ht.parser.PathParamUint64(r, "id")
 }
 
 func (ht *Box) getRawItemID(r *http.Request) string {

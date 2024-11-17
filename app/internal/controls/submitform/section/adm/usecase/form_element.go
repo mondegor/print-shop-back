@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-components/mrsort"
+	"github.com/mondegor/go-components/mrordering"
 	"github.com/mondegor/go-sysmess/mrmsg"
 	"github.com/mondegor/go-webcore/mrcore"
 	"github.com/mondegor/go-webcore/mrenum"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -25,7 +25,7 @@ type (
 		storage            adm.FormElementStorage
 		submitFormAPI      SubmitFormAPI
 		elementTemplateAPI api.ElementTemplateHeader
-		ordererAPI         mrsort.Orderer
+		orderingAPI        mrordering.Mover
 		eventEmitter       mrsender.EventEmitter
 		errorWrapper       mrcore.UseCaseErrorWrapper
 	}
@@ -41,7 +41,7 @@ func NewFormElement(
 	storage adm.FormElementStorage,
 	submitFormAPI SubmitFormAPI,
 	elementTemplateAPI api.ElementTemplateHeader,
-	ordererAPI mrsort.Orderer,
+	orderingAPI mrordering.Mover,
 	eventEmitter mrsender.EventEmitter,
 	errorWrapper mrcore.UseCaseErrorWrapper,
 ) *FormElement {
@@ -49,15 +49,15 @@ func NewFormElement(
 		storage:            storage,
 		submitFormAPI:      submitFormAPI,
 		elementTemplateAPI: elementTemplateAPI,
-		ordererAPI:         ordererAPI,
-		eventEmitter:       eventEmitter,
+		orderingAPI:        orderingAPI,
+		eventEmitter:       decorator.NewSourceEmitter(eventEmitter, entity.ModelNameFormElement),
 		errorWrapper:       errorWrapper,
 	}
 }
 
 // GetItem - comment method.
-func (uc *FormElement) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (entity.FormElement, error) {
-	if itemID < 1 {
+func (uc *FormElement) GetItem(ctx context.Context, itemID uint64) (entity.FormElement, error) {
+	if itemID == 0 {
 		return entity.FormElement{}, mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -70,27 +70,27 @@ func (uc *FormElement) GetItem(ctx context.Context, itemID mrtype.KeyInt32) (ent
 }
 
 // Create - comment method.
-func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (mrtype.KeyInt32, error) {
-	if err := uc.initItemBeforeCreate(ctx, &item); err != nil {
+func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (itemID uint64, err error) {
+	if err = uc.initItemBeforeCreate(ctx, &item); err != nil {
 		return 0, err
 	}
 
-	if err := uc.checkForm(ctx, &item); err != nil {
+	if err = uc.checkForm(ctx, &item); err != nil {
 		return 0, err
 	}
 
-	if err := uc.checkItem(ctx, &item); err != nil {
+	if err = uc.checkItem(ctx, &item); err != nil {
 		return 0, err
 	}
 
-	itemID, err := uc.storage.Insert(ctx, item)
+	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
 		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormElement)
 	}
 
-	uc.emitEvent(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
 
-	if err = uc.getOrdererAPI(item.FormID).MoveToLast(ctx, itemID); err != nil {
+	if err = uc.orderingAPI.MoveToLast(ctx, itemID, uc.storage.NewCondition(item.FormID)); err != nil {
 		mrlog.Ctx(ctx).Error().Err(err)
 	}
 
@@ -99,11 +99,11 @@ func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (mrt
 
 // Store - comment method.
 func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error {
-	if item.ID < 1 {
+	if item.ID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
-	if item.TagVersion < 1 {
+	if item.TagVersion == 0 {
 		return mrcore.ErrUseCaseEntityVersionInvalid.New()
 	}
 
@@ -126,14 +126,14 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormElement)
 	}
 
-	uc.emitEvent(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
 
 // Remove - comment method.
-func (uc *FormElement) Remove(ctx context.Context, itemID mrtype.KeyInt32) error {
-	if itemID < 1 {
+func (uc *FormElement) Remove(ctx context.Context, itemID uint64) error {
+	if itemID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -142,7 +142,7 @@ func (uc *FormElement) Remove(ctx context.Context, itemID mrtype.KeyInt32) error
 		return err
 	}
 
-	if err = uc.getOrdererAPI(formID).Unlink(ctx, itemID); err != nil {
+	if err = uc.orderingAPI.Unlink(ctx, itemID, uc.storage.NewCondition(formID)); err != nil {
 		return err
 	}
 
@@ -150,14 +150,14 @@ func (uc *FormElement) Remove(ctx context.Context, itemID mrtype.KeyInt32) error
 		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, itemID)
 	}
 
-	uc.emitEvent(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
 
 	return nil
 }
 
 // MoveAfterID - comment method.
-func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID mrtype.KeyInt32) error {
-	if itemID < 1 {
+func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID uint64) error {
+	if itemID == 0 {
 		return mrcore.ErrUseCaseEntityNotFound.New()
 	}
 
@@ -166,11 +166,11 @@ func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID mrtype.K
 		return err
 	}
 
-	if err = uc.getOrdererAPI(formID).MoveAfterID(ctx, itemID, afterID); err != nil {
+	if err = uc.orderingAPI.MoveAfterID(ctx, itemID, afterID, uc.storage.NewCondition(formID)); err != nil {
 		return err
 	}
 
-	uc.emitEvent(ctx, "Move", mrmsg.Data{"id": itemID, "afterId": afterID})
+	uc.eventEmitter.Emit(ctx, "Move", mrmsg.Data{"id": itemID, "afterId": afterID})
 
 	return nil
 }
@@ -241,13 +241,7 @@ func (uc *FormElement) checkParamName(ctx context.Context, item *entity.FormElem
 	return nil
 }
 
-func (uc *FormElement) getOrdererAPI(formID uuid.UUID) mrsort.Orderer {
-	meta := uc.storage.NewOrderMeta(formID)
-
-	return uc.ordererAPI.WithMetaData(meta)
-}
-
-func (uc *FormElement) getFormID(ctx context.Context, itemID mrtype.KeyInt32) (uuid.UUID, error) {
+func (uc *FormElement) getFormID(ctx context.Context, itemID uint64) (uuid.UUID, error) {
 	// TODO: можно оптимизировать загружая только FormID
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
@@ -259,13 +253,4 @@ func (uc *FormElement) getFormID(ctx context.Context, itemID mrtype.KeyInt32) (u
 	}
 
 	return item.FormID, nil
-}
-
-func (uc *FormElement) emitEvent(ctx context.Context, eventName string, data mrmsg.Data) {
-	uc.eventEmitter.EmitWithSource(
-		ctx,
-		eventName,
-		entity.ModelNameFormElement,
-		data,
-	)
 }

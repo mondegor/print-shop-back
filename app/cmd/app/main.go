@@ -10,6 +10,9 @@ import (
 	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
+	"github.com/mondegor/go-webcore/mrworker"
+	"github.com/mondegor/go-webcore/mrworker/process/onstartup"
+	"github.com/mondegor/go-webcore/mrworker/process/signal"
 	"github.com/oklog/run"
 
 	"github.com/mondegor/print-shop-back/cmd/factory"
@@ -35,20 +38,32 @@ func runApp(ctx context.Context, args []string, stdout io.Writer) error {
 		return err
 	}
 
-	// close opened shared resources when app shutdown (db, redis, etc...)
-	defer mrlib.CallEachFunc(ctx, opts.OpenedResources)
+	defer func() {
+		// close opened shared resources when app shutdown (db, redis, etc...)
+		mrlib.CallEachFunc(ctx, opts.OpenedResources)
+		mrlog.Ctx(ctx).Info().Msg("The application has been stopped")
+	}()
 
 	appRunner := mrrun.NewAppRunner(&run.Group{})
-	ctx, chLast := appRunner.AddSignalHandler(ctx)
+	ctx, interception := signal.NewInterception(ctx)
+	lastStarting := appRunner.AddFirstProcess(ctx, interception)
 
-	// init task scheduler
+	// init services
 	{
+		mailer, tasks := factory.NewMailerService(ctx, opts)
+		opts.SchedulerTasks = append(opts.SchedulerTasks, tasks...)
+		lastStarting = appRunner.AddNextProcess(ctx, mailer, lastStarting)
+
+		notifier, tasks := factory.NewNotifierService(ctx, opts)
+		opts.SchedulerTasks = append(opts.SchedulerTasks, tasks...)
+		lastStarting = appRunner.AddNextProcess(ctx, notifier, lastStarting)
+
 		scheduler, err := factory.NewTaskScheduler(ctx, opts)
 		if err != nil {
 			return fmt.Errorf("factory.NewScheduler(): %w", err)
 		}
 
-		chLast = appRunner.AddNextProcess(ctx, scheduler, chLast)
+		lastStarting = appRunner.AddNextProcess(ctx, scheduler, lastStarting)
 	}
 
 	// init app servers
@@ -58,30 +73,35 @@ func runApp(ctx context.Context, args []string, stdout io.Writer) error {
 			return fmt.Errorf("factory.NewRestServer(): %w", err)
 		}
 
-		chLast = appRunner.AddNextProcess(ctx, restServer, chLast)
+		lastStarting = appRunner.AddNextProcess(ctx, restServer, lastStarting)
 
 		internalServer, err := factory.NewInternalServer(ctx, opts)
 		if err != nil {
 			return fmt.Errorf("factory.NewInternalServer(): %w", err)
 		}
 
-		appRunner.AddNextProcess(ctx, internalServer, chLast)
+		lastStarting = appRunner.AddNextProcess(ctx, internalServer, lastStarting)
 	}
 
-	// run app and its servers
-	logger := mrlog.Ctx(ctx)
-	logger.Info().Msg("Starting the application...")
+	// the last process in the startup app chain
+	{
+		onStartupProcess := onstartup.NewProcess(
+			mrworker.JobFunc(
+				func(ctx context.Context) error {
+					opts.AppHealth.StartupCompleted()
+					mrlog.Ctx(ctx).Info().Msg("The application started, waiting for requests. To exit press CTRL+C")
 
-	onStartup := func() {
-		logger.Info().Msg("The application started, waiting for requests. To exit press CTRL+C")
-		opts.AppHealth.StartupCompleted()
+					return nil
+				},
+			),
+		)
+
+		appRunner.AddNextProcess(ctx, onStartupProcess, lastStarting)
 	}
 
-	if err = appRunner.Run(onStartup); err != nil {
+	if err = appRunner.Run(); err != nil {
 		return fmt.Errorf("the application has been stopped with error: %w", err)
 	}
-
-	logger.Info().Msg("The application has been stopped")
 
 	return nil
 }

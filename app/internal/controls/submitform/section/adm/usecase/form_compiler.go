@@ -98,8 +98,8 @@ func (uc *FormCompilerJson) correctField(parentName string, field *uiform.UIFiel
 
 		if !isNullOrRequired {
 			field.EnabledValues = []uiform.UIFieldItem{
-				{ID: parentName + "_Disabled", IsChecked: mrtype.BoolToPointer(false)},
-				{ID: parentName + "_Enabled", IsChecked: mrtype.BoolToPointer(true)},
+				{ID: parentName + "_Disabled", IsChecked: mrtype.CastBoolToPointer(false)},
+				{ID: parentName + "_Enabled", IsChecked: mrtype.CastBoolToPointer(true)},
 			}
 		}
 	}

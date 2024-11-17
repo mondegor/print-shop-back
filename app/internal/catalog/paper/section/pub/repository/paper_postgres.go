@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
+	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
@@ -15,7 +15,11 @@ import (
 type (
 	// PaperPostgres - comment struct.
 	PaperPostgres struct {
-		client mrstorage.DBConnManager
+		client         mrstorage.DBConnManager
+		repoTypeIDs    db.ColumnFetcher[mrenum.ItemStatus, uint64]
+		repoColorIDs   db.ColumnFetcher[mrenum.ItemStatus, uint64]
+		repoDensities  db.ColumnFetcher[mrenum.ItemStatus, measure.KilogramPerMeter2]
+		repoFactureIDs db.ColumnFetcher[mrenum.ItemStatus, uint64]
 	}
 )
 
@@ -23,6 +27,34 @@ type (
 func NewPaperPostgres(client mrstorage.DBConnManager) *PaperPostgres {
 	return &PaperPostgres{
 		client: client,
+		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+			client,
+			module.DBTableNamePapers,
+			"type_id",
+			"paper_status",
+			module.DBFieldDeletedAt,
+		),
+		repoColorIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+			client,
+			module.DBTableNamePapers,
+			"color_id",
+			"paper_status",
+			module.DBFieldDeletedAt,
+		),
+		repoDensities: db.NewColumnFetcher[mrenum.ItemStatus, measure.KilogramPerMeter2](
+			client,
+			module.DBTableNamePapers,
+			"paper_density",
+			"paper_status",
+			module.DBFieldDeletedAt,
+		),
+		repoFactureIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+			client,
+			module.DBTableNamePapers,
+			"facture_id",
+			"paper_status",
+			module.DBFieldDeletedAt,
+		),
 	}
 }
 
@@ -42,7 +74,7 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 			paper_density,
 			paper_sides
         FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePapers + `
+            ` + module.DBTableNamePapers + `
         WHERE
             paper_status = $1 AND deleted_at IS NULL
         ORDER BY
@@ -88,169 +120,21 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 }
 
 // FetchTypeIDs - comment method.
-func (re *PaperPostgres) FetchTypeIDs(ctx context.Context) ([]mrtype.KeyInt32, error) {
-	sql := `
-        SELECT
-			type_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePapers + `
-        WHERE
-            paper_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            type_id
-		ORDER BY type_id ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]mrtype.KeyInt32, 0)
-
-	for cursor.Next() {
-		var typeID mrtype.KeyInt32
-
-		err = cursor.Scan(
-			&typeID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, typeID)
-	}
-
-	return rows, cursor.Err()
+func (re *PaperPostgres) FetchTypeIDs(ctx context.Context) ([]uint64, error) {
+	return re.repoTypeIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
 }
 
 // FetchColorIDs - comment method.
-func (re *PaperPostgres) FetchColorIDs(ctx context.Context) ([]mrtype.KeyInt32, error) {
-	sql := `
-        SELECT
-			color_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePapers + `
-        WHERE
-            paper_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            color_id
-		ORDER BY color_id ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]mrtype.KeyInt32, 0)
-
-	for cursor.Next() {
-		var colorID mrtype.KeyInt32
-
-		err = cursor.Scan(
-			&colorID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, colorID)
-	}
-
-	return rows, cursor.Err()
+func (re *PaperPostgres) FetchColorIDs(ctx context.Context) ([]uint64, error) {
+	return re.repoColorIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
 }
 
 // FetchDensities - comment method.
 func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.KilogramPerMeter2, error) {
-	sql := `
-        SELECT
-			paper_density
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePapers + `
-        WHERE
-            paper_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            paper_density
-		ORDER BY paper_density ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]measure.KilogramPerMeter2, 0)
-
-	for cursor.Next() {
-		var typeID measure.KilogramPerMeter2
-
-		err = cursor.Scan(
-			&typeID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, typeID)
-	}
-
-	return rows, cursor.Err()
+	return re.repoDensities.Fetch(ctx, mrenum.ItemStatusEnabled)
 }
 
 // FetchFactureIDs - comment method.
-func (re *PaperPostgres) FetchFactureIDs(ctx context.Context) ([]mrtype.KeyInt32, error) {
-	sql := `
-        SELECT
-			facture_id
-        FROM
-            ` + module.DBSchema + `.` + module.DBTableNamePapers + `
-        WHERE
-            paper_status = $1 AND deleted_at IS NULL
-        GROUP BY
-            facture_id
-		ORDER BY facture_id ASC;`
-
-	cursor, err := re.client.Conn(ctx).Query(
-		ctx,
-		sql,
-		mrenum.ItemStatusEnabled,
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	defer cursor.Close()
-
-	rows := make([]mrtype.KeyInt32, 0)
-
-	for cursor.Next() {
-		var factureID mrtype.KeyInt32
-
-		err = cursor.Scan(
-			&factureID,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		rows = append(rows, factureID)
-	}
-
-	return rows, cursor.Err()
+func (re *PaperPostgres) FetchFactureIDs(ctx context.Context) ([]uint64, error) {
+	return re.repoFactureIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
 }

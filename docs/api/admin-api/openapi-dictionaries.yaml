@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.4.3
+  version: v0.4.4
   title: Private API print-shop управления справочниками
   license:
     name: Apache-2.0
@@ -1035,6 +1035,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 0
         maximum: 1024
         default: 0
@@ -1047,6 +1048,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         minimum: 1
         maximum: 1024
         default: 50
@@ -1085,6 +1087,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 200000 # 100 mm
 
@@ -1095,6 +1098,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 200000 # 100 mm
 
@@ -1105,6 +1109,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 100000 # 100 mm
 
@@ -1115,6 +1120,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 100000 # 100 mm
 
@@ -1125,6 +1131,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 100000 # 100 mm
 
@@ -1135,6 +1142,7 @@ components:
       required: false
       schema:
         type: integer
+        # format: uint64
         maxLength: 10
       example: 100000 # 100 mm
 
@@ -1145,6 +1153,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -1155,6 +1164,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -1165,6 +1175,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -1175,6 +1186,7 @@ components:
       required: true
       schema:
         type: integer
+        # format: uint64
         minimum: 1
       example: 1000
 
@@ -1213,18 +1225,21 @@ components:
     App.Field.ListPager.Total:
       description: Количество записей в БД с учётом указанных в запросе фильтров
       type: integer
+      # format: uint64
       minimum: 0
       example: 584
 
     App.Field.TagVersion:
       description: Текущая версия записи
       type: integer
+      # format: uint32
       minimum: 1
       example: 5
 
     App.Field.Measure.Millimeter:
       description: Миллиметр (mm)
       type: integer
+      format: int64
       maxLength: 8
       minimum: 0
       example: 1000 # 1m
@@ -1309,33 +1324,34 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
+          # format: uint64
           example: 9223372036854775807
 
     Custom.Field.Dictionaries.MaterialTypeID:
       description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PaperColorID:
       description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PaperFactureID:
       description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
     Custom.Field.Dictionaries.PrintFormatID:
       description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
       type: integer
-      format: int32
+      # format: uint64
       minimum: 1
       example: 2
 
