@@ -1,6 +1,14 @@
 # Print Shop Back Changelog
 Все изменения сервиса Print Shop Back будут документироваться на этой странице.
 
+## 2024-11-30
+### Added
+- Добавлены настройки для отправки писем и телеграмм сообщений;
+
+### Changed
+- Обновлен `debugging.error_caller.upper_bounds`;
+- Заменён `UseCaseHelper` -> `UseCaseErrorWrapper`;
+
 ## 2024-11-17
 ### Added
 - Подключены сервисы `mrnotifier` и `mrmailer` для отправки персонализированных уведомлений;

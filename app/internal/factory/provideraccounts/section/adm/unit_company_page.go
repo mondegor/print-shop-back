@@ -40,7 +40,7 @@ func newUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (*ht
 			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewCompanyPage(storage, opts.UseCaseHelper, opts.UnitCompanyPage.LogoURLBuilder)
+	useCase := usecase.NewCompanyPage(storage, opts.UseCaseErrorWrapper, opts.UnitCompanyPage.LogoURLBuilder)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,

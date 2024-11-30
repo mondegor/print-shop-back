@@ -64,8 +64,8 @@ func NewNotifierService(ctx context.Context, opts app.Options) (mrrun.Process, [
 		mrnotifier.WithSendProcessorOpts(
 			consume.WithCaption(opts.Cfg.TaskSchedule.Notifier.SendProcessor.Caption),
 			consume.WithReadyTimeout(opts.Cfg.TaskSchedule.Notifier.SendProcessor.ReadyTimeout),
+			consume.WithStartReadDelay(opts.Cfg.TaskSchedule.Notifier.SendProcessor.StartReadDelay),
 			consume.WithReadPeriod(opts.Cfg.TaskSchedule.Notifier.SendProcessor.ReadPeriod),
-			consume.WithBusyReadPeriod(opts.Cfg.TaskSchedule.Notifier.SendProcessor.BusyReadPeriod),
 			consume.WithCancelReadTimeout(opts.Cfg.TaskSchedule.Notifier.SendProcessor.CancelReadTimeout),
 			consume.WithHandlerTimeout(opts.Cfg.TaskSchedule.Notifier.SendProcessor.HandlerTimeout),
 			consume.WithQueueSize(opts.Cfg.TaskSchedule.Notifier.SendProcessor.QueueSize),

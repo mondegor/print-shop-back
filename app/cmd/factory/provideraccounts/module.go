@@ -21,10 +21,10 @@ func NewModuleOptions(_ context.Context, opts app.Options) (provideraccounts.Opt
 	}
 
 	return provideraccounts.Options{
-		EventEmitter:  opts.EventEmitter,
-		UseCaseHelper: mrapp.NewUseCaseErrorWrapper(),
-		DBConnManager: opts.PostgresConnManager,
-		Locker:        opts.Locker,
+		EventEmitter:        opts.EventEmitter,
+		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		DBConnManager:       opts.PostgresConnManager,
+		Locker:              opts.Locker,
 		RequestParsers: provideraccounts.RequestParsers{
 			// Parser:       opts.RequestParsers.Parser,
 			// ExtendParser: opts.RequestParsers.ExtendParser,

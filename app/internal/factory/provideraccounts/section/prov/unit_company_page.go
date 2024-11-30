@@ -35,7 +35,7 @@ func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*http
 		opts.DBConnManager,
 		storage,
 		opts.EventEmitter,
-		opts.UseCaseHelper,
+		opts.UseCaseErrorWrapper,
 		opts.UnitCompanyPage.LogoURLBuilder,
 	)
 	controller := httpv1.NewCompanyPage(
@@ -54,7 +54,7 @@ func newUnitCompanyPageLogo(_ context.Context, opts provideraccounts.Options) (*
 		opts.UnitCompanyPage.LogoFileAPI,
 		opts.Locker,
 		opts.EventEmitter,
-		opts.UseCaseHelper,
+		opts.UseCaseErrorWrapper,
 	)
 	controller := httpv1.NewCompanyPageLogo(
 		opts.RequestParsers.ModuleParser,

@@ -11,9 +11,9 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		UseCaseHelper  mrcore.UseCaseErrorWrapper
-		RequestParser  *mrparser.String
-		ResponseSender mrserver.FileResponseSender
+		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
+		RequestParser       *mrparser.String
+		ResponseSender      mrserver.FileResponseSender
 
 		UnitImageProxy UnitImageProxyOptions
 	}

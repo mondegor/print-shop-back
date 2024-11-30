@@ -18,11 +18,12 @@ debugging:
       - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).Perform
       - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).PerformWithCommit
       - github.com/mondegor/go-webcore/mrlog/zerolog.(*eventAdapter).Err
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
+      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).begin
       - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Exec
+      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
       - github.com/mondegor/go-storage/mrpostgres.(*queryRow).Scan
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Err
+      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
       - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
 
 logger:
@@ -117,6 +118,17 @@ translation:
       - dictionaries/paper-colors
       - dictionaries/paper-factures
       - dictionaries/print-formats
+
+senders:
+  mail:
+    # default_from: PrintShop <username@yandex.ru>
+    # smtp_host: smtp.yandex.ru
+    # smtp_port: 587 # STARTTLS
+    # smtp_user_name: username
+    # smtp_password: password
+  telegram_bot:
+    # name: "@Telegram_Bot"
+    # token: "0000000000:AAAaaAAaaAAaaAAAA0AAaaaaAaAAAAAAa_a"
 
 app_sections:
   admin_api:
@@ -236,8 +248,8 @@ task_schedule:
     send_processor:
       caption: "Mailer.SendProcessor"
       ready_timeout: 60s
+      start_read_delay: 5s
       read_period: 30s
-      busy_read_period: 15s
       cancel_read_timeout: 5s
       handler_timeout: 30s
       queue_size: 25
@@ -262,8 +274,8 @@ task_schedule:
     send_processor:
       caption: "Notifier.SendProcessor"
       ready_timeout: 60s
+      start_read_delay: 0s
       read_period: 30s
-      busy_read_period: 15s
       cancel_read_timeout: 5s
       handler_timeout: 30s
       queue_size: 25

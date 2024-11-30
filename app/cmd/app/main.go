@@ -50,7 +50,11 @@ func runApp(ctx context.Context, args []string, stdout io.Writer) error {
 
 	// init services
 	{
-		mailer, tasks := factory.NewMailerService(ctx, opts)
+		mailer, tasks, err := factory.NewMailerService(ctx, opts)
+		if err != nil {
+			return fmt.Errorf("factory.NewMailerService(): %w", err)
+		}
+
 		opts.SchedulerTasks = append(opts.SchedulerTasks, tasks...)
 		lastStarting = appRunner.AddNextProcess(ctx, mailer, lastStarting)
 
@@ -60,7 +64,7 @@ func runApp(ctx context.Context, args []string, stdout io.Writer) error {
 
 		scheduler, err := factory.NewTaskScheduler(ctx, opts)
 		if err != nil {
-			return fmt.Errorf("factory.NewScheduler(): %w", err)
+			return fmt.Errorf("factory.NewTaskScheduler(): %w", err)
 		}
 
 		lastStarting = appRunner.AddNextProcess(ctx, scheduler, lastStarting)

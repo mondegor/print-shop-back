@@ -28,9 +28,9 @@ func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options,
 	}
 
 	return filestation.Options{
-		UseCaseHelper:  mrapp.NewUseCaseErrorWrapper(),
-		RequestParser:  opts.RequestParsers.String,
-		ResponseSender: opts.ResponseSenders.FileSender,
+		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		RequestParser:       opts.RequestParsers.String,
+		ResponseSender:      opts.ResponseSenders.FileSender,
 
 		UnitImageProxy: filestation.UnitImageProxyOptions{
 			FileAPI:  fileAPI,

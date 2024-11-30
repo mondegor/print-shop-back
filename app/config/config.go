@@ -33,6 +33,7 @@ type (
 		FileProviders   `yaml:"file_providers"`
 		Cors            `yaml:"cors"`
 		Translation     `yaml:"translation"`
+		Senders         `yaml:"senders"`
 		AppSections     `yaml:"app_sections"`
 		AccessControl   `yaml:"access_control"`
 		ModulesSettings `yaml:"modules_settings"`
@@ -170,6 +171,26 @@ type (
 		} `yaml:"dictionaries"`
 	}
 
+	// Senders - comment struct.
+	Senders struct {
+		Mail        SenderMail        `yaml:"mail"`
+		TelegramBot SenderTelegramBot `yaml:"telegram_bot"`
+	}
+
+	SenderMail struct {
+		DefaultFrom  string `yaml:"default_from" env:"APPX_SENDER_MAIL_DEFAULT_FROM"`    // e-mail от которого отправляются письма [по умолчанию]
+		SmtpHost     string `yaml:"smtp_host" env:"APPX_SENDER_MAIL_SMTP_HOST"`          // SMTP сервер для отправки почты (домен или IP)
+		SmtpPort     string `yaml:"smtp_port" env:"APPX_SENDER_MAIL_SMTP_PORT"`          // порт SMTP сервера для отправки почты
+		SmtpUserName string `yaml:"smtp_user_name" env:"APPX_SENDER_MAIL_SMTP_USERNAME"` // адрес почтового ящика на SMTP сервере
+		SmtpPassword string `yaml:"smtp_password" env:"APPX_SENDER_MAIL_SMTP_PASSWORD"`  // пароль почтового ящика на SMTP сервере
+	}
+
+	// SenderTelegramBot - comment struct.
+	SenderTelegramBot struct {
+		Name  string `yaml:"name" env:"APPX_SENDER_TELEGRAMBOT_NAME"`
+		Token string `yaml:"token" env:"APPX_SENDER_TELEGRAMBOT_TOKEN"`
+	}
+
 	// AppSections - comment struct.
 	AppSections struct {
 		// AdminAPI - comment struct.
@@ -295,8 +316,8 @@ type (
 	MessageProcessor struct {
 		Caption           string        `yaml:"caption"`
 		ReadyTimeout      time.Duration `yaml:"ready_timeout"`
+		StartReadDelay    time.Duration `yaml:"start_read_delay"`
 		ReadPeriod        time.Duration `yaml:"read_period"`
-		BusyReadPeriod    time.Duration `yaml:"busy_read_period"`
 		CancelReadTimeout time.Duration `yaml:"cancel_read_timeout"`
 		HandlerTimeout    time.Duration `yaml:"handler_timeout"`
 		QueueSize         uint32        `yaml:"queue_size"`
