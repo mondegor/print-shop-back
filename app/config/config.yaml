@@ -62,7 +62,7 @@ storage:
   database: db_pg
   migrations_dir: "./migrations" # if empty automatic migration will be disabled
   migrations_table: print_shop_migrations
-  max_pool_size: 10
+  max_pool_size: 2
   max_conn_lifetime: 1h
   max_conn_idle_time: 15m
   timeout: 60s
@@ -249,7 +249,7 @@ task_schedule:
       caption: "Mailer.SendProcessor"
       ready_timeout: 60s
       start_read_delay: 5s
-      read_period: 30s
+      read_period: 2m
       cancel_read_timeout: 5s
       handler_timeout: 30s
       queue_size: 25
@@ -257,12 +257,12 @@ task_schedule:
     change_from_to_retry:
       caption: "Mailer.ChangeFromToRetry"
       # startup: false
-      period: 30s
+      period: 600s
       timeout: 60s
     clean_queue:
       caption: "Mailer.CleanQueue"
       # startup: false
-      period: 40s # 45m
+      period: 45m
       timeout: 60s
     send_retry_attempts: 3
     send_delay_correction: 15s
@@ -275,7 +275,7 @@ task_schedule:
       caption: "Notifier.SendProcessor"
       ready_timeout: 60s
       start_read_delay: 0s
-      read_period: 30s
+      read_period: 2m
       cancel_read_timeout: 5s
       handler_timeout: 30s
       queue_size: 25
@@ -283,12 +283,12 @@ task_schedule:
     change_from_to_retry:
       caption: "Notifier.ChangeFromToRetry"
       # startup: false
-      period: 30s
+      period: 600s
       timeout: 60s
     clean_queue:
       caption: "Notifier.CleanQueue"
       # startup: false
-      period: 40m # 45m
+      period: 45m
       timeout: 60s
     send_retry_attempts: 3
     change_queue_limit: 100

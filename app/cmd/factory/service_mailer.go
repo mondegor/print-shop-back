@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/mondegor/go-components/factory/mrmailer"
+	mailer "github.com/mondegor/go-components/mrmailer"
 	"github.com/mondegor/go-components/mrmailer/component/handle"
 	"github.com/mondegor/go-components/mrmailer/component/produce"
 	"github.com/mondegor/go-components/mrmailer/provider/mail"
 	"github.com/mondegor/go-components/mrmailer/provider/messenger"
+	"github.com/mondegor/go-components/mrmailer/provider/nop"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
@@ -50,22 +52,33 @@ func NewMailerAPI(ctx context.Context, opts app.Options) *produce.MessageSender 
 func NewMailerService(ctx context.Context, opts app.Options) (mrrun.Process, []mrworker.Task, error) {
 	mrlog.Ctx(ctx).Info().Msg("Create and init mailer service")
 
-	telegramBot, err := telegrambot.NewMessageClient(opts.Cfg.Senders.TelegramBot.Token)
-	if err != nil {
-		return nil, nil, err
+	mailProvider := mailer.MessageProvider(nop.New())
+	telegramProvider := mailer.MessageProvider(nop.New())
+
+	if opts.Cfg.Senders.Mail.SmtpHost != "" {
+		provider, err := mail.New(
+			smtp.NewMailClient(
+				opts.Cfg.Senders.Mail.SmtpHost,
+				opts.Cfg.Senders.Mail.SmtpPort,
+				opts.Cfg.Senders.Mail.SmtpUserName,
+				opts.Cfg.Senders.Mail.SmtpPassword,
+			),
+			opts.Cfg.Senders.Mail.DefaultFrom,
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		mailProvider = provider
 	}
 
-	mailProvider, err := mail.New(
-		smtp.NewMailClient(
-			opts.Cfg.Senders.Mail.SmtpHost,
-			opts.Cfg.Senders.Mail.SmtpPort,
-			opts.Cfg.Senders.Mail.SmtpUserName,
-			opts.Cfg.Senders.Mail.SmtpPassword,
-		),
-		opts.Cfg.Senders.Mail.DefaultFrom,
-	)
-	if err != nil {
-		return nil, nil, err
+	if opts.Cfg.Senders.TelegramBot.Token != "" {
+		telegramBot, err := telegrambot.NewMessageClient(opts.Cfg.Senders.TelegramBot.Token)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		telegramProvider = messenger.New(telegramBot)
 	}
 
 	process, tasks := mrmailer.NewComponentService(
@@ -92,7 +105,7 @@ func NewMailerService(ctx context.Context, opts app.Options) (mrrun.Process, []m
 		),
 		mrmailer.WithSendHandlerOpts(
 			handle.WithClientEmail(mailProvider),
-			handle.WithClientMessenger(messenger.New(telegramBot)),
+			handle.WithClientMessenger(telegramProvider),
 		),
 		mrmailer.WithTaskChangeFromToRetryOpts(
 			task.WithCaption(opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Caption),
