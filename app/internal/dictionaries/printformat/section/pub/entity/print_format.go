@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/mondegor/print-shop-back/pkg/libs/measure"
+
 const (
 	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat" // ModelNamePrintFormat - название сущности
 )
@@ -7,10 +9,10 @@ const (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct { // DB: printshop_dictionaries.print_formats
-		ID      uint64 `json:"id"` // format_id
-		Caption string `json:"caption"`
-		Width   uint64 `json:"width"`
-		Height  uint64 `json:"height"`
+		ID      uint64        `json:"id"` // format_id
+		Caption string        `json:"caption"`
+		Width   measure.Meter `json:"width"`
+		Height  measure.Meter `json:"height"`
 	}
 
 	// PrintFormatParams - comment struct.

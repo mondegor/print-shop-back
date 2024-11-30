@@ -1805,9 +1805,9 @@ components:
             - maxLength: 64
             - example: "A4 (210 x 297 mm)"
         width:
-          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         height:
-          $ref: "#/components/schemas/App.Field.Measure.Millimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
 
     Controls.SubmitForms.PublicAPI.Response.Model.FormList:
       description: DTO - список типов ламината
