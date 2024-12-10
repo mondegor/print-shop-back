@@ -18,7 +18,6 @@ const (
 
 type (
 	// Laminate - comment struct.
-	// Laminate - comment struct.
 	Laminate struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender

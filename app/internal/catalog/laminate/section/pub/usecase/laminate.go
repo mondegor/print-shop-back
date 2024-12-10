@@ -12,7 +12,6 @@ import (
 
 type (
 	// Laminate - comment struct.
-	// Laminate - comment struct.
 	Laminate struct {
 		storage      pub.LaminateStorage
 		errorWrapper mrcore.UseCaseErrorWrapper

@@ -30,29 +30,29 @@ func NewPaperPostgres(client mrstorage.DBConnManager) *PaperPostgres {
 		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
-			"type_id",
 			"paper_status",
+			"type_id",
 			module.DBFieldDeletedAt,
 		),
 		repoColorIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
-			"color_id",
 			"paper_status",
+			"color_id",
 			module.DBFieldDeletedAt,
 		),
 		repoDensities: db.NewColumnFetcher[mrenum.ItemStatus, measure.KilogramPerMeter2](
 			client,
 			module.DBTableNamePapers,
-			"paper_density",
 			"paper_status",
+			"paper_density",
 			module.DBFieldDeletedAt,
 		),
 		repoFactureIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
-			"facture_id",
 			"paper_status",
+			"facture_id",
 			module.DBFieldDeletedAt,
 		),
 	}
