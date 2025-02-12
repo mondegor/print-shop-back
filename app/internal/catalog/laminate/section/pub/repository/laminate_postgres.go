@@ -28,15 +28,15 @@ func NewLaminatePostgres(client mrstorage.DBConnManager) *LaminatePostgres {
 		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
 			client,
 			module.DBTableNameLaminates,
-			"type_id",
 			"laminate_status",
+			"type_id",
 			module.DBFieldDeletedAt,
 		),
 		repoThicknesses: db.NewColumnFetcher[mrenum.ItemStatus, measure.Meter](
 			client,
 			module.DBTableNameLaminates,
-			"laminate_thickness",
 			"laminate_status",
+			"laminate_thickness",
 			module.DBFieldDeletedAt,
 		),
 	}
