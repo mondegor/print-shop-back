@@ -1,7 +1,5 @@
 ### Виджет спуск полос
 
-+ 
-
 Задача сформировать все возможные варианты спуска полос и отсортировать по наименьшему количеству отходов.
 Результат работы виджета список вариантов.
 
@@ -12,9 +10,16 @@
 ![Figma](imp.png)  
 [Прототип в Figma](https://www.figma.com/proto/IR6FyDyMlyLhJazR1kleIu/calc?page-id=1307%3A18&node-id=2213-1540&viewport=589%2C-6403%2C0.78&t=4VdE0S2YQ47Lwip5-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=1314%3A53&show-proto-sidebar=1)
 
+Графически отобразить в UI раскладку на листе:
+- без симметрии "useMirror": false
+- с поворотом остатка без симметрии
+- с поворотом остатка с симметрией
+- с симметрией "useMirror": true, без поворота остатка
+
+  ![Варианты спуска](layout.png)
 
 Request:
-````
+```
 {
 "itemFormat": "100x200",
 "itemDistance": "100x200",
@@ -22,14 +27,14 @@ Request:
 "disableRotation": true,
 "useMirror": true
 }
-````
+```
 Может есть смысл "disableRotation" переименовать в "useRotation"
 
 1. Request 1. Сначала рассчитываем с параметрами как задано в форме ().
 2. Request 2. Переворачиваем itemFormat: если было 100x200, то второй расчет для 200x100. Остальные параметры не меняем.
 
 Result:
-````
+```
 [
 {
 "name": "Результат 1",
@@ -68,4 +73,4 @@ Result:
 }
 },
 ]
-````
+```
