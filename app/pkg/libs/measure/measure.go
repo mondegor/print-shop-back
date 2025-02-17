@@ -1,6 +1,8 @@
 package measure
 
-import "github.com/mondegor/go-webcore/mrtype"
+import (
+	"github.com/mondegor/go-webcore/mrtype"
+)
 
 const (
 	DeltaThousand = 0.001     // DeltaThousand - дельта (одна десятитысячная) для сравнения float чисел

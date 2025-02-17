@@ -10,5 +10,6 @@ type (
 	// RectImpositionUseCase - comment interface.
 	RectImpositionUseCase interface {
 		Calc(ctx context.Context, data entity.ParsedData) (entity.AlgoResult, error)
+		CalcVariants(ctx context.Context, data entity.ParsedData) ([]entity.AlgoVariantResult, error)
 	}
 )

@@ -32,6 +32,8 @@ type (
 	// AlgoResult - результат вычислений спуска полос.
 	AlgoResult struct {
 		Layout    rect.Format     // формат листа, куда помещаются все изделия
+		Item      rect.Format     // формат изделия
+		Distance  rect.Format     // расстояние между изделиями
 		Fragments []base.Fragment // раскладка изделий на листе
 		Total     uint64          // общее кол-во элементов
 		RestArea  float64         // неиспользуемый остаток (m2)
@@ -147,6 +149,8 @@ func (ri *Algo) Calc(item rect.Item, out rect.Format, opts Options) (AlgoResult,
 
 	return AlgoResult{
 		Layout:    totalLayout,
+		Item:      item.Format,
+		Distance:  item.Distance,
 		Fragments: fragments,
 		Total:     fragments.Total(),
 		RestArea:  restArea,

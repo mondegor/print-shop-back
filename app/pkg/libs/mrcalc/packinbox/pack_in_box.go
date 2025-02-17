@@ -2,7 +2,6 @@ package packinbox
 
 import (
 	"fmt"
-
 	"github.com/mondegor/go-webcore/mrlog"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/parallelepiped"

@@ -67,6 +67,12 @@ func TestAlgoQuantity(t *testing.T) {
 			out:  rect.Format{},
 			want: base.Fragment{},
 		},
+		{
+			name: "Rect in (3 x 3)",
+			in:   rect.Format{Width: 0.1, Height: 0.1},
+			out:  rect.Format{Width: 0.3, Height: 0.3},
+			want: base.Fragment{ByWidth: 3, ByHeight: 3},
+		},
 	}
 	for _, tt := range tests {
 		tt := tt

@@ -21,8 +21,16 @@ type (
 	// AlgoResult - результат вычислений спуска полос.
 	AlgoResult struct {
 		Layout    rect.Format     `json:"layout"`
+		Item      rect.Format     `json:"item"`
+		Distance  rect.Format     `json:"distance"`
 		Fragments []base.Fragment `json:"fragments"`
 		Total     uint64          `json:"total"`
 		Garbage   float64         `json:"garbage"`
+	}
+
+	// AlgoVariantResult - .
+	AlgoVariantResult struct {
+		Name   string     `json:"name"`
+		Result AlgoResult `json:"result"`
 	}
 )

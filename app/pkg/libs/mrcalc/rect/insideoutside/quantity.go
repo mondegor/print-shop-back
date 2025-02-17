@@ -2,7 +2,7 @@ package insideoutside
 
 import (
 	"fmt"
-
+	"github.com/mondegor/go-webcore/mrlib"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/base"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/rect"
 )
@@ -25,7 +25,7 @@ func AlgoQuantity(in, out rect.Format) (base.Fragment, error) {
 // getQuantityInsideOnOutside - необходимо гарантировать in.Width > 0 и in.Height > 0.
 func getQuantityInsideOnOutside(in, out rect.Format) base.Fragment {
 	return base.Fragment{
-		ByWidth:  uint64(out.Width / in.Width),
-		ByHeight: uint64(out.Height / in.Height),
+		ByWidth:  uint64(mrlib.RoundFloat8(out.Width / in.Width)),
+		ByHeight: uint64(mrlib.RoundFloat8(out.Height / in.Height)),
 	}
 }
