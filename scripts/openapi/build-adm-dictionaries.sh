@@ -102,7 +102,7 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Kilogram.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.KilogramPerMeterS2.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.KilogramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter3.yaml"
