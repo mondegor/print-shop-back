@@ -1,0 +1,5 @@
+App.Field.Size3D:
+  description: Три целых числа в формате {first}x{second}x{third}
+  type: string
+  maxLength: 16
+  example: "100x200"

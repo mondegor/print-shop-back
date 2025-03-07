@@ -1,0 +1,53 @@
+Calculations.Algo.PublicAPI.Request.Model.SheetImposition:
+  description: DTO параметров алгоритма "Спуск полос"
+  type: object
+  required:
+    - itemFormat
+    - itemDistance
+    - outFormat
+  properties:
+    itemFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    itemDistance:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+        - description: Расстояние между элементами ({по горизонтали}x{по вертикали})
+    outFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    disableRotation:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Boolean"
+        - description: Запретить поворот остатка на 90 градусов
+    useMirror:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Boolean"
+        - description: Использовать зеркальное размещение элементов
+
+Calculations.Algo.PublicAPI.Response.Model.SheetImposition:
+  description: DTO - расчёта алгоритма "Спуск полос"
+  type: object
+  required:
+    - containerFormat
+    - fragmentDistance
+    - fragments
+    - totalElements
+    - garbage
+    - allowRotation
+    - useMirror
+  properties:
+    containerFormat:
+      $ref: "#/components/schemas/Custom.Field.Rect2dFormat"
+    fragmentDistance:
+      $ref: "#/components/schemas/App.Field.Measure.Meter"
+    fragments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Fragment"
+    totalElements:
+      $ref: "#/components/schemas/App.Field.Uint"
+    garbage:
+      $ref: "#/components/schemas/App.Field.Measure.Meter2"
+    allowRotation:
+      $ref: "#/components/schemas/App.Field.Boolean"
+    useMirror:
+      $ref: "#/components/schemas/App.Field.Boolean"

@@ -1,0 +1,90 @@
+Calculations.Algo.PublicAPI.Request.Model.SheetPackInStack:
+  description: DTO параметров алгоритма "Количество пачек пачек"
+  type: object
+  required:
+    - sheet
+    - quantityInStack
+  properties:
+    sheet:
+      $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.Sheet"
+    quantityInStack:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество изделий в пачке
+        - example: 200
+
+Calculations.Algo.PublicAPI.Request.Model.Sheet:
+  description: DTO изделия прямоугольного формата
+  type: object
+  required:
+    - format
+    - thickness
+    - density
+    - quantity
+  properties:
+    format:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    thickness:
+      $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+    density:
+      $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+    quantity:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество изделий
+        - example: 2600
+
+Calculations.Algo.PublicAPI.Response.Model.SheetPackInStack:
+  description: DTO - результат алгоритма "Количество пачек"
+  type: object
+  required:
+    - fullProduct
+    - totalQuantity
+    - totalWeight
+    - totalVolume
+  properties:
+    fullProduct:
+      allOf:
+        - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Product"
+        - description: Полностью заполненная пачка с изделиями
+    restProduct:
+      allOf:
+        - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Product"
+        - description: Пачка с остатком изделий
+    totalQuantity:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Uint"
+        - description: Количество пачек
+        - example: 17
+    totalWeight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+        - description: Общий вес пачек с изделиями
+        - example: 371.25
+    totalVolume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Общий объём пачек
+        - example: 17.25
+
+Calculations.Algo.PublicAPI.Response.Model.Product:
+  description: DTO пачки с изделиями
+  type: object
+  required:
+    - format
+    - weight
+    - volume
+  properties:
+    format:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Millimeter3"
+    weight:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+        - description: Вес пачки с изделиями
+        - example: 2.5
+    volume:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+        - description: Внешний объём пачки
+        - example: 0.04

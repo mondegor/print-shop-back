@@ -1,0 +1,49 @@
+Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideQuantity:
+  description: DTO - параметров алгоритмов размещений элементов на внешнем формате
+  type: object
+  required:
+    - inFormat
+    - outFormat
+  properties:
+    inFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    outFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+
+Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideQuantity:
+  description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - layout
+    - total
+  properties:
+    layout:
+      $ref: "#/components/schemas/Custom.Field.Layout"
+    total:
+      $ref: "#/components/schemas/App.Field.Uint"
+
+Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideMax:
+  description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - inFormat
+    - outFormat
+  properties:
+    inFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    outFormat:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+
+Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideMax:
+  description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+  type: object
+  required:
+    - fragments
+    - total
+  properties:
+    fragments:
+      type: array
+      items:
+        $ref: "#/components/schemas/Custom.Field.Fragment"
+    total:
+      $ref: "#/components/schemas/App.Field.Uint"

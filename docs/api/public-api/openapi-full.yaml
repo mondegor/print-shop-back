@@ -73,7 +73,7 @@ tags:
     description: Public API Files and images
 
 paths:
-  /v1/calculations/algo/circulation/pack-in-box:
+  /v1/calculations/algo/box/pack-in-box:
     post:
       summary: Метод расчёта количества и веса коробок для тиража
       description: |-
@@ -129,7 +129,7 @@ paths:
         items = 3
         QuantityBoxes = 0.3 мм * 1000 / (330 мм * 3) = 0.303 округлить до 1.
 
-      operationId: calcAlgoCirculationPackInBox
+      operationId: calcAlgoBoxPackInBox
       tags:
         - Calculations.Algo
 
@@ -142,15 +142,15 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.CirculationPackInBox"
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.BoxPackInBox"
 
       responses:
         "200":
-          description: Получен расчет количества и веса коробок
+          description: Получен расчет алгоритма
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox"
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.BoxPackInBox"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -160,7 +160,7 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/calculations/algo/rect/cutting-quantity:
+  /v1/calculations/algo/sheet/cutting-quantity:
     post:
       summary: Метод расчёта количества резов на печатном формате
       description: |-
@@ -180,15 +180,15 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity"
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetCuttingQuantity"
 
       responses:
         "200":
-          description: Получен расчет количества резов
+          description: Получен расчет алгоритма
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity"
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetCuttingQuantity"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -198,11 +198,11 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/calculations/algo/rect/imposition:
+  /v1/calculations/algo/sheet/imposition:
     post:
       summary: Метод расчёта спуска полос
       description: |-
-        Спуска полос - расположения элементов указанного формата на указанном печатном формате
+        Спуск полос - расположения элементов указанного формата на указанном печатном формате
 
       operationId: calcAlgoRectImposition
       tags:
@@ -217,15 +217,15 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectImposition"
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetImposition"
 
       responses:
         "200":
-          description: Получен расчет спуска полос
+          description: Получен расчет алгоритма
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectImposition"
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetImposition"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -235,7 +235,49 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/calculations/algo/rect/inside-on-outside-quantity:
+  /v1/calculations/algo/sheet/imposition/variants:
+    post:
+      summary: Метод расчёта спуска полос в двух вариантах
+      description: |-
+        Спуск полос - расположения элементов указанного формата на указанном печатном формате
+        Первый вариант: изделие раскладывается в указанном формате;
+        Второй вариант: изделие повёрнутое на 90 градусов;
+        Возвращаются все возможные варианты, если ни один вариант невозможен, то возвращается ошибка.
+
+      operationId: calcAlgoRectImpositionVariants
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetImposition"
+
+      responses:
+        "200":
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetImposition"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/sheet/inside-on-outside-quantity:
     post:
       summary: Метод расчёта количества размещений элементов на внешнем формате
       description: |-
@@ -255,15 +297,15 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideQuantity"
 
       responses:
         "200":
-          description: Получен расчет количества размещений элементов
+          description: Получен расчет алгоритма
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity"
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideQuantity"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -273,7 +315,7 @@ paths:
         "500":
           $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  /v1/calculations/algo/rect/inside-on-outside-max:
+  /v1/calculations/algo/sheet/inside-on-outside-max:
     post:
       summary: Метод расчёта максимальное количества размещений элементов на внешнем формате
       description: |-
@@ -293,15 +335,52 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity"
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideMax"
 
       responses:
         "200":
-          description: Получен расчет максимального количества размещений
+          description: Получен расчет алгоритма
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax"
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideMax"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/calculations/algo/sheet/pack-in-stack:
+    post:
+      summary: Метод расчёта количества пачек, изделий в пачке и веса пачки
+      description: |-
+        Возвращает количество пачек с изделиями, формат пачки, вес пачки.
+
+      operationId: calcAlgoSheetPackInStack
+      tags:
+        - Calculations.Algo
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetPackInStack"
+
+      responses:
+        "200":
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetPackInStack"
         "400":
           $ref: "#/components/responses/App.ResponseJson.Error400"
         "401":
@@ -957,19 +1036,6 @@ components:
       format: date-time
       example: "2023-01-01T12:00:00.000+03:00"
 
-    App.Field.DoubleSize:
-      description: Два целых числа в формате {first}x{second}
-      type: string
-      # format: rect-format
-      maxLength: 16
-      example: "100x200"
-
-    App.Field.Float64:
-      description: Дробное 64-х разрядное число
-      type: number
-      format: double
-      example: 83076403.209471
-
     App.Field.JsonData:
       description: Данные в формате json
       type: string
@@ -994,20 +1060,18 @@ components:
       maxLength: 32
       example: "rewrite-name"
 
+    App.Field.Size2D:
+      description: Два целых числа в формате {first}x{second}
+      type: string
+      maxLength: 16
+      example: "100x200"
+
     App.Field.Uint:
       description: Целое положительное число
       type: integer
       # format: uint64
       minimum: 0
       example: 9223372036854775807
-
-    App.Field.Measure.DoubleMillimeter:
-      description: Два целых числа {width}x{height} в миллиметрах (mm x mm)
-      type: string
-      # format: rect-format
-      maxLength: 16
-      minimum: 0
-      example: "100x200"
 
     App.Field.Measure.Gram:
       description: Грамм (g)
@@ -1041,6 +1105,14 @@ components:
       minimum: 0
       example: 10
 
+    App.Field.Measure.Meter2:
+      description: Метр квадратный (m2)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 43.08
+
     App.Field.Measure.Meter3:
       description: Метр кубический (m3)
       type: number
@@ -1065,10 +1137,18 @@ components:
       minimum: 0
       example: 1000 # 1m
 
-    App.Field.Measure.TripleMillimeter:
+    App.Field.Measure.Millimeter2:
+      description: Два целых числа {width}x{height} в миллиметрах (mm x mm)
+      type: string
+      # format: s2-format
+      maxLength: 16
+      minimum: 0
+      example: "100x200"
+
+    App.Field.Measure.Millimeter3:
       description: Три целых числа {first}x{second}x{third} в миллиметрах (mm x mm x mm)
       type: string
-      # format: cube-format
+      # format: s3-format
       maxLength: 16
       example: "100x200x300"
 
@@ -1142,6 +1222,19 @@ components:
           type: string
           example: "f7479171-83d2-4f64-84ac-892f8c0aaf48"
 
+    Custom.Enum.FragmentPosition:
+      description: |-
+        Размещение прямоугольного фрагмента:
+        - TOP - сверху;
+        - ONSIDE - сбоку;
+        - BOTTOM - внизу;
+      type: string
+      enum:
+        - TOP
+        - ONSIDE
+        - BOTTOM
+      example: "ONSIDE"
+
     Custom.Enum.PaperSides:
       description: |-
         Стороны бумаги:
@@ -1203,7 +1296,25 @@ components:
       example: 2
 
     Custom.Field.Fragment:
-      description: Фрагмент площади с количеством размещенных на нём элементов
+      description: Фрагмент прямоугольного формата на котором размещены элементы указанного формата на указанной дистанции между ними
+      type: object
+      required:
+        - element
+        - distance
+        - layout
+        - position
+      properties:
+        element:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+        distance:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+        layout:
+          $ref: "#/components/schemas/Custom.Field.Layout"
+        position:
+          $ref: "#/components/schemas/Custom.Enum.FragmentPosition"
+
+    Custom.Field.Layout:
+      description: Табличная схема размещения элементов
       type: object
       required:
         - byWidth
@@ -1220,7 +1331,7 @@ components:
           # format: uint64
           example: 43
 
-    Custom.Field.RectFormat:
+    Custom.Field.Rect2dFormat:
       description: Прямоугольный формат
       type: object
       required:
@@ -1238,7 +1349,7 @@ components:
           format: double
           example: 0.297
 
-    Calculations.Algo.PublicAPI.Request.Model.CirculationPackInBox:
+    Calculations.Algo.PublicAPI.Request.Model.BoxPackInBox:
       description: DTO параметров алгоритма "Количество коробок"
       type: object
       required:
@@ -1257,16 +1368,13 @@ components:
       type: object
       required:
         - format
-        - thickness
-        - weightM2
+        - weight
         - quantity
       properties:
         format:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
-        thickness:
-          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
-        weightM2:
-          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter3"
+        weight:
+          $ref: "#/components/schemas/App.Field.Measure.Gram"
         quantity:
           allOf:
             - $ref: "#/components/schemas/App.Field.Uint"
@@ -1283,11 +1391,11 @@ components:
         - weight
       properties:
         format:
-          $ref: "#/components/schemas/App.Field.Measure.TripleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter3"
         thickness:
           $ref: "#/components/schemas/App.Field.Measure.Micrometer"
         margins:
-          $ref: "#/components/schemas/App.Field.Measure.TripleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter3"
         weight:
           allOf:
             - $ref: "#/components/schemas/App.Field.Measure.Gram"
@@ -1297,12 +1405,11 @@ components:
             - $ref: "#/components/schemas/App.Field.Measure.Gram"
             - description: Максимальная грузоподъёмность коробки
 
-    Calculations.Algo.PublicAPI.Response.Model.CirculationPackInBox:
-      description: DTO - результат алгоритма "Количество коробок"
+    Calculations.Algo.PublicAPI.Response.Model.BoxPackInBox:
+      description: DTO - результат алгоритма "Количество коробок с изделиями"
       type: object
       required:
         - fullBox
-        - restBox
         - boxesQuantity
         - boxesWeight
         - productsVolume
@@ -1385,21 +1492,21 @@ components:
             - description: Незаполненный объём коробки в %
             - example: 23.71
 
-    Calculations.Algo.PublicAPI.Request.Model.RectCuttingQuantity:
+    Calculations.Algo.PublicAPI.Request.Model.SheetCuttingQuantity:
       description: DTO параметров алгоритма "Количество резов"
       type: object
       required:
-        - fragments
+        - layouts
         - distance
       properties:
-        fragments:
+        layouts:
           type: array
           items:
-            $ref: "#/components/schemas/App.Field.DoubleSize"
+            $ref: "#/components/schemas/App.Field.Size2D"
         distance:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
 
-    Calculations.Algo.PublicAPI.Response.Model.RectCuttingQuantity:
+    Calculations.Algo.PublicAPI.Response.Model.SheetCuttingQuantity:
       description: DTO - результат алгоритма "Количество резов"
       type: object
       required:
@@ -1408,7 +1515,7 @@ components:
         quantity:
           $ref: "#/components/schemas/App.Field.Uint"
 
-    Calculations.Algo.PublicAPI.Request.Model.RectImposition:
+    Calculations.Algo.PublicAPI.Request.Model.SheetImposition:
       description: DTO параметров алгоритма "Спуск полос"
       type: object
       required:
@@ -1417,13 +1524,13 @@ components:
         - outFormat
       properties:
         itemFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
         itemDistance:
           allOf:
-            - $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+            - $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
             - description: Расстояние между элементами ({по горизонтали}x{по вертикали})
         outFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
         disableRotation:
           allOf:
             - $ref: "#/components/schemas/App.Field.Boolean"
@@ -1431,29 +1538,38 @@ components:
         useMirror:
           allOf:
             - $ref: "#/components/schemas/App.Field.Boolean"
-            - description: Использовать зеркальное размешение элементов
+            - description: Использовать зеркальное размещение элементов
 
-    Calculations.Algo.PublicAPI.Response.Model.RectImposition:
+    Calculations.Algo.PublicAPI.Response.Model.SheetImposition:
       description: DTO - расчёта алгоритма "Спуск полос"
       type: object
       required:
-        - layout
+        - containerFormat
+        - fragmentDistance
         - fragments
-        - total
+        - totalElements
         - garbage
+        - allowRotation
+        - useMirror
       properties:
-        layout:
-          $ref: "#/components/schemas/Custom.Field.RectFormat"
+        containerFormat:
+          $ref: "#/components/schemas/Custom.Field.Rect2dFormat"
+        fragmentDistance:
+          $ref: "#/components/schemas/App.Field.Measure.Meter"
         fragments:
           type: array
           items:
             $ref: "#/components/schemas/Custom.Field.Fragment"
-        total:
+        totalElements:
           $ref: "#/components/schemas/App.Field.Uint"
         garbage:
-          $ref: "#/components/schemas/App.Field.Float64"
+          $ref: "#/components/schemas/App.Field.Measure.Meter2"
+        allowRotation:
+          $ref: "#/components/schemas/App.Field.Boolean"
+        useMirror:
+          $ref: "#/components/schemas/App.Field.Boolean"
 
-    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideQuantity:
+    Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideQuantity:
       description: DTO - параметров алгоритмов размещений элементов на внешнем формате
       type: object
       required:
@@ -1461,23 +1577,23 @@ components:
         - outFormat
       properties:
         inFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
         outFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
 
-    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideQuantity:
+    Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideQuantity:
       description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
       type: object
       required:
-        - fragment
+        - layout
         - total
       properties:
-        fragment:
-          $ref: "#/components/schemas/Custom.Field.Fragment"
+        layout:
+          $ref: "#/components/schemas/Custom.Field.Layout"
         total:
           $ref: "#/components/schemas/App.Field.Uint"
 
-    Calculations.Algo.PublicAPI.Request.Model.RectInsideOutsideMax:
+    Calculations.Algo.PublicAPI.Request.Model.SheetInsideOutsideMax:
       description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
       type: object
       required:
@@ -1485,11 +1601,11 @@ components:
         - outFormat
       properties:
         inFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
         outFormat:
-          $ref: "#/components/schemas/App.Field.Measure.DoubleMillimeter"
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
 
-    Calculations.Algo.PublicAPI.Response.Model.RectInsideOutsideMax:
+    Calculations.Algo.PublicAPI.Response.Model.SheetInsideOutsideMax:
       description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
       type: object
       required:
@@ -1502,6 +1618,97 @@ components:
             $ref: "#/components/schemas/Custom.Field.Fragment"
         total:
           $ref: "#/components/schemas/App.Field.Uint"
+
+    Calculations.Algo.PublicAPI.Request.Model.SheetPackInStack:
+      description: DTO параметров алгоритма "Количество пачек пачек"
+      type: object
+      required:
+        - sheet
+        - quantityInStack
+      properties:
+        sheet:
+          $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.Sheet"
+        quantityInStack:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Uint"
+            - description: Количество изделий в пачке
+            - example: 200
+
+    Calculations.Algo.PublicAPI.Request.Model.Sheet:
+      description: DTO изделия прямоугольного формата
+      type: object
+      required:
+        - format
+        - thickness
+        - density
+        - quantity
+      properties:
+        format:
+          $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+        thickness:
+          $ref: "#/components/schemas/App.Field.Measure.Micrometer"
+        density:
+          $ref: "#/components/schemas/App.Field.Measure.GramPerMeter2"
+        quantity:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Uint"
+            - description: Количество изделий
+            - example: 2600
+
+    Calculations.Algo.PublicAPI.Response.Model.SheetPackInStack:
+      description: DTO - результат алгоритма "Количество пачек"
+      type: object
+      required:
+        - fullProduct
+        - totalQuantity
+        - totalWeight
+        - totalVolume
+      properties:
+        fullProduct:
+          allOf:
+            - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Product"
+            - description: Полностью заполненная пачка с изделиями
+        restProduct:
+          allOf:
+            - $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.Product"
+            - description: Пачка с остатком изделий
+        totalQuantity:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Uint"
+            - description: Количество пачек
+            - example: 17
+        totalWeight:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+            - description: Общий вес пачек с изделиями
+            - example: 371.25
+        totalVolume:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+            - description: Общий объём пачек
+            - example: 17.25
+
+    Calculations.Algo.PublicAPI.Response.Model.Product:
+      description: DTO пачки с изделиями
+      type: object
+      required:
+        - format
+        - weight
+        - volume
+      properties:
+        format:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Measure.Millimeter3"
+        weight:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Measure.Kilogram"
+            - description: Вес пачки с изделиями
+            - example: 2.5
+        volume:
+          allOf:
+            - $ref: "#/components/schemas/App.Field.Measure.Meter3"
+            - description: Внешний объём пачки
+            - example: 0.04
 
     Calculations.QueryHistory.PublicAPI.Request.Model.Query:
       description: DTO параметров сохранения расчётов запроса

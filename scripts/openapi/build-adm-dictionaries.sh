@@ -75,7 +75,6 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.Date.yaml"
     # "${sharedDir}/components/fields/App.Field.DateTime.yaml"
-    # "${sharedDir}/components/fields/App.Field.DoubleSize.yaml"
     # "${sharedDir}/components/fields/App.Field.Email.yaml"
     # "${sharedDir}/components/fields/App.Field.ExternalURL.yaml"
     # "${sharedDir}/components/fields/App.Field.FileURL.yaml"
@@ -91,6 +90,8 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/components/fields/App.Field.Percent.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
     # "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
+    # "${sharedDir}/components/fields/App.Field.Size2D.yaml"
+    # "${sharedDir}/components/fields/App.Field.Size3D.yaml"
     "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
     # "${sharedDir}/components/fields/App.Field.Uint.yaml"
@@ -98,7 +99,6 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Centimeter.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.DoubleMillimeter.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Gram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.GramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Kilogram.yaml"
@@ -109,8 +109,9 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
     "${sharedDir}/components/fields/measures/App.Field.Measure.Millimeter.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Millimeter2.yaml"
+    # "${sharedDir}/components/fields/measures/App.Field.Measure.Millimeter3.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Price.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.TripleMillimeter.yaml"
 
     # "${sharedDir}/components/models/App.Request.Model.ChangeFlag.yaml"
     "${sharedDir}/components/models/App.Request.Model.ChangeStatus.yaml"
@@ -130,6 +131,7 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.FragmentPosition.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
 
@@ -144,7 +146,8 @@ mrcmd_func_openapi_build_adm_dictionaries() {
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.RectFormat.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Layout.yaml"
+    # "${sharedDir}/custom/fields/Custom.Field.Rect2dFormat.yaml"
 
     "${materialTypeDir}/material_type_schemas.yaml"
     "${paperColorDir}/paper_color_schemas.yaml"

@@ -1,0 +1,17 @@
+Custom.Field.Layout:
+  description: Табличная схема размещения элементов
+  type: object
+  required:
+    - byWidth
+    - byHeight
+  properties:
+    byWidth:
+      description: Кол-во элементов по ширине
+      type: integer
+      # format: uint64
+      example: 27
+    byHeight:
+      description: Кол-во элементов по высоте
+      type: integer
+      # format: uint64
+      example: 43

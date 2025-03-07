@@ -1,0 +1,12 @@
+Custom.Enum.FragmentPosition:
+  description: |-
+    Размещение прямоугольного фрагмента:
+    - TOP - сверху;
+    - ONSIDE - сбоку;
+    - BOTTOM - внизу;
+  type: string
+  enum:
+    - TOP
+    - ONSIDE
+    - BOTTOM
+  example: "ONSIDE"

@@ -16,25 +16,31 @@ func CreateModule(ctx context.Context, opts algo.Options) ([]mrserver.HttpContro
 
 	mrfactory.InfoCreateModule(ctx, module.Name)
 
-	if l, err := createUnitCirculationPackInBox(ctx, opts); err != nil {
+	if l, err := createUnitBoxPackInBox(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitRectCutting(ctx, opts); err != nil {
+	if l, err := createUnitSheetPackInStack(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitRectImposition(ctx, opts); err != nil {
+	if l, err := createUnitSheetCutting(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitRectInsideOutside(ctx, opts); err != nil {
+	if l, err := createUnitSheetImposition(ctx, opts); err != nil {
+		return nil, err
+	} else {
+		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+	}
+
+	if l, err := createUnitSheetInsideOutside(ctx, opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)

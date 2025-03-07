@@ -1,0 +1,37 @@
+/v1/calculations/algo/sheet/cutting-quantity:
+  post:
+    summary: Метод расчёта количества резов на печатном формате
+    description: |-
+      Возвращает общее количество резов необходимых совершить резательным оборудованием
+      на печатном формате, чтобы получить заданное кол-во элементов нужного формата.
+
+    operationId: calcAlgoRectCuttingQuantity
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetCuttingQuantity"
+
+    responses:
+      "200":
+        description: Получен расчет алгоритма
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetCuttingQuantity"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

@@ -1,0 +1,6 @@
+App.Field.Measure.Millimeter3:
+  description: Три целых числа {first}x{second}x{third} в миллиметрах (mm x mm x mm)
+  type: string
+  # format: s3-format
+  maxLength: 16
+  example: "100x200x300"
