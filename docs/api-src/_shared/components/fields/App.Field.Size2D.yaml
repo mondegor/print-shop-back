@@ -1,0 +1,5 @@
+App.Field.Size2D:
+  description: Два целых числа в формате {first}x{second}
+  type: string
+  maxLength: 16
+  example: "100x200"

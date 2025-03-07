@@ -1,0 +1,78 @@
+/v1/calculations/algo/sheet/imposition:
+  post:
+    summary: Метод расчёта спуска полос
+    description: |-
+      Спуск полос - расположения элементов указанного формата на указанном печатном формате
+
+    operationId: calcAlgoRectImposition
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetImposition"
+
+    responses:
+      "200":
+        description: Получен расчет алгоритма
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetImposition"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/calculations/algo/sheet/imposition/variants:
+  post:
+    summary: Метод расчёта спуска полос в двух вариантах
+    description: |-
+      Спуск полос - расположения элементов указанного формата на указанном печатном формате
+      Первый вариант: изделие раскладывается в указанном формате;
+      Второй вариант: изделие повёрнутое на 90 градусов;
+      Возвращаются все возможные варианты, если ни один вариант невозможен, то возвращается ошибка.
+
+    operationId: calcAlgoRectImpositionVariants
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetImposition"
+
+    responses:
+      "200":
+        description: Получен расчет алгоритма
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetImposition"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

@@ -16,6 +16,12 @@ type (
 	// Meter - метр (m, СИ).
 	Meter float64
 
+	// Meter2 - метр квадратный (m2, СИ).
+	Meter2 float64
+
+	// Meter3 - метр кубический (m3, СИ).
+	Meter3 float64
+
 	// Centimeter - сантиметр (cm).
 	Centimeter float64
 

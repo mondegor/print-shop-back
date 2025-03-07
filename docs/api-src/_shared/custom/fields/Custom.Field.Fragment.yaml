@@ -1,17 +1,17 @@
 Custom.Field.Fragment:
-  description: Фрагмент площади с количеством размещенных на нём элементов
+  description: Фрагмент прямоугольного формата на котором размещены элементы указанного формата на указанной дистанции между ними
   type: object
   required:
-    - byWidth
-    - byHeight
+    - element
+    - distance
+    - layout
+    - position
   properties:
-    byWidth:
-      description: Кол-во элементов по ширине
-      type: integer
-      # format: uint64
-      example: 27
-    byHeight:
-      description: Кол-во элементов по высоте
-      type: integer
-      # format: uint64
-      example: 43
+    element:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    distance:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+    layout:
+      $ref: "#/components/schemas/Custom.Field.Layout"
+    position:
+      $ref: "#/components/schemas/Custom.Enum.FragmentPosition"

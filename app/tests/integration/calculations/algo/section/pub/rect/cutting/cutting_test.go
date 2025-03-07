@@ -7,8 +7,7 @@ import (
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/rect/cutting/entity"
+	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/tests/integration"
 )
 
@@ -31,19 +30,19 @@ func (ts *AlgoRectCuttingTestSuite) TearDownTest() {
 func (ts *AlgoRectCuttingTestSuite) TestCalcQuantity() {
 	var (
 		method  = http.MethodPost
-		target  = "/v1/calculations/algo/rect/cutting-quantity"
-		request = httpv1.CalcCuttingQuantityRequest{
-			Fragments: []string{
+		target  = "/v1/calculations/algo/sheet/cutting-quantity"
+		request = model.SheetCuttingQuantityRequest{
+			Layouts: []string{
 				"10x20",
 				"18x56",
 			},
 			DistanceFormat: "5x3",
 		}
 		expectedStatusCode = http.StatusOK
-		expectedResponse   = entity.QuantityResult{
+		expectedResponse   = model.SheetCuttingQuantityResult{
 			Quantity: 208,
 		}
-		gotResponse = entity.QuantityResult{}
+		gotResponse = model.SheetCuttingQuantityResult{}
 	)
 
 	statusCode, err := ts.tester.ExecRequest(

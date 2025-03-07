@@ -1,0 +1,22 @@
+Calculations.Algo.PublicAPI.Request.Model.SheetCuttingQuantity:
+  description: DTO параметров алгоритма "Количество резов"
+  type: object
+  required:
+    - layouts
+    - distance
+  properties:
+    layouts:
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Field.Size2D"
+    distance:
+      $ref: "#/components/schemas/App.Field.Measure.Millimeter2"
+
+Calculations.Algo.PublicAPI.Response.Model.SheetCuttingQuantity:
+  description: DTO - результат алгоритма "Количество резов"
+  type: object
+  required:
+    - quantity
+  properties:
+    quantity:
+      $ref: "#/components/schemas/App.Field.Uint"

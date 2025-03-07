@@ -14,6 +14,7 @@ import (
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/view"
 )
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
@@ -119,11 +120,11 @@ func NewValidator(ctx context.Context, _ config.Config) (*mrplayvalidator.Valida
 		return nil, err
 	}
 
-	if err := validator.Register("tag_double_size", mrview.ValidateDoubleSize); err != nil {
+	if err := validator.Register("tag_2d_size", view.Validate2dSize); err != nil {
 		return nil, err
 	}
 
-	if err := validator.Register("tag_triple_size", mrview.ValidateTripleSize); err != nil {
+	if err := validator.Register("tag_3d_size", view.Validate3dSize); err != nil {
 		return nil, err
 	}
 

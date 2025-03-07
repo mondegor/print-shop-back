@@ -1,0 +1,36 @@
+/v1/calculations/algo/sheet/pack-in-stack:
+  post:
+    summary: Метод расчёта количества пачек, изделий в пачке и веса пачки
+    description: |-
+      Возвращает количество пачек с изделиями, формат пачки, вес пачки.
+
+    operationId: calcAlgoSheetPackInStack
+    tags:
+      - Calculations.Algo
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Request.Model.SheetPackInStack"
+
+    responses:
+      "200":
+        description: Получен расчет алгоритма
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Calculations.Algo.PublicAPI.Response.Model.SheetPackInStack"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
