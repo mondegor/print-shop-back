@@ -37,7 +37,7 @@ servers:
     description: Local Host
 tags:
   - name: Calculations.Algo
-    description: Public API Calculations algorithms
+    description: Public API Calculations imposition
 
   - name: Calculations.QueryHistory
     description: Public API Calculations query history
