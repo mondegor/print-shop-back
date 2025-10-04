@@ -14,6 +14,7 @@ func NewSubmitFormModuleOptions(opts app.Options) submitform.Options {
 		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
 		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
+		StorageErrorWrapper: opts.StorageErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		Locker:              opts.Locker,
 		RequestParsers: submitform.RequestParsers{

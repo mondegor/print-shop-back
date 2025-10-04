@@ -24,9 +24,9 @@ func InitPostgres(opts app.Options) (*mrpostgres.ConnAdapter, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	mrlog.Info(opts.Logger, "Create and init postgres pool connection")
-
 	cfg := opts.Cfg.Storage
+
+	mrlog.Info(opts.Logger, "Create and init postgres pool connection", "host", cfg.Host, "hort", cfg.Port)
 
 	postgresOpts := mrpostgres.Options{
 		Host:            cfg.Host,
@@ -74,7 +74,7 @@ func InitPostgresConnManager(conn *mrpostgres.ConnAdapter, logger mrlog.Logger) 
 
 // ApplyPostgresMigrations - накатывает миграции БД opts.Cfg.Storage.
 func ApplyPostgresMigrations(opts app.Options) error {
-	mrlog.Info(opts.Logger, "Apply postgres migrations: "+opts.Cfg.Storage.MigrationsDir)
+	mrlog.Info(opts.Logger, "Apply postgres migrations", "dir", opts.Cfg.Storage.MigrationsDir)
 
 	connCli, err := opts.PostgresConnManager.ConnAdapter().Cli()
 	if err != nil {

@@ -19,8 +19,8 @@ type (
 	Options struct {
 		Logger              mrlog.Logger
 		EventEmitter        mrevent.Emitter
-		StorageErrorWrapper mrerr.ErrorWrapper
 		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
+		StorageErrorWrapper mrerr.ErrorWrapper
 		DBConnManager       mrstorage.DBConnManager
 		RequestParsers      RequestParsers
 		ResponseSender      mrserver.FileResponseSender

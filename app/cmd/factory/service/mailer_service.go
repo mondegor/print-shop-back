@@ -33,8 +33,9 @@ func InitMailerAPI(opts app.Options) *produce.MessageSender {
 
 	return producer.NewSender(
 		opts.PostgresConnManager,
-		opts.TraceManager,
 		opts.EventEmitter,
+		opts.UsecaseErrorWrapper,
+		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceMailerTableName,
 			PrimaryKey: serviceMailerPrimaryKey,
@@ -56,6 +57,8 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 	telegramProvider := mrmailer.MessageProvider(nop.New(opts.Tracer))
 
 	if opts.Cfg.Senders.Mail.SmtpHost != "" {
+		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.Senders.Mail.SmtpHost, "port", opts.Cfg.Senders.Mail.SmtpPort)
+
 		provider, err := mail.New(
 			smtp.NewMailClient(
 				opts.Cfg.Senders.Mail.SmtpHost,
@@ -75,6 +78,8 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 	}
 
 	if opts.Cfg.Senders.TelegramBot.Token != "" {
+		mrlog.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.Senders.TelegramBot.Name)
+
 		telegramBot, err := telegrambot.NewMessageClient(opts.Cfg.Senders.TelegramBot.Token, opts.Tracer)
 		if err != nil {
 			return nil, err
@@ -87,6 +92,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
+		opts.UsecaseErrorWrapper,
 		opts.Logger,
 		opts.Tracer,
 		opts.TraceManager,
@@ -128,6 +134,7 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
+		opts.UsecaseErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{

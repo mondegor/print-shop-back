@@ -15,9 +15,9 @@ func InitRedis(opts app.Options) (*mrredis.ConnAdapter, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
-	mrlog.Info(opts.Logger, "Create and init redis connection")
-
 	cfg := opts.Cfg.Redis
+
+	mrlog.Info(opts.Logger, "Create and init redis connection", "host", cfg.Host, "port", cfg.Port)
 
 	redisOpts := mrredis.Options{
 		Host:         cfg.Host,

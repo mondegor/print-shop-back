@@ -15,14 +15,14 @@ const (
 
 // InitRestServer - создаёт объект mrserver.ServerAdapter.
 func InitRestServer(opts app.Options) (*mrhttp.Adapter, error) {
-	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", restServerCaption))
+	srvOpts := opts.Cfg.Servers.RestServer
+
+	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", restServerCaption), "port", srvOpts.Listen.Port)
 
 	router, err := InitRestRouterWithHandlers(opts)
 	if err != nil {
 		return nil, err
 	}
-
-	srvOpts := opts.Cfg.Servers.RestServer
 
 	return mrhttp.NewAdapter(
 		router,

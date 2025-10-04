@@ -18,6 +18,7 @@ type (
 		Logger              mrlog.Logger
 		EventEmitter        mrevent.Emitter
 		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
+		StorageErrorWrapper mrerr.ErrorWrapper
 		DBConnManager       mrstorage.DBConnManager
 		Locker              mrlock.Locker
 		RequestParsers      RequestParsers

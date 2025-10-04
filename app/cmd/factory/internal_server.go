@@ -15,9 +15,9 @@ const (
 
 // InitInternalServer - создаёт объект mrserver.ServerAdapter.
 func InitInternalServer(opts app.Options) *mrhttp.Adapter {
-	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", internalServerCaption))
-
 	srvOpts := opts.Cfg.Servers.InternalServer
+
+	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", internalServerCaption), "port", srvOpts.Listen.Port)
 
 	return mrhttp.NewAdapter(
 		opts.InternalRouter,

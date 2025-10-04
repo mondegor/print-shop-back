@@ -10,8 +10,8 @@ func NewAuthModuleOptions(opts app.Options) (auth.Options, error) {
 	return auth.Options{
 		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		StorageErrorWrapper: opts.StorageErrorWrapper,
 		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
+		StorageErrorWrapper: opts.StorageErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: auth.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,

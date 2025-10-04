@@ -60,10 +60,10 @@ type (
 		InternalRouter        *http.ServeMux
 		Sentry                *mrsentry.Adapter
 		Prometheus            *mrinit.Prometheus
-		ErrorHandler          mrerr.ErrorHandler
 		EventEmitter          mrevent.Emitter
-		StorageErrorWrapper   mrerr.ErrorWrapper
+		ErrorHandler          mrerr.ErrorHandler
 		UsecaseErrorWrapper   mrerr.UseCaseErrorWrapper
+		StorageErrorWrapper   mrerr.ErrorWrapper
 		FileUserErrorWrapper  mrerr.UserErrorWrapper
 		ImageUserErrorWrapper mrerr.UserErrorWrapper
 		AppHealth             *mrrun.AppHealth

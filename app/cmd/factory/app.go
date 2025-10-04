@@ -139,8 +139,8 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 
 	opts.EventEmitter = InitEventEmitter(opts)
 	opts.ErrorHandler = mrwire.InitErrorHandler(opts.Logger)
-	opts.StorageErrorWrapper = errorwrapper.NewInfraStorage()
 	opts.UsecaseErrorWrapper = errorwrapper.NewUseCase()
+	opts.StorageErrorWrapper = errorwrapper.NewInfraStorage()
 	opts.FileUserErrorWrapper = errorwrapper.NewDownloadUserImage()
 	opts.ImageUserErrorWrapper = errorwrapper.NewDownloadUserImage()
 	opts.AppHealth = mrrun.NewAppHealth()

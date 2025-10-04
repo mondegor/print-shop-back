@@ -51,11 +51,13 @@ func newUnitFormElement(opts moduleOptions) (*httpv1.FormElement, error) { //nol
 		opts.ElementTemplateAPI,
 		mrordering.NewComponentMover(
 			opts.DBConnManager,
+			opts.UsecaseErrorWrapper,
+			opts.StorageErrorWrapper,
+			opts.EventEmitter,
 			mrsql.DBTableInfo{
 				Name:       module.DBTableNameSubmitFormElements,
 				PrimaryKey: "form_id",
 			},
-			opts.EventEmitter,
 		),
 		opts.EventEmitter,
 		opts.UsecaseErrorWrapper,

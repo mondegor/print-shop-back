@@ -33,6 +33,8 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 	return collector.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
+		opts.UsecaseErrorWrapper,
+		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
@@ -58,6 +60,8 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	return scheduler.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
+		opts.UsecaseErrorWrapper,
+		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
