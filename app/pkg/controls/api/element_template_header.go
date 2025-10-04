@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	ElementTemplateHeaderName = "Controls.API.ElementTemplateHeader" // ElementTemplateHeaderName - название API
+	// ElementTemplateHeaderName - название API.
+	ElementTemplateHeaderName = "Controls.API.ElementTemplateHeader"
 )
 
 type (
@@ -34,14 +35,11 @@ type (
 
 var (
 	// ErrElementTemplateRequired - element template ID is required.
-	ErrElementTemplateRequired = mrerr.NewProto(
-		"controls.errElementTemplateRequired", mrerr.ErrorKindUser, "element template ID is required")
+	ErrElementTemplateRequired = mrerr.NewKindUser("ElementTemplateRequired", "element template ID is required")
 
 	// ErrElementTemplateNotFound - element template with ID not found.
-	ErrElementTemplateNotFound = mrerr.NewProto(
-		"controls.errElementTemplateNotFound", mrerr.ErrorKindUser, "element template with ID={{ .id }} not found")
+	ErrElementTemplateNotFound = mrerr.NewKindUser("ElementTemplateNotFound", "element template with ID={Id} not found")
 
 	// ErrElementTemplateIsDisabled - element template with ID is disabled.
-	ErrElementTemplateIsDisabled = mrerr.NewProto(
-		"controls.errElementTemplateIsDisabled", mrerr.ErrorKindUser, "element template with ID={{ .id }} is disabled")
+	ErrElementTemplateIsDisabled = mrerr.NewKindUser("ElementTemplateIsDisabled", "element template with ID={Id} is disabled")
 )

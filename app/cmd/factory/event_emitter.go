@@ -3,33 +3,33 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/eventemitter"
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver/mrprometheus"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 )
 
-// NewEventEmitter - создаёт объект eventemitter.Emitter.
-func NewEventEmitter(opts app.Options) *eventemitter.Emitter {
+// InitEventEmitter - создаёт объект mrevent.Emitter.
+func InitEventEmitter(opts app.Options) mrevent.Emitter {
 	observeEvent := mrprometheus.NewObserveEvent("rest_api", "go")
 
-	opts.Prometheus.MustRegister(
-		observeEvent.Collectors()...,
-	)
+	opts.Prometheus.Add(observeEvent.Collectors()...)
 
-	return eventemitter.New(
-		mrsender.EventReceiveFunc(
-			func(ctx context.Context, eventName, source string, object any) {
+	return mrevent.NewEmitter(
+		mrevent.ReceiveFunc(
+			func(ctx context.Context, eventName string, args ...any) {
+				source, eventName := mrevent.ExtractEventName(eventName)
+
 				observeEvent.IncrementEvent(eventName, source)
 
-				mrlog.Ctx(ctx).
-					Info().
-					Str("event", eventName).
-					Str("source", source).
-					Any("object", object).
-					Send()
+				opts.Logger.Info(
+					ctx, "EventEmitter",
+					append(
+						args,
+						"event", eventName,
+						"source", source,
+					),
+				)
 			},
 		),
 	)

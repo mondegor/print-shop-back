@@ -41,8 +41,9 @@ func TestMax(t *testing.T) {
 			out:  rect2d.Format{Width: 300, Height: 400},
 			want: rect2d.Fragments{
 				rect2d.Fragment{
-					Element: rect2d.Format{Width: 100, Height: 100},
-					Layout:  rect2d.Layout{ByWidth: 3, ByHeight: 4},
+					Element:  rect2d.Format{Width: 100, Height: 100},
+					Layout:   rect2d.Layout{ByWidth: 3, ByHeight: 4},
+					Position: enum.PositionTop,
 				},
 			},
 			wantErr: false,
@@ -53,8 +54,9 @@ func TestMax(t *testing.T) {
 			out:  rect2d.Format{Width: 300, Height: 400},
 			want: rect2d.Fragments{
 				rect2d.Fragment{
-					Element: rect2d.Format{Width: 100, Height: 50},
-					Layout:  rect2d.Layout{ByWidth: 3, ByHeight: 8},
+					Element:  rect2d.Format{Width: 100, Height: 50},
+					Layout:   rect2d.Layout{ByWidth: 3, ByHeight: 8},
+					Position: enum.PositionTop,
 				},
 			},
 			wantErr: false,
@@ -65,8 +67,9 @@ func TestMax(t *testing.T) {
 			out:  rect2d.Format{Width: 300, Height: 400},
 			want: rect2d.Fragments{
 				rect2d.Fragment{
-					Element: rect2d.Format{Width: 100, Height: 50},
-					Layout:  rect2d.Layout{ByWidth: 3, ByHeight: 8},
+					Element:  rect2d.Format{Width: 100, Height: 50},
+					Layout:   rect2d.Layout{ByWidth: 3, ByHeight: 8},
+					Position: enum.PositionTop,
 				},
 			},
 			wantErr: false,
@@ -77,8 +80,9 @@ func TestMax(t *testing.T) {
 			out:  rect2d.Format{Width: 300, Height: 450},
 			want: rect2d.Fragments{
 				rect2d.Fragment{
-					Element: rect2d.Format{Width: 100, Height: 33},
-					Layout:  rect2d.Layout{ByWidth: 3, ByHeight: 13},
+					Element:  rect2d.Format{Width: 100, Height: 33},
+					Layout:   rect2d.Layout{ByWidth: 3, ByHeight: 13},
+					Position: enum.PositionTop,
 				},
 			},
 			wantErr: false,
@@ -89,8 +93,9 @@ func TestMax(t *testing.T) {
 			out:  rect2d.Format{Width: 300, Height: 450},
 			want: rect2d.Fragments{
 				rect2d.Fragment{
-					Element: rect2d.Format{Width: 100, Height: 33},
-					Layout:  rect2d.Layout{ByWidth: 3, ByHeight: 13},
+					Element:  rect2d.Format{Width: 100, Height: 33},
+					Layout:   rect2d.Layout{ByWidth: 3, ByHeight: 13},
+					Position: enum.PositionTop,
 				},
 			},
 			wantErr: false,
@@ -115,8 +120,6 @@ func TestMax(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

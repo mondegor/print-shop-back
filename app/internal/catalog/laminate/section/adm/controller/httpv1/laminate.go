@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
@@ -29,12 +29,12 @@ type (
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
 		useCase    adm.LaminateUseCase
-		listSorter mrview.ListSorter
+		listSorter mrtype.ListSorter
 	}
 )
 
 // NewLaminate - создаёт контроллер Laminate.
-func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.LaminateUseCase, listSorter mrview.ListSorter) *Laminate {
+func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.LaminateUseCase, listSorter mrtype.ListSorter) *Laminate {
 	return &Laminate{
 		parser:     parser,
 		sender:     sender,
@@ -196,15 +196,15 @@ func (ht *Laminate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Laminate) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrLaminateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

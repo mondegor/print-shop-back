@@ -32,6 +32,7 @@ mrcmd_func_openapi_build_pub_file_station() {
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
     # "${sharedDir}/components/parameters/App.Request.Header.CurrentPage.yaml"
+    "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.Filter.SearchText.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.Filter.Statuses.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.ListPager.yaml"

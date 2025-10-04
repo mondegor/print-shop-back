@@ -1,9 +1,6 @@
 package pub
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1"
@@ -13,10 +10,10 @@ import (
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
 )
 
-func createUnitBoxPackInBox(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
+func createUnitBoxPackInBox(opts algo.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitBoxPackInBox(ctx, opts); err != nil {
+	if c, err := newUnitBoxPackInBox(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -25,12 +22,11 @@ func createUnitBoxPackInBox(ctx context.Context, opts algo.Options) ([]mrserver.
 	return list, nil
 }
 
-func newUnitBoxPackInBox(ctx context.Context, opts algo.Options) (*httpv1.BoxPackInBox, error) { //nolint:unparam
-	logger := mrlog.Ctx(ctx)
-	impAlgo := imposition.New(logger)
-	packInBoxAlgo := packinbox.New(logger, impAlgo)
+func newUnitBoxPackInBox(opts algo.Options) (*httpv1.BoxPackInBox, error) { //nolint:unparam
+	impAlgo := imposition.New(opts.Logger)
+	packInBoxAlgo := packinbox.New(impAlgo)
 
-	useCase := usecase.NewBoxPackInBox(packInBoxAlgo, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewBoxPackInBox(packInBoxAlgo, opts.Logger, opts.EventEmitter)
 	controller := httpv1.NewBoxPackInBox(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

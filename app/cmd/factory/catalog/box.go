@@ -1,24 +1,16 @@
 package catalog
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
 )
 
 // NewBoxModuleOptions - создаёт объект box.Options.
-func NewBoxModuleOptions(_ context.Context, opts app.Options) (box.Options, error) {
-	boxDictionary, err := opts.Translator.Dictionary("catalog/boxes")
-	if err != nil {
-		return box.Options{}, err
-	}
-
+func NewBoxModuleOptions(opts app.Options) box.Options {
 	return box.Options{
+		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: box.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -26,11 +18,7 @@ func NewBoxModuleOptions(_ context.Context, opts app.Options) (box.Options, erro
 		},
 		ResponseSender: opts.ResponseSenders.Sender,
 
-		UnitBox: box.UnitBoxOptions{
-			Dictionary: boxDictionary,
-		},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }

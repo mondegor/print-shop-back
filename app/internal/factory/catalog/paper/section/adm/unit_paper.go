@@ -1,11 +1,8 @@
 package adm
 
 import (
-	"context"
-
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/controller/httpv1"
@@ -15,10 +12,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
 )
 
-func createUnitPaper(ctx context.Context, opts paper.Options) ([]mrserver.HttpController, error) {
+func createUnitPaper(opts paper.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPaper(ctx, opts); err != nil {
+	if c, err := newUnitPaper(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -27,8 +24,8 @@ func createUnitPaper(ctx context.Context, opts paper.Options) ([]mrserver.HttpCo
 	return list, nil
 }
 
-func newUnitPaper(ctx context.Context, opts paper.Options) (*httpv1.Paper, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.Paper{})
+func newUnitPaper(opts paper.Options) (*httpv1.Paper, error) {
+	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.Paper{})
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +44,7 @@ func newUnitPaper(ctx context.Context, opts paper.Options) (*httpv1.Paper, error
 		opts.PaperColorAPI,
 		opts.PaperFactureAPI,
 		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
+		opts.UsecaseErrorWrapper,
 	)
 	controller := httpv1.NewPaper(
 		opts.RequestParsers.ExtendParser,

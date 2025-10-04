@@ -4,14 +4,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (
-	ModelNameSubmitForm = "admin-api.Controls.SubmitForm" // ModelNameSubmitForm - название сущности
+	// ModelNameSubmitForm - название сущности.
+	ModelNameSubmitForm = "admin-api.Controls.SubmitForm"
 )
 
 type (

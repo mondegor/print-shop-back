@@ -1,0 +1,63 @@
+package httpv1
+
+import (
+	"github.com/mondegor/go-components/mrauth"
+	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/print-shop-back/pkg/validate"
+	"net/http"
+)
+
+const (
+	sessionsListURL = "/v1/sessions"
+)
+
+type Session struct {
+	parser  validate.RequestParser
+	sender  mrserver.ResponseSender
+	useCase mrauth.SessionUseCase
+}
+
+func NewSession(
+	parser validate.RequestParser,
+	sender mrserver.ResponseSender,
+	useCase mrauth.SessionUseCase,
+) *Session {
+	return &Session{
+		parser:  parser,
+		sender:  sender,
+		useCase: useCase,
+	}
+}
+
+// Handlers - возвращает обработчики контроллера Session.
+func (ht *Session) Handlers() []mrserver.HttpHandler {
+	return []mrserver.HttpHandler{
+		{Method: http.MethodPost, URL: sessionsListURL, Func: ht.GetList},
+		{Method: http.MethodDelete, URL: sessionsListURL, Func: ht.Close},
+	}
+}
+
+// GetList - comment method.
+func (ht *Session) GetList(w http.ResponseWriter, r *http.Request) error {
+	items, err := ht.useCase.GetList(r.Context())
+	if err != nil {
+		return err
+	}
+
+	return ht.sender.Send(w, http.StatusOK, items)
+}
+
+// Close - comment method.
+func (ht *Session) Close(w http.ResponseWriter, r *http.Request) error {
+	request := CloseSessionsRequest{}
+
+	if err := ht.parser.Validate(r, &request); err != nil {
+		return err
+	}
+
+	if err := ht.useCase.Close(r.Context(), request.Hashes); err != nil {
+		return err
+	}
+
+	return ht.sender.SendNoContent(w)
+}

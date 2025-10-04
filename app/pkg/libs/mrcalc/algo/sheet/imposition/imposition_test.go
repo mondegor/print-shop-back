@@ -1,10 +1,11 @@
 package imposition_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	mock_mrlog "github.com/mondegor/go-webcore/mrlog/mock"
+	"github.com/mondegor/go-sysmess/mrlog/slog/nopslog"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
@@ -13,16 +14,6 @@ import (
 )
 
 // TODO: ДОБАВИТЬ ТЕСТ MIRROR
-
-func newLoggerStub(ctrl *gomock.Controller) *mock_mrlog.MockLogger {
-	mockLogger := mock_mrlog.NewMockLogger(ctrl)
-	mockLoggerEvent := mock_mrlog.NewMockLoggerEvent(ctrl)
-
-	mockLogger.EXPECT().Debug().Return(mockLoggerEvent).MinTimes(1)
-	mockLoggerEvent.EXPECT().MsgFunc(gomock.Any()).MinTimes(1)
-
-	return mockLogger
-}
 
 func TestImposition_CalcWithAllowRotation(t *testing.T) {
 	t.Parallel()
@@ -318,14 +309,12 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			im := imposition.New(newLoggerStub(ctrl))
+			im := imposition.New(nopslog.New())
 
-			got, err := im.Calc(tt.element, tt.distance, tt.out, imposition.Options{AllowRotation: true})
+			got, err := im.Calc(context.Background(), tt.element, tt.distance, tt.out, imposition.Options{AllowRotation: true})
 			assert.Equal(t, tt.want, got)
 			assert.NoError(t, err)
 		})

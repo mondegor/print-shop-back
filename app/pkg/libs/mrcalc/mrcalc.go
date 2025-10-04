@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
 )
 
 const (
-	SizeSeparator = "x" // SizeSeparator - разделитель для представления размера в виде строки
+	// SizeSeparator - разделитель для представления размера в виде строки.
+	SizeSeparator = "x"
 )
 
 // ParseStringToPositiveFloat - comment method.
@@ -31,5 +32,5 @@ func FormatPositiveFloatToString(value float64) string {
 		return "!BADVALUE"
 	}
 
-	return strconv.FormatFloat(mrlib.RoundFloat8(value), 'f', -1, 64)
+	return strconv.FormatFloat(extmath.RoundFloat8(value), 'f', -1, 64)
 }

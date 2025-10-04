@@ -37,13 +37,15 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-all)
       mrcmd openapi build-adm-all
-      mrcmd openapi build-int-all
+      mrcmd openapi build-auth
+      mrcmd openapi build-int
       mrcmd openapi build-prov-all
       mrcmd openapi build-pub-all
       ;;
 
     build-full)
       mrcmd openapi build-adm
+      mrcmd openapi build-auth
       mrcmd openapi build-int
       mrcmd openapi build-prov
       mrcmd openapi build-pub
@@ -57,10 +59,6 @@ function mrcmd_plugins_openapi_method_exec() {
       mrcmd openapi build-adm-prv-accounts
       ;;
 
-    build-int-all)
-      mrcmd openapi build-int
-      ;;
-
     build-prov-all)
       mrcmd openapi build-prov
       ;;
@@ -72,6 +70,10 @@ function mrcmd_plugins_openapi_method_exec() {
 
     build-adm)
       sectionName="admin-api"
+      ;;
+
+    build-auth)
+      sectionName="auth-api"
       ;;
 
     build-int)
@@ -140,6 +142,7 @@ function mrcmd_plugins_openapi_method_help() {
   echo -e "    build-adm-catalog         Builds admin Catalog API docs"
   echo -e "    build-adm-dictionaries    Builds admin Dictionaries API docs"
   echo -e "    build-adm-prv-accounts    Builds admin Provider accounts API docs"
+  echo -e "    build-auth                Builds user Auth API docs"
   echo -e "    build-int-all             Builds internal (system) API docs"
   echo -e "    build-prov-all            Builds all providers API docs"
   echo -e "    build-pub-all             Builds all public API docs"

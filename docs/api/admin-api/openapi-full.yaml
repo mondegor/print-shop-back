@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.5.0
+  version: v0.6.0
   title: Private API print-shop
   license:
     name: Apache-2.0
@@ -31,9 +31,9 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
-  - url: http://api.print-shop.local/adm
+  - url: http://api.print-shop.local/baxkend
     description: Local Domain
-  - url: http://localhost:8080/adm
+  - url: http://localhost:8080/baxkend
     description: Local Host
 tags:
   - name: Catalog.Box
@@ -97,6 +97,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
@@ -149,6 +150,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -187,6 +189,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       responses:
@@ -229,6 +232,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       requestBody:
@@ -265,6 +269,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       responses:
@@ -299,6 +304,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       requestBody:
@@ -350,6 +356,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
@@ -368,7 +375,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
+                $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -395,6 +402,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -433,6 +441,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       responses:
@@ -469,6 +478,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       requestBody:
@@ -505,6 +515,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       responses:
@@ -539,6 +550,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       requestBody:
@@ -590,6 +602,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
@@ -612,7 +625,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
+                $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -639,6 +652,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -677,6 +691,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       responses:
@@ -713,6 +728,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       requestBody:
@@ -749,6 +765,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       responses:
@@ -783,6 +800,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       requestBody:
@@ -833,6 +851,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
@@ -872,6 +891,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -910,6 +930,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
@@ -946,6 +967,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
@@ -982,6 +1004,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       responses:
@@ -1016,6 +1039,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
       requestBody:
@@ -1066,6 +1090,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
@@ -1105,6 +1130,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -1143,6 +1169,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
 
       responses:
@@ -1179,6 +1206,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
 
       requestBody:
@@ -1215,6 +1243,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
 
       responses:
@@ -1249,6 +1278,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperColors.AdminAPI.Request.Path.ColorID"
 
       requestBody:
@@ -1299,6 +1329,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
         - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
@@ -1338,6 +1369,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -1376,6 +1408,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
 
       responses:
@@ -1412,6 +1445,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
 
       requestBody:
@@ -1448,6 +1482,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
 
       responses:
@@ -1482,6 +1517,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PaperFactures.AdminAPI.Request.Path.FactureID"
 
       requestBody:
@@ -1532,6 +1568,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
@@ -1575,6 +1612,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -1613,6 +1651,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
 
       responses:
@@ -1649,6 +1688,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
 
       requestBody:
@@ -1685,6 +1725,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
 
       responses:
@@ -1719,6 +1760,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Dictionaries.PrintFormats.AdminAPI.Request.Path.FormatID"
 
       requestBody:
@@ -1771,6 +1813,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -1785,7 +1828,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
+                $ref: "#/components/schemas/Controls.ElementTemplates.AdminAPI.Response.Model.ElementTemplateList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -1815,6 +1858,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -1853,6 +1897,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
       responses:
@@ -1891,6 +1936,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
@@ -1927,6 +1973,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
       responses:
@@ -1961,6 +2008,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
       requestBody:
@@ -1998,6 +2046,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.ElementTemplates.AdminAPI.Request.Path.TemplateID"
 
       responses:
@@ -2047,6 +2096,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
         - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -2061,7 +2111,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
+                $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -2090,6 +2140,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -2128,6 +2179,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
@@ -2167,6 +2219,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
@@ -2203,6 +2256,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
@@ -2237,6 +2291,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       requestBody:
@@ -2278,6 +2333,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
@@ -2312,6 +2368,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
       responses:
@@ -2343,6 +2400,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormVersion"
 
@@ -2384,6 +2442,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -2422,6 +2481,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.ElementID"
 
       responses:
@@ -2460,6 +2520,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.ElementID"
 
       requestBody:
@@ -2496,6 +2557,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.ElementID"
 
       responses:
@@ -2524,6 +2586,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.ElementID"
 
       requestBody:
@@ -2574,6 +2637,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses"
 
       responses:
@@ -2602,7 +2666,6 @@ components:
       required: false
       schema:
         type: string
-        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
@@ -2614,6 +2677,15 @@ components:
         type: string
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+    App.Request.Query.Language:
+      description: Явное указание языка запроса. Приоритетнее Accept-Language.
+      name: lang
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "ru-RU"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка

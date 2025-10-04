@@ -3,7 +3,8 @@ package entity
 import "github.com/mondegor/print-shop-back/pkg/libs/measure"
 
 const (
-	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat" // ModelNamePrintFormat - название сущности
+	// ModelNamePrintFormat - название сущности.
+	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat"
 )
 
 type (

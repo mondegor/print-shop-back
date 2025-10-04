@@ -1,8 +1,6 @@
 package pub
 
 import (
-	"context"
-
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
@@ -10,10 +8,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
 )
 
-func createUnitSheetCutting(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
+func createUnitSheetCutting(opts algo.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitSheetCutting(ctx, opts); err != nil {
+	if c, err := newUnitSheetCutting(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -22,8 +20,8 @@ func createUnitSheetCutting(ctx context.Context, opts algo.Options) ([]mrserver.
 	return list, nil
 }
 
-func newUnitSheetCutting(_ context.Context, opts algo.Options) (*httpv1.SheetCutting, error) { //nolint:unparam
-	useCase := usecase.NewSheetCutting(opts.EventEmitter, opts.UseCaseErrorWrapper)
+func newUnitSheetCutting(opts algo.Options) (*httpv1.SheetCutting, error) { //nolint:unparam
+	useCase := usecase.NewSheetCutting(opts.EventEmitter)
 	controller := httpv1.NewSheetCutting(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

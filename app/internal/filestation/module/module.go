@@ -1,8 +1,12 @@
 package module
 
 const (
-	Name       = "FileStation"    // Name - название модуля
-	Permission = "modFileStation" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "FileStation"
 
-	UnitImageProxyPermission = Permission // UnitImageProxyPermission - разрешение юнита ImageProxy
+	// Permission - разрешение модуля.
+	Permission = "modFileStation"
+
+	// UnitImageProxyPermission - разрешение юнита ImageProxy.
+	UnitImageProxyPermission = Permission
 )

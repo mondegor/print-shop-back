@@ -8,8 +8,8 @@ type (
 	}
 )
 
-// IsEmpty - проверяется заполнена ли коробка.
-func (m FilledBox) IsEmpty() bool {
+// Empty - сообщает, является ли коробка пустой.
+func (m FilledBox) Empty() bool {
 	return m.Product.Quantity == 0
 }
 

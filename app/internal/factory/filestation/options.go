@@ -2,7 +2,8 @@ package filestation
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
@@ -11,7 +12,8 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
+		Logger              mrlog.Logger
+		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
 		RequestParser       *mrparser.String
 		ResponseSender      mrserver.FileResponseSender
 

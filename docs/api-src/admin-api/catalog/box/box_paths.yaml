@@ -26,6 +26,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
@@ -78,6 +79,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     requestBody:
       required: true
@@ -116,6 +118,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
     responses:
@@ -158,6 +161,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
     requestBody:
@@ -194,6 +198,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
     responses:
@@ -228,6 +233,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
     requestBody:

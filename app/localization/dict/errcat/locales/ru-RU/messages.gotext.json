@@ -1,0 +1,1315 @@
+{
+    "language": "ru-RU",
+    "messages": [
+        {
+            "id": "Internal",
+            "message": "Internal",
+            "translation": "Внутренняя ошибка сервера"
+        },
+        {
+            "id": "System",
+            "message": "System",
+            "translation": "Системная ошибка сервера"
+        },
+        {
+            "id": "unexpected internal error",
+            "message": "unexpected internal error",
+            "translation": "Внутренняя ошибка сервера [problem]"
+        },
+        {
+            "id": "request body is not valid: '{Reason}'",
+            "message": "request body is not valid: '{Reason}'",
+            "translation": "11111Тело запроса невалидное: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ]
+        },
+        {
+            "id": "system is temporarily unavailable",
+            "message": "system is temporarily unavailable",
+            "translation": "Система временно не может обработать ваш запрос. Пожалуйста, повторите запрос позже"
+        },
+        {
+            "id": "the file with the specified key '{Key}' was not uploaded",
+            "message": "the file with the specified key '{Key}' was not uploaded",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ]
+        },
+        {
+            "id": "401. client is unauthorized",
+            "message": "401. client is unauthorized",
+            "translation": "Требуется авторизация пользователя"
+        },
+        {
+            "id": "403. access forbidden",
+            "message": "403. access forbidden",
+            "translation": "Доступ к ресурсу отклонён"
+        },
+        {
+            "id": "404. resource not found",
+            "message": "404. resource not found",
+            "translation": "Запрашиваемый ресурс не был найден"
+        },
+        {
+            "id": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
+            "message": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "request param with key '{Key}' is empty",
+            "message": "request param with key '{Key}' is empty",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ]
+        },
+        {
+            "id": "request param with key '{Key}' contains value greater then max '{Max}'",
+            "message": "request param with key '{Key}' contains value greater then max '{Max}'",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "Max",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Max\""
+                }
+            ]
+        },
+        {
+            "id": "request param with key '{Key}' has value length greater then max '{MaxLength}' characters",
+            "message": "request param with key '{Key}' has value length greater then max '{MaxLength}' characters",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "MaxLength",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"MaxLength\""
+                }
+            ]
+        },
+        {
+            "id": "input data is incorrect: '{Reason}'",
+            "message": "input data is incorrect: '{Reason}'",
+            "translation": "Входные данные некорректны: '{Reason}'",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ]
+        },
+        {
+            "id": "access forbidden",
+            "message": "access forbidden",
+            "translation": ""
+        },
+        {
+            "id": "entity not found",
+            "message": "entity not found",
+            "translation": ""
+        },
+        {
+            "id": "entity is not available",
+            "message": "entity is not available",
+            "translation": ""
+        },
+        {
+            "id": "entity already exists",
+            "message": "entity already exists",
+            "translation": ""
+        },
+        {
+            "id": "entity version is invalid",
+            "message": "entity version is invalid",
+            "translation": ""
+        },
+        {
+            "id": "switching from '{StatusFrom}' to '{StatusTo}' is rejected",
+            "message": "switching from '{StatusFrom}' to '{StatusTo}' is rejected",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "StatusFrom",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"StatusFrom\""
+                },
+                {
+                    "id": "StatusTo",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"StatusTo\""
+                }
+            ]
+        },
+        {
+            "id": "file is invalid",
+            "message": "file is invalid",
+            "translation": ""
+        },
+        {
+            "id": "login is invalid",
+            "message": "login is invalid",
+            "translation": ""
+        },
+        {
+            "id": "email is invalid",
+            "message": "email is invalid",
+            "translation": ""
+        },
+        {
+            "id": "phone is invalid",
+            "message": "phone is invalid",
+            "translation": ""
+        },
+        {
+            "id": "email already exists",
+            "message": "email already exists",
+            "translation": ""
+        },
+        {
+            "id": "phone already exists",
+            "message": "phone already exists",
+            "translation": ""
+        },
+        {
+            "id": "query {ShortLink} not found",
+            "message": "query {ShortLink} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "ShortLink",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"ShortLink\""
+                }
+            ]
+        },
+        {
+            "id": "box with ID={Id} not found",
+            "message": "box with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "box article '{Name}' already exists",
+            "message": "box article '{Name}' already exists",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ]
+        },
+        {
+            "id": "laminate with ID={Id} not found",
+            "message": "laminate with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "laminate article '{Name}' already exists",
+            "message": "laminate article '{Name}' already exists",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ]
+        },
+        {
+            "id": "paper with ID={Id} not found",
+            "message": "paper with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "paper article '{Name}' already exists",
+            "message": "paper article '{Name}' already exists",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ]
+        },
+        {
+            "id": "form ID is required",
+            "message": "form ID is required",
+            "translation": ""
+        },
+        {
+            "id": "form with ID={Id} not found",
+            "message": "form with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "rewrite name '{Name}' already exists",
+            "message": "rewrite name '{Name}' already exists",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ]
+        },
+        {
+            "id": "param name '{Name}' already exists",
+            "message": "param name '{Name}' already exists",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ]
+        },
+        {
+            "id": "form with ID={Id} is disabled",
+            "message": "form with ID={Id} is disabled",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "form element with ID={Id} not found",
+            "message": "form element with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "item detailing '{Name1}' not allowed for form detailing '{Name2}'",
+            "message": "item detailing '{Name1}' not allowed for form detailing '{Name2}'",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name1\""
+                },
+                {
+                    "id": "Name2",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Name2\""
+                }
+            ]
+        },
+        {
+            "id": "element template ID is required",
+            "message": "element template ID is required",
+            "translation": ""
+        },
+        {
+            "id": "element template with ID={Id} not found",
+            "message": "element template with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "element template with ID={Id} is disabled",
+            "message": "element template with ID={Id} is disabled",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "laminate type ID is required",
+            "message": "laminate type ID is required",
+            "translation": ""
+        },
+        {
+            "id": "laminate type with ID={Id} is not available",
+            "message": "laminate type with ID={Id} is not available",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "laminate type with ID={Id} not found",
+            "message": "laminate type with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "paper color ID is required",
+            "message": "paper color ID is required",
+            "translation": ""
+        },
+        {
+            "id": "paper color with ID={Id} is not available",
+            "message": "paper color with ID={Id} is not available",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "paper color with ID={Id} not found",
+            "message": "paper color with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "paper facture ID is required",
+            "message": "paper facture ID is required",
+            "translation": ""
+        },
+        {
+            "id": "paper facture with ID={Id} is not available",
+            "message": "paper facture with ID={Id} is not available",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "paper facture with ID={Id} not found",
+            "message": "paper facture with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "print format ID is required",
+            "message": "print format ID is required",
+            "translation": ""
+        },
+        {
+            "id": "print format with ID={Id} is not available",
+            "message": "print format with ID={Id} is not available",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "print format with ID={Id} not found",
+            "message": "print format with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "token is expired",
+            "message": "token is expired",
+            "translation": ""
+        },
+        {
+            "id": "token is invalid",
+            "message": "token is invalid",
+            "translation": ""
+        },
+        {
+            "id": "token section {Key} is invalid",
+            "message": "token section {Key} is invalid",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ]
+        },
+        {
+            "id": "token is already revoked",
+            "message": "token is already revoked",
+            "translation": ""
+        },
+        {
+            "id": "confirm code is incorrect",
+            "message": "confirm code is incorrect",
+            "translation": ""
+        },
+        {
+            "id": "all attempts to confirm the operation have been used",
+            "message": "all attempts to confirm the operation have been used",
+            "translation": ""
+        },
+        {
+            "id": "sending new messages is temporarily restricted",
+            "message": "sending new messages is temporarily restricted",
+            "translation": ""
+        },
+        {
+            "id": "after node with ID={Id} not found",
+            "message": "after node with ID={Id} not found",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ]
+        },
+        {
+            "id": "invalid file size, min size = {Value}b",
+            "message": "invalid file size, min size = {Value}b",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "invalid file size, max size = {Value}b",
+            "message": "invalid file size, max size = {Value}b",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "invalid file extension: {Value}",
+            "message": "invalid file extension: {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "invalid file total size, max total size = {Value}b",
+            "message": "invalid file total size, max total size = {Value}b",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "the content type '{Value}' does not match the detected type",
+            "message": "the content type '{Value}' does not match the detected type",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "unsupported file type '{Value}'",
+            "message": "unsupported file type '{Value}'",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "invalid image width, max size = {Value}px",
+            "message": "invalid image width, max size = {Value}px",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "invalid image height, max size = {Value}px",
+            "message": "invalid image height, max size = {Value}px",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_http_url: {Name}, {Type}, {Value}",
+            "message": "Validator_http_url: {Name}, {Type}, {Value}",
+            "translation": "Значение поля должно являться URL адресом (текущее значение: {Value})",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_required: {Name}, {Type}, {Value}",
+            "message": "Validator_required: {Name}, {Type}, {Value}",
+            "translation": "Поле обязательно для заполнения",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_gte: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_gte: {Name}, {Type}, {Value}, {Param}",
+            "translation": "Значение поля должно быть больше или равно {Param} (текущее значение: {Value})",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_lte: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_lte: {Name}, {Type}, {Value}, {Param}",
+            "translation": "Значение поля должно быть меньше или равно {Param} (текущее значение: {Value})",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_max: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_max: {Name}, {Type}, {Value}, {Param}",
+            "translation": "Значение поля должно быть не более {Param} символов",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_min: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_min: {Name}, {Type}, {Value}, {Param}",
+            "translation": "Значение поля должно быть не менее {Param} символов (текущее значение: {Value})",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_article: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_article: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_email: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_email: {Name}, {Type}, {Value}",
+            "translation": "Значение поля должно являться email адресом (current value: '{Value}')",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_email_phone: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_email_phone: {Name}, {Type}, {Value}",
+            "translation": "Значение поля должно являться email адресом или номером телефона (current value: '{Value}')",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_password: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_password: {Name}, {Type}, {Value}",
+            "translation": "Значение поля должно содержать только латинские буквы, цифры и специальные символы кроме пробела (current value: '{Value}')",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_phone: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_phone: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_rewrite_name: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_rewrite_name: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_variable: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_variable: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_2d_size: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_2d_size: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        },
+        {
+            "id": "Validator_tag_3d_size: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_3d_size: {Name}, {Type}, {Value}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ]
+        }
+    ]
+}

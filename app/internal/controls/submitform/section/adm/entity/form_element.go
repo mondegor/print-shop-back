@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	ModelNameFormElement = "admin-api.Controls.FormElement" // ModelNameFormElement - название сущности
+	// ModelNameFormElement - название сущности.
+	ModelNameFormElement = "admin-api.Controls.FormElement"
 )
 
 type (

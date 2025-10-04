@@ -1,0 +1,73 @@
+Auth.Security.Request.Model.ChangeEmail:
+  type: object
+  required:
+    - newEmail
+  properties:
+    newEmail:
+      description: Новый емаил пользователя
+      type: string
+      format: email
+      minLength: 7
+      maxLength: 64
+      example: "new-user-email@local.host"
+
+Auth.Security.Request.Model.ChangePhone:
+  type: object
+  required:
+    - newPhone
+  properties:
+    newPhone:
+      description: Новый телефон пользователя
+      type: string
+      format: phone
+      minLength: 10
+      maxLength: 32
+      example: "+7 999 888 77 66"
+
+Auth.Security.Request.Model.ChangePassword:
+  type: object
+  required:
+    - newPassword
+  properties:
+    newPassword:
+      description: Новый пароль пользователя
+      type: string
+      minLength: 8
+      maxLength: 32
+      example: "L$QI.qA6eu7zG%7w"
+
+Auth.Security.Request.Model.ApplyOperation:
+  type: object
+  required:
+    - operationToken
+  properties:
+    operationToken:
+      description: Токен операции, которая подтверждена пользователем
+      type: string
+      minLength: 64
+      maxLength: 128
+      example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+
+Auth.Security.Response.GeneratedPassword:
+  type: object
+  required:
+    - password
+  properties:
+    password:
+      description: Сгенерированный пароль для пользователя
+      type: string
+      minLength: 8
+      maxLength: 32
+      example: "L$QI.qA6eu7zG%7w"
+
+Auth.Security.Response.TotpGenerator:
+  type: object
+  required:
+    - totpUrl
+  properties:
+    totpUrl:
+      description: URL для добавления его в приложение 2FA аутентификации
+      type: string
+      minLength: 64
+      maxLength: 256
+      example: "otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7"

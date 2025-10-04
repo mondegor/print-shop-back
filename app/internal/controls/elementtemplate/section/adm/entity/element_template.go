@@ -3,15 +3,16 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
 )
 
 const (
-	ModelNameElementTemplate = "admin-api.Controls.ElementTemplate" // ModelNameElementTemplate - название сущности
+	// ModelNameElementTemplate - название сущности.
+	ModelNameElementTemplate = "admin-api.Controls.ElementTemplate"
 )
 
 type (

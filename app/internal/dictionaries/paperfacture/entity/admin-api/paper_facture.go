@@ -3,12 +3,13 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 const (
-	ModelNamePaperFacture = "admin-api.Dictionaries.PaperFacture" // ModelNamePaperFacture - название сущности
+	// ModelNamePaperFacture - название сущности.
+	ModelNamePaperFacture = "admin-api.Dictionaries.PaperFacture"
 )
 
 type (

@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
@@ -243,7 +243,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 		)
 		if err != nil {
 			// если это системная ошибка
-			if !mrcore.ErrStorageRowsNotAffected.Is(err) {
+			if !mr.ErrStorageRowsNotAffected.Is(err) {
 				return err
 			}
 		}

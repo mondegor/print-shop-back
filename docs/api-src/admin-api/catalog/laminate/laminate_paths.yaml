@@ -26,6 +26,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
@@ -44,7 +45,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-                $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
+              $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -71,6 +72,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     requestBody:
       required: true
@@ -109,6 +111,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
     responses:
@@ -145,6 +148,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
     requestBody:
@@ -181,6 +185,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
     responses:
@@ -215,6 +220,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
     requestBody:

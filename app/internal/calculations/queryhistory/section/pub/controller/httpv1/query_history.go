@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
@@ -40,8 +40,8 @@ func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера QueryHistory.
 func (ht *QueryHistory) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodGet, URL: queryHistoryItemURL, Func: ht.Get},
-		{Method: http.MethodPost, URL: queryHistoryURL, Func: ht.Create},
+		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mrserver.PermissionAnyUser, Func: ht.Get},
+		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mrserver.PermissionAnyUser, Func: ht.Create},
 	}
 }
 
@@ -92,7 +92,7 @@ func (ht *QueryHistory) getRawItemID(r *http.Request) string {
 }
 
 func (ht *QueryHistory) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrQueryHistoryNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
@@ -29,7 +29,7 @@ type (
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
 		useCase    adm.PrintFormatUseCase
-		listSorter mrview.ListSorter
+		listSorter mrtype.ListSorter
 	}
 )
 
@@ -38,7 +38,7 @@ func NewPrintFormat(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
 	useCase adm.PrintFormatUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *PrintFormat {
 	return &PrintFormat{
 		parser:     parser,
@@ -192,15 +192,15 @@ func (ht *PrintFormat) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PrintFormat) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return api.ErrPrintFormatNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

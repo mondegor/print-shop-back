@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	ModelNameLaminate = "public-api.Dictionaries.Laminate" // ModelNameLaminate - название сущности
+	// ModelNameLaminate - название сущности.
+	ModelNameLaminate = "public-api.Dictionaries.Laminate"
 )
 
 type (

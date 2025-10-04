@@ -4,15 +4,18 @@ package enum
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"math"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Типы элементов.
+const (
+	ElementTypeGroup ElementType = iota + 1 // группа (блок) с названием, способная вмещать другие элементы
+	ElementTypeList                         // массив элементов
 )
 
 const (
-	_                ElementType = iota
-	ElementTypeGroup             // ElementTypeGroup - группа (блок) с названием, способная вмещать другие элементы
-	ElementTypeList              // ElementTypeList - массив элементов
-
 	elementTypeLast     = uint8(ElementTypeList)
 	enumNameElementType = "ElementType"
 )
@@ -42,7 +45,7 @@ func (e *ElementType) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementType)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameElementType)
 }
 
 // Set - устанавливает указанное значение, если оно является enum значением.
@@ -53,7 +56,7 @@ func (e *ElementType) Set(value uint8) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementType)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameElementType)
 }
 
 // String - возвращает значение в виде строки.
@@ -61,10 +64,10 @@ func (e ElementType) String() string {
 	return elementTypeName[e]
 }
 
-// Empty - проверяет, что enum значение не установлено.
-func (e ElementType) Empty() bool {
-	return e == 0
-}
+// // Empty - сообщает, установлено ли enum значение.
+// func (e ElementType) Empty() bool {
+// 	return e == 0
+// }
 
 // MarshalJSON - переводит enum значение в строковое представление.
 func (e ElementType) MarshalJSON() ([]byte, error) {
@@ -84,11 +87,11 @@ func (e *ElementType) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *ElementType) Scan(value any) error {
-	if val, ok := value.(int64); ok {
+	if val, ok := value.(int64); ok && val >= 0 && val <= math.MaxUint8 {
 		return e.Set(uint8(val))
 	}
 
-	return mrcore.ErrInternalTypeAssertion.New(enumNameElementType, value)
+	return mr.ErrInternalTypeAssertion.New(enumNameElementType, value)
 }
 
 // Value implements the driver.Valuer interface.

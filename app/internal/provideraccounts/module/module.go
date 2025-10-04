@@ -1,13 +1,24 @@
 package module
 
 const (
-	Name       = "ProviderAccounts"    // Name - название модуля
-	Permission = "modProviderAccounts" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "ProviderAccounts"
 
-	DBSchema                  = "printshop_providers"         // DBSchema - схема БД используемая модулем
-	DBTableNameCompaniesPages = DBSchema + ".companies_pages" // DBTableNameCompaniesPages - таблица БД используемая модулем
-	DBFieldWithoutDeletedAt   = ""                            // DBFieldWithoutDeletedAt - поле удаления записи не используется
+	// Permission - разрешение модуля.
+	Permission = "modProviderAccounts"
 
-	UnitCompanyPagePermission = Permission                        // UnitCompanyPagePermission - разрешение юнита CompanyPage
-	UnitCompanyPageLogoDir    = "provider-account/companies-logo" // UnitCompanyPageLogoDir - относительный путь для хранения логотипов компаний
+	// DBSchema - схема БД используемая модулем.
+	DBSchema = "printshop_providers"
+
+	// DBTableNameCompaniesPages - таблица БД используемая модулем.
+	DBTableNameCompaniesPages = DBSchema + ".companies_pages"
+
+	// DBFieldWithoutDeletedAt - поле удаления записи не используется.
+	DBFieldWithoutDeletedAt = ""
+
+	// UnitCompanyPagePermission - разрешение юнита CompanyPage.
+	UnitCompanyPagePermission = Permission
+
+	// UnitCompanyPageLogoDir - относительный путь для хранения логотипов компаний.
+	UnitCompanyPageLogoDir = "provider-account/companies-logo"
 )

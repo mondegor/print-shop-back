@@ -4,24 +4,18 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
-
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/model"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s3/rect3d"
 )
 
 type (
 	// AlgoSheet - размещение изделий одного формата в указанной коробке.
-	AlgoSheet struct {
-		logger mrlog.Logger
-	}
+	AlgoSheet struct{}
 )
 
 // New - создаёт объект AlgoSheet.
-func New(logger mrlog.Logger) *AlgoSheet {
-	return &AlgoSheet{
-		logger: logger,
-	}
+func New() *AlgoSheet {
+	return &AlgoSheet{}
 }
 
 // Calc - расчёт алгоритма.

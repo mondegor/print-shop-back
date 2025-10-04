@@ -8,8 +8,8 @@ import (
 	"github.com/mondegor/print-shop-back/config"
 )
 
-// NewImageURLBuilder - создаёт объект placeholderpath.Builder.
-func NewImageURLBuilder(cfg config.Config) (*placeholderpath.Builder, error) {
+// InitImageURLBuilder - создаёт объект placeholderpath.Builder.
+func InitImageURLBuilder(cfg config.Config) (*placeholderpath.Builder, error) {
 	return placeholderpath.New(
 		strings.TrimRight(cfg.ModulesSettings.FileStation.ImageProxy.Host, "/")+
 			"/"+

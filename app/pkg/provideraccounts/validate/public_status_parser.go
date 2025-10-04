@@ -3,7 +3,7 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrreq"
 
 	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
@@ -11,24 +11,28 @@ import (
 
 type (
 	// RequestPublicStatusParser - comment interface.
-	RequestPublicStatusParser interface {
+	RequestPublicStatusParser interface { // TODO: ПЕРЕНЕСТИ
 		FilterPublicStatusList(r *http.Request, key string) []enum.PublicStatus
 	}
 
 	// PublicStatusParser - comment struct.
 	PublicStatusParser struct {
+		logger       mrlog.Logger
 		defaultItems []enum.PublicStatus
 	}
 )
 
 // NewPublicStatusParser - создаёт объект PublicStatusParser.
-func NewPublicStatusParser() *PublicStatusParser {
-	return &PublicStatusParser{}
+func NewPublicStatusParser(logger mrlog.Logger) *PublicStatusParser {
+	return &PublicStatusParser{
+		logger: logger,
+	}
 }
 
 // NewPublicStatusParserWithDefault - создаёт объект PublicStatusParser.
-func NewPublicStatusParserWithDefault(items []enum.PublicStatus) *PublicStatusParser {
+func NewPublicStatusParserWithDefault(logger mrlog.Logger, items []enum.PublicStatus) *PublicStatusParser {
 	return &PublicStatusParser{
+		logger:       logger,
 		defaultItems: items,
 	}
 }
@@ -37,7 +41,7 @@ func NewPublicStatusParserWithDefault(items []enum.PublicStatus) *PublicStatusPa
 func (p *PublicStatusParser) FilterPublicStatusList(r *http.Request, key string) []enum.PublicStatus {
 	items, err := p.parseList(r, key)
 	if err != nil {
-		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
+		p.logger.Warn(r.Context(), "PublicStatusParser", "error", err)
 
 		return p.defaultItems
 	}

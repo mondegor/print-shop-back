@@ -3,7 +3,7 @@ package insideoutside
 import (
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2/rect2d"
 )
@@ -26,7 +26,7 @@ func AlgoQuantity(in, out rect2d.Format) (rect2d.Layout, error) {
 // getQuantityInsideOnOutside - необходимо гарантировать in.Width > 0 и in.Height > 0.
 func getQuantityInsideOnOutside(in, out rect2d.Format) rect2d.Layout {
 	return rect2d.Layout{
-		ByWidth:  uint64(mrlib.RoundFloat8(out.Width / in.Width)),
-		ByHeight: uint64(mrlib.RoundFloat8(out.Height / in.Height)),
+		ByWidth:  uint64(extmath.RoundFloat8(out.Width / in.Width)),
+		ByHeight: uint64(extmath.RoundFloat8(out.Height / in.Height)),
 	}
 }

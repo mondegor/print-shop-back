@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
@@ -28,12 +28,12 @@ type (
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
 		useCase    adm.BoxUseCase
-		listSorter mrview.ListSorter
+		listSorter mrtype.ListSorter
 	}
 )
 
 // NewBox - создаёт контроллер Box.
-func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.BoxUseCase, listSorter mrview.ListSorter) *Box {
+func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.BoxUseCase, listSorter mrtype.ListSorter) *Box {
 	return &Box{
 		parser:     parser,
 		sender:     sender,
@@ -194,15 +194,15 @@ func (ht *Box) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Box) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrBoxNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

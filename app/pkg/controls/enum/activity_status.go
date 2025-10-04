@@ -3,17 +3,20 @@ package enum
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"math"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Статусы активности процесса.
+const (
+	ActivityStatusDraft     ActivityStatus = iota + 1 // черновик
+	ActivityStatusTesting                             // на тестировании
+	ActivityStatusPublished                           // опубликован
+	ActivityStatusArchived                            // заархивирован
 )
 
 const (
-	_                       ActivityStatus = iota
-	ActivityStatusDraft                    // ActivityStatusDraft - comment const
-	ActivityStatusTesting                  // ActivityStatusTesting - comment const
-	ActivityStatusPublished                // ActivityStatusPublished - comment const
-	ActivityStatusArchived                 // ActivityStatusArchived - comment const
-
 	activityStatusLast     = uint8(ActivityStatusArchived)
 	enumNameActivityStatus = "ActivityStatus"
 )
@@ -47,7 +50,7 @@ func (e *ActivityStatus) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameActivityStatus)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameActivityStatus)
 }
 
 // Set - устанавливает указанное значение, если оно является enum значением.
@@ -58,7 +61,7 @@ func (e *ActivityStatus) Set(value uint8) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameActivityStatus)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameActivityStatus)
 }
 
 // String - возвращает значение в виде строки.
@@ -66,10 +69,10 @@ func (e ActivityStatus) String() string {
 	return activityStatusName[e]
 }
 
-// Empty - проверяет, что enum значение не установлено.
-func (e ActivityStatus) Empty() bool {
-	return e == 0
-}
+// // Empty - сообщает, установлено ли enum значение.
+// func (e ActivityStatus) Empty() bool {
+// 	return e == 0
+// }
 
 // MarshalJSON - переводит enum значение в строковое представление.
 func (e ActivityStatus) MarshalJSON() ([]byte, error) {
@@ -89,11 +92,11 @@ func (e *ActivityStatus) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *ActivityStatus) Scan(value any) error {
-	if val, ok := value.(int64); ok {
+	if val, ok := value.(int64); ok && val >= 0 && val <= math.MaxUint8 {
 		return e.Set(uint8(val))
 	}
 
-	return mrcore.ErrInternalTypeAssertion.New(enumNameActivityStatus, value)
+	return mr.ErrInternalTypeAssertion.New(enumNameActivityStatus, value)
 }
 
 // Value implements the driver.Valuer interface.
@@ -103,7 +106,6 @@ func (e ActivityStatus) Value() (driver.Value, error) {
 
 // ParseActivityStatusList - парсит массив строковых значений и
 // возвращает соответствующий массив enum значений.
-// ParseActivityStatusList - comment func.
 func ParseActivityStatusList(items []string) ([]ActivityStatus, error) {
 	var tmp ActivityStatus
 

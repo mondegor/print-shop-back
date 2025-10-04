@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.5.0
+  version: v0.6.0
   title: Private API print-shop управления каталогом
   license:
     name: Apache-2.0
@@ -31,9 +31,9 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
-  - url: http://api.print-shop.local/adm
+  - url: http://api.print-shop.local/baxkend
     description: Local Domain
-  - url: http://localhost:8080/adm
+  - url: http://localhost:8080/baxkend
     description: Local Host
 tags:
   - name: Catalog.Box
@@ -74,6 +74,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMax"
@@ -126,6 +127,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -164,6 +166,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       responses:
@@ -206,6 +209,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       requestBody:
@@ -242,6 +246,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       responses:
@@ -276,6 +281,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Boxes.AdminAPI.Request.Path.BoxID"
 
       requestBody:
@@ -327,6 +333,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.LengthMin"
@@ -345,7 +352,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
+                $ref: "#/components/schemas/Catalog.Laminates.AdminAPI.Response.Model.LaminateList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -372,6 +379,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -410,6 +418,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       responses:
@@ -446,6 +455,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       requestBody:
@@ -482,6 +492,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       responses:
@@ -516,6 +527,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Laminates.AdminAPI.Request.Path.LaminateID"
 
       requestBody:
@@ -567,6 +579,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
         - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
@@ -589,7 +602,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                  $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
+                $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
         "401":
           $ref: "#/components/responses/App.ResponseJson.Error401"
         "403":
@@ -616,6 +629,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -654,6 +668,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       responses:
@@ -690,6 +705,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       requestBody:
@@ -726,6 +742,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       responses:
@@ -760,6 +777,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
       requestBody:
@@ -793,7 +811,6 @@ components:
       required: false
       schema:
         type: string
-        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
@@ -805,6 +822,15 @@ components:
         type: string
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+    App.Request.Query.Language:
+      description: Явное указание языка запроса. Приоритетнее Accept-Language.
+      name: lang
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "ru-RU"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка

@@ -1,0 +1,52 @@
+Auth.Sessions.Request.Model.CloseSessions:
+  description: DTO закрытия указанных сессий текущего пользователя
+  type: object
+  required:
+    - hashes
+  properties:
+    hashes:
+      type: array
+      items:
+        $ref: "#/components/schemas/Auth.Sessions.Request.Model.SessionHash"
+
+Auth.Sessions.Request.Model.SessionHash:
+  description: Идентификатор сессии текущего пользователя
+  type: string
+  minLength: 16
+  maxLength: 16
+  example: "1f3bc817fb1d50cb"
+
+Auth.Sessions.Response.Model.UserSession:
+  type: object
+  required:
+    - sessionHash
+    - appName
+    - deviceName
+    - lastIP
+    - location
+    - isCurrent
+  properties:
+    sessionHash:
+      description: Идентификатор открытой сессии
+      type: string
+      example: "1f3bc817fb1d50cb"
+    appName:
+      description: Приложение, в котором открыта сессия
+      type: string
+      example: "Web, Firefox"
+    deviceName:
+      description: Название устройства, на котором открыта сессия
+      type: string
+      example: "Device 1"
+    lastIP:
+      description: IP адрес последнего посещения
+      type: string
+      example: "95.165.01.01"
+    location:
+      description: Местоположение на основе IP
+      type: string
+      example: "Moscow, Russia"
+    isCurrent:
+      description: Признак, что сессия является текущей
+      type: boolean
+      example: false

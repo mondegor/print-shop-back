@@ -9,13 +9,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlock"
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-sysmess/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
@@ -28,8 +28,9 @@ type (
 		storage      prov.CompanyPageLogoStorage
 		fileAPI      mrstorage.FileProviderAPI
 		locker       mrlock.Locker
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		eventEmitter mrevent.Emitter
+		errorWrapper mrerr.UseCaseErrorWrapper
+		logger       mrlog.Logger
 	}
 )
 
@@ -38,26 +39,28 @@ func NewCompanyPageLogo(
 	storage prov.CompanyPageLogoStorage,
 	fileAPI mrstorage.FileProviderAPI,
 	locker mrlock.Locker,
-	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UseCaseErrorWrapper,
+	eventEmitter mrevent.Emitter,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	logger mrlog.Logger,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		storage:      storage,
 		fileAPI:      fileAPI,
 		locker:       locker,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPageLogo),
-		errorWrapper: errorWrapper,
+		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPageLogo),
+		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameCompanyPageLogo),
+		logger:       logger,
 	}
 }
 
 // StoreFile - comment method.
 func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, image mrtype.Image) error {
 	if accountID == uuid.Nil {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if image.OriginalName == "" || image.Size == 0 {
-		return mrcore.ErrUseCaseInvalidFile.New()
+		return mr.ErrUseCaseInvalidFile.New()
 	}
 
 	newLogoPath, err := uc.getLogoPath(accountID, image.OriginalName)
@@ -66,20 +69,20 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 	}
 
 	if unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID)); err != nil {
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPageLogo)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	} else {
 		defer unlock()
 	}
 
 	oldLogoMeta, err := uc.storage.FetchMeta(ctx, accountID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "accountId", accountID)
 	}
 
 	image.Path = newLogoPath
 
 	if err = uc.fileAPI.Upload(ctx, image.ToFile()); err != nil {
-		return uc.errorWrapper.WrapErrorEntityFailed(err, "FileProviderAPI", image.Path)
+		return uc.errorWrapper.WrapErrorFailed(err, "imagePath", image.Path)
 	}
 
 	logoMeta := mrentity.ImageMeta{
@@ -92,10 +95,10 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 	if err = uc.storage.UpdateMeta(ctx, accountID, logoMeta); err != nil {
 		uc.removeLogoFile(ctx, newLogoPath, oldLogoMeta.Path)
 
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "accountId", accountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "StoreFile", mrmsg.Data{"accountId": accountID, "path": newLogoPath, "old-path": oldLogoMeta.Path})
+	uc.eventEmitter.Emit(ctx, "StoreFile", mrargs.Group{"accountId": accountID, "path": newLogoPath, "old-path": oldLogoMeta.Path})
 	uc.removeLogoFile(ctx, oldLogoMeta.Path, newLogoPath)
 
 	return nil
@@ -104,25 +107,25 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 // RemoveFile - comment method.
 func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID uuid.UUID) error {
 	if accountID == uuid.Nil {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID)); err != nil {
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPageLogo)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	} else {
 		defer unlock()
 	}
 
 	logoMeta, err := uc.storage.FetchMeta(ctx, accountID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "accountId", accountID)
 	}
 
 	if err = uc.storage.DeleteMeta(ctx, accountID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPageLogo, accountID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "accountId", accountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "RemoveFile", mrmsg.Data{"accountId": accountID, "meta": logoMeta})
+	uc.eventEmitter.Emit(ctx, "RemoveFile", mrargs.Group{"accountId": accountID, "meta": logoMeta})
 	uc.removeLogoFile(ctx, logoMeta.Path, "")
 
 	return nil
@@ -152,6 +155,6 @@ func (uc *CompanyPageLogo) removeLogoFile(ctx context.Context, filePath, prevFil
 	}
 
 	if err := uc.fileAPI.Remove(ctx, filePath); err != nil {
-		mrlog.Ctx(ctx).Error().Err(err).Msg("fileAPI.Remove()")
+		uc.logger.Error(ctx, "fileAPI.Remove", "error", err)
 	}
 }

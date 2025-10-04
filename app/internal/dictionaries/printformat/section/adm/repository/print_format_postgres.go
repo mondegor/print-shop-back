@@ -6,9 +6,10 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/enums"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
@@ -257,8 +258,8 @@ func (re *PrintFormatPostgres) fetchCondition(filter entity.PrintFormatListFilte
 			return c.JoinAnd(
 				c.Expr("deleted_at IS NULL"),
 				c.FilterLike("UPPER(format_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(filter.Height), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(filter.Width), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(filter.Height), 0, extmath.EqualityThresholdE9),
 				c.FilterAnyOf("format_status", filter.Statuses),
 			)
 		},
@@ -270,7 +271,7 @@ func (re *PrintFormatPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("format_id", mrenum.SortDirectionASC),
+				o.Field("format_id", enums.SortDirectionASC),
 			)
 		},
 	)

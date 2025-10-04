@@ -9,7 +9,8 @@ import (
 )
 
 const (
-	ModelNameFormVersion = "admin-api.Controls.FormVersion" // ModelNameFormVersion - название сущности
+	// ModelNameFormVersion - название сущности.
+	ModelNameFormVersion = "admin-api.Controls.FormVersion"
 )
 
 type (

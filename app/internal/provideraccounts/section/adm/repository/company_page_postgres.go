@@ -6,8 +6,8 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/enums"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
@@ -136,7 +136,7 @@ func (re *CompanyPagePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("account_id", mrenum.SortDirectionASC),
+				o.Field("account_id", enums.SortDirectionASC),
 			)
 		},
 	)

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrlib/casttype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
@@ -98,8 +98,8 @@ func (uc *FormCompilerJson) correctField(parentName string, field *uiform.UIFiel
 
 		if !isNullOrRequired {
 			field.EnabledValues = []uiform.UIFieldItem{
-				{ID: parentName + "_Disabled", IsChecked: mrtype.CastBoolToPointer(false)},
-				{ID: parentName + "_Enabled", IsChecked: mrtype.CastBoolToPointer(true)},
+				{ID: parentName + "_Disabled", IsChecked: casttype.BoolToPointer(false)},
+				{ID: parentName + "_Enabled", IsChecked: casttype.BoolToPointer(true)},
 			}
 		}
 	}

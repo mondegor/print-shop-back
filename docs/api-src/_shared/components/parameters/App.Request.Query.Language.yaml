@@ -1,0 +1,8 @@
+App.Request.Query.Language:
+  description: Явное указание языка запроса. Приоритетнее Accept-Language.
+  name: lang
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "ru-RU"

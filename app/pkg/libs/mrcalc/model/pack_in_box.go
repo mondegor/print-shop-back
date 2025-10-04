@@ -10,7 +10,7 @@ type (
 
 // BoxesQuantity - возвращает общее количество коробок.
 func (m *PackInBox) BoxesQuantity() uint64 {
-	if m.RestBox.IsEmpty() {
+	if m.RestBox.Empty() {
 		return m.FullBox.Quantity
 	}
 
@@ -19,7 +19,7 @@ func (m *PackInBox) BoxesQuantity() uint64 {
 
 // BoxesVolume - возвращает общий внешний объём коробок.
 func (m *PackInBox) BoxesVolume() float64 {
-	if m.RestBox.IsEmpty() {
+	if m.RestBox.Empty() {
 		return m.FullBox.TotalVolume()
 	}
 
@@ -28,7 +28,7 @@ func (m *PackInBox) BoxesVolume() float64 {
 
 // BoxesInnerVolume - возвращает общий внутренний объём коробок.
 func (m *PackInBox) BoxesInnerVolume() float64 {
-	if m.RestBox.IsEmpty() {
+	if m.RestBox.Empty() {
 		return m.FullBox.TotalInnerVolume()
 	}
 
@@ -37,7 +37,7 @@ func (m *PackInBox) BoxesInnerVolume() float64 {
 
 // BoxesWeight - возвращает общий вес коробок с изделиями.
 func (m *PackInBox) BoxesWeight() float64 {
-	if m.RestBox.IsEmpty() {
+	if m.RestBox.Empty() {
 		return m.FullBox.TotalWeight()
 	}
 
@@ -46,7 +46,7 @@ func (m *PackInBox) BoxesWeight() float64 {
 
 // ProductsVolume - возвращает общий объём изделий.
 func (m *PackInBox) ProductsVolume() float64 {
-	if m.RestBox.IsEmpty() {
+	if m.RestBox.Empty() {
 		return m.FullBox.Product.TotalVolume()
 	}
 

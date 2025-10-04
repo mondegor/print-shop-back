@@ -1,0 +1,111 @@
+/v1/operation/confirm:
+  patch:
+    summary: Auth/OP/R1. Метод подтверждения операции
+    description: Метод предназначен для подтверждения указанной операции инициированной пользователем
+    operationId: confirmUserOperation
+    tags:
+      - Auth.Operation
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Operation.Request.Model.ConfirmOperation"
+
+    responses:
+      "200":
+        # Подтверждение операции очередным методом прошло успешно, необходимо подтвердить операцию следующим методом
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "204":
+        description: Указанная операция была подтверждена
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        # Код подтверждения операции должен быть указан
+        # Код подтверждения операции некорректен
+        # Исчерпано кол-во попыток подтверждения операции
+        $ref: "#/components/responses/Auth.ResponseJson.Error400"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/operation/resend:
+  patch:
+    summary: Auth/OP/R2. Метод повторной отправки кода подтверждения
+    description: Метод предназначен для повторной отправки кода подтверждения указанной операции инициированной пользователем на емаил/телефон
+    operationId: resendUserOperationConfirmCode
+    tags:
+      - Auth.Operation
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Operation.Request.Model.OperationToken"
+
+    responses:
+      "200":
+        # На емаил/телефон было отправлено сообщение с кодом подтверждения операции
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/operation/revoke:
+  patch:
+    summary: Auth/OP/R3. Метод отзыва/отмены операции
+    description: Метод предназначен для отзыва/отмены пользователем указанной операции, если это возможно
+    operationId: revokeUserOperation
+    tags:
+      - Auth.Operation
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Operation.Request.Model.OperationToken"
+
+    responses:
+      "204":
+        description: Указанная операция была отозвана
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

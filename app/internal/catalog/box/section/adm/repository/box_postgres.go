@@ -7,9 +7,10 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/enums"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
@@ -301,10 +302,10 @@ func (re *BoxPostgres) fetchCondition(filter entity.BoxListFilter) mrstorage.SQL
 			return c.JoinAnd(
 				c.Expr("deleted_at IS NULL"),
 				c.FilterLikeFields([]string{"UPPER(box_article)", "UPPER(box_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterRangeFloat64("box_length", mrtype.RangeFloat64(filter.Length), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_height", mrtype.RangeFloat64(filter.Height), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_weight", mrtype.RangeFloat64(filter.Weight), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_length", mrtype.RangeFloat64(filter.Length), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_width", mrtype.RangeFloat64(filter.Width), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_height", mrtype.RangeFloat64(filter.Height), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_weight", mrtype.RangeFloat64(filter.Weight), 0, extmath.EqualityThresholdE9),
 				c.FilterAnyOf("box_status", filter.Statuses),
 			)
 		},
@@ -316,7 +317,7 @@ func (re *BoxPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartF
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("box_id", mrenum.SortDirectionASC),
+				o.Field("box_id", enums.SortDirectionASC),
 			)
 		},
 	)

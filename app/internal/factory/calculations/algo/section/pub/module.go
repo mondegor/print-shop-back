@@ -1,9 +1,7 @@
 package pub
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrfactory"
+	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/module"
@@ -11,39 +9,39 @@ import (
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.
-func CreateModule(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
+func CreateModule(opts algo.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrinit.InfoCreateModule(opts.Logger, module.Name)
 
-	if l, err := createUnitBoxPackInBox(ctx, opts); err != nil {
+	if l, err := createUnitBoxPackInBox(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitSheetPackInStack(ctx, opts); err != nil {
+	if l, err := createUnitSheetPackInStack(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitSheetCutting(ctx, opts); err != nil {
+	if l, err := createUnitSheetCutting(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitSheetImposition(ctx, opts); err != nil {
+	if l, err := createUnitSheetImposition(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
-	if l, err := createUnitSheetInsideOutside(ctx, opts); err != nil {
+	if l, err := createUnitSheetInsideOutside(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
 	return list, nil

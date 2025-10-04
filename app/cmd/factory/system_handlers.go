@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
@@ -14,21 +14,24 @@ import (
 )
 
 // RegisterSystemHandlers - регистрация системных обработчиков.
-func RegisterSystemHandlers(ctx context.Context, opts app.Options) error {
-	mrlog.Ctx(ctx).Info().Msgf("Init system handlers")
+func RegisterSystemHandlers(opts app.Options) error {
+	mrlog.Info(opts.Logger, "Init system handlers")
 
 	probes := []mrrun.ProbeChecker{
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"App",
 			mrrun.WithAppReadyProbe(opts.AppHealth),
 			time.Microsecond,
 		),
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"Postgres",
 			opts.PostgresConnManager.ConnAdapter().Ping,
 			0, // timeout by default
 		),
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"Redis",
 			opts.RedisAdapter.Ping,
 			0, // timeout by default
@@ -39,19 +42,20 @@ func RegisterSystemHandlers(ctx context.Context, opts app.Options) error {
 	opts.InternalRouter.Handle(
 		"/health",
 		mrresp.HandlerGetHealth(
-			mrrun.PrepareProbesForCheck(probes...),
+			mrrun.PrepareProbesForCheck(opts.Logger, probes...),
 		),
 	)
 
-	probesFunc := mrrun.PrepareProbes(probes...)
+	probesFunc := mrrun.PrepareProbes(opts.Logger, probes...)
 
 	systemInfoFunc, err := mrresp.HandlerGetSystemInfoAsJSON(
+		opts.Logger,
 		mrresp.SystemInfoConfig{
 			Name:        opts.Cfg.App.Name,
 			Version:     opts.Cfg.App.Version,
 			Environment: opts.Cfg.App.Environment,
 			IsDebug:     opts.Cfg.Debugging.Debug,
-			LogLevel:    mrlog.Ctx(ctx).Level(),
+			LogLevel:    opts.Cfg.Log.Level,
 			StartedAt:   opts.Cfg.App.StartedAt,
 			Processes: func(ctx context.Context) map[string]string {
 				finishedProbes := probesFunc(ctx)

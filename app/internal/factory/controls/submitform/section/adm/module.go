@@ -1,10 +1,8 @@
 package adm
 
 import (
-	"context"
-
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrfactory"
+	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
@@ -36,26 +34,25 @@ type (
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.
-func CreateModule(ctx context.Context, opts submitform.Options) ([]mrserver.HttpController, error) {
-	mrfactory.InfoCreateModule(ctx, module.Name)
+func CreateModule(opts submitform.Options) ([]mrserver.HttpController, error) {
+	mrinit.InfoCreateModule(opts.Logger, module.Name)
 
-	unitSubmitFormOptions, err := initUnitSubmitFormEnvironment(ctx, opts)
+	unitSubmitFormOptions, err := initUnitSubmitFormEnvironment(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	unitFormElementOptions, err := initUnitFormElementEnvironment(ctx, opts)
+	unitFormElementOptions, err := initUnitFormElementEnvironment(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	unitFormVersionOptions, err := initUnitSubmitFormVersionEnvironment(ctx, opts)
+	unitFormVersionOptions, err := initUnitSubmitFormVersionEnvironment(opts)
 	if err != nil {
 		return nil, err
 	}
 
 	return createModule(
-		ctx,
 		moduleOptions{
 			Options:     opts,
 			submitForm:  unitSubmitFormOptions,
@@ -65,19 +62,19 @@ func CreateModule(ctx context.Context, opts submitform.Options) ([]mrserver.Http
 	)
 }
 
-func createModule(ctx context.Context, opts moduleOptions) ([]mrserver.HttpController, error) {
+func createModule(opts moduleOptions) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if l, err := createUnitSubmitForm(ctx, opts); err != nil {
+	if l, err := createUnitSubmitForm(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.UnitSubmitFormPermission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.UnitSubmitFormPermission))...)
 	}
 
-	if l, err := createUnitFormElement(ctx, opts); err != nil {
+	if l, err := createUnitFormElement(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.UnitFormElementPermission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.UnitFormElementPermission))...)
 	}
 
 	return list, nil

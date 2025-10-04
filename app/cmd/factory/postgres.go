@@ -3,6 +3,7 @@ package factory
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -10,31 +11,34 @@ import (
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/mondegor/go-storage/mrmigrate/gomigrate"
 	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrpostgres/logger"
+	"github.com/mondegor/go-storage/mrpostgres/monitoring"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrstorage/mrprometheus"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 )
 
-// NewPostgres - создаёт объект mrpostgres.ConnAdapter.
-func NewPostgres(ctx context.Context, opts app.Options) (*mrpostgres.ConnAdapter, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init postgres connection")
+// InitPostgres - создаёт объект mrpostgres.ConnAdapter.
+func InitPostgres(opts app.Options) (*mrpostgres.ConnAdapter, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
 
-	cfg := opts.Cfg
+	mrlog.Info(opts.Logger, "Create and init postgres pool connection")
+
+	cfg := opts.Cfg.Storage
+
 	postgresOpts := mrpostgres.Options{
-		Host:            cfg.Storage.Host,
-		Port:            cfg.Storage.Port,
-		Database:        cfg.Storage.Database,
-		Username:        cfg.Storage.Username,
-		Password:        cfg.Storage.Password,
-		MaxPoolSize:     cfg.Storage.MaxPoolSize,
-		MaxConnLifetime: cfg.Storage.MaxConnLifetime,
-		MaxConnIdleTime: cfg.Storage.MaxConnIdleTime,
-		ConnAttempts:    1,
-		ConnTimeout:     cfg.Storage.Timeout,
-		QueryTracer:     logger.NewQueryTracer(cfg.Storage.Host, cfg.Storage.Port, cfg.Storage.Database),
+		Host:            cfg.Host,
+		Port:            cfg.Port,
+		Database:        cfg.Database,
+		Username:        cfg.Username,
+		Password:        cfg.Password,
+		MaxPoolSize:     cfg.MaxPoolSize,
+		MaxConnLifetime: cfg.MaxConnLifetime,
+		MaxConnIdleTime: cfg.MaxConnIdleTime,
+		ConnTimeout:     cfg.Timeout,
+		QueryTracer:     monitoring.NewQueryTracer(cfg.Host, cfg.Port, cfg.Database, opts.Tracer),
 	}
 
 	conn := mrpostgres.New()
@@ -43,14 +47,19 @@ func NewPostgres(ctx context.Context, opts app.Options) (*mrpostgres.ConnAdapter
 		return nil, err
 	}
 
-	opts.Prometheus.MustRegister(
+	connCli, err := conn.Cli()
+	if err != nil {
+		return nil, err
+	}
+
+	opts.Prometheus.Add(
 		mrprometheus.NewDBCollector(
 			"pgx",
 			func() mrstorage.DBStatProvider {
-				return conn.Cli().Stat()
+				return connCli.Stat()
 			},
 			map[string]string{
-				"db_name": cfg.Storage.Database,
+				"db_name": cfg.Database,
 			},
 		),
 	)
@@ -58,16 +67,21 @@ func NewPostgres(ctx context.Context, opts app.Options) (*mrpostgres.ConnAdapter
 	return conn, conn.Ping(ctx)
 }
 
-// NewPostgresConnManager - создаёт объект mrpostgres.ConnManager.
-func NewPostgresConnManager(_ context.Context, conn *mrpostgres.ConnAdapter) *mrpostgres.ConnManager {
-	return mrpostgres.NewConnManager(conn)
+// InitPostgresConnManager - создаёт объект mrpostgres.ConnManager.
+func InitPostgresConnManager(conn *mrpostgres.ConnAdapter, logger mrlog.Logger) *mrpostgres.ConnManager {
+	return mrpostgres.NewConnManager(conn, logger)
 }
 
 // ApplyPostgresMigrations - накатывает миграции БД opts.Cfg.Storage.
-func ApplyPostgresMigrations(ctx context.Context, opts app.Options) error {
-	mrlog.Ctx(ctx).Info().Msgf("Apply postgres migrations: %s", opts.Cfg.Storage.MigrationsDir)
+func ApplyPostgresMigrations(opts app.Options) error {
+	mrlog.Info(opts.Logger, "Apply postgres migrations: "+opts.Cfg.Storage.MigrationsDir)
 
-	db := stdlib.OpenDBFromPool(opts.PostgresConnManager.ConnAdapter().Cli())
+	connCli, err := opts.PostgresConnManager.ConnAdapter().Cli()
+	if err != nil {
+		return err
+	}
+
+	db := stdlib.OpenDBFromPool(connCli)
 	defer db.Close()
 
 	// if opts.Cfg.Storage.MigrationsTable is empty then will be used postgres.DefaultMigrationsTable
@@ -82,7 +96,7 @@ func ApplyPostgresMigrations(ctx context.Context, opts app.Options) error {
 	}
 	defer dbMigrate.Close()
 
-	dbMigrate.Log = gomigrate.NewLoggerAdapter(mrlog.Ctx(ctx).With().Str("migrator", "go-migrate").Logger())
+	dbMigrate.Log = gomigrate.NewLoggerAdapter(opts.Logger.WithAttrs("migrator", "go-migrate"))
 
 	if err = dbMigrate.Up(); err != nil {
 		if !errors.Is(err, migrate.ErrNoChange) {

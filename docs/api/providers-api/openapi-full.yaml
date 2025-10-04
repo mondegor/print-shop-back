@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.5.0
+  version: v0.6.0
   title: Protected Providers API print-shop
   license:
     name: Apache-2.0
@@ -54,6 +54,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       responses:
         "200":
@@ -89,6 +90,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -128,6 +130,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -168,6 +171,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       requestBody:
         required: true
@@ -205,6 +209,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
 
       responses:
         "204":
@@ -226,7 +231,6 @@ components:
       required: false
       schema:
         type: string
-        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
@@ -238,6 +242,15 @@ components:
         type: string
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+    App.Request.Query.Language:
+      description: Явное указание языка запроса. Приоритетнее Accept-Language.
+      name: lang
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "ru-RU"
 
   schemas:
     App.Field.DateTimeCreatedAt:
@@ -319,7 +332,7 @@ components:
       example: "PUBLISHED"
 
     CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage:
-      description: DTO - сохранение публичной страницы компании
+      description: DTO сохранения публичной страницы компании
       type: object
       required:
         - rewriteName
@@ -342,7 +355,7 @@ components:
           example: "https://site.localhost/"
 
     CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus:
-      description: DTO - изменения статуса публикации страницы компании
+      description: DTO изменения статуса публикации страницы компании
       type: object
       properties:
         status:

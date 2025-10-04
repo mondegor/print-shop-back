@@ -3,13 +3,16 @@ package enum
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Ориентации формата.
+const (
+	FormatOrientationBook  Orientation = iota + 1 // книжная ориентация
+	FormatOrientationAlbum                        // альбомная ориентация
 )
 
 const (
-	FormatOrientationBook  Orientation = iota // FormatOrientationBook - книжная ориентация
-	FormatOrientationAlbum                    // FormatOrientationAlbum - альбомная ориентация
-
 	enumNameOrientation = "Orientation"
 )
 
@@ -38,7 +41,7 @@ func (e *Orientation) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameOrientation)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameOrientation)
 }
 
 // String - возвращает значение в виде строки.

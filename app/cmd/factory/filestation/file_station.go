@@ -1,9 +1,6 @@
 package filestation
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
 	"github.com/mondegor/go-webcore/mrpath/placeholderpath"
 
 	"github.com/mondegor/print-shop-back/internal/app"
@@ -11,7 +8,7 @@ import (
 )
 
 // NewModuleOptions - создаёт объект filestation.Options.
-func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options, error) {
+func NewModuleOptions(opts app.Options) (filestation.Options, error) {
 	fileAPI, err := opts.FileProviderPool.ProviderAPI(
 		opts.Cfg.ModulesSettings.FileStation.ImageProxy.FileProvider,
 	)
@@ -28,7 +25,8 @@ func NewModuleOptions(_ context.Context, opts app.Options) (filestation.Options,
 	}
 
 	return filestation.Options{
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		Logger:              opts.Logger,
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		RequestParser:       opts.RequestParsers.String,
 		ResponseSender:      opts.ResponseSenders.FileSender,
 

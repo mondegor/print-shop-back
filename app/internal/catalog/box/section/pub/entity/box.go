@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	ModelNameBox = "public-api.Catalog.Box" // ModelNameBox - название сущности
+	// ModelNameBox - название сущности.
+	ModelNameBox = "public-api.Catalog.Box"
 )
 
 type (

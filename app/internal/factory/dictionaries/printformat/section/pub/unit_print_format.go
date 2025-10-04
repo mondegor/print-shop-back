@@ -1,8 +1,6 @@
 package pub
 
 import (
-	"context"
-
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/controller/httpv1"
@@ -11,10 +9,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
 )
 
-func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
+func createUnitPrintFormat(opts printformat.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPrintFormat(ctx, opts); err != nil {
+	if c, err := newUnitPrintFormat(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -23,11 +21,11 @@ func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrs
 	return list, nil
 }
 
-func newUnitPrintFormat(_ context.Context, opts printformat.Options) (*httpv1.PrintFormat, error) { //nolint:unparam
+func newUnitPrintFormat(opts printformat.Options) (*httpv1.PrintFormat, error) { //nolint:unparam
 	storage := repository.NewPrintFormatPostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewPrintFormat(storage, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewPrintFormat(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

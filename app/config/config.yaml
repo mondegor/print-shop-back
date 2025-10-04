@@ -6,18 +6,23 @@ app:
 
 debugging:
   debug: true
-  unexpected_http_status: 418 # http.StatusTeapot
+  authorized_user:
+    id: "137b652a-2380-480f-bb95-3c78183f68f3"
+    realm: "" # "printshop/customers"
+    kind: "standard" # "pro"
+    lang: "ru-RU"
+  unexpected_http_status: 599 # instead of http.StatusInternalServerError for unwrapped errors
   error_caller:
-    enable: true
+    is_enabled: true
     depth: 3
-    show_func_name: true
     upper_bounds:
-      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).New
-      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).Wrap
-      - github.com/mondegor/go-webcore/mrcore.PrepareError
-      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).Perform
-      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).PerformWithCommit
-      - github.com/mondegor/go-webcore/mrlog/zerolog.(*eventAdapter).Err
+      - github.com/mondegor/go-sysmess/mrerrors.(*ProtoError).New
+      - github.com/mondegor/go-sysmess/mrerrors.(*ProtoError).Wrap
+      - github.com/mondegor/go-sysmess/mrerrors.(*ProtoError).WrapContext
+      - github.com/mondegor/go-sysmess/mrerr.(*ErrorHandler).Execute
+      - github.com/mondegor/go-sysmess/mrerr.(*ErrorHandler).do
+      - github.com/mondegor/go-sysmess/mrerr/mr.(*UseCaseErrorWrapper).WrapErrorNotFoundOrFailed
+      - github.com/mondegor/go-sysmess/mrerr/mr.(*UseCaseErrorWrapper).WrapErrorFailed
       - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).begin
       - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Exec
       - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
@@ -27,10 +32,13 @@ debugging:
       - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
 
 logger:
-  level: trace # info, warn, error, fatal, debug, trace
-  timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
+  level: debug # info, warn, error
+  time_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly, Kitchen
   json_format: false
-  console_color: true
+  color_mode: true # true, false; true only if json_format=false
+
+tracer:
+  is_enabled: true
 
 sentry:
   # dsn: http://id@127.0.0.1:9980/1
@@ -62,10 +70,10 @@ storage:
   database: db_pg
   migrations_dir: "./migrations" # if empty automatic migration will be disabled
   migrations_table: print_shop_migrations
-  max_pool_size: 2
+  max_pool_size: 10
   max_conn_lifetime: 1h
   max_conn_idle_time: 15m
-  timeout: 60s
+  timeout: 15s
 
 redis:
   host: db-redis
@@ -103,21 +111,11 @@ cors:
     - X-Request-Id
   allow_credentials: true
 
-translation:
-  dir_path: "./translate"
-  lang_codes: # the first language is default
-    - en_EN
-    - ru_RU
-  dictionaries:
-    dir_path: "./translate/dict"
-    list:
-      - catalog/boxes
-      - catalog/laminates
-      - catalog/papers
-      - dictionaries/material-types
-      - dictionaries/paper-colors
-      - dictionaries/paper-factures
-      - dictionaries/print-formats
+localization:
+  lang_url_param: lang
+  languages: # the first language is default
+    - "ru-RU"
+    - "en-US"
 
 senders:
   mail:
@@ -130,39 +128,119 @@ senders:
     # name: "@Telegram_Bot"
     # token: "0000000000:AAAaaAAaaAAaaAAAA0AAaaaaAaAAAAAAa_a"
 
-app_sections:
-  admin_api:
-    privilege: apiAdm
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
-  providers_api:
-    privilege: apiProv
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
-  public_api:
-    privilege: apiPub
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
-
 access_control:
+  realms:
+    - name: "admin.printshop/backend"
+      auth_token:
+        access_type: session
+        access_expiry: 15m
+        refresh_expiry: 2h
+        length: 96
+      user_kinds:
+        - name: admin
+          roles:
+            - administrators
+          session_max: 4
+      register_user_kind: none
+      operation_confirm:
+        token_length: 96
+        # code_length: 6
+        session_expiry: 5m
+        send_by_email:
+          max_attempts: 3
+          # max_resends: 8
+          # min_resend_time: 1m
+        send_by_phone:
+          max_attempts: 3
+          max_resends: 2
+          # min_resend_time: 2m
+    - name: "printshop/customers"
+      auth_token:
+        access_type: jwt
+        access_expiry: 60m
+        refresh_expiry: 4320h # 180 days
+        length: 64
+      user_kinds:
+        - name: standard
+          roles:
+            - customers
+          session_max: 4
+        - name: pro
+          roles:
+            - customers
+            - customers/pro
+          session_max: 8
+      register_user_kind: standard
+      operation_confirm:
+        token_length: 64
+        code_length: 4
+        # session_expiry: 10m
+        send_by_email:
+          max_attempts: 3
+          # max_resends: 8
+          # min_resend_time: 1m
+        send_by_phone:
+          max_attempts: 3
+          # max_resends: 2
+          min_resend_time: 3m
+    - name: "printshop/providers"
+      auth_token:
+        access_type: jwt
+        access_expiry: 30m
+        refresh_expiry: 720h # 1 month
+        length: 80
+      user_kinds:
+        - name: standard
+          roles:
+            - providers
+          session_max: 4
+        - name: pro
+          roles:
+            - providers
+            - providers/pro
+          session_max: 8
+      register_user_kind: standard
+      # operation_confirm:
+        # token_length: 80
+        # code_length: 6
+        # session_expiry: 10m
+        # send_by_email:
+          # max_attempts: 5
+          # max_resends: 8
+          # min_resend_time: 1m
+        # send_by_phone:
+          # max_attempts: 5
+          # max_resends: 2
+          # min_resend_time: 2m
+  routing_sections:
+    - name: public-api
+      base_path: "/"
+      privilege: public
+    - name: auth-api
+      base_path: "/auth/"
+      privilege: public
+    - name: admin-api
+      base_path: "/backend/"
+      privilege: api/admin
+    - name: customer-api
+      base_path: "/user/"
+      privilege: api/customers
+    - name: provider-api
+      base_path: "/prov/"
+      privilege: api/providers
+  roles_dir_path: "./roles"
   roles:
-    dir_path: "./roles"
-    file_type: yaml
-    list: # the first role is the guest role
-      - guests
-      - administrators
-      - providers
+    - administrators # will be searched for administrators.yaml in dir_path and etc
+    - customers
+    - customers/pro
+    - providers
+    - providers/pro
   privileges:
-    - apiAdm
-    - apiProv
-    - apiPub
+    - api/admin
+    - api/customers
+    - api/providers
   permissions:
-    - modCalculationsAlgo
-    - modCalculationsBox
-    - modCalculationsQueryHistory
+    - modAuth
     - modCatalogBox
     - modCatalogPaper
     - modCatalogLaminate
@@ -175,6 +253,20 @@ access_control:
     - modDictionariesPrintFormat
     - modFileStation
     - modProviderAccounts
+  operation_confirm: # settings by default
+    token_length: 80
+    code_length: 6
+    session_expiry: 10m
+    send_by_email:
+      max_attempts: 5
+      max_resends: 8
+      min_resend_time: 1m
+    send_by_phone:
+      max_attempts: 5
+      max_resends: 2
+      min_resend_time: 2m
+  jwt_method: "HS256" # HS512
+  jwt_secret: "The secret for symmetric security key" # OPTIONAL, ключ для расшифровки jwt токена, необходим только если используется в realms
 
 modules_settings:
   general:
@@ -239,59 +331,64 @@ validation:
       ext: xml
 
 task_schedule:
-  reload_settings:
-    caption: "Settings.Reload"
-    startup: true
-    period: 5m
-    timeout: 15s
+  settings:
+    reload_settings:
+      period: 10m
+      timeout: 15s
+      notification_channel: "event_settings_changed"
+  auth:
+    user_stat:
+      request_collector:
+        ready_timeout: 30s
+        flush_period: 1m
+        handler_timeout: 30s
+        batch_size: 5 # 50
+        workers_count: 1
+    clean_records:
+      period: 5m
+      timeout: 15s
+    clean_records_limit: 100
+    logs_life_time: 168h # 1 week
   mailer:
-    send_processor:
-      caption: "Mailer.SendProcessor"
-      ready_timeout: 60s
-      start_read_delay: 5s
+    message_processor:
+      ready_timeout: 30s
       read_period: 2m
-      cancel_read_timeout: 5s
+      consumer_read_timeout: 2s
+      consumer_write_timeout: 4s
       handler_timeout: 30s
       queue_size: 25
       workers_count: 1
+      notification_channel: "event_mailer_queue_inserted"
     change_from_to_retry:
-      caption: "Mailer.ChangeFromToRetry"
-      # startup: false
       period: 600s
-      timeout: 60s
+      timeout: 30s
     clean_queue:
-      caption: "Mailer.CleanQueue"
-      # startup: false
       period: 45m
-      timeout: 60s
+      timeout: 30s
     send_retry_attempts: 3
     send_delay_correction: 15s
     change_queue_limit: 100
-    change_retry_timeout: 60s
+    change_retry_timeout: 30s
     change_retry_delayed: 0s
     clean_queue_limit: 100
   notifier:
-    send_processor:
-      caption: "Notifier.SendProcessor"
-      ready_timeout: 60s
-      start_read_delay: 0s
+    notice_processor:
+      ready_timeout: 30s
       read_period: 2m
-      cancel_read_timeout: 5s
+      consumer_read_timeout: 2s
+      consumer_write_timeout: 4s
       handler_timeout: 30s
       queue_size: 25
       workers_count: 1
+      notification_channel: "event_notifier_queue_inserted"
     change_from_to_retry:
-      caption: "Notifier.ChangeFromToRetry"
-      # startup: false
-      period: 600s
-      timeout: 60s
+      period: 5m
+      timeout: 30s
     clean_queue:
-      caption: "Notifier.CleanQueue"
-      # startup: false
-      period: 45m
-      timeout: 60s
+      period: 30m
+      timeout: 30s
     send_retry_attempts: 3
     change_queue_limit: 100
-    change_retry_timeout: 60s
+    change_retry_timeout: 30s
     change_retry_delayed: 30s
     clean_queue_limit: 100

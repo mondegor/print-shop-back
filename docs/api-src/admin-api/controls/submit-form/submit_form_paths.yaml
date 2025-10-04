@@ -29,6 +29,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.ElementDetailing"
       - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
@@ -43,7 +44,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-                $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
+              $ref: "#/components/schemas/Controls.SubmitForms.AdminAPI.Response.Model.FormList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -72,6 +73,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     requestBody:
       required: true
@@ -110,6 +112,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     responses:
@@ -149,6 +152,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     requestBody:
@@ -185,6 +189,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     responses:
@@ -219,6 +224,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     requestBody:
@@ -260,6 +266,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     responses:
@@ -294,6 +301,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
 
     responses:
@@ -325,6 +333,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormID"
       - $ref: "#/components/parameters/Controls.SubmitForms.AdminAPI.Request.Path.FormVersion"
 

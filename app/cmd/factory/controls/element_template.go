@@ -1,10 +1,6 @@
 package controls
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
 	"github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
@@ -12,25 +8,25 @@ import (
 )
 
 // NewElementTemplateModuleOptions - создаёт объект elementtemplate.Options.
-func NewElementTemplateModuleOptions(_ context.Context, opts app.Options) (elementtemplate.Options, error) {
+func NewElementTemplateModuleOptions(opts app.Options) elementtemplate.Options {
 	return elementtemplate.Options{
-		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
-		DBConnManager:       opts.PostgresConnManager,
+		Logger:               opts.Logger,
+		EventEmitter:         opts.EventEmitter,
+		UsecaseErrorWrapper:  opts.UsecaseErrorWrapper,
+		FileUserErrorWrapper: opts.FileUserErrorWrapper,
+		DBConnManager:        opts.PostgresConnManager,
 		RequestParsers: elementtemplate.RequestParsers{
 			// Parser:       opts.RequestParsers.Parser,
 			// ExtendParser: opts.RequestParsers.ExtendParser,
 			ModuleParser: validate.NewParser(
 				opts.RequestParsers.ExtendParser,
 				opts.RequestParsers.FileJson,
-				pkgvalidate.NewDetailingParser(),
+				pkgvalidate.NewDetailingParser(opts.Logger),
 			),
 		},
 		ResponseSender: opts.ResponseSenders.FileSender,
 
-		UnitElementTemplate: elementtemplate.UnitElementTemplateOptions{},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }

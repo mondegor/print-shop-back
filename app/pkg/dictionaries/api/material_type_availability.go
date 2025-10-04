@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	MaterialTypeAvailabilityName = "Dictionaries.API.MaterialTypeAvailability" // MaterialTypeAvailabilityName - название API
+	// MaterialTypeAvailabilityName - название API.
+	MaterialTypeAvailabilityName = "Dictionaries.API.MaterialTypeAvailability"
 )
 
 type (
@@ -24,14 +25,11 @@ type (
 
 var (
 	// ErrMaterialTypeRequired - laminate type ID is required.
-	ErrMaterialTypeRequired = mrerr.NewProto(
-		"dictionaries.errMaterialTypeRequired", mrerr.ErrorKindUser, "laminate type ID is required")
+	ErrMaterialTypeRequired = mrerr.NewKindUser("MaterialTypeRequired", "laminate type ID is required")
 
 	// ErrMaterialTypeNotAvailable - laminate type with ID is not available.
-	ErrMaterialTypeNotAvailable = mrerr.NewProto(
-		"dictionaries.errMaterialTypeNotAvailable", mrerr.ErrorKindUser, "laminate type with ID={{ .id }} is not available")
+	ErrMaterialTypeNotAvailable = mrerr.NewKindUser("MaterialTypeNotAvailable", "laminate type with ID={Id} is not available")
 
 	// ErrMaterialTypeNotFound - laminate type with ID not found.
-	ErrMaterialTypeNotFound = mrerr.NewProto(
-		"dictionaries.errMaterialTypeNotFound", mrerr.ErrorKindUser, "laminate type with ID={{ .id }} not found")
+	ErrMaterialTypeNotFound = mrerr.NewKindUser("MaterialTypeNotFound", "laminate type with ID={Id} not found")
 )

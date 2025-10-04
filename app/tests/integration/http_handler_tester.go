@@ -8,11 +8,14 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrlog/slog/nopslog"
+	"github.com/mondegor/go-sysmess/mrtrace/noptracer"
+	"github.com/mondegor/go-sysmess/mrwire"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
 	"github.com/mondegor/print-shop-back/cmd/factory"
+	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/tests"
@@ -35,7 +38,7 @@ type (
 func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	t.Helper()
 
-	ctx := helpers.ContextWithNopLogger()
+	ctx := context.Background()
 	cfg, err := config.Create(
 		config.Args{
 			WorkDir:    tests.AppWorkDir(),
@@ -45,18 +48,26 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	)
 	require.NoError(t, err)
 
+	logger := nopslog.New()
+	tracer := noptracer.New()
+	traceManager, err := mrwire.InitTraceContextManager(logger)
+	require.NoError(t, err)
+
 	pgt := infra.NewPostgresTester(t, tests.DBSchemas(), tests.ExcludedDBTables())
 	pgt.ApplyMigrations(tests.AppMigrationsDir())
 
 	rds := infra.NewRedisTester(t)
 
-	fpool, err := factory.NewFileProviderPool(ctx, cfg)
+	fpool, err := factory.InitFileProviderPool(logger, tracer, cfg)
 	require.NoError(t, err)
 
-	ctx, opts, err := factory.InitAppEnvironment(
-		ctx,
+	opts, err := factory.InitAppEnvironment(
 		app.Options{
 			Cfg:                 cfg,
+			Logger:              logger,
+			Tracer:              tracer,
+			TraceManager:        traceManager,
+			OpenedResources:     mrwire.NewCloseManager(logger),
 			PostgresConnManager: pgt.ConnManager(),
 			RedisAdapter:        rds.Conn(),
 			FileProviderPool:    fpool,
@@ -64,7 +75,7 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	)
 	require.NoError(t, err)
 
-	router, err := factory.NewRestRouterWithRegisterHandlers(ctx, opts)
+	router, err := rest.InitRestRouterWithHandlers(opts)
 	require.NoError(t, err)
 
 	return &HttpHandlerTester{
@@ -100,7 +111,7 @@ func (t *HttpHandlerTester) ExecRequest(r *helpers.HttpRequest, structResponse a
 
 // Clean - очищает ресурсы после завершения тестирования обработчика.
 func (t *HttpHandlerTester) Clean() {
-	mrlib.CallEachFunc(t.ctx, t.opts.OpenedResources)
+	t.opts.OpenedResources.Close()
 	t.pgt.Destroy(t.ctx)
 	t.rds.Destroy(t.ctx)
 

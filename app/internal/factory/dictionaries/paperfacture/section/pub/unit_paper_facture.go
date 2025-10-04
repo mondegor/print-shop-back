@@ -1,8 +1,6 @@
 package pub
 
 import (
-	"context"
-
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
@@ -11,10 +9,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
 )
 
-func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]mrserver.HttpController, error) {
+func createUnitPaperFacture(opts paperfacture.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPaperFacture(ctx, opts); err != nil {
+	if c, err := newUnitPaperFacture(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -23,11 +21,11 @@ func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]m
 	return list, nil
 }
 
-func newUnitPaperFacture(_ context.Context, opts paperfacture.Options) (*httpv1.PaperFacture, error) { //nolint:unparam
+func newUnitPaperFacture(opts paperfacture.Options) (*httpv1.PaperFacture, error) { //nolint:unparam
 	storage := repository.NewPaperFacturePostgres(
 		opts.DBConnManager,
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewPaperFacture(storage, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewPaperFacture(
 		opts.RequestParsers.Parser,
 		opts.ResponseSender,

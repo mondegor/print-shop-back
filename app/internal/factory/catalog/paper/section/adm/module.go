@@ -1,9 +1,7 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrfactory"
+	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
@@ -11,15 +9,15 @@ import (
 )
 
 // CreateModule - создаются все компоненты модуля и возвращаются к нему контролеры.
-func CreateModule(ctx context.Context, opts paper.Options) ([]mrserver.HttpController, error) {
+func CreateModule(opts paper.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	mrfactory.InfoCreateModule(ctx, module.Name)
+	mrinit.InfoCreateModule(opts.Logger, module.Name)
 
-	if l, err := createUnitPaper(ctx, opts); err != nil {
+	if l, err := createUnitPaper(opts); err != nil {
 		return nil, err
 	} else {
-		list = append(list, mrfactory.PrepareEachController(l, mrfactory.WithPermission(module.Permission))...)
+		list = append(list, mrinit.PrepareEachController(l, mrinit.WithPermission(module.Permission))...)
 	}
 
 	return list, nil

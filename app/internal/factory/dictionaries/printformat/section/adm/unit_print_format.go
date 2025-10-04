@@ -1,11 +1,8 @@
 package adm
 
 import (
-	"context"
-
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/controller/httpv1"
@@ -15,10 +12,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
 )
 
-func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
+func createUnitPrintFormat(opts printformat.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitPrintFormat(ctx, opts); err != nil {
+	if c, err := newUnitPrintFormat(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -27,8 +24,8 @@ func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrs
 	return list, nil
 }
 
-func newUnitPrintFormat(ctx context.Context, opts printformat.Options) (*httpv1.PrintFormat, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.PrintFormat{})
+func newUnitPrintFormat(opts printformat.Options) (*httpv1.PrintFormat, error) {
+	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.PrintFormat{})
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +37,7 @@ func newUnitPrintFormat(ctx context.Context, opts printformat.Options) (*httpv1.
 			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewPrintFormat(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

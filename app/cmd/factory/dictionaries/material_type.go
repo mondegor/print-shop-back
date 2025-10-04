@@ -1,10 +1,7 @@
 package dictionaries
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability/usecase"
@@ -13,15 +10,11 @@ import (
 )
 
 // NewMaterialTypeModuleOptions - создаёт объект materialtype.Options.
-func NewMaterialTypeModuleOptions(_ context.Context, opts app.Options) (materialtype.Options, error) {
-	materialTypeDictionary, err := opts.Translator.Dictionary("dictionaries/material-types")
-	if err != nil {
-		return materialtype.Options{}, err
-	}
-
+func NewMaterialTypeModuleOptions(opts app.Options) materialtype.Options {
 	return materialtype.Options{
+		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: materialtype.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -29,18 +22,14 @@ func NewMaterialTypeModuleOptions(_ context.Context, opts app.Options) (material
 		},
 		ResponseSender: opts.ResponseSenders.Sender,
 
-		UnitMaterialType: materialtype.UnitMaterialTypeOptions{
-			Dictionary: materialTypeDictionary,
-		},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }
 
 // NewMaterialTypeAvailabilityAPI - создаёт объект usecase.MaterialType.
-func NewMaterialTypeAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.MaterialType, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries laminate type availability API")
+func NewMaterialTypeAvailabilityAPI(opts app.Options) (*usecase.MaterialType, error) {
+	mrlog.Info(opts.Logger, "Create and init dictionaries laminate type availability API")
 
-	return availability.NewMaterialType(opts.PostgresConnManager), nil
+	return availability.NewMaterialType(opts.PostgresConnManager, opts.UsecaseErrorWrapper, opts.Tracer), nil
 }

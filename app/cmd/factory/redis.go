@@ -2,28 +2,34 @@ package factory
 
 import (
 	"context"
+	"time"
 
 	"github.com/mondegor/go-storage/mrredis"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
-	"github.com/mondegor/print-shop-back/config"
+	"github.com/mondegor/print-shop-back/internal/app"
 )
 
-// NewRedis - создаёт объект mrredis.ConnAdapter.
-func NewRedis(ctx context.Context, cfg config.Config) (*mrredis.ConnAdapter, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init redis connection")
+// InitRedis - создаёт объект mrredis.ConnAdapter.
+func InitRedis(opts app.Options) (*mrredis.ConnAdapter, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
 
-	opts := mrredis.Options{
-		Host:         cfg.Redis.Host,
-		Port:         cfg.Redis.Port,
-		Password:     cfg.Redis.Password,
-		ReadTimeout:  cfg.Redis.ReadTimeout,
-		WriteTimeout: cfg.Redis.WriteTimeout,
+	mrlog.Info(opts.Logger, "Create and init redis connection")
+
+	cfg := opts.Cfg.Redis
+
+	redisOpts := mrredis.Options{
+		Host:         cfg.Host,
+		Port:         cfg.Port,
+		Password:     cfg.Password,
+		ReadTimeout:  cfg.ReadTimeout,
+		WriteTimeout: cfg.WriteTimeout,
 	}
 
-	conn := mrredis.New()
+	conn := mrredis.New(opts.Tracer)
 
-	if err := conn.Connect(ctx, opts); err != nil {
+	if err := conn.Connect(ctx, redisOpts); err != nil {
 		return nil, err
 	}
 

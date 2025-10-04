@@ -1,11 +1,8 @@
 package adm
 
 import (
-	"context"
-
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/controller/httpv1"
@@ -15,10 +12,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
 )
 
-func createUnitLaminate(ctx context.Context, opts laminate.Options) ([]mrserver.HttpController, error) {
+func createUnitLaminate(opts laminate.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitLaminate(ctx, opts); err != nil {
+	if c, err := newUnitLaminate(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -27,8 +24,8 @@ func createUnitLaminate(ctx context.Context, opts laminate.Options) ([]mrserver.
 	return list, nil
 }
 
-func newUnitLaminate(ctx context.Context, opts laminate.Options) (*httpv1.Laminate, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.Laminate{})
+func newUnitLaminate(opts laminate.Options) (*httpv1.Laminate, error) {
+	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.Laminate{})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +38,7 @@ func newUnitLaminate(ctx context.Context, opts laminate.Options) (*httpv1.Lamina
 			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewLaminate(storage, opts.MaterialTypeAPI, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewLaminate(storage, opts.MaterialTypeAPI, opts.EventEmitter, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewLaminate(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

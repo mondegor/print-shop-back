@@ -3,15 +3,16 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 const (
-	ModelNamePaper = "admin-api.Catalog.Paper" // ModelNamePaper - название сущности
+	// ModelNamePaper - название сущности.
+	ModelNamePaper = "admin-api.Catalog.Paper"
 )
 
 type (

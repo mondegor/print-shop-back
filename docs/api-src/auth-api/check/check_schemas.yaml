@@ -1,0 +1,36 @@
+Auth.Check.Request.Model.CheckLogin:
+  type: object
+  required:
+    - userLogin
+  properties:
+    realm:
+      description: Область, пространство, где планируется регистрация
+      type: string
+      maxLength: 32
+      example: "domain_name/user_group"
+    userLogin:
+      description: Eмаил/телефон пользователя под которым планируется регистрация
+      type: string
+      minLength: 7
+      maxLength: 64
+      example: "user-email@local.host"
+
+Auth.Check.Request.Model.CheckPasswordStrength:
+  type: object
+  required:
+    - password
+  properties:
+    password:
+      description: Проверяемый пароль
+      type: string
+      minLength: 8
+      maxLength: 32
+      example: "L$QI.qA6eu7zG%7w"
+
+Auth.Check.Response.Model.CheckPasswordStrength:
+  type: object
+  required:
+    - strength
+  properties:
+    strength:
+      $ref: "#/components/schemas/Auth.Enum.PasswordStrength"

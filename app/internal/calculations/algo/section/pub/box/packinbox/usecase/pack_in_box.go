@@ -3,11 +3,11 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
@@ -16,32 +16,33 @@ import (
 )
 
 const (
-	ModelNameBoxPackInBox = "public-api.Calculations.Algo.BoxRequest.PackInBox" // ModelNameBoxPackInBox - название сущности
+	// ModelNameBoxPackInBox - название сущности.
+	ModelNameBoxPackInBox = "public-api.Calculations.Algo.BoxRequest.PackInBox"
 )
 
 type (
 	// BoxPackInBox - comment struct.
 	BoxPackInBox struct {
 		algo         *packinbox.Algo
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		logger       mrlog.Logger
+		eventEmitter mrevent.Emitter
 	}
 )
 
 // NewBoxPackInBox - создаёт объект BoxPackInBox.
-func NewBoxPackInBox(algo *packinbox.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *BoxPackInBox {
+func NewBoxPackInBox(algo *packinbox.Algo, logger mrlog.Logger, eventEmitter mrevent.Emitter) *BoxPackInBox {
 	return &BoxPackInBox{
 		algo:         algo,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, ModelNameBoxPackInBox),
-		errorWrapper: errorWrapper,
+		logger:       logger,
+		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, ModelNameBoxPackInBox),
 	}
 }
 
 // Calc - comment method.
 func (uc *BoxPackInBox) Calc(ctx context.Context, data dto.ParsedData) (model.BoxPackInBoxResponse, error) {
-	result, err := uc.algo.Calc(data.Box, data.ProductHeap)
+	result, err := uc.algo.Calc(ctx, data.Box, data.ProductHeap)
 	if err != nil {
-		return model.BoxPackInBoxResponse{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
+		return model.BoxPackInBoxResponse{}, mr.ErrUseCaseIncorrectInputData.New(err)
 	}
 
 	var (
@@ -49,37 +50,37 @@ func (uc *BoxPackInBox) Calc(ctx context.Context, data dto.ParsedData) (model.Bo
 		restBox *model.BoxResponse
 	)
 
-	if !result.FullBox.IsEmpty() {
+	if !result.FullBox.Empty() {
 		fullBox = model.BoxResponse{
-			Weight:              measure.Kilogram(mrlib.RoundFloat4(result.FullBox.TotalWeight())),
-			Volume:              measure.Meter3(mrlib.RoundFloat8(result.FullBox.TotalVolume())),
-			InnerVolume:         measure.Meter3(mrlib.RoundFloat8(result.FullBox.TotalInnerVolume())),
+			Weight:              measure.Kilogram(extmath.RoundFloat4(result.FullBox.TotalWeight())),
+			Volume:              measure.Meter3(extmath.RoundFloat8(result.FullBox.TotalVolume())),
+			InnerVolume:         measure.Meter3(extmath.RoundFloat8(result.FullBox.TotalInnerVolume())),
 			ProductQuantity:     result.FullBox.Product.Quantity,
-			ProductVolume:       measure.Meter3(mrlib.RoundFloat8(result.FullBox.Product.TotalVolume())),
-			UnusedVolumePercent: mrlib.RoundFloat2(result.FullBox.UnusedVolumePercent()),
+			ProductVolume:       measure.Meter3(extmath.RoundFloat8(result.FullBox.Product.TotalVolume())),
+			UnusedVolumePercent: extmath.RoundFloat2(result.FullBox.UnusedVolumePercent()),
 		}
 	}
 
-	if !result.RestBox.IsEmpty() {
+	if !result.RestBox.Empty() {
 		restBox = &model.BoxResponse{
-			Weight:              measure.Kilogram(mrlib.RoundFloat4(result.RestBox.Weight())),
-			Volume:              measure.Meter3(mrlib.RoundFloat8(result.RestBox.Box.Volume())),
-			InnerVolume:         measure.Meter3(mrlib.RoundFloat8(result.RestBox.Box.InnerVolume())),
+			Weight:              measure.Kilogram(extmath.RoundFloat4(result.RestBox.Weight())),
+			Volume:              measure.Meter3(extmath.RoundFloat8(result.RestBox.Box.Volume())),
+			InnerVolume:         measure.Meter3(extmath.RoundFloat8(result.RestBox.Box.InnerVolume())),
 			ProductQuantity:     result.RestBox.Product.Quantity,
-			ProductVolume:       measure.Meter3(mrlib.RoundFloat8(result.RestBox.Product.TotalVolume())),
-			UnusedVolumePercent: mrlib.RoundFloat2(result.RestBox.UnusedVolumePercent()),
+			ProductVolume:       measure.Meter3(extmath.RoundFloat8(result.RestBox.Product.TotalVolume())),
+			UnusedVolumePercent: extmath.RoundFloat2(result.RestBox.UnusedVolumePercent()),
 		}
 	}
 
-	uc.eventEmitter.Emit(ctx, "Calc", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", mrargs.Group{"data": data})
 
 	return model.BoxPackInBoxResponse{
 		FullBox:          fullBox,
 		RestBox:          restBox,
 		BoxesQuantity:    result.BoxesQuantity(),
-		BoxesWeight:      measure.Kilogram(mrlib.RoundFloat4(result.BoxesWeight())),
-		ProductsVolume:   measure.Meter3(mrlib.RoundFloat8(result.ProductsVolume())),
-		BoxesVolume:      measure.Meter3(mrlib.RoundFloat8(result.BoxesVolume())),
-		BoxesInnerVolume: measure.Meter3(mrlib.RoundFloat8(result.BoxesInnerVolume())),
+		BoxesWeight:      measure.Kilogram(extmath.RoundFloat4(result.BoxesWeight())),
+		ProductsVolume:   measure.Meter3(extmath.RoundFloat8(result.ProductsVolume())),
+		BoxesVolume:      measure.Meter3(extmath.RoundFloat8(result.BoxesVolume())),
+		BoxesInnerVolume: measure.Meter3(extmath.RoundFloat8(result.BoxesInnerVolume())),
 	}, nil
 }

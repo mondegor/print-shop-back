@@ -3,9 +3,8 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/google/uuid"
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
@@ -18,18 +17,30 @@ const (
 type (
 	// CompanyPageLogo - comment struct.
 	CompanyPageLogo struct {
-		parser  mrserver.RequestParserImage
-		sender  mrserver.ResponseSender
-		useCase prov.CompanyPageLogoUseCase
+		parser                requestParser
+		sender                mrserver.ResponseSender
+		useCase               prov.CompanyPageLogoUseCase
+		imageUserErrorWrapper mrerr.UserErrorWrapper
+	}
+
+	requestParser interface {
+		mrserver.RequestParserImage
+		mrserver.RequestParserUser
 	}
 )
 
 // NewCompanyPageLogo - создаёт контроллер CompanyPageLogo.
-func NewCompanyPageLogo(parser mrserver.RequestParserImage, sender mrserver.ResponseSender, useCase prov.CompanyPageLogoUseCase) *CompanyPageLogo {
+func NewCompanyPageLogo(
+	parser requestParser,
+	sender mrserver.ResponseSender,
+	useCase prov.CompanyPageLogoUseCase,
+	imageUserErrorWrapper mrerr.UserErrorWrapper,
+) *CompanyPageLogo {
 	return &CompanyPageLogo{
-		parser:  parser,
-		sender:  sender,
-		useCase: useCase,
+		parser:                parser,
+		sender:                sender,
+		useCase:               useCase,
+		imageUserErrorWrapper: imageUserErrorWrapper,
 	}
 }
 
@@ -45,12 +56,12 @@ func (ht *CompanyPageLogo) Handlers() []mrserver.HttpHandler {
 func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) error {
 	file, err := ht.parser.FormImage(r, module.ParamNameFileCompanyLogo)
 	if err != nil {
-		return mrparser.WrapImageError(err, module.ParamNameFileCompanyLogo)
+		return ht.imageUserErrorWrapper.WrapError(err, module.ParamNameFileCompanyLogo)
 	}
 
 	defer file.Body.Close()
 
-	if err = ht.useCase.StoreFile(r.Context(), uuid.MustParse(tmpAccountID), file); err != nil {
+	if err = ht.useCase.StoreFile(r.Context(), ht.parser.UserID(r), file); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -59,7 +70,7 @@ func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) er
 
 // RemoveLogo - comment method.
 func (ht *CompanyPageLogo) RemoveLogo(w http.ResponseWriter, r *http.Request) error {
-	if err := ht.useCase.RemoveFile(r.Context(), uuid.MustParse(tmpAccountID)); err != nil {
+	if err := ht.useCase.RemoveFile(r.Context(), ht.parser.UserID(r)); err != nil {
 		return err
 	}
 

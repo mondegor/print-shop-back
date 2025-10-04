@@ -1,8 +1,6 @@
 package prov
 
 import (
-	"context"
-
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
@@ -11,16 +9,16 @@ import (
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
 )
 
-func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
+func createUnitCompanyPage(opts provideraccounts.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitCompanyPage(ctx, opts); err != nil {
+	if c, err := newUnitCompanyPage(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
 	}
 
-	if c, err := newUnitCompanyPageLogo(ctx, opts); err != nil {
+	if c, err := newUnitCompanyPageLogo(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -29,14 +27,14 @@ func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (
 	return list, nil
 }
 
-func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
+func newUnitCompanyPage(opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
 	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
 	useCase := usecase.NewCompanyPage(
 		opts.DBConnManager,
 		storage,
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
 		opts.UnitCompanyPage.LogoURLBuilder,
+		opts.EventEmitter,
+		opts.UsecaseErrorWrapper,
 	)
 	controller := httpv1.NewCompanyPage(
 		opts.RequestParsers.ModuleParser,
@@ -47,19 +45,21 @@ func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*http
 	return controller, nil
 }
 
-func newUnitCompanyPageLogo(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPageLogo, error) { //nolint:unparam
+func newUnitCompanyPageLogo(opts provideraccounts.Options) (*httpv1.CompanyPageLogo, error) { //nolint:unparam
 	storage := repository.NewCompanyPageLogoPostgres(opts.DBConnManager)
 	useCase := usecase.NewCompanyPageLogo(
 		storage,
 		opts.UnitCompanyPage.LogoFileAPI,
 		opts.Locker,
 		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
+		opts.UsecaseErrorWrapper,
+		opts.Logger,
 	)
 	controller := httpv1.NewCompanyPageLogo(
 		opts.RequestParsers.ModuleParser,
 		opts.ResponseSender,
 		useCase,
+		opts.ImageUserErrorWrapper,
 	)
 
 	return controller, nil

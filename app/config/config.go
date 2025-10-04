@@ -4,7 +4,9 @@ import (
 	"io"
 	"time"
 
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrlib/extfile"
+
+	"github.com/mondegor/print-shop-back/internal/factory/auth"
 )
 
 type (
@@ -25,6 +27,7 @@ type (
 		App             `yaml:"app"`
 		Debugging       `yaml:"debugging"`
 		Log             `yaml:"logger"`
+		Trace           `yaml:"tracer"`
 		Sentry          `yaml:"sentry"`
 		Servers         `yaml:"servers"`
 		Storage         `yaml:"storage"`
@@ -32,9 +35,8 @@ type (
 		FileSystem      `yaml:"file_system"`
 		FileProviders   `yaml:"file_providers"`
 		Cors            `yaml:"cors"`
-		Translation     `yaml:"translation"`
+		Localization    `yaml:"localization"`
 		Senders         `yaml:"senders"`
-		AppSections     `yaml:"app_sections"`
 		AccessControl   `yaml:"access_control"`
 		ModulesSettings `yaml:"modules_settings"`
 		Validation      `yaml:"validation"`
@@ -59,25 +61,34 @@ type (
 
 	// Debugging - comment struct.
 	Debugging struct {
-		Debug                bool `yaml:"debug" env:"APPX_DEBUG"`
-		UnexpectedHttpStatus int  `yaml:"unexpected_http_status"`
+		Debug          bool `yaml:"debug" env:"APPX_DEBUG"`
+		AuthorizedUser struct {
+			ID       string `yaml:"id"`
+			Realm    string `yaml:"realm"`
+			Kind     string `yaml:"kind"`
+			LangCode string `yaml:"lang"`
+		} `yaml:"authorized_user"`
+		UnexpectedHttpStatus int `yaml:"unexpected_http_status"`
 		ErrorCaller          `yaml:"error_caller"`
 	}
 
 	// ErrorCaller - comment struct.
 	ErrorCaller struct {
-		Enable       bool     `yaml:"enable" env:"APPX_ERR_CALLER_ENABLE"`
-		Depth        uint8    `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
-		ShowFuncName bool     `yaml:"show_func_name"`
-		UpperBounds  []string `yaml:"upper_bounds"`
+		IsEnabled   bool     `yaml:"is_enabled" env:"APPX_ERR_CALLER_IS_ENABLED"`
+		Depth       uint8    `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
+		UpperBounds []string `yaml:"upper_bounds"`
 	}
 
 	// Log - comment struct.
 	Log struct {
-		Level           string `yaml:"level" env:"APPX_LOG_LEVEL"`
-		TimestampFormat string `yaml:"timestamp_format" env:"APPX_LOG_TIMESTAMP"`
-		JsonFormat      bool   `yaml:"json_format" env:"APPX_LOG_JSON"`
-		ConsoleColor    bool   `yaml:"console_color" env:"APPX_LOG_COLOR"`
+		Level      string `yaml:"level" env:"APPX_LOG_LEVEL"`
+		TimeFormat string `yaml:"time_format" env:"APPX_LOG_TIME_FORMAT"`
+		JsonFormat bool   `yaml:"json_format" env:"APPX_LOG_JSON"`
+		ColorMode  bool   `yaml:"color_mode" env:"APPX_LOG_COLOR"`
+	}
+
+	Trace struct {
+		IsEnabled bool `yaml:"is_enabled" env:"APPX_TRACE_IS_ENABLED"`
 	}
 
 	// Sentry - comment struct.
@@ -160,15 +171,10 @@ type (
 		AllowCredentials bool     `yaml:"allow_credentials"`
 	}
 
-	// Translation - comment struct.
-	Translation struct {
-		DirPath   string   `yaml:"dir_path" env:"APPX_TRANSLATION_DIR_PATH"`
-		LangCodes []string `yaml:"lang_codes" env:"APPX_TRANSLATION_LANGS"` // items by "," separated
-		// Dictionaries - comment struct.
-		Dictionaries struct {
-			DirPath string   `yaml:"dir_path" env:"APPX_TRANSLATION_DICTIONARIES_DIR_PATH"`
-			List    []string `yaml:"list"`
-		} `yaml:"dictionaries"`
+	// Localization - comment struct.
+	Localization struct {
+		LangURLParam string   `yaml:"lang_url_param"`
+		Languages    []string `yaml:"languages" env:"APPX_LOCALIZATION_LANGS"` // items by "," separated
 	}
 
 	// Senders - comment struct.
@@ -191,46 +197,24 @@ type (
 		Token string `yaml:"token" env:"APPX_SENDER_TELEGRAMBOT_TOKEN"`
 	}
 
-	// AppSections - comment struct.
-	AppSections struct {
-		// AdminAPI - comment struct.
-		AdminAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_ADMIN_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_ADMIN_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"admin_api"`
-		// ProvidersAPI - comment struct.
-		ProvidersAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_PROVIDERS_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_PROVIDERS_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"providers_api"`
-		// PublicAPI - comment struct.
-		PublicAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_PUBLIC_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_PUBLIC_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"public_api"`
-	}
-
 	// AccessControl - comment struct.
 	AccessControl struct {
-		Roles       `yaml:"roles"`
-		Privileges  []string `yaml:"privileges"`
-		Permissions []string `yaml:"permissions"`
+		Realms           []auth.UserRealm      `yaml:"realms"`
+		RoutingSections  []RoutingSection      `yaml:"routing_sections"`
+		RolesDirPath     string                `yaml:"roles_dir_path" env:"APPX_ROLES_DIR_PATH"`
+		Roles            []string              `yaml:"roles"`
+		Privileges       []string              `yaml:"privileges"`
+		Permissions      []string              `yaml:"permissions"`
+		OperationConfirm auth.OperationConfirm `yaml:"operation_confirm"`
+		JWTMethod        string                `yaml:"jwt_method" env:"APPX_JWT_METHOD"`
+		JWTSecret        string                `yaml:"jwt_secret" env:"APPX_JWT_SECRET"`
 	}
 
-	// Roles - comment struct.
-	Roles struct {
-		DirPath  string   `yaml:"dir_path" env:"APPX_ROLES_DIR_PATH"`
-		FileType string   `yaml:"file_type"`
-		List     []string `yaml:"list"`
+	// RoutingSection - comment struct.
+	RoutingSection struct {
+		Name      string `yaml:"name"`
+		BasePath  string `yaml:"base_path"`
+		Privilege string `yaml:"privilege"`
 	}
 
 	// ModulesSettings - comment struct.
@@ -266,14 +250,14 @@ type (
 		Images struct {
 			Logo ImageType `yaml:"logo"`
 		} `yaml:"images"`
-		MimeTypes []mrlib.MimeType `yaml:"mime_types"`
+		MimeTypes []extfile.MimeType `yaml:"mime_types"`
 	}
 
 	// FileType - comment struct.
 	FileType struct {
 		MinSize                 uint64   `yaml:"min_size"`
 		MaxSize                 uint64   `yaml:"max_size"`
-		MaxFiles                uint32   `yaml:"max_files"`
+		MaxFiles                int      `yaml:"max_files"`
 		CheckRequestContentType bool     `yaml:"check_request_content_type"`
 		Extensions              []string `yaml:"extensions"`
 	}
@@ -288,47 +272,73 @@ type (
 
 	// TaskSchedule - comment struct.
 	TaskSchedule struct {
-		ReloadSettings SchedulerTask `yaml:"reload_settings"`
-		Mailer         struct {
-			SendProcessor       MessageProcessor `yaml:"send_processor"`
+		Settings struct {
+			// Caption        string        `yaml:"caption"`
+			ReloadSettings SchedulerTask `yaml:"reload_settings"`
+		} `yaml:"settings"`
+		Auth struct {
+			// Caption           string        `yaml:"caption"`
+			CleanRecords      SchedulerTask `yaml:"clean_records"`
+			CleanRecordsLimit int           `yaml:"clean_records_limit"`
+			LogsLifeTime      time.Duration `yaml:"logs_life_time"`
+			UserStat          struct {
+				RequestCollector MessageCollector `yaml:"request_collector"`
+			} `yaml:"user_stat"`
+		} `yaml:"auth"`
+		Mailer struct {
+			// Caption             string           `yaml:"caption"`
+			MessageProcessor    MessageProcessor `yaml:"message_processor"`
 			ChangeFromToRetry   SchedulerTask    `yaml:"change_from_to_retry"`
 			CleanQueue          SchedulerTask    `yaml:"clean_queue"`
 			SendRetryAttempts   uint32           `yaml:"send_retry_attempts"`
 			SendDelayCorrection time.Duration    `yaml:"send_delay_correction"`
-			ChangeQueueLimit    uint32           `yaml:"change_queue_limit"`
+			ChangeQueueLimit    int              `yaml:"change_queue_limit"`
 			ChangeRetryTimeout  time.Duration    `yaml:"change_retry_timeout"`
 			ChangeRetryDelayed  time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit     uint32           `yaml:"clean_queue_limit"`
+			CleanQueueLimit     int              `yaml:"clean_queue_limit"`
 		} `yaml:"mailer"`
 		Notifier struct {
-			SendProcessor      MessageProcessor `yaml:"send_processor"`
+			// Caption            string           `yaml:"caption"`
+			NoticeProcessor    MessageProcessor `yaml:"notice_processor"`
 			ChangeFromToRetry  SchedulerTask    `yaml:"change_from_to_retry"`
 			CleanQueue         SchedulerTask    `yaml:"clean_queue"`
 			SendRetryAttempts  uint32           `yaml:"send_retry_attempts"`
-			ChangeQueueLimit   uint32           `yaml:"change_queue_limit"`
+			ChangeQueueLimit   int              `yaml:"change_queue_limit"`
 			ChangeRetryTimeout time.Duration    `yaml:"change_retry_timeout"`
 			ChangeRetryDelayed time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit    uint32           `yaml:"clean_queue_limit"`
+			CleanQueueLimit    int              `yaml:"clean_queue_limit"`
 		} `yaml:"notifier"`
+	}
+
+	// MessageCollector - comment struct.
+	MessageCollector struct {
+		// Caption              string        `yaml:"caption"`
+		ReadyTimeout   time.Duration `yaml:"ready_timeout"`
+		FlushPeriod    time.Duration `yaml:"flush_period"`
+		HandlerTimeout time.Duration `yaml:"handler_timeout"`
+		BatchSize      int           `yaml:"batch_size"`
+		WorkersCount   int           `yaml:"workers_count"`
 	}
 
 	// MessageProcessor - comment struct.
 	MessageProcessor struct {
-		Caption           string        `yaml:"caption"`
-		ReadyTimeout      time.Duration `yaml:"ready_timeout"`
-		StartReadDelay    time.Duration `yaml:"start_read_delay"`
-		ReadPeriod        time.Duration `yaml:"read_period"`
-		CancelReadTimeout time.Duration `yaml:"cancel_read_timeout"`
-		HandlerTimeout    time.Duration `yaml:"handler_timeout"`
-		QueueSize         uint32        `yaml:"queue_size"`
-		WorkersCount      uint16        `yaml:"workers_count"`
+		// Caption              string        `yaml:"caption"`
+		ReadyTimeout         time.Duration `yaml:"ready_timeout"`
+		ReadPeriod           time.Duration `yaml:"read_period"`
+		ConsumerReadTimeout  time.Duration `yaml:"consumer_read_timeout"`
+		ConsumerWriteTimeout time.Duration `yaml:"consumer_write_timeout"`
+		HandlerTimeout       time.Duration `yaml:"handler_timeout"`
+		QueueSize            int           `yaml:"queue_size"`
+		WorkersCount         int           `yaml:"workers_count"`
+		NotificationChannel  string        `yaml:"notification_channel,omitempty"`
 	}
 
 	// SchedulerTask - comment struct.
 	SchedulerTask struct {
-		Caption string        `yaml:"caption"`
-		Startup bool          `yaml:"startup"`
-		Period  time.Duration `yaml:"period"`
-		Timeout time.Duration `yaml:"timeout"`
+		// Caption             string        `yaml:"caption"`
+		// Startup             bool          `yaml:"startup"`
+		Period              time.Duration `yaml:"period"`
+		Timeout             time.Duration `yaml:"timeout"`
+		NotificationChannel string        `yaml:"notification_channel,omitempty"`
 	}
 )

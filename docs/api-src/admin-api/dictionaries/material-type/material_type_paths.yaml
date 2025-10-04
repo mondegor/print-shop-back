@@ -25,6 +25,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
@@ -64,6 +65,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     requestBody:
       required: true
@@ -102,6 +104,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
     responses:
@@ -138,6 +141,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
     requestBody:
@@ -174,6 +178,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
     responses:
@@ -208,6 +213,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Dictionaries.MaterialTypes.AdminAPI.Request.Path.TypeID"
 
     requestBody:

@@ -1,9 +1,6 @@
 package pub
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1"
@@ -12,10 +9,10 @@ import (
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/packinstack"
 )
 
-func createUnitSheetPackInStack(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
+func createUnitSheetPackInStack(opts algo.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitSheetPackInStack(ctx, opts); err != nil {
+	if c, err := newUnitSheetPackInStack(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -24,11 +21,10 @@ func createUnitSheetPackInStack(ctx context.Context, opts algo.Options) ([]mrser
 	return list, nil
 }
 
-func newUnitSheetPackInStack(ctx context.Context, opts algo.Options) (*httpv1.PackInStack, error) { //nolint:unparam
-	logger := mrlog.Ctx(ctx)
-	packInStackAlgoSheet := packinstack.New(logger)
+func newUnitSheetPackInStack(opts algo.Options) (*httpv1.PackInStack, error) { //nolint:unparam
+	packInStackAlgoSheet := packinstack.New()
 
-	useCase := usecase.NewSheetPackInStack(packInStackAlgoSheet, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewSheetPackInStack(packInStackAlgoSheet, opts.EventEmitter)
 	controller := httpv1.NewSheetPackInStack(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

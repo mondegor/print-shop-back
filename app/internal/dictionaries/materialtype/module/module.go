@@ -1,11 +1,24 @@
 package module
 
 const (
-	Name       = "Dictionaries.MaterialType"   // Name - название модуля
-	Permission = "modDictionariesMaterialType" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "Dictionaries.MaterialType"
 
-	DBSchema                 = "printshop_dictionaries"     // DBSchema - схема БД используемая модулем
-	DBTableNameMaterialTypes = DBSchema + ".material_types" // DBTableNameMaterialTypes - таблица БД используемая модулем
-	DBFieldTagVersion        = "tag_version"                // DBFieldTagVersion - поле для хранения версии записи
-	DBFieldDeletedAt         = "deleted_at"                 // DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена
+	// Permission - разрешение модуля.
+	Permission = "modDictionariesMaterialType"
+
+	// LocaleDomain - домен локализации записей.
+	LocaleDomain = "dictionaries.material-type"
+
+	// DBSchema - схема БД используемая модулем.
+	DBSchema = "printshop_dictionaries"
+
+	// DBTableNameMaterialTypes - таблица БД используемая модулем.
+	DBTableNameMaterialTypes = DBSchema + ".material_types"
+
+	// DBFieldTagVersion - поле для хранения версии записи.
+	DBFieldTagVersion = "tag_version"
+
+	// DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена.
+	DBFieldDeletedAt = "deleted_at"
 )

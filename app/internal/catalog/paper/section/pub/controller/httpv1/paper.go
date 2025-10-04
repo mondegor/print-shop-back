@@ -49,7 +49,7 @@ func (ht *Paper) Handlers() []mrserver.HttpHandler {
 
 // GetList - comment method.
 func (ht *Paper) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
+	items, err := ht.useCase.GetList(r.Context(), ht.parser.Localizer(r), ht.listParams(r))
 	if err != nil {
 		return err
 	}

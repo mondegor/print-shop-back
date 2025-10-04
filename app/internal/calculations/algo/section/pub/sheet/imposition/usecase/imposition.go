@@ -4,11 +4,10 @@ import (
 	"context"
 	"math"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
@@ -17,35 +16,36 @@ import (
 )
 
 const (
-	ModelNameSheetImposition = "public-api.Calculations.Algo.Sheet.Imposition" // ModelNameSheetImposition - название сущности
+	// ModelNameSheetImposition - название сущности.
+	ModelNameSheetImposition = "public-api.Calculations.Algo.Sheet.Imposition"
 )
 
 type (
 	// SheetImposition - comment struct.
 	SheetImposition struct {
-		algo         *imposition.Algo
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		algo *imposition.Algo
+		// logger       mrlog.Logger
+		eventEmitter mrevent.Emitter
 	}
 )
 
 // NewSheetImposition - создаёт объект SheetImposition.
-func NewSheetImposition(algo *imposition.Algo, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *SheetImposition {
+func NewSheetImposition(algo *imposition.Algo, eventEmitter mrevent.Emitter) *SheetImposition {
 	return &SheetImposition{
-		algo:         algo,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, ModelNameSheetImposition),
-		errorWrapper: errorWrapper,
+		algo: algo,
+		// logger:       logger,
+		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, ModelNameSheetImposition),
 	}
 }
 
 // Calc - comment method.
 func (uc *SheetImposition) Calc(ctx context.Context, data dto.ParsedData) (model.SheetImpositionResponse, error) {
-	result, err := uc.algo.Calc(data.Element, data.Distance, data.Out, data.Opts)
+	result, err := uc.algo.Calc(ctx, data.Element, data.Distance, data.Out, data.Opts)
 	if err != nil {
-		return model.SheetImpositionResponse{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
+		return model.SheetImpositionResponse{}, mr.ErrUseCaseIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Calc", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", mrargs.Group{"data": data})
 
 	if result.Fragments.TotalQuantity() == 0 {
 		return model.SheetImpositionResponse{}, nil
@@ -57,32 +57,32 @@ func (uc *SheetImposition) Calc(ctx context.Context, data dto.ParsedData) (model
 // CalcVariants - comment method.
 func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData) (model.SheetImpositionVariantsResponse, error) {
 	if almostEqual(data.Element.Width, data.Element.Height) && almostEqual(data.Distance.Width, data.Distance.Height) {
-		result, err := uc.algo.Calc(data.Element, data.Distance, data.Out, data.Opts)
+		result, err := uc.algo.Calc(ctx, data.Element, data.Distance, data.Out, data.Opts)
 		if err != nil {
-			return nil, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
+			return nil, mr.ErrUseCaseIncorrectInputData.New(err)
 		}
 
-		uc.eventEmitter.Emit(ctx, "CalcVariants", mrmsg.Data{"data": data})
+		uc.eventEmitter.Emit(ctx, "CalcVariants", mrargs.Group{"data": data})
 
 		return model.SheetImpositionVariantsResponse{
 			uc.createResult(result),
 		}, nil
 	}
 
-	var countVariants int
+	countVariants := 0
 
-	resultV1, errV1 := uc.algo.Calc(data.Element, data.Distance, data.Out, data.Opts)
+	resultV1, errV1 := uc.algo.Calc(ctx, data.Element, data.Distance, data.Out, data.Opts)
 	if errV1 == nil {
 		countVariants++
 	}
 
-	resultV2, errV2 := uc.algo.Calc(data.Element.Rotate90(), data.Distance.Rotate90(), data.Out, data.Opts)
+	resultV2, errV2 := uc.algo.Calc(ctx, data.Element.Rotate90(), data.Distance.Rotate90(), data.Out, data.Opts)
 	if errV2 == nil {
 		countVariants++
 	}
 
 	if countVariants == 0 {
-		return nil, mrcore.ErrUseCaseIncorrectInputData.Wrap(errV1, "data", data)
+		return nil, mr.ErrUseCaseIncorrectInputData.New(errV1.Error())
 	}
 
 	results := make(model.SheetImpositionVariantsResponse, 0, countVariants)
@@ -95,7 +95,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 		results = append(results, uc.createResult(resultV2))
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcVariants", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcVariants", mrargs.Group{"data": data})
 
 	return results, nil
 }
@@ -103,10 +103,10 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 func (uc *SheetImposition) createResult(item imposition.Output) model.SheetImpositionResponse {
 	return model.SheetImpositionResponse{
 		ContainerFormat:  item.ContainerFormat.Round(),
-		FragmentDistance: measure.Meter(mrlib.RoundFloat4(item.Fragments.FragmentDistance())),
+		FragmentDistance: measure.Meter(extmath.RoundFloat4(item.Fragments.FragmentDistance())),
 		Fragments:        item.Fragments.Round(),
 		TotalElements:    item.Fragments.TotalQuantity(),
-		Garbage:          measure.Meter2(mrlib.RoundFloat8(item.RestArea)),
+		Garbage:          measure.Meter2(extmath.RoundFloat8(item.RestArea)),
 		AllowRotation:    item.AllowRotation,
 		UseMirror:        item.UseMirror,
 	}

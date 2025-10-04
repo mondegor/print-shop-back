@@ -1,8 +1,12 @@
 package module
 
+// Названия параметров фильтра используемых в URL.
 const (
-	ParamNameFilterSearchText = "query"    // ParamNameFilterSearchText - название URL параметра фильтра
-	ParamNameFilterStatuses   = "statuses" // ParamNameFilterStatuses - название URL параметра фильтра
+	ParamNameFilterSearchText = "query"
+	ParamNameFilterStatuses   = "statuses"
+)
 
-	ParamNameFileCompanyLogo = "companyLogo" // ParamNameFileCompanyLogo - название параметра, где будет содержаться загружаемый файл
+const (
+	// ParamNameFileCompanyLogo - название параметра, где будет содержаться загружаемый файл.
+	ParamNameFileCompanyLogo = "companyLogo"
 )

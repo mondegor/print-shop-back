@@ -1,6 +1,9 @@
 package module
 
 const (
-	Name       = "Calculations.Algo"   // Name - comment const
-	Permission = "modCalculationsAlgo" // Permission - разрешение модуля
+	// Name - comment const.
+	Name = "Calculations.Algo"
+
+	// Permission - разрешение модуля.
+	Permission = "modCalculationsAlgo"
 )

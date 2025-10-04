@@ -3,12 +3,13 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 )
 
 const (
-	ModelNameMaterialType = "admin-api.Dictionaries.MaterialType" // ModelNameMaterialType - название сущности
+	// ModelNameMaterialType - название сущности.
+	ModelNameMaterialType = "admin-api.Dictionaries.MaterialType"
 )
 
 type (

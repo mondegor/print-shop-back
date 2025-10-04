@@ -1,10 +1,7 @@
 package dictionaries
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability/usecase"
@@ -13,15 +10,11 @@ import (
 )
 
 // NewPrintFormatModuleOptions - создаёт объект printformat.Options.
-func NewPrintFormatModuleOptions(_ context.Context, opts app.Options) (printformat.Options, error) {
-	printFormatDictionary, err := opts.Translator.Dictionary("dictionaries/print-formats")
-	if err != nil {
-		return printformat.Options{}, err
-	}
-
+func NewPrintFormatModuleOptions(opts app.Options) printformat.Options {
 	return printformat.Options{
+		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: printformat.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -29,18 +22,14 @@ func NewPrintFormatModuleOptions(_ context.Context, opts app.Options) (printform
 		},
 		ResponseSender: opts.ResponseSenders.Sender,
 
-		UnitPrintFormat: printformat.UnitPrintFormatOptions{
-			Dictionary: printFormatDictionary,
-		},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }
 
 // NewPrintFormatAvailabilityAPI - создаёт объект usecase.PrintFormat.
-func NewPrintFormatAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PrintFormat, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries print format availability API")
+func NewPrintFormatAvailabilityAPI(opts app.Options) (*usecase.PrintFormat, error) {
+	mrlog.Info(opts.Logger, "Create and init dictionaries print format availability API")
 
-	return availability.NewPrintFormat(opts.PostgresConnManager), nil
+	return availability.NewPrintFormat(opts.PostgresConnManager, opts.UsecaseErrorWrapper, opts.Tracer), nil
 }

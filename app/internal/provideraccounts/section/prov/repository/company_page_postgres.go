@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
@@ -116,7 +116,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.SiteURL,
 		)
 		// если сохранение удачное или если это системная ошибка
-		if err == nil || !mrcore.ErrStorageRowsNotAffected.Is(err) {
+		if err == nil || !mr.ErrStorageRowsNotAffected.Is(err) {
 			return err
 		}
 

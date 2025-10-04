@@ -1,0 +1,12 @@
+Custom.Enum.UserAuth2fa:
+  description: |-
+    Тип двухфакторной аутентификации пользователя:
+    - PASSWORD - дополнительная авторизация по паролю;
+    - TOTP - дополнительная авторизация по TOTP;
+    - DISABLED - отключена;
+  type: string
+  enum:
+    - PASSWORD
+    - TOTP
+    - DISABLED
+  example: "PASSWORD"

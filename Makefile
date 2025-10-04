@@ -19,13 +19,10 @@ migrate:
 generate:
 	mrcmd go generate
 
-fmt:
-	mrcmd go fmt
-
-fmti:
-	mrcmd go fmti
-
 lint:
+	mrcmd go fmt
+	mrcmd go fmti
+	mrcmd go fmti2
 	mrcmd golangci-lint check
 
 test:
@@ -53,4 +50,4 @@ app-logs:
 app-stop:
 	mrcmd stop
 
-.PHONY: build build-api deps deps-upgrade migrate generate fmt fmti lint test test-report plantuml app-conf app-start app-state app-logs app-stop
+.PHONY: build build-api deps deps-upgrade migrate generate lint test test-report plantuml app-conf app-start app-state app-logs app-stop

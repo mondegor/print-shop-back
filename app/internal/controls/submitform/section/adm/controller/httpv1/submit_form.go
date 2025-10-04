@@ -8,10 +8,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -37,7 +36,7 @@ type (
 		sender         mrserver.FileResponseSender
 		useCase        adm.SubmitFormUseCase
 		useCaseVersion adm.FormVersionUseCase
-		listSorter     mrview.ListSorter
+		listSorter     mrtype.ListSorter
 	}
 )
 
@@ -47,7 +46,7 @@ func NewSubmitForm(
 	sender mrserver.FileResponseSender,
 	useCase adm.SubmitFormUseCase,
 	useCaseVersion adm.FormVersionUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *SubmitForm {
 	return &SubmitForm{
 		parser:         parser,
@@ -254,15 +253,15 @@ func (ht *SubmitForm) getRawItemID(r *http.Request) string {
 }
 
 func (ht *SubmitForm) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrSubmitFormNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

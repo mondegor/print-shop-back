@@ -3,19 +3,19 @@ package uiform
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Типы данных.
+const (
+	UIDataTypeBoolean UIDataType = iota + 1
+	UIDataTypeGroup
+	UIDataTypeEnum
+	UIDataTypeNumber
+	UIDataTypeString
 )
 
 const (
-	_                 UIDataType = iota
-	UIDataTypeBoolean            // UIDataTypeBoolean - comment const
-	UIDataTypeGroup              // UIDataTypeGroup - comment const
-	UIDataTypeEnum               // UIDataTypeEnum - comment const
-	UIDataTypeNumber             // UIDataTypeNumber - comment const
-	UIDataTypeString             // UIDataTypeString - comment const
-
-	// uiDataTypeLast = uint8(UIDataTypeString).
-
 	enumNameUIDataType = "UIDataType"
 )
 
@@ -50,19 +50,8 @@ func (e *UIDataType) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
 }
-
-// Set - устанавливает указанное значение, если оно является enum значением.
-// func (e *UIDataType) Set(value uint8) error {
-// 	if value > 0 && value <= uiDataTypeLast {
-// 		*e = UIDataType(value)
-//
-// 		return nil
-// 	}
-//
-// 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
-// }
 
 // String - возвращает значение в виде строки.
 func (e UIDataType) String() string {

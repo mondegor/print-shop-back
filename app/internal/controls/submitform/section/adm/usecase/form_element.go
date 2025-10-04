@@ -5,12 +5,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-components/mrordering"
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -26,8 +26,9 @@ type (
 		submitFormAPI      SubmitFormAPI
 		elementTemplateAPI api.ElementTemplateHeader
 		orderingAPI        mrordering.Mover
-		eventEmitter       mrsender.EventEmitter
-		errorWrapper       mrcore.UseCaseErrorWrapper
+		eventEmitter       mrevent.Emitter
+		errorWrapper       mrerr.UseCaseErrorWrapper
+		logger             mrlog.Logger
 	}
 
 	// SubmitFormAPI - comment interface.
@@ -42,28 +43,30 @@ func NewFormElement(
 	submitFormAPI SubmitFormAPI,
 	elementTemplateAPI api.ElementTemplateHeader,
 	orderingAPI mrordering.Mover,
-	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UseCaseErrorWrapper,
+	eventEmitter mrevent.Emitter,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	logger mrlog.Logger,
 ) *FormElement {
 	return &FormElement{
 		storage:            storage,
 		submitFormAPI:      submitFormAPI,
 		elementTemplateAPI: elementTemplateAPI,
 		orderingAPI:        orderingAPI,
-		eventEmitter:       decorator.NewSourceEmitter(eventEmitter, entity.ModelNameFormElement),
-		errorWrapper:       errorWrapper,
+		eventEmitter:       mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameFormElement),
+		errorWrapper:       mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameFormElement),
+		logger:             logger,
 	}
 }
 
 // GetItem - comment method.
 func (uc *FormElement) GetItem(ctx context.Context, itemID uint64) (entity.FormElement, error) {
 	if itemID == 0 {
-		return entity.FormElement{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.FormElement{}, mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.FormElement{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, itemID)
+		return entity.FormElement{}, uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
 	}
 
 	return item, nil
@@ -85,13 +88,13 @@ func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (ite
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormElement)
+		return 0, uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrargs.Group{"id": itemID})
 
 	if err = uc.orderingAPI.MoveToLast(ctx, itemID, uc.storage.NewCondition(item.FormID)); err != nil {
-		mrlog.Ctx(ctx).Error().Err(err)
+		uc.logger.Error(ctx, "Create", "error", err)
 	}
 
 	return itemID, nil
@@ -100,17 +103,17 @@ func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (ite
 // Store - comment method.
 func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return mr.ErrUseCaseEntityVersionInvalid.New()
 	}
 
 	// предварительная проверка существования записи нужна для того,
 	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
 	if err := uc.storage.IsExist(ctx, item.ID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, item.ID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", item.ID)
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
@@ -119,14 +122,14 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormElement)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrargs.Group{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -134,7 +137,7 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 // Remove - comment method.
 func (uc *FormElement) Remove(ctx context.Context, itemID uint64) error {
 	if itemID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	formID, err := uc.getFormID(ctx, itemID)
@@ -147,10 +150,10 @@ func (uc *FormElement) Remove(ctx context.Context, itemID uint64) error {
 	}
 
 	if err = uc.storage.Delete(ctx, itemID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, itemID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrargs.Group{"id": itemID})
 
 	return nil
 }
@@ -158,7 +161,7 @@ func (uc *FormElement) Remove(ctx context.Context, itemID uint64) error {
 // MoveAfterID - comment method.
 func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID uint64) error {
 	if itemID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	formID, err := uc.getFormID(ctx, itemID)
@@ -170,7 +173,7 @@ func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID uint64) 
 		return err
 	}
 
-	uc.eventEmitter.Emit(ctx, "Move", mrmsg.Data{"id": itemID, "afterId": afterID})
+	uc.eventEmitter.Emit(ctx, "Move", mrargs.Group{"id": itemID, "afterId": afterID})
 
 	return nil
 }
@@ -202,11 +205,11 @@ func (uc *FormElement) checkForm(ctx context.Context, item *entity.FormElement) 
 
 	form, err := uc.submitFormAPI.FetchOne(ctx, item.FormID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
 			return module.ErrSubmitFormNotFound.New(item.FormID)
 		}
 
-		return uc.errorWrapper.WrapErrorEntityFailed(err, entity.ModelNameSubmitForm, item.FormID)
+		return uc.errorWrapper.WrapErrorFailed(err, "formId", item.FormID)
 	}
 
 	if form.Detailing != enum.ElementDetailingExtended && form.Detailing != item.Detailing {
@@ -227,11 +230,11 @@ func (uc *FormElement) checkItem(ctx context.Context, item *entity.FormElement) 
 func (uc *FormElement) checkParamName(ctx context.Context, item *entity.FormElement) error {
 	id, err := uc.storage.FetchIDByParamName(ctx, item.FormID, item.ParamName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
 			return nil
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameFormElement)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	}
 
 	if item.ID != id {
@@ -245,11 +248,11 @@ func (uc *FormElement) getFormID(ctx context.Context, itemID uint64) (uuid.UUID,
 	// TODO: можно оптимизировать загружая только FormID
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return uuid.Nil, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameFormElement, itemID)
+		return uuid.Nil, uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
 	}
 
 	if item.FormID == uuid.Nil {
-		return uuid.Nil, mrcore.ErrInternal.New().WithAttr(entity.ModelNameFormElement, mrmsg.Data{"formId": item.FormID})
+		return uuid.Nil, mr.ErrInternal.New().WithAttrs("model", entity.ModelNameFormElement, "formId", item.FormID)
 	}
 
 	return item.FormID, nil

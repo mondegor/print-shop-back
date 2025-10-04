@@ -1,0 +1,10 @@
+{
+    "language": "ru-RU",
+    "messages": [
+        {
+            "id": "Confirm your identity to sign in",
+            "message": "Confirm your identity to sign in",
+            "translation": "Чтобы войти в систему, введите код подтверждения, отправленный на ваш электронный адрес"
+        }
+    ]
+}

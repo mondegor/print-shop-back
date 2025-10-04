@@ -18,8 +18,8 @@ type (
 	}
 )
 
-// IsEmpty - проверяется есть ли в пачке изделия.
-func (m ProductStack) IsEmpty() bool {
+// Empty - сообщает, является ли пачка с изделиями пустой.
+func (m ProductStack) Empty() bool {
 	return m.Quantity == 0
 }
 

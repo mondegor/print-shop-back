@@ -42,8 +42,6 @@ App.System.Response.Model.SystemInfo:
         - INFO
         - WARN
         - ERROR
-        - FATAL
-        - TRACE
       example: "ERROR"
     startedAt:
       description: Время запуска приложения (UTC)

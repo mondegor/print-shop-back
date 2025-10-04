@@ -1,14 +1,27 @@
 package module
 
 const (
-	Name       = "Controls.ElementTemplate"   // Name - название модуля
-	Permission = "modControlsElementTemplate" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "Controls.ElementTemplate"
 
-	DBSchema                    = "printshop_controls"            // DBSchema - схема БД используемая модулем
-	DBTableNameElementTemplates = DBSchema + ".element_templates" // DBTableNameElementTemplates - таблица БД используемая модулем
-	DBFieldTagVersion           = "tag_version"                   // DBFieldTagVersion - поле для хранения версии записи
-	DBFieldDeletedAt            = "deleted_at"                    // DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена
+	// Permission - разрешение модуля.
+	Permission = "modControlsElementTemplate"
 
-	JsonFileNamePattern = "controls-template-%d.json" // JsonFileNamePattern - comment const
-	JsonPrettyIndent    = "  "                        // JsonPrettyIndent - comment const
+	// DBSchema - схема БД используемая модулем.
+	DBSchema = "printshop_controls"
+
+	// DBTableNameElementTemplates - таблица БД используемая модулем.
+	DBTableNameElementTemplates = DBSchema + ".element_templates"
+
+	// DBFieldTagVersion - поле для хранения версии записи.
+	DBFieldTagVersion = "tag_version"
+
+	// DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена.
+	DBFieldDeletedAt = "deleted_at"
+
+	// JsonFileNamePattern - comment const.
+	JsonFileNamePattern = "controls-template-%d.json"
+
+	// JsonPrettyIndent - comment const.
+	JsonPrettyIndent = "  "
 )

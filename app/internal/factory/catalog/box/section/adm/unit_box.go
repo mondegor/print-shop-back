@@ -1,11 +1,8 @@
 package adm
 
 import (
-	"context"
-
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/controller/httpv1"
@@ -15,10 +12,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
 )
 
-func createUnitBox(ctx context.Context, opts box.Options) ([]mrserver.HttpController, error) {
+func createUnitBox(opts box.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitBox(ctx, opts); err != nil {
+	if c, err := newUnitBox(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -27,8 +24,8 @@ func createUnitBox(ctx context.Context, opts box.Options) ([]mrserver.HttpContro
 	return list, nil
 }
 
-func newUnitBox(ctx context.Context, opts box.Options) (*httpv1.Box, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.Box{})
+func newUnitBox(opts box.Options) (*httpv1.Box, error) {
+	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.Box{})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +38,7 @@ func newUnitBox(ctx context.Context, opts box.Options) (*httpv1.Box, error) {
 			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
 		),
 	)
-	useCase := usecase.NewBox(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewBox(storage, opts.EventEmitter, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewBox(
 		opts.RequestParsers.ExtendParser,
 		opts.ResponseSender,

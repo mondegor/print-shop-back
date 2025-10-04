@@ -3,6 +3,8 @@ package pub
 import (
 	"context"
 
+	"github.com/mondegor/go-webcore/mrcore"
+
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
@@ -10,7 +12,7 @@ import (
 type (
 	// PaperUseCase - comment interface.
 	PaperUseCase interface {
-		GetList(ctx context.Context, params entity.PaperParams) ([]entity.Paper, error)
+		GetList(ctx context.Context, lz mrcore.Localizer, params entity.PaperParams) ([]entity.Paper, error)
 		GetTypeList(ctx context.Context) ([]uint64, error)
 		GetColorList(ctx context.Context) ([]uint64, error)
 		GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter2, error)

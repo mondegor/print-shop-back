@@ -1,10 +1,11 @@
 package enum
 
+// Результаты сравнения прямоугольных форматов.
 const (
-	CompareTypeEqual         CompareType = iota // CompareTypeEqual - форматы равны
-	CompareTypeFirstInside                      // CompareTypeFirstInside - первый формат входит во второй
-	CompareTypeSecondInside                     // CompareTypeSecondInside - второй формат входит в первый
-	CompareTypeNotCompatible                    // CompareTypeNotCompatible - форматы не совместимы
+	CompareTypeEqual         CompareType = iota // форматы равны
+	CompareTypeFirstInside                      // первый формат входит во второй
+	CompareTypeSecondInside                     // второй формат входит в первый
+	CompareTypeNotCompatible                    // форматы не совместимы
 )
 
 type (

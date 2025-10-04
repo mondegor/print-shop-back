@@ -1,9 +1,8 @@
 package packinbox
 
 import (
+	"context"
 	"fmt"
-
-	"github.com/mondegor/go-webcore/mrlog"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/model"
@@ -13,17 +12,15 @@ import (
 type (
 	// Algo - размещение изделий одного формата в указанной коробке.
 	Algo struct {
-		logger     mrlog.Logger
 		imp        *imposition.Algo
 		impOptions imposition.Options
 	}
 )
 
 // New - создаёт объект Algo.
-func New(logger mrlog.Logger, imp *imposition.Algo) *Algo {
+func New(imp *imposition.Algo) *Algo {
 	return &Algo{
-		logger: logger,
-		imp:    imp,
+		imp: imp,
 		impOptions: imposition.Options{
 			AllowRotation: true,
 			UseMirror:     false,
@@ -32,7 +29,7 @@ func New(logger mrlog.Logger, imp *imposition.Algo) *Algo {
 }
 
 // Calc - расчёт алгоритма.
-func (a *Algo) Calc(box model.Box, productHeap model.ProductStack) (packInBox model.PackInBox, err error) {
+func (a *Algo) Calc(ctx context.Context, box model.Box, productHeap model.ProductStack) (packInBox model.PackInBox, err error) {
 	if !productHeap.Format.IsValid() {
 		return model.PackInBox{}, fmt.Errorf("product.Format is not valid: %s", productHeap.Format)
 	}
@@ -48,6 +45,7 @@ func (a *Algo) Calc(box model.Box, productHeap model.ProductStack) (packInBox mo
 	}
 
 	impResult, err := a.imp.Calc(
+		ctx,
 		productHeap.Format.BottomFormat(),
 		rect2d.Format{}, // without distance
 		boxInnerFormat.BottomFormat(),

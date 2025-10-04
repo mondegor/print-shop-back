@@ -3,15 +3,18 @@ package enum
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"math"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Типы сторон бумаги.
+const (
+	PaperSideSame      PaperSide = iota + 1 // стороны одинаковые
+	PaperSideDifferent                      // стороны различаются
 )
 
 const (
-	_                  PaperSide = iota
-	PaperSideSame                // PaperSideSame - comment const
-	PaperSideDifferent           // PaperSideDifferent - comment const
-
 	paperSideLast     = uint8(PaperSideDifferent)
 	enumNamePaperSide = "PaperSide"
 )
@@ -41,18 +44,18 @@ func (e *PaperSide) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNamePaperSide)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNamePaperSide)
 }
 
 // Set - устанавливает указанное значение, если оно является enum значением.
 func (e *PaperSide) Set(value uint8) error {
-	if value > 0 && value <= paperSideLast {
+	if value <= paperSideLast {
 		*e = PaperSide(value)
 
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNamePaperSide)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNamePaperSide)
 }
 
 // String - возвращает значение в виде строки.
@@ -60,17 +63,20 @@ func (e PaperSide) String() string {
 	return paperSideName[e]
 }
 
-// Empty - проверяет, что enum значение не установлено.
-func (e PaperSide) Empty() bool {
-	return e == 0
-}
+//
+// // Empty - сообщает, установлено ли enum значение.
+// func (e PaperSide) Empty() bool {
+// 	return e == 0
+// }
 
 // MarshalJSON - переводит enum значение в строковое представление.
+// !!!! при формировании json переводит в текстовый вид.
 func (e PaperSide) MarshalJSON() ([]byte, error) {
 	return json.Marshal(e.String())
 }
 
 // UnmarshalJSON - переводит строковое значение в enum представление.
+// !!!! из json переводится в числовой вид.
 func (e *PaperSide) UnmarshalJSON(data []byte) error {
 	var value string
 
@@ -82,34 +88,17 @@ func (e *PaperSide) UnmarshalJSON(data []byte) error {
 }
 
 // Scan implements the Scanner interface.
+// !!!! не допускает, чтобы из БД пришло неизвестное значение.
 func (e *PaperSide) Scan(value any) error {
-	if val, ok := value.(int64); ok {
+	if val, ok := value.(int64); ok && val >= 0 && val <= math.MaxUint8 {
 		return e.Set(uint8(val))
 	}
 
-	return mrcore.ErrInternalTypeAssertion.New(enumNamePaperSide, value)
+	return mr.ErrInternalTypeAssertion.New(enumNamePaperSide, value)
 }
 
 // Value implements the driver.Valuer interface.
+// !!!! можно возвращать nil значение, если 0.
 func (e PaperSide) Value() (driver.Value, error) {
 	return uint8(e), nil
-}
-
-// ParsePaperSideList - парсит массив строковых значений и
-// возвращает соответствующий массив enum значений.
-// ParsePaperSideList - comment func.
-func ParsePaperSideList(items []string) ([]PaperSide, error) {
-	var tmp PaperSide
-
-	parsedItems := make([]PaperSide, len(items))
-
-	for i := range items {
-		if err := tmp.ParseAndSet(items[i]); err != nil {
-			return nil, err
-		}
-
-		parsedItems[i] = tmp
-	}
-
-	return parsedItems, nil
 }

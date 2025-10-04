@@ -73,8 +73,6 @@ Web сервис для расчёта стоимости и времени из
 - `make deps` // аналог `mrcmd go deps`
 - `make migrate` // аналог `mrcmd go-migrate up`
 - `make generate` // аналог `mrcmd go generate`
-- `make fmt` // аналог `mrcmd go fmt`
-- `make fmti` // аналог `mrcmd go fmti`
 - `make lint` // аналог `mrcmd golangci-lint check`
 - `make test` // аналог `mrcmd go test`
 - `make test-report` // аналог `mrcmd go test-report`

@@ -1,10 +1,11 @@
 package imposition
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition/remaining"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition/total"
@@ -18,9 +19,9 @@ type (
 	// указанного формата, которое можно разместить на листе указанного формата.
 	// Также учитывается расстояние между элементами по горизонтали и вертикали.
 	Algo struct {
-		logger    mrlog.Logger
 		remaining *remaining.AlgoRemaining
 		total     *total.AlgoTotal
+		logger    mrlog.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
 	}
 
 	// Options - опции алгоритма Algo.
@@ -42,14 +43,14 @@ type (
 // New - создаёт объект Algo.
 func New(logger mrlog.Logger) *Algo {
 	return &Algo{
-		logger:    logger,
 		remaining: remaining.New(logger),
 		total:     total.New(),
+		logger:    logger,
 	}
 }
 
 // Calc - расчёт алгоритма.
-func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output, error) {
+func (ri *Algo) Calc(ctx context.Context, element, distance, out rect2d.Format, opts Options) (Output, error) {
 	if !element.IsValid() {
 		return Output{}, fmt.Errorf("element format is not valid: %s", element)
 	}
@@ -62,7 +63,8 @@ func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output
 		return Output{}, fmt.Errorf("out format is not valid: %s", out)
 	}
 
-	ri.logger.Debug().MsgFunc(
+	ri.logger.DebugFunc(
+		ctx,
 		func() string {
 			return fmt.Sprintf(
 				"Calc(%s) :: Calculate count rect elements of %s + %s on out format %s",
@@ -85,13 +87,14 @@ func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output
 		}
 	}
 
-	topFragment, err := ri.calcTopFragment(element, distance, outWork)
+	topFragment, err := ri.calcTopFragment(ctx, element, distance, outWork)
 	if err != nil {
 		return Output{}, err
 	}
 
 	if topFragment.Layout.Quantity() == 0 {
-		ri.logger.Debug().MsgFunc(
+		ri.logger.DebugFunc(
+			ctx,
 			func() string {
 				return fmt.Sprintf(
 					"- calculated unsuccessfully: ZERO elements of %s on %s",
@@ -109,7 +112,7 @@ func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output
 	fragments[0] = topFragment
 
 	if opts.AllowRotation {
-		remainingFragment, err := ri.remaining.Calc(topFragment, outWork)
+		remainingFragment, err := ri.remaining.Calc(ctx, topFragment, outWork)
 		if err != nil {
 			return Output{}, fmt.Errorf("opts.AllowRotation=true: %w", err)
 		}
@@ -129,7 +132,8 @@ func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output
 
 	containerFormat, restArea := ri.total.Calc(fragments, out)
 
-	ri.logger.Debug().MsgFunc(
+	ri.logger.DebugFunc(
+		ctx,
 		func() string {
 			return fmt.Sprintf(
 				"- calculated successfully: %d elements of %s + %s on %s, image: %s, rest %.2fx%.2f ~= %.2f, fragments: %d",
@@ -159,7 +163,7 @@ func (ri *Algo) Calc(element, distance, out rect2d.Format, opts Options) (Output
 	}, nil
 }
 
-func (ri *Algo) calcTopFragment(element, distance, out rect2d.Format) (rect2d.Fragment, error) {
+func (ri *Algo) calcTopFragment(ctx context.Context, element, distance, out rect2d.Format) (rect2d.Fragment, error) {
 	// добавляются фиктивные границы к внешнему формату,
 	// для того, чтобы поместить граничные элементы, у которых внешние края
 	// в реальности короче (т.к. distance выступает в качестве межэлементного расстояния)
@@ -182,7 +186,8 @@ func (ri *Algo) calcTopFragment(element, distance, out rect2d.Format) (rect2d.Fr
 		Layout:   layout,
 	}
 
-	ri.logger.Debug().MsgFunc(
+	ri.logger.DebugFunc(
+		ctx,
 		func() string {
 			return fmt.Sprintf(
 				"- placed element %s on out format %s with fict margins: %s, %s, %d * %d = %d",

@@ -1,7 +1,8 @@
 [Назад к оглавлению](./README.md)
 
-# REST API документация для Print Shop Back v0.5.0
+# REST API документация для Print Shop Back v0.6.0
 - [API документация в формате OpenAPI/Swagger](./api)
+    - [AuthAPI](./api/auth-api)
     - [AdminAPI](./api/admin-api)
     - [ProvidersAPI](./api/providers-api)  
     - [PublicAPI](./api/public-api)

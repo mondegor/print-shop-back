@@ -1,0 +1,9 @@
+Auth.Request.Cookie.Web.RefreshToken:
+  name: RTID
+  in: cookie
+  schema:
+    description: Используется платформой WEB
+    type: string
+    minLength: 64
+    maxLength: 128
+  example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"

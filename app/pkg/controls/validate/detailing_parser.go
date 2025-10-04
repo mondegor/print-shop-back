@@ -3,7 +3,7 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrreq"
 
 	"github.com/mondegor/print-shop-back/pkg/controls/enum"
@@ -11,24 +11,28 @@ import (
 
 type (
 	// RequestDetailingParser - comment interface.
-	RequestDetailingParser interface {
+	RequestDetailingParser interface { // TODO: ПЕРЕНЕСТИ
 		FilterElementDetailingList(r *http.Request, key string) []enum.ElementDetailing
 	}
 
 	// DetailingParser - comment struct.
 	DetailingParser struct {
+		logger       mrlog.Logger
 		defaultItems []enum.ElementDetailing
 	}
 )
 
 // NewDetailingParser - создаёт объект DetailingParser.
-func NewDetailingParser() *DetailingParser {
-	return &DetailingParser{}
+func NewDetailingParser(logger mrlog.Logger) *DetailingParser {
+	return &DetailingParser{
+		logger: logger,
+	}
 }
 
 // NewDetailingParserWithDefault - создаёт объект DetailingParser.
-func NewDetailingParserWithDefault(items []enum.ElementDetailing) *DetailingParser {
+func NewDetailingParserWithDefault(logger mrlog.Logger, items []enum.ElementDetailing) *DetailingParser {
 	return &DetailingParser{
+		logger:       logger,
 		defaultItems: items,
 	}
 }
@@ -37,7 +41,7 @@ func NewDetailingParserWithDefault(items []enum.ElementDetailing) *DetailingPars
 func (p *DetailingParser) FilterElementDetailingList(r *http.Request, key string) []enum.ElementDetailing {
 	items, err := p.parseList(r, key)
 	if err != nil {
-		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
+		p.logger.Warn(r.Context(), "DetailingParser", "error", err)
 
 		return p.defaultItems
 	}

@@ -1,12 +1,13 @@
 package factory
 
 import (
-	"github.com/mondegor/go-sysmess/mrcaller"
+	"context"
+
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/features"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
-	"github.com/mondegor/go-webcore/mrserver/mrreq"
+	"github.com/mondegor/go-sysmess/mrerr/instance"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrerr/stacktrace"
+	"github.com/mondegor/go-sysmess/mrmsg"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 )
@@ -14,92 +15,94 @@ import (
 // InitProtoAppErrors - инициализирует работу с ProtoAppError ошибками.
 func InitProtoAppErrors(opts app.Options) {
 	var (
-		options         []mrerr.ProtoOption
-		callerOption    mrerr.ProtoOption
-		onCreatedOption mrerr.ProtoOption
+		userOptions     []mrerr.Option
+		intSysOptions   []mrerr.Option
+		callerOption    mrerr.Option
+		onCreatedOption mrerr.Option
 	)
 
-	if opts.Cfg.Debugging.ErrorCaller.Enable {
-		caller := mrcaller.New(
-			mrcaller.WithDepth(opts.Cfg.Debugging.ErrorCaller.Depth),
-			mrcaller.WithShowFuncName(opts.Cfg.Debugging.ErrorCaller.ShowFuncName),
-			mrcaller.WithFilterStackTrace(
-				mrcaller.FilterStackTraceTrimUpper(opts.Cfg.Debugging.ErrorCaller.UpperBounds),
+	if opts.Cfg.Debugging.ErrorCaller.IsEnabled {
+		caller := stacktrace.New(
+			stacktrace.WithDepth(opts.Cfg.Debugging.ErrorCaller.Depth),
+			stacktrace.WithStackTraceFilter(
+				stacktrace.TrimUpperFilter(opts.Cfg.Debugging.ErrorCaller.UpperBounds),
 			),
 		)
 
-		callerOption = mrerr.WithProtoCaller(
+		callerOption = mrerr.WithCaller(
 			func() mrerr.StackTracer {
 				return caller.StackTrace()
 			},
 		)
 
-		onCreatedOption = mrerr.WithProtoOnCreated(
-			func(_ *mrerr.AppError) (instanceID string) {
-				return features.GenerateInstanceID()
+		onCreatedOption = mrerr.WithOnCreated(
+			func(context.Context, error) (instanceID string) {
+				return instance.GenerateID()
 			},
 		)
 
-		options = append(options, callerOption)
+		intSysOptions = append(intSysOptions, callerOption)
 	}
 
 	if opts.Sentry != nil {
 		sentry := opts.Sentry
-		onCreatedOption = mrerr.WithProtoOnCreated(
-			func(err *mrerr.AppError) (instanceID string) {
-				if instanceID = sentry.CaptureAppError(err); instanceID != "" {
+		onCreatedOption = mrerr.WithOnCreated(
+			func(ctx context.Context, err error) (instanceID string) {
+				// ???????????????????????????? ПРОВЕРИТЬ!!!
+				if instanceID = sentry.CaptureAppError(ctx, mr.CastOrWrapUnexpectedInternal(err)); instanceID != "" {
 					return instanceID
 				}
 
-				return features.GenerateInstanceID()
+				return instance.GenerateID()
 			},
 		)
 	}
 
 	if onCreatedOption != nil {
-		options = append(options, onCreatedOption)
+		intSysOptions = append(intSysOptions, onCreatedOption)
 	}
 
-	// если ни одна опция не указана, то вызывается инициализация ошибок
-	// без использования обработчиков опций по умолчанию
-	if len(options) == 0 {
-		mrerr.InitDefaultOptions()
+	messageArgsReplacer := mrerr.WithArgsReplacer(
+		func(message string) mrerr.MessageReplacer {
+			return mrmsg.NewMessageReplacer("{", "}", message)
+		},
+	)
 
-		return
-	}
-
-	// список ошибок, у которых должны быть индивидуальные опции
-	specialErrors := []mrinit.ErrorSettings{
-		mrinit.WithOnCreated(mrcore.ErrUnexpectedInternal),
-		mrinit.AllDisabled(mrcore.ErrStorageNoRowFound),
-		mrinit.AllDisabled(mrcore.ErrStorageRowsNotAffected),
-		mrinit.WithCaller(mrcore.ErrUseCaseIncorrectInputData),
-		mrinit.AllDisabled(mrcore.ErrHttpRequestParseData),
-		mrinit.AllDisabled(mrreq.ErrHttpRequestCorrelationID),
-		mrinit.AllDisabled(mrreq.ErrHttpRequestUserIP),
-		mrinit.AllDisabled(mrreq.ErrHttpRequestParseUserIP),
-	}
-
-	// формируется сопоставление кода ошибки и соответствующих опций по умолчанию
-	errorOptionsMap := mrinit.CreateErrorOptionsMap(specialErrors, callerOption, onCreatedOption)
-
-	// обработчик опций по умолчанию, который будет использоваться при вызове mrerr.NewProto()
-	defaultHandler := func(_ string, kind mrerr.ErrorKind) []mrerr.ProtoOption {
-		if kind == mrerr.ErrorKindUser {
-			return nil
-		}
-
-		return options
-	}
+	userOptions = append(userOptions, messageArgsReplacer)
+	intSysOptions = append(intSysOptions, messageArgsReplacer)
 
 	mrerr.InitDefaultOptions(
-		mrerr.ProtoOptionsHandlerFunc(func(code string, kind mrerr.ErrorKind) []mrerr.ProtoOption {
-			if op, ok := errorOptionsMap[code]; ok {
-				return op
+		mrerr.OptionsHandlerFunc(func(kind mrerr.ErrorKind, _, _ string) []mrerr.Option {
+			// // следующий фрагмент кода генерит вспомогательный код, который необходимо скопировать
+			// // в localization/dict/errcat/generate.go для локализации пользовательских ошибок в проекте
+			// if kind == mrerr.ErrorKindUser || code != "" {
+			// 	mrlog.DebugFunc(
+			//	    opts.Logger,
+			// 		func() string {
+			// 			formattedMessage, placeholders := gotext.NewMessageFormatter("{", "}").Format(message)
+			// 			formattedMessage = strconv.Quote(formattedMessage)
+			//
+			// 			if len(placeholders) > 0 {
+			// 				placeholders = mrmsg.NewPlaceholderExtractor("{", "}").Extract(message)
+			// 				for i := range placeholders {
+			// 					placeholders[i] = strconv.Quote(strings.TrimLeft(strings.TrimRight(placeholders[i], "}"), "{"))
+			// 				}
+			// 				formattedMessage += ", " + strings.Join(placeholders, ", ")
+			// 			}
+			//
+			// 			if code == "" {
+			// 				code = "EMPTY"
+			// 			}
+			//
+			// 			return kind.String() + "|" + code + `: p.Sprintf(` + formattedMessage + `)`
+			// 		},
+			// 	)
+			// }
+			if kind == mrerr.ErrorKindUser {
+				return userOptions
 			}
 
-			return defaultHandler(code, kind)
+			return intSysOptions
 		}),
-		mrerr.ProtoOptionsHandlerFunc(defaultHandler),
 	)
 }

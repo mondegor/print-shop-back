@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	PaperColorAvailabilityName = "Dictionaries.API.PaperColorAvailability" // PaperColorAvailabilityName - название API
+	// PaperColorAvailabilityName - название API.
+	PaperColorAvailabilityName = "Dictionaries.API.PaperColorAvailability"
 )
 
 type (
@@ -24,14 +25,11 @@ type (
 
 var (
 	// ErrPaperColorRequired - paper color ID is required.
-	ErrPaperColorRequired = mrerr.NewProto(
-		"dictionaries.errPaperColorRequired", mrerr.ErrorKindUser, "paper color ID is required")
+	ErrPaperColorRequired = mrerr.NewKindUser("PaperColorRequired", "paper color ID is required")
 
 	// ErrPaperColorNotAvailable - paper color with ID is not available.
-	ErrPaperColorNotAvailable = mrerr.NewProto(
-		"dictionaries.errPaperColorNotAvailable", mrerr.ErrorKindUser, "paper color with ID={{ .id }} is not available")
+	ErrPaperColorNotAvailable = mrerr.NewKindUser("PaperColorNotAvailable", "paper color with ID={Id} is not available")
 
 	// ErrPaperColorNotFound - paper color with ID not found.
-	ErrPaperColorNotFound = mrerr.NewProto(
-		"dictionaries.errPaperColorNotFound", mrerr.ErrorKindUser, "paper color with ID={{ .id }} not found")
+	ErrPaperColorNotFound = mrerr.NewKindUser("PaperColorNotFound", "paper color with ID={Id} not found")
 )

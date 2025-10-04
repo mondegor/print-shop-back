@@ -1,0 +1,1487 @@
+{
+    "language": "en-US",
+    "messages": [
+        {
+            "id": "Internal",
+            "message": "Internal",
+            "translation": "Internal server error",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "System",
+            "message": "System",
+            "translation": "System server error",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "unexpected internal error",
+            "message": "unexpected internal error",
+            "translation": "Internal server error [problem]\n\n418. unexpected error",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "request body is not valid: '{Reason}'",
+            "message": "request body is not valid: '{Reason}'",
+            "translation": "Request body is not valid: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "system is temporarily unavailable",
+            "message": "system is temporarily unavailable",
+            "translation": "The system is temporarily unable to process your request. Please try again later",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "the file with the specified key '{Key}' was not uploaded",
+            "message": "the file with the specified key '{Key}' was not uploaded",
+            "translation": "the file with the specified key '{Key}' was not uploaded",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "401. client is unauthorized",
+            "message": "401. client is unauthorized",
+            "translation": "User authorization required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "403. access forbidden",
+            "message": "403. access forbidden",
+            "translation": "Forbidden - You don't have permission to access",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "404. resource not found",
+            "message": "404. resource not found",
+            "translation": "Resource not found",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
+            "message": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
+            "translation": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "request param with key '{Key}' is empty",
+            "message": "request param with key '{Key}' is empty",
+            "translation": "request param with key '{Key}' is empty",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "request param with key '{Key}' contains value greater then max '{Max}'",
+            "message": "request param with key '{Key}' contains value greater then max '{Max}'",
+            "translation": "request param with key '{Key}' contains value greater then max '{Max}'",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "Max",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Max\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "request param with key '{Key}' has value length greater then max '{MaxLength}' characters",
+            "message": "request param with key '{Key}' has value length greater then max '{MaxLength}' characters",
+            "translation": "request param with key '{Key}' has value length greater then max '{MaxLength}' characters",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                },
+                {
+                    "id": "MaxLength",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"MaxLength\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "input data is incorrect: '{Reason}'",
+            "message": "input data is incorrect: '{Reason}'",
+            "translation": "Input data is incorrect: '{Reason}'",
+            "translatorComment": "Copied from source.",
+          "placeholders": [
+            {
+              "id": "Reason",
+              "string": "%[1]s",
+              "type": "string",
+              "underlyingType": "string",
+              "argNum": 1,
+              "expr": "\"Reason\""
+            }
+          ],
+            "fuzzy": true
+        },
+        {
+            "id": "access forbidden",
+            "message": "access forbidden",
+            "translation": "access forbidden",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "entity not found",
+            "message": "entity not found",
+            "translation": "entity not found",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "entity is not available",
+            "message": "entity is not available",
+            "translation": "entity is not available",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "entity already exists",
+            "message": "entity already exists",
+            "translation": "entity already exists",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "entity version is invalid",
+            "message": "entity version is invalid",
+            "translation": "entity version is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "switching from '{StatusFrom}' to '{StatusTo}' is rejected",
+            "message": "switching from '{StatusFrom}' to '{StatusTo}' is rejected",
+            "translation": "switching from '{StatusFrom}' to '{StatusTo}' is rejected",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "StatusFrom",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"StatusFrom\""
+                },
+                {
+                    "id": "StatusTo",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"StatusTo\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "file is invalid",
+            "message": "file is invalid",
+            "translation": "file is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "login is invalid",
+            "message": "login is invalid",
+            "translation": "login is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "email is invalid",
+            "message": "email is invalid",
+            "translation": "email is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "phone is invalid",
+            "message": "phone is invalid",
+            "translation": "phone is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "email already exists",
+            "message": "email already exists",
+            "translation": "email already exists",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "phone already exists",
+            "message": "phone already exists",
+            "translation": "phone already exists",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "query {ShortLink} not found",
+            "message": "query {ShortLink} not found",
+            "translation": "query {ShortLink} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "ShortLink",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"ShortLink\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "box with ID={Id} not found",
+            "message": "box with ID={Id} not found",
+            "translation": "box with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "box article '{Name}' already exists",
+            "message": "box article '{Name}' already exists",
+            "translation": "box article '{Name}' already exists",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "laminate with ID={Id} not found",
+            "message": "laminate with ID={Id} not found",
+            "translation": "laminate with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "laminate article '{Name}' already exists",
+            "message": "laminate article '{Name}' already exists",
+            "translation": "laminate article '{Name}' already exists",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper with ID={Id} not found",
+            "message": "paper with ID={Id} not found",
+            "translation": "paper with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper article '{Name}' already exists",
+            "message": "paper article '{Name}' already exists",
+            "translation": "paper article '{Name}' already exists",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "form ID is required",
+            "message": "form ID is required",
+            "translation": "form ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "form with ID={Id} not found",
+            "message": "form with ID={Id} not found",
+            "translation": "form with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "rewrite name '{Name}' already exists",
+            "message": "rewrite name '{Name}' already exists",
+            "translation": "rewrite name '{Name}' already exists",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "param name '{Name}' already exists",
+            "message": "param name '{Name}' already exists",
+            "translation": "param name '{Name}' already exists",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "form with ID={Id} is disabled",
+            "message": "form with ID={Id} is disabled",
+            "translation": "form with ID={Id} is disabled",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "form element with ID={Id} not found",
+            "message": "form element with ID={Id} not found",
+            "translation": "form element with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "item detailing '{Name1}' not allowed for form detailing '{Name2}'",
+            "message": "item detailing '{Name1}' not allowed for form detailing '{Name2}'",
+            "translation": "item detailing '{Name1}' not allowed for form detailing '{Name2}'",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name1\""
+                },
+                {
+                    "id": "Name2",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Name2\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "element template ID is required",
+            "message": "element template ID is required",
+            "translation": "element template ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "element template with ID={Id} not found",
+            "message": "element template with ID={Id} not found",
+            "translation": "element template with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "element template with ID={Id} is disabled",
+            "message": "element template with ID={Id} is disabled",
+            "translation": "element template with ID={Id} is disabled",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "laminate type ID is required",
+            "message": "laminate type ID is required",
+            "translation": "laminate type ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "laminate type with ID={Id} is not available",
+            "message": "laminate type with ID={Id} is not available",
+            "translation": "laminate type with ID={Id} is not available",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "laminate type with ID={Id} not found",
+            "message": "laminate type with ID={Id} not found",
+            "translation": "laminate type with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper color ID is required",
+            "message": "paper color ID is required",
+            "translation": "paper color ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "paper color with ID={Id} is not available",
+            "message": "paper color with ID={Id} is not available",
+            "translation": "paper color with ID={Id} is not available",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper color with ID={Id} not found",
+            "message": "paper color with ID={Id} not found",
+            "translation": "paper color with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper facture ID is required",
+            "message": "paper facture ID is required",
+            "translation": "paper facture ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "paper facture with ID={Id} is not available",
+            "message": "paper facture with ID={Id} is not available",
+            "translation": "paper facture with ID={Id} is not available",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "paper facture with ID={Id} not found",
+            "message": "paper facture with ID={Id} not found",
+            "translation": "paper facture with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "print format ID is required",
+            "message": "print format ID is required",
+            "translation": "print format ID is required",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "print format with ID={Id} is not available",
+            "message": "print format with ID={Id} is not available",
+            "translation": "print format with ID={Id} is not available",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "print format with ID={Id} not found",
+            "message": "print format with ID={Id} not found",
+            "translation": "print format with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "token is expired",
+            "message": "token is expired",
+            "translation": "token is expired",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "token is invalid",
+            "message": "token is invalid",
+            "translation": "token is invalid",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "token section {Key} is invalid",
+            "message": "token section {Key} is invalid",
+            "translation": "token section {Key} is invalid",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "token is already revoked",
+            "message": "token is already revoked",
+            "translation": "token is already revoked",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "confirm code is incorrect",
+            "message": "confirm code is incorrect",
+            "translation": "confirm code is incorrect",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "all attempts to confirm the operation have been used",
+            "message": "all attempts to confirm the operation have been used",
+            "translation": "all attempts to confirm the operation have been used",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "sending new messages is temporarily restricted",
+            "message": "sending new messages is temporarily restricted",
+            "translation": "sending new messages is temporarily restricted",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "after node with ID={Id} not found",
+            "message": "after node with ID={Id} not found",
+            "translation": "after node with ID={Id} not found",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Id",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Id\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid file size, min size = {Value}b",
+            "message": "invalid file size, min size = {Value}b",
+            "translation": "invalid file size, min size = {Value}b",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid file size, max size = {Value}b",
+            "message": "invalid file size, max size = {Value}b",
+            "translation": "invalid file size, max size = {Value}b",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid file extension: {Value}",
+            "message": "invalid file extension: {Value}",
+            "translation": "invalid file extension: {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid file total size, max total size = {Value}b",
+            "message": "invalid file total size, max total size = {Value}b",
+            "translation": "invalid file total size, max total size = {Value}b",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "the content type '{Value}' does not match the detected type",
+            "message": "the content type '{Value}' does not match the detected type",
+            "translation": "the content type '{Value}' does not match the detected type",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "unsupported file type '{Value}'",
+            "message": "unsupported file type '{Value}'",
+            "translation": "unsupported file type '{Value}'",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid image width, max size = {Value}px",
+            "message": "invalid image width, max size = {Value}px",
+            "translation": "invalid image width, max size = {Value}px",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "invalid image height, max size = {Value}px",
+            "message": "invalid image height, max size = {Value}px",
+            "translation": "invalid image height, max size = {Value}px",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_http_url: {Name}, {Type}, {Value}",
+            "message": "Validator_http_url: {Name}, {Type}, {Value}",
+            "translation": "The field value must be URL address (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_required: {Name}, {Type}, {Value}",
+            "message": "Validator_required: {Name}, {Type}, {Value}",
+            "translation": "The field is required",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_gte: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_gte: {Name}, {Type}, {Value}, {Param}",
+            "translation": "The field value must be greater than or equal to {Param} (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_lte: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_lte: {Name}, {Type}, {Value}, {Param}",
+            "translation": "The field value must be less than or equal to {Param} (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_max: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_max: {Name}, {Type}, {Value}, {Param}",
+            "translation": "The field value must be no more than {Param} characters",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_min: {Name}, {Type}, {Value}, {Param}",
+            "message": "Validator_min: {Name}, {Type}, {Value}, {Param}",
+            "translation": "The field value must be at least {Param} characters (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                },
+                {
+                    "id": "Param",
+                    "string": "%[4]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 4,
+                    "expr": "\"Param\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_article: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_article: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_article: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_email: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_email: {Name}, {Type}, {Value}",
+            "translation": "The field value must be email address (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_email_phone: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_email_phone: {Name}, {Type}, {Value}",
+            "translation": "The field value must be email address or phone number (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_password: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_password: {Name}, {Type}, {Value}",
+            "translation": "The field value must contain only latin letters, numbers, and special characters without spaces (current value: '{Value}')",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_phone: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_phone: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_phone: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_rewrite_name: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_rewrite_name: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_rewrite_name: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_variable: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_variable: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_variable: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_2d_size: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_2d_size: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_2d_size: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "Validator_tag_3d_size: {Name}, {Type}, {Value}",
+            "message": "Validator_tag_3d_size: {Name}, {Type}, {Value}",
+            "translation": "Validator_tag_3d_size: {Name}, {Type}, {Value}",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Name",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Name\""
+                },
+                {
+                    "id": "Type",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Type\""
+                },
+                {
+                    "id": "Value",
+                    "string": "%[3]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 3,
+                    "expr": "\"Value\""
+                }
+            ],
+            "fuzzy": true
+        }
+    ]
+}

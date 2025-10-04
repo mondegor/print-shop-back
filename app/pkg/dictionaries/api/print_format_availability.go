@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	PrintFormatAvailabilityName = "Dictionaries.API.PrintFormatAvailability" // PrintFormatAvailabilityName - название API
+	// PrintFormatAvailabilityName - название API.
+	PrintFormatAvailabilityName = "Dictionaries.API.PrintFormatAvailability"
 )
 
 type (
@@ -24,14 +25,11 @@ type (
 
 var (
 	// ErrPrintFormatRequired - print format ID is required.
-	ErrPrintFormatRequired = mrerr.NewProto(
-		"dictionaries.errPrintFormatRequired", mrerr.ErrorKindUser, "print format ID is required")
+	ErrPrintFormatRequired = mrerr.NewKindUser("PrintFormatRequired", "print format ID is required")
 
 	// ErrPrintFormatNotAvailable - print format with ID is not available.
-	ErrPrintFormatNotAvailable = mrerr.NewProto(
-		"dictionaries.errPrintFormatNotAvailable", mrerr.ErrorKindUser, "print format with ID={{ .id }} is not available")
+	ErrPrintFormatNotAvailable = mrerr.NewKindUser("PrintFormatNotAvailable", "print format with ID={Id} is not available")
 
 	// ErrPrintFormatNotFound - print format with ID not found.
-	ErrPrintFormatNotFound = mrerr.NewProto(
-		"dictionaries.errPrintFormatNotFound", mrerr.ErrorKindUser, "print format with ID={{ .id }} not found")
+	ErrPrintFormatNotFound = mrerr.NewKindUser("PrintFormatNotFound", "print format with ID={Id} not found")
 )

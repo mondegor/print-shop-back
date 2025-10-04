@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/mondegor/go-components/mrmailer"
@@ -10,20 +9,28 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlang"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlock"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlocale"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/mrwire"
+	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-webcore/mraccess/role/filestorage"
+	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrpath"
-	"github.com/mondegor/go-webcore/mrperms"
 	"github.com/mondegor/go-webcore/mrrun"
-	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrsentry"
+	"github.com/mondegor/go-webcore/mrserver/mrhttp"
 	"github.com/mondegor/go-webcore/mrserver/mrparser"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
-	"github.com/mondegor/go-webcore/mrworker"
-	"github.com/prometheus/client_golang/prometheus"
+	"github.com/mondegor/go-webcore/mrworker/process/collect"
+	"github.com/mondegor/go-webcore/mrworker/process/consume"
+	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
 	"github.com/mondegor/print-shop-back/config"
+	"github.com/mondegor/print-shop-back/internal/factory/auth"
 	calculationsalgo "github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
 	calculationsquery "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
 	catalogbox "github.com/mondegor/print-shop-back/internal/factory/catalog/box"
@@ -44,24 +51,35 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		Cfg          config.Config
-		AppHealth    *mrrun.AppHealth
-		ErrorHandler mrcore.ErrorHandler
-		EventEmitter mrsender.EventEmitter
+		Cfg             config.Config
+		Logger          mrlog.Logger
+		Tracer          mrtrace.Tracer
+		TraceManager    mrtrace.ContextManager
+		OpenedResources *mrwire.CloseManager
 
-		InternalRouter *http.ServeMux
-		Sentry         *mrsentry.Adapter
-		Prometheus     *prometheus.Registry
+		InternalRouter        *http.ServeMux
+		Sentry                *mrsentry.Adapter
+		Prometheus            *mrinit.Prometheus
+		ErrorHandler          mrerr.ErrorHandler
+		EventEmitter          mrevent.Emitter
+		StorageErrorWrapper   mrerr.ErrorWrapper
+		UsecaseErrorWrapper   mrerr.UseCaseErrorWrapper
+		FileUserErrorWrapper  mrerr.UserErrorWrapper
+		ImageUserErrorWrapper mrerr.UserErrorWrapper
+		AppHealth             *mrrun.AppHealth
 
-		PostgresConnManager *mrpostgres.ConnManager
-		RedisAdapter        *mrredis.ConnAdapter
-		FileProviderPool    *mrstorage.FileProviderPool
-		Locker              mrlock.Locker
-		Translator          *mrlang.Translator
-		RequestParsers      RequestParsers
-		ResponseSenders     ResponseSenders
-		AccessControl       *mrperms.RoleAccessControl
-		ImageURLBuilder     mrpath.PathBuilder
+		PostgresConnManager          *mrpostgres.ConnManager
+		PostgresNotificationService  *mrpostgres.ProcessWaitForNotification
+		PostgresNotificationChannels mrpostgres.ReceiverChannels
+		RedisAdapter                 *mrredis.ConnAdapter
+		FileProviderPool             *mrstorage.FileProviderPool
+		Locker                       mrlock.Locker
+		LocalePool                   *mrlocale.Pool
+		RequestParsers               RequestParsers
+		ResponseSenders              ResponseSenders
+		PermsProvider                *filestorage.PermsProvider
+		RealmKindRights              mraccess.RightsGetter
+		ImageURLBuilder              mrpath.PathBuilder
 
 		// API section
 		DictionariesMaterialTypeAPI api.MaterialTypeAvailability
@@ -74,6 +92,7 @@ type (
 		SettingsSetterAPI           mrsettings.Setter
 
 		// Modules section
+		AuthModule                     auth.Options
 		CalculationsAlgoModule         calculationsalgo.Options
 		CalculationsQueryHistoryModule calculationsquery.Options
 		CatalogBoxModule               catalogbox.Options
@@ -88,8 +107,13 @@ type (
 		FileStationModule              filestation.Options
 		ProviderAccountsModule         provideraccounts.Options
 
-		SchedulerTasks  []mrworker.Task
-		OpenedResources []func(ctx context.Context)
+		// Services and Servers section
+		UserStatRequestCollectorService *collect.MessageCollector
+		MailProcessorService            *consume.MessageProcessor
+		NoticeProcessorService          *consume.MessageProcessor
+		HttpServer                      *mrhttp.Adapter
+		HttpInternalServer              *mrhttp.Adapter
+		TaskSchedulerServices           []*schedule.TaskScheduler // можно добавлять начиная с формирования API
 	}
 
 	// RequestParsers - comment struct.
@@ -104,6 +128,9 @@ type (
 		String     *mrparser.String
 		UUID       *mrparser.UUID
 		Validator  *mrparser.Validator
+		Locale     *mrparser.Locale
+		ClientIP   *mrparser.ClientIP
+		User       *mrparser.User
 		FileJson   *mrparser.File
 		ImageLogo  *mrparser.Image
 

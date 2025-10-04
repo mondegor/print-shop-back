@@ -5,7 +5,7 @@ CREATE TABLE printshop_global.notifier_templates (
     tag_version int4 NOT NULL DEFAULT 1 CHECK(tag_version > 0),
     template_group int2 NOT NULL, -- 1=USERS, 2=ADMINS
     template_name character varying(64) NULL,
-    lang_code character(5) NOT NULL, -- en_EN, ru_RU
+    lang_code character(5) NOT NULL, -- en-US, ru-RU
     template_caption character varying(128) NOT NULL,
     notice_props jsonb NOT NULL,
     notice_vars jsonb NOT NULL, -- cache from notice_props
@@ -21,9 +21,15 @@ CREATE UNIQUE INDEX uk_notifier_templates_template_name ON printshop_global.noti
 
 INSERT INTO printshop_global.notifier_templates (template_id, tag_version, template_group, template_name, lang_code, template_caption, notice_props, notice_vars, template_status, created_at, updated_at, deleted_at)
 VALUES
-    (1, 1, 1, 'test-template', 'en_EN', 'Тестовый шаблон', '{"email": {"content": "{{ .preheader }}\nTest Content acc-{{ .accountId }}", "replyTo": "Ivan Ivanov <ivanov_test+reply@gmail.com>", "subject": "Test Subject acc-{{ .accountId }}", "fromName": "TestFrom TestovFrom", "preheader": "Test preheader", "contentType": "text/plain", "observerEmails": ["Ivan Observer <ivanov_test@gmail.com>"]}, "messenger": {"tags": ["@ivanov_test"], "chatId": "-1000000000000", "content": "Test Content {{ .accountId }}", "subject": "Test subject {{ .accountId }}"}}', '[]', 2, '2024-11-21 05:33:42.071000 +03:00', '2024-11-21 05:33:44.263000 +03:00', null);
+    (1, 1, 1, 'confirm.user.activation', 'ru-RU', 'Подтверждение регистрации пользователя', '{"email": {"content": "Регистрация пользователя на площадке https://{{ .hostName }}/. Код подтверждения: {{ .confirmCode }}", "subject": "Подтверждение регистрации пользователя", "fromName": "PrintShop", "contentType": "text/plain"}}', '["hostName"]', 2, '2025-01-26 04:41:52.694000 +03:00', '2025-01-26 04:41:52.694000 +03:00', null),
+    (2, 1, 1, 'user.registration.success', 'ru-RU', 'Регистрация успешно пройдена', '{"email": {"content": "Вы были успешно зарегистрированы на площадке https://{{ .hostName }}/.", "subject": "Регистрация успешно пройдена", "fromName": "PrintShop", "contentType": "text/plain", "observerEmails": ["mondegor@gmail.com"]}}', '["hostName"]', 2, '2024-11-21 05:33:42.071000 +03:00', '2024-11-21 05:33:44.263000 +03:00', null),
+    (3, 1, 1, 'user.was.registered', 'ru-RU', '[Admins] Уведомление о новом пользователе', '{"messenger": {"tags": ["@mondegor"], "chatId": "-1002478328065", "content": "Новый пользователь: {{ .userEmail }} в {{ .userRealm }} "}}', '[]', 2, '2024-11-21 05:33:42.071000 +03:00', '2024-11-21 05:33:44.263000 +03:00', null),
+    (4, 1, 1, 'confirm.create.session.by.email', 'ru-RU', 'Подтверждение открытия сессии по емаилу', '{"email": {"content": "Авторизация пользователя на площадке https://{{ .hostName }}/. Код подтверждения: {{ .confirmCode }}", "subject": "Авторизация пользователя", "fromName": "PrintShop", "contentType": "text/plain"}}', '["hostName"]', 2, '2025-01-26 04:41:52.694000 +03:00', '2025-01-26 04:41:52.694000 +03:00', null),
+    (5, 1, 1, 'user.authorization.success', 'ru-RU', 'Произведена авторизация пользователя', '{"email": {"content": "Была произведена авторизация вашего пользователя на площадке https://{{ .hostName }}/.", "subject": "Предупреждение об авторизации пользователя", "fromName": "PrintShop", "contentType": "text/plain", "observerEmails": ["mondegor@gmail.com"]}}', '["hostName"]', 2, '2024-11-21 05:33:42.071000 +03:00', '2024-11-21 05:33:44.263000 +03:00', null),
+    (6, 1, 1, 'confirm.operation.by.email', 'ru-RU', 'Подтверждение операции по емаилу', '{"email": {"content": "Подтверждение операции ''{{ .operation }}'' на площадке https://{{ .hostName }}/. Код подтверждения: {{ .confirmCode }}", "subject": "Подтверждение операции пользователя", "fromName": "PrintShop", "contentType": "text/plain"}}', '["hostName"]', 2, '2025-01-26 04:41:52.694000 +03:00', '2025-01-26 04:41:52.694000 +03:00', null),
+    (7, 1, 1, 'user.revoke.token.alert', 'ru-RU', 'Повторный отзыв refresh токена', '{"email": {"content": "Обнаружена потенциальная угроза взлома вашего аккаунта на площадке https://{{ .hostName }}/. В целях безопасности все открытые сессии на ваших устройствах завершены.", "subject": "Предупреждение о потенциальной угрозе взлома аккаунта", "fromName": "PrintShop", "contentType": "text/plain", "observerEmails": ["mondegor@gmail.com"]}}', '["hostName"]', 2, '2024-11-21 05:33:42.071000 +03:00', '2024-11-21 05:33:44.263000 +03:00', null);
 
-ALTER SEQUENCE printshop_global.notifier_templates_template_id_seq RESTART WITH 2;
+ALTER SEQUENCE printshop_global.notifier_templates_template_id_seq RESTART WITH 8;
 
 -- --------------------------------------------------------------------------------------------------
 
@@ -37,4 +43,8 @@ CREATE TABLE printshop_global.notifier_template_vars (
 
 CREATE UNIQUE INDEX uk_notifier_notice_vars_var_name ON printshop_global.notifier_template_vars (var_name);
 
--- INSERT INTO printshop_global.notifier_notice_vars VALUES (1,'preheader','','Заголовок, который вставляется в тело уведомления'),(5,'linkConfirmAction','','Ссылка на подтверждение действия пользователя (активация в системе, изменения емаила, пароля и т.д.)'),(20,'accountId','','Аккаунт пользователя'),(21,'accountLogin','','Логин пользователя'),(22,'accountEmail','','E-mail для уведомлений пользователя'),(23,'userName','','Имя пользователя'),(24,'userSurname','','Фамилия пользователя'),(25,'userMessage','','Текст сообщения от пользователя'),(26,'linkSetPassword','','Ссылка на установку нового пароля'),(27,'linkChangeEmail','','Ссылка на подтверждение изменения емаила');
+-- --------------------------------------------------------------------------------------------------
+
+INSERT INTO printshop_global.notifier_template_vars (var_name, default_value, var_description, created_at, updated_at)
+VALUES
+    ('hostName', 'printshop.local', 'Название домена проекта', '2024-11-21 13:37:18.875000 +03:00', '2024-11-21 12:37:20.237000 +03:00');

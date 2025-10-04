@@ -1,9 +1,6 @@
 package pub
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1"
@@ -12,10 +9,10 @@ import (
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
 )
 
-func createUnitSheetImposition(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
+func createUnitSheetImposition(opts algo.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitSheetImposition(ctx, opts); err != nil {
+	if c, err := newUnitSheetImposition(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -24,9 +21,9 @@ func createUnitSheetImposition(ctx context.Context, opts algo.Options) ([]mrserv
 	return list, nil
 }
 
-func newUnitSheetImposition(ctx context.Context, opts algo.Options) (*httpv1.SheetImposition, error) { //nolint:unparam
-	algoComponent := imposition.New(mrlog.Ctx(ctx))
-	useCase := usecase.NewSheetImposition(algoComponent, opts.EventEmitter, opts.UseCaseErrorWrapper)
+func newUnitSheetImposition(opts algo.Options) (*httpv1.SheetImposition, error) { //nolint:unparam
+	algoComponent := imposition.New(opts.Logger)
+	useCase := usecase.NewSheetImposition(algoComponent, opts.EventEmitter)
 	controller := httpv1.NewSheetImposition(
 		opts.RequestParsers.Validator,
 		opts.ResponseSender,

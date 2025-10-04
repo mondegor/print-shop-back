@@ -13,6 +13,9 @@ type (
 		mrserver.RequestParserString
 		mrserver.RequestParserUUID
 		mrserver.RequestParserValidate
+		mrserver.RequestParserClientIP
+		mrserver.RequestParserUser
+		mrserver.RequestParserLocale
 	}
 
 	// Parser - comment struct.
@@ -22,6 +25,9 @@ type (
 		*mrparser.String
 		*mrparser.UUID
 		*mrparser.Validator
+		*mrparser.ClientIP
+		*mrparser.User
+		*mrparser.Locale
 	}
 )
 
@@ -32,6 +38,9 @@ func NewParser(
 	p3 *mrparser.String,
 	p4 *mrparser.UUID,
 	p5 *mrparser.Validator,
+	p6 *mrparser.ClientIP,
+	p7 *mrparser.User,
+	p8 *mrparser.Locale,
 ) *Parser {
 	return &Parser{
 		Int64:     p1,
@@ -39,5 +48,8 @@ func NewParser(
 		String:    p3,
 		UUID:      p4,
 		Validator: p5,
+		ClientIP:  p6,
+		User:      p7,
+		Locale:    p8,
 	}
 }

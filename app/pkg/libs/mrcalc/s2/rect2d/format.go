@@ -1,7 +1,7 @@
 package rect2d
 
 import (
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/enum"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2"
@@ -20,12 +20,12 @@ func (f Format) String() string {
 	return s2.Size{f.Width, f.Height}.String()
 }
 
-// IsValid - проверяет валиден ли текущий формат.
+// IsValid - сообщает валиден ли текущий формат.
 func (f Format) IsValid() bool {
 	return f.Width > 0 && f.Height > 0
 }
 
-// IsZero - проверяет что формат является нулевым.
+// IsZero - сообщает, является ли формат нулевым.
 func (f Format) IsZero() bool {
 	return f.Width == 0 && f.Height == 0
 }
@@ -143,7 +143,7 @@ func (f Format) Transform(coefficient float64) Format {
 // Round - возвращает округлённый формат.
 func (f Format) Round() Format {
 	return Format{
-		Width:  mrlib.RoundFloat4(f.Width),
-		Height: mrlib.RoundFloat4(f.Height),
+		Width:  extmath.RoundFloat4(f.Width),
+		Height: extmath.RoundFloat4(f.Height),
 	}
 }

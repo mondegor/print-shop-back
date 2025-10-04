@@ -1,10 +1,7 @@
 package dictionaries
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability/usecase"
@@ -13,15 +10,11 @@ import (
 )
 
 // NewPaperFactureModuleOptions - создаёт объект paperfacture.Options.
-func NewPaperFactureModuleOptions(_ context.Context, opts app.Options) (paperfacture.Options, error) {
-	paperFactureDictionary, err := opts.Translator.Dictionary("dictionaries/paper-factures")
-	if err != nil {
-		return paperfacture.Options{}, err
-	}
-
+func NewPaperFactureModuleOptions(opts app.Options) paperfacture.Options {
 	return paperfacture.Options{
+		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: paperfacture.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -29,18 +22,14 @@ func NewPaperFactureModuleOptions(_ context.Context, opts app.Options) (paperfac
 		},
 		ResponseSender: opts.ResponseSenders.Sender,
 
-		UnitPaperFacture: paperfacture.UnitPaperFactureOptions{
-			Dictionary: paperFactureDictionary,
-		},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }
 
 // NewPaperFactureAvailabilityAPI - создаёт объект usecase.PaperFacture.
-func NewPaperFactureAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PaperFacture, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries paper facture availability API")
+func NewPaperFactureAvailabilityAPI(opts app.Options) (*usecase.PaperFacture, error) {
+	mrlog.Info(opts.Logger, "Create and init dictionaries paper facture availability API")
 
-	return availability.NewPaperFacture(opts.PostgresConnManager), nil
+	return availability.NewPaperFacture(opts.PostgresConnManager, opts.UsecaseErrorWrapper, opts.Tracer), nil
 }

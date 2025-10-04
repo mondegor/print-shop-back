@@ -2,9 +2,9 @@ package box
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlang"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/pkg/validate"
@@ -13,21 +13,15 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		EventEmitter        mrsender.EventEmitter
-		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
+		Logger              mrlog.Logger
+		EventEmitter        mrevent.Emitter
+		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
 		DBConnManager       mrstorage.DBConnManager
 		RequestParsers      RequestParsers
 		ResponseSender      mrserver.ResponseSender
 
-		UnitBox UnitBoxOptions
-
 		PageSizeMax     uint64
 		PageSizeDefault uint64
-	}
-
-	// UnitBoxOptions - comment struct.
-	UnitBoxOptions struct {
-		Dictionary *mrlang.MultiLangDictionary
 	}
 
 	// RequestParsers - comment struct.

@@ -45,7 +45,7 @@ func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 
 // GetList - comment method.
 func (ht *Laminate) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
+	items, err := ht.useCase.GetList(r.Context(), ht.parser.Localizer(r), ht.listParams(r))
 	if err != nil {
 		return err
 	}

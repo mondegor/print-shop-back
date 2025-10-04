@@ -3,14 +3,17 @@ package enum
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Расположения на прямоугольном формате.
+const (
+	PositionTop    Position = iota + 1 // сверху
+	PositionOnside                     // сбоку -
+	PositionBottom                     // снизу
 )
 
 const (
-	PositionTop    Position = iota // PositionTop -
-	PositionOnside                 // PositionOnside -
-	PositionBottom                 // PositionBottom -
-
 	enumNamePosition = "Position"
 )
 
@@ -41,7 +44,7 @@ func (e *Position) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNamePosition)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNamePosition)
 }
 
 // String - возвращает значение в виде строки.

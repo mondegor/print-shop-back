@@ -1,9 +1,9 @@
 package factory
 
 import (
-	"context"
+	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrhttp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
@@ -13,19 +13,19 @@ const (
 	internalServerCaption = "HttpInternalServer"
 )
 
-// NewInternalServer - создаёт объект mrserver.ServerAdapter.
-func NewInternalServer(ctx context.Context, opts app.Options) (*mrhttp.Adapter, error) {
-	mrlog.Ctx(ctx).Info().Msgf("Create and init '%s'", internalServerCaption)
+// InitInternalServer - создаёт объект mrserver.ServerAdapter.
+func InitInternalServer(opts app.Options) *mrhttp.Adapter {
+	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", internalServerCaption))
 
 	srvOpts := opts.Cfg.Servers.InternalServer
 
 	return mrhttp.NewAdapter(
-		ctx,
 		opts.InternalRouter,
+		mrhttp.WithLogger(opts.Logger),
 		mrhttp.WithCaption(internalServerCaption),
 		mrhttp.WithHostAndPort(srvOpts.Listen.BindIP, srvOpts.Listen.Port),
 		mrhttp.WithReadTimeout(srvOpts.ReadTimeout),
 		mrhttp.WithWriteTimeout(srvOpts.WriteTimeout),
 		mrhttp.WithShutdownTimeout(srvOpts.ShutdownTimeout),
-	), nil
+	)
 }

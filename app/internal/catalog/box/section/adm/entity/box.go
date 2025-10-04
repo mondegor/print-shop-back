@@ -3,14 +3,15 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 const (
-	ModelNameBox = "admin-api.Catalog.Box" // ModelNameBox - название сущности
+	// ModelNameBox - название сущности.
+	ModelNameBox = "admin-api.Catalog.Box"
 )
 
 type (

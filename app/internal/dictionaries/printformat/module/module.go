@@ -1,11 +1,24 @@
 package module
 
 const (
-	Name       = "Dictionaries.PrintFormat"   // Name - название модуля
-	Permission = "modDictionariesPrintFormat" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "Dictionaries.PrintFormat"
 
-	DBSchema                = "printshop_dictionaries"    // DBSchema - схема БД используемая модулем
-	DBTableNamePrintFormats = DBSchema + ".print_formats" // DBTableNamePrintFormats - таблица БД используемая модулем
-	DBFieldTagVersion       = "tag_version"               // DBFieldTagVersion - поле для хранения версии записи
-	DBFieldDeletedAt        = "deleted_at"                // DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена
+	// Permission - разрешение модуля.
+	Permission = "modDictionariesPrintFormat"
+
+	// LocaleDomain - домен локализации записей.
+	LocaleDomain = "dictionaries.print-format"
+
+	// DBSchema - схема БД используемая модулем.
+	DBSchema = "printshop_dictionaries"
+
+	// DBTableNamePrintFormats - таблица БД используемая модулем.
+	DBTableNamePrintFormats = DBSchema + ".print_formats"
+
+	// DBFieldTagVersion - поле для хранения версии записи.
+	DBFieldTagVersion = "tag_version"
+
+	// DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена.
+	DBFieldDeletedAt = "deleted_at"
 )

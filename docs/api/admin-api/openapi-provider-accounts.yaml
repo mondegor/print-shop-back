@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.3
 info:
-  version: v0.5.0
+  version: v0.6.0
   title: Private API print-shop управления аккаунтами провайдеров
   license:
     name: Apache-2.0
@@ -31,9 +31,9 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
-  - url: http://api.print-shop.local/adm
+  - url: http://api.print-shop.local/baxkend
     description: Local Domain
-  - url: http://localhost:8080/adm
+  - url: http://localhost:8080/baxkend
     description: Local Host
 tags:
   - name: CompanyPage
@@ -67,6 +67,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
         - $ref: "#/components/parameters/ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses"
 
       responses:
@@ -95,7 +96,6 @@ components:
       required: false
       schema:
         type: string
-        default: "ru-RU"
       example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
 
     App.Request.Header.CorrelationID:
@@ -107,6 +107,15 @@ components:
         type: string
         format: uuid
       example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+    App.Request.Query.Language:
+      description: Явное указание языка запроса. Приоритетнее Accept-Language.
+      name: lang
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "ru-RU"
 
     App.Request.Query.Filter.SearchText:
       description: Поисковая строка

@@ -1,10 +1,7 @@
 package dictionaries
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/api/availability/usecase"
@@ -13,15 +10,11 @@ import (
 )
 
 // NewPaperColorModuleOptions - создаёт объект papercolor.Options.
-func NewPaperColorModuleOptions(_ context.Context, opts app.Options) (papercolor.Options, error) {
-	paperColorDictionary, err := opts.Translator.Dictionary("dictionaries/paper-colors")
-	if err != nil {
-		return papercolor.Options{}, err
-	}
-
+func NewPaperColorModuleOptions(opts app.Options) papercolor.Options {
 	return papercolor.Options{
+		Logger:              opts.Logger,
 		EventEmitter:        opts.EventEmitter,
-		UseCaseErrorWrapper: mrapp.NewUseCaseErrorWrapper(),
+		UsecaseErrorWrapper: opts.UsecaseErrorWrapper,
 		DBConnManager:       opts.PostgresConnManager,
 		RequestParsers: papercolor.RequestParsers{
 			Parser:       opts.RequestParsers.Parser,
@@ -29,18 +22,14 @@ func NewPaperColorModuleOptions(_ context.Context, opts app.Options) (papercolor
 		},
 		ResponseSender: opts.ResponseSenders.Sender,
 
-		UnitPaperColor: papercolor.UnitPaperColorOptions{
-			Dictionary: paperColorDictionary,
-		},
-
 		PageSizeMax:     opts.Cfg.General.PageSizeMax,
 		PageSizeDefault: opts.Cfg.General.PageSizeDefault,
-	}, nil
+	}
 }
 
 // NewPaperColorAvailabilityAPI - создаёт объект usecase.PaperColor.
-func NewPaperColorAvailabilityAPI(ctx context.Context, opts app.Options) (*usecase.PaperColor, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init dictionaries paper color availability API")
+func NewPaperColorAvailabilityAPI(opts app.Options) (*usecase.PaperColor, error) {
+	mrlog.Info(opts.Logger, "Create and init dictionaries paper color availability API")
 
-	return availability.NewPaperColor(opts.PostgresConnManager), nil
+	return availability.NewPaperColor(opts.PostgresConnManager, opts.UsecaseErrorWrapper, opts.Tracer), nil
 }

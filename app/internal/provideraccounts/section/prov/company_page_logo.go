@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 )
 
 type (

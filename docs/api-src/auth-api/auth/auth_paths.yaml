@@ -1,0 +1,233 @@
+/v1/signup:
+  post:
+    summary: Auth/R1. Метод создания нового пользователя в системе
+    description: |-
+      Метод предназначен для подготовки создания в БД системы новой учётной записи пользователя.
+
+      ### Алгоритм создания нового пользователя:
+      1. Пользователь указывает свой емаил в качестве логина;
+      2. Отправляется код подтверждения на указанный емаил;
+      3. Пользователь указывает полученный код и подтверждает регистрацию своего аккаунта;
+      4. Создаётся аккаунт пользователя;
+      5. Пользователь получает доступ к своему аккаунту;
+    operationId: createUser
+    tags:
+      - Auth
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Request.Model.CreateUser"
+
+    responses:
+      "200":
+        # На емаил было отправлено сообщение с кодом подтверждения создания пользователя
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Eмаил должен быть указан
+        # Eмаил некорректен или уже привязан к другому пользователю
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/signin:
+  post:
+    summary: Auth/R2. Метод авторизации пользователя в системе
+    description: |-
+      Метод предназначен для авторизации пользователя под указанным емаилом/телефоном.
+
+      ### Алгоритм авторизации пользователя:
+      1. Пользователь указывает свой емаил/телефон в качестве логина;
+      2. Отправляется код подтверждения на указанный емаил или на емаил привязанный к указанному телефону;
+      3. Пользователь указывает полученный код и подтверждает авторизацию;
+      4. Если 2FA включена:\
+        4.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+        4.2. Пользователь указывает 2FA пароль и получает доступ к своему аккаунту;
+      5. Если 2FA выключена:\
+        5.1. Пользователь получает доступ к своему аккаунту;
+
+      Если включена 2FA аутентификация по TOTP и доступ к TOTP генератору временно невозможен или он был утерян,
+      то предоставляется возможность ввести один из аварийных TOTP кодов, которые были сгенерированы при подключении
+      TOTP генератора.
+    operationId: authorizeUser
+    tags:
+      - Auth
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Request.Model.AuthorizeUser"
+
+    responses:
+      "200":
+        # На емаил/телефон было отправлено сообщение с кодом подтверждения авторизации пользователя
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Емаил/телефон должен быть указан
+        # Емаил/телефон некорректен или не существует такого пользователя
+        # Пользователь под емаилом/телефоном заблокирован в системе
+        # Пользователь отправил слишком много SMS за короткое время с указанного телефона (remainingResends <= 0);
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/session:
+  post:
+    summary: Auth/R3. Метод открытия новой сессии пользователя
+    description: |-
+      Метод предназначен для открытия новой сессии пользователя по подтверждённой операции,
+      при этом возвращаются сгенерированные access и refresh токены для поддержания активности сессии.
+
+      В теле запроса должен быть указан параметр token, который может являться токеном операции или API токеном.
+      При указании токена операции должно быть также передан параметр secret для подтверждения этой операции.
+
+      При передачи параметра useCookie=true новый refreshToken вернётся в заголовке Set-Cookie.
+    operationId: openUserSession
+    tags:
+      - Auth
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Request.Model.LoginByToken"
+
+    responses:
+      "200":
+        # На емаил/телефон было отправлено сообщение с кодом подтверждения авторизации пользователя
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "201":
+        # Открыта новая сессия пользователя и сгенерированы Refresh и Access токены
+        # Регенерированы Refresh и Access токены для текущей сессии пользователя
+        $ref: "#/components/responses/Auth.ResponseJson.SuccessAccess"
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        # Код подтверждения операции должен быть указан
+        # Код подтверждения операции некорректен
+        # Исчерпано кол-во попыток подтверждения операции
+        $ref: "#/components/responses/Auth.ResponseJson.Error400"
+      "403":
+        # Токен операции / refresh токен некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  patch:
+    summary: Auth/R4. Метод продления текущей сессии пользователя
+    description: |-
+      Метод предназначен для продления текущей сессии пользователя по указанному refreshToken,
+      при этом возвращаются новые сгенерированные access и refresh токены для поддержания активности сессии.
+
+      Важно! RefreshToken можно указывать только один раз, при повторном указании все сессии пользователя
+      будут принудительно закрыты в целях безопасности.
+
+      Если в заголовке запроса будет присутствовать кука под именем RTID, то в ней должен лежать
+      refreshToken. Иначе refreshToken должен находиться в теле запроса.
+
+      Если refreshToken был найден в куке RTID, то новый refreshToken вернётся в заголовке Set-Cookie.
+    operationId: continueUserSession
+    tags:
+      - Auth
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Auth.Request.Cookie.Web.RefreshToken"
+
+    requestBody:
+      required: false
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Request.Model.ContinueSession"
+
+    responses:
+      "201":
+        # Открыта новая сессия пользователя и сгенерированы Refresh и Access токены
+        # Регенерированы Refresh и Access токены для текущей сессии пользователя
+        $ref: "#/components/responses/Auth.ResponseJson.SuccessAccess"
+      "400":
+        # Refresh токен должен быть указан
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "403":
+        # Токен операции / refresh токен некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Auth/R5. Метод закрытия текущей сессий пользователя
+    description: Метод предназначен для закрытия текущей сессии пользователя
+    operationId: closeUserSession
+    tags:
+      - Auth
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "204":
+        description: Текущая сессия пользователя была закрыта
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/user:
+  get:
+    summary: Auth/R6. Метод получения информации о пользователе
+    description: Метод предназначен для получения информации из БД о текущем пользователе
+    operationId: getUserInfo
+    tags:
+      - Auth
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "200":
+        description: Сформирован ответ с информацией о текущем пользователе
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Auth.Response.Model.UserInfo"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

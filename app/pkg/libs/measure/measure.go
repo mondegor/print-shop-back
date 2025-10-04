@@ -1,15 +1,24 @@
 package measure
 
 import (
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 )
 
 const (
-	DeltaThousand = 0.001     // DeltaThousand - дельта (одна десятитысячная) для сравнения float чисел
-	Thousand      = 1000.0    // Thousand - тысяча единиц
-	Million       = 1000000.0 // Million - миллион единиц
-	OneThousandth = 0.001     // OneThousandth - одна тысячная единицы
-	OneMillionth  = 0.000001  // OneMillionth - одна миллионная единицы
+	// DeltaThousand - дельта (одна десятитысячная) для сравнения float чисел.
+	DeltaThousand = 0.001
+
+	// Thousand - тысяча единиц.
+	Thousand = 1000.0
+
+	// Million - миллион единиц.
+	Million = 1000000.0
+
+	// OneThousandth - одна тысячная единицы.
+	OneThousandth = 0.001
+
+	// OneMillionth - одна миллионная единицы.
+	OneMillionth = 0.000001
 )
 
 type (

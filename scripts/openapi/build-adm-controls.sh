@@ -37,6 +37,7 @@ mrcmd_func_openapi_build_adm_controls() {
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
     # "${sharedDir}/components/parameters/App.Request.Header.CurrentPage.yaml"
+    "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Filter.SearchText.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Filter.Statuses.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.ListPager.yaml"
@@ -128,6 +129,8 @@ mrcmd_func_openapi_build_adm_controls() {
     # "${sharedDir}/custom/enums/Custom.Enum.FragmentPosition.yaml"
     # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
     "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.UserAuth2fa.yaml"
+    # "${sharedDir}/custom/enums/Custom.Enum.UserStatus.yaml"
 
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
     # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"

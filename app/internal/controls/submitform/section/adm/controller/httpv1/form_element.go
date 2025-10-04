@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-components/mrordering"
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
@@ -149,7 +149,7 @@ func (ht *FormElement) getRawItemID(r *http.Request) string {
 }
 
 func (ht *FormElement) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
@@ -158,7 +158,7 @@ func (ht *FormElement) wrapError(err error, r *http.Request) error {
 		return mrerr.NewCustomError("formId", err)
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
@@ -175,7 +175,7 @@ func (ht *FormElement) wrapError(err error, r *http.Request) error {
 }
 
 func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

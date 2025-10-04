@@ -1,7 +1,8 @@
 ---
 privileges:
-  - apiProv
+  - api/providers
 
 permissions:
+  - modAuth
   - modFileStation
   - modProviderAccounts

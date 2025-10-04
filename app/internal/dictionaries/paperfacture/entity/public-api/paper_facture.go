@@ -1,7 +1,8 @@
 package entity
 
 const (
-	ModelNamePaperFacture = "public-api.Dictionaries.PaperFacture" // ModelNamePaperFacture - название сущности
+	// ModelNamePaperFacture - название сущности.
+	ModelNamePaperFacture = "public-api.Dictionaries.PaperFacture"
 )
 
 type (

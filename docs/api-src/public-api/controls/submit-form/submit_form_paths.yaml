@@ -18,6 +18,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     responses:
       "200":
@@ -25,7 +26,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-                $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.FormList"
+              $ref: "#/components/schemas/Controls.SubmitForms.PublicAPI.Response.Model.FormList"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
@@ -40,6 +41,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Controls.SubmitForms.PublicAPI.Request.Path.FormRewriteName"
 
     responses:

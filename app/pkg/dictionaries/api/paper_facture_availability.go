@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	PaperFactureAvailabilityName = "Dictionaries.API.PaperFactureAvailability" // PaperFactureAvailabilityName - название API
+	// PaperFactureAvailabilityName - название API.
+	PaperFactureAvailabilityName = "Dictionaries.API.PaperFactureAvailability"
 )
 
 type (
@@ -24,14 +25,11 @@ type (
 
 var (
 	// ErrPaperFactureRequired - paper facture ID is required.
-	ErrPaperFactureRequired = mrerr.NewProto(
-		"dictionaries.errPaperFactureRequired", mrerr.ErrorKindUser, "paper facture ID is required")
+	ErrPaperFactureRequired = mrerr.NewKindUser("PaperFactureRequired", "paper facture ID is required")
 
 	// ErrPaperFactureNotAvailable - paper facture with ID is not available.
-	ErrPaperFactureNotAvailable = mrerr.NewProto(
-		"dictionaries.errPaperFactureNotAvailable", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} is not available")
+	ErrPaperFactureNotAvailable = mrerr.NewKindUser("PaperFactureNotAvailable", "paper facture with ID={Id} is not available")
 
 	// ErrPaperFactureNotFound - paper facture with ID not found.
-	ErrPaperFactureNotFound = mrerr.NewProto(
-		"dictionaries.errPaperFactureNotFound", mrerr.ErrorKindUser, "paper facture with ID={{ .id }} not found")
+	ErrPaperFactureNotFound = mrerr.NewKindUser("PaperFactureNotFound", "paper facture with ID={Id} not found")
 )

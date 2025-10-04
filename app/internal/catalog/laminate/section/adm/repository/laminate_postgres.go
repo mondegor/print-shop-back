@@ -7,9 +7,10 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/enums"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
@@ -302,8 +303,8 @@ func (re *LaminatePostgres) fetchCondition(filter entity.LaminateListFilter) mrs
 				c.Expr("deleted_at IS NULL"),
 				c.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(filter.SearchText)),
 				c.FilterAnyOf("type_id", filter.TypeIDs),
-				c.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(filter.Length), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
+				c.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(filter.Length), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(filter.Width), 0, extmath.EqualityThresholdE9),
 				c.FilterAnyOf("laminate_status", filter.Statuses),
 			)
 		},
@@ -315,7 +316,7 @@ func (re *LaminatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQL
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("laminate_id", mrenum.SortDirectionASC),
+				o.Field("laminate_id", enums.SortDirectionASC),
 			)
 		},
 	)

@@ -3,20 +3,21 @@ package uiform
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Типы элементов интерфейса.
+const (
+	UIItemViewBlock UIItemView = iota + 1 // блок
+	UIItemViewCheck                       // check box
+	UIItemViewCombo                       // combo box
+	UIItemViewList                        // список
+	UIItemViewRadio                       // radio box
+	UIItemViewRange                       // диапазон (2 поля)
+	UIItemViewText                        // текс
 )
 
 const (
-	_               UIItemView = iota
-	UIItemViewBlock            // UIItemViewBlock - comment const
-	UIItemViewCheck            // UIItemViewCheck - comment const
-	UIItemViewCombo            // UIItemViewCombo - comment const
-	UIItemViewList             // UIItemViewList - comment const
-	UIItemViewRadio            // UIItemViewRadio - comment const
-	UIItemViewRange            // UIItemViewRange - comment const
-	UIItemViewText             // UIItemViewText - comment const
-
-	// uiItemViewLast     = uint8(UIItemViewText).
 	enumNameUIItemView = "UIItemView"
 )
 
@@ -55,19 +56,8 @@ func (e *UIItemView) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIItemView)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameUIItemView)
 }
-
-// Set - устанавливает указанное значение, если оно является enum значением.
-// func (e *UIItemView) Set(value uint8) error {
-// 	if value > 0 && value <= uiItemViewLast {
-// 		*e = UIItemView(value)
-//
-// 		return nil
-// 	}
-//
-// 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIItemView)
-// }
 
 // String - возвращает значение в виде строки.
 func (e UIItemView) String() string {

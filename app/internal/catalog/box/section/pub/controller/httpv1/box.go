@@ -16,7 +16,6 @@ const (
 
 type (
 	// Box - comment struct.
-	// Box - comment struct.
 	Box struct {
 		parser  validate.RequestParser
 		sender  mrserver.ResponseSender
@@ -42,7 +41,7 @@ func (ht *Box) Handlers() []mrserver.HttpHandler {
 
 // GetList - comment method.
 func (ht *Box) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
+	items, err := ht.useCase.GetList(r.Context(), ht.parser.Localizer(r), ht.listParams(r))
 	if err != nil {
 		return err
 	}

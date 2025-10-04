@@ -3,10 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
@@ -14,22 +13,21 @@ import (
 )
 
 const (
-	ModelNameSheetInsideOutside = "public-api.Calculations.Algo.Sheet.InsideOutside" // ModelNameSheetInsideOutside - название сущности
+	// ModelNameSheetInsideOutside - название сущности.
+	ModelNameSheetInsideOutside = "public-api.Calculations.Algo.Sheet.InsideOutside"
 )
 
 type (
 	// SheetInsideOutside - comment struct.
 	SheetInsideOutside struct {
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		eventEmitter mrevent.Emitter
 	}
 )
 
 // NewSheetInsideOutside - создаёт объект SheetInsideOutside.
-func NewSheetInsideOutside(eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *SheetInsideOutside {
+func NewSheetInsideOutside(eventEmitter mrevent.Emitter) *SheetInsideOutside {
 	return &SheetInsideOutside{
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, ModelNameSheetInsideOutside),
-		errorWrapper: errorWrapper,
+		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, ModelNameSheetInsideOutside),
 	}
 }
 
@@ -37,10 +35,10 @@ func NewSheetInsideOutside(eventEmitter mrsender.EventEmitter, errorWrapper mrco
 func (uc *SheetInsideOutside) CalcQuantity(ctx context.Context, data dto.ParsedData) (model.SheetInsideOutsideQuantityResponse, error) {
 	result, err := insideoutside.AlgoQuantity(data.In, data.Out)
 	if err != nil {
-		return model.SheetInsideOutsideQuantityResponse{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
+		return model.SheetInsideOutsideQuantityResponse{}, mr.ErrUseCaseIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcQuantity", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcQuantity", mrargs.Group{"data": data})
 
 	return model.SheetInsideOutsideQuantityResponse{
 		Layout: result,
@@ -52,10 +50,10 @@ func (uc *SheetInsideOutside) CalcQuantity(ctx context.Context, data dto.ParsedD
 func (uc *SheetInsideOutside) CalcMax(ctx context.Context, data dto.ParsedData) (model.SheetInsideOutsideMaxResponse, error) {
 	result, err := insideoutside.AlgoMax(data.In, data.Out)
 	if err != nil {
-		return model.SheetInsideOutsideMaxResponse{}, mrcore.ErrUseCaseIncorrectInputData.Wrap(err, "data", data)
+		return model.SheetInsideOutsideMaxResponse{}, mr.ErrUseCaseIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcMax", mrmsg.Data{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcMax", mrargs.Group{"data": data})
 
 	return model.SheetInsideOutsideMaxResponse{
 		Fragments: result,

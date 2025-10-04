@@ -3,7 +3,7 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 )
 
 type (

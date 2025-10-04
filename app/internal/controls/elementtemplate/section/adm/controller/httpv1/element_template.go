@@ -7,11 +7,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
-	"github.com/mondegor/go-webcore/mrtype"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
@@ -31,10 +29,11 @@ const (
 type (
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
-		parser     validate.RequestElementTemplateParser
-		sender     mrserver.FileResponseSender
-		useCase    adm.ElementTemplateUseCase
-		listSorter mrview.ListSorter
+		parser               validate.RequestElementTemplateParser
+		sender               mrserver.FileResponseSender
+		useCase              adm.ElementTemplateUseCase
+		listSorter           mrtype.ListSorter
+		fileUserErrorWrapper mrerr.UserErrorWrapper
 	}
 )
 
@@ -43,13 +42,15 @@ func NewElementTemplate(
 	parser validate.RequestElementTemplateParser,
 	sender mrserver.FileResponseSender,
 	useCase adm.ElementTemplateUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
+	fileUserErrorWrapper mrerr.UserErrorWrapper,
 ) *ElementTemplate {
 	return &ElementTemplate{
-		parser:     parser,
-		sender:     sender,
-		useCase:    useCase,
-		listSorter: listSorter,
+		parser:               parser,
+		sender:               sender,
+		useCase:              useCase,
+		listSorter:           listSorter,
+		fileUserErrorWrapper: fileUserErrorWrapper,
 	}
 }
 
@@ -142,7 +143,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 
 	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
 	if err != nil {
-		return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
+		return ht.fileUserErrorWrapper.WrapError(err, module.ParamNameElementTemplateAttachment)
 	}
 
 	item := entity.ElementTemplate{
@@ -179,8 +180,8 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
 	if err != nil {
 		// указывать файл необязательно
-		if !mrcore.ErrHttpFileUpload.Is(err) {
-			return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
+		if !mr.ErrHttpFileUpload.Is(err) {
+			return ht.fileUserErrorWrapper.WrapError(err, module.ParamNameElementTemplateAttachment)
 		}
 
 		file.Body = nil
@@ -240,15 +241,15 @@ func (ht *ElementTemplate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return api.ErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

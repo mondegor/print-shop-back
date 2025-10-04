@@ -30,6 +30,7 @@ mrcmd_func_openapi_build_int() {
   OPENAPI_COMPONENTS_PARAMETERS=(
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
+    "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
   )
 
   OPENAPI_COMPONENTS_SCHEMAS=(

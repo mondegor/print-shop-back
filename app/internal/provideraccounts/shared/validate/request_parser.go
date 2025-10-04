@@ -12,6 +12,7 @@ type (
 	// RequestProviderAccountsParser - comment interface.
 	RequestProviderAccountsParser interface {
 		pkgvalidate.RequestExtendParser
+		mrserver.RequestParserUser
 		mrserver.RequestParserImage
 		validate.RequestPublicStatusParser
 	}
@@ -19,6 +20,7 @@ type (
 	// Parser - comment struct.
 	Parser struct {
 		*pkgvalidate.ExtendParser
+		*mrparser.User
 		*mrparser.Image
 		*validate.PublicStatusParser
 	}
@@ -27,12 +29,14 @@ type (
 // NewParser - создаёт объект Parser.
 func NewParser(
 	p1 *pkgvalidate.ExtendParser,
-	p2 *mrparser.Image,
-	p3 *validate.PublicStatusParser,
+	p2 *mrparser.User,
+	p3 *mrparser.Image,
+	p4 *validate.PublicStatusParser,
 ) *Parser {
 	return &Parser{
 		ExtendParser:       p1,
-		Image:              p2,
-		PublicStatusParser: p3,
+		User:               p2,
+		Image:              p3,
+		PublicStatusParser: p4,
 	}
 }

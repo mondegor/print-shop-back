@@ -1,0 +1,326 @@
+/v1/security/email:
+  post:
+    summary: Auth/SC/R1. Метод создания операции на изменение емаила пользователя
+    description: |-
+      Метод предназначен для создания операции изменения емаила текущего пользователя.
+
+      ### Алгоритм изменения емаила пользователя:
+      1. Отправляется код подтверждения на новый емаил;
+      2. Пользователь указывает полученный код и подтверждает новый емаил;
+      3. Если 2FA включена:\
+        3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+        3.2. Пользователь указывает 2FA пароль и его емаил изменяется на новый;\
+        3.3. На старый емаил отправляется уведомление, что емаил был изменён;
+      4. Если 2FA выключена:\
+        4.1. Новый емаил ставится в лист ожидания и через 3 дня старый емаил изменяется на новый;\
+        4.2. На старый емаил отправляется уведомление, что емаил был изменён со ссылкой блокировки аккаунта до выяснения обстоятельств (ссылка действует 14 дней);
+    operationId: changeUserEmail
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Security.Request.Model.ChangeEmail"
+
+    responses:
+      "200":
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Новый емаил должен быть указан
+        # Новый емаил некорректен или уже используется другим пользователем
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/phone:
+  post:
+    summary: Auth/SC/R2. Метод создания операции на установку/изменение телефона пользователя
+    description: |-
+      Метод предназначен для создания операции установки/изменения телефона текущего пользователя.
+
+      ### Алгоритм установки/изменения телефона пользователя:
+      1. Отправляется код подтверждения на текущий емаил;
+      2. Пользователь указывает полученный код и подтверждает установку нового телефона;
+      3. Если 2FA включена:\
+        3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+        3.2. Пользователь указывает 2FA пароль и его телефон устанавливается/изменяется на новый;\
+        3.3. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
+      4. Если 2FA выключена:\
+        4.1. Телефон пользователя устанавливается/изменяется на новый;\
+        4.2. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
+    operationId: changeUserPhone
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Security.Request.Model.ChangePhone"
+
+    responses:
+      "200":
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Новый телефон должен быть указан
+        # Новый телефон некорректен или уже используется другим пользователем
+        # Пользователь отправил слишком много SMS за короткое время с указанного телефона (countSmsSend <= 0);
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/password:
+  post:
+    summary: Auth/SC/R3. Метод создания операции на установку/изменение пароля пользователя (2FA)
+    description: |-
+      Метод предназначен для создания операции установки/изменения пароля текущего пользователя (при этом включается 2FA).
+
+      ### Алгоритм установки/изменения пароля:
+      1. Отправляется код подтверждения на текущий емаил;
+      2. Пользователь указывает полученный код и подтверждает установку нового пароля;
+      3. Если 2FA включена:\
+        3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+        3.2. Пользователь указывает 2FA пароль и его устанавливаемый пароль изменяется на новый;\
+        3.3. На текущий емаил отправляется уведомление, что пароль был установлен/изменён;
+      4. Если 2FA выключена:\
+        4.1. Включается 2FA и пароль пользователя устанавливается;\
+        4.2. На текущий емаил отправляется уведомление, что включена 2FA и пароль установлен;
+    operationId: changeUser2faPassword
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Security.Request.Model.ChangePassword"
+
+    responses:
+      "200":
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Новый пароль должен быть указан
+        # Новый пароль не соответствует требованием безопасности системы
+        # Текущий пароль указан неверно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/password/generate:
+  post:
+    summary: Auth/SC/R4. Метод генерации пароля
+    description: Метод предназначен для помощи пользователю при установке нового пароля.
+    operationId: generatePassword
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "200":
+        description: Сгенерирован новый пароль
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Auth.Security.Response.GeneratedPassword"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/totp:
+  post:
+    summary: Auth/SC/R5. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
+    description: |-
+      Метод предназначен для создания операции установки/изменения TOTP генератора для 2FA аутентификации текущего пользователя (при этом включается 2FA).
+
+      ### Алгоритм установки/изменения TOTP генератора:
+      1. Отправляется код подтверждения на текущий емаил;
+      2. Пользователь указывает полученный код и подтверждает установку нового TOTP генератора;
+      3. Если 2FA включена:\
+        3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+        3.2. Пользователь указывает 2FA пароль и его устанавливаемый TOTP генератор изменяется на новый;\
+        3.3. На текущий емаил отправляется уведомление, что TOTP генератор был установлен/изменён;
+      4. Если 2FA выключена:\
+        4.1. Включается 2FA и TOTP генератор пользователя устанавливается;\
+        4.2. На текущий емаил отправляется уведомление, что включена 2FA и TOTP генератор установлен;
+    operationId: changeUser2faTotpGenerator
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "200":
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Текущий одноразовый пароль (TOTP) указан неверно
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  patch:
+    summary: Auth/SC/R6. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
+    description: Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя
+    operationId: applyUserOperationTotpGenerator
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Security.Request.Model.ApplyOperation"
+
+    responses:
+      "200":
+        description: Операция пользователя на установку TOTP генератора была применена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Auth.Security.Response.TotpGenerator"
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/disable2fa:
+  post:
+    summary: Auth/SC/R7. Метод создания операции отключения 2FA аутентификацию пользователя
+    description: |-
+      Метод предназначен для создания операции отключения 2FA аутентификации текущего пользователя.
+
+      ### Алгоритм отключения 2FA аутентификации пользователя (если 2FA включена):
+      1. Отправляется код подтверждения на текущий емаил;
+      2. Пользователь указывает полученный код и подтверждает отключение 2FA;
+      3. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);
+      4. Пользователь указывает 2FA пароль и 2FA аутентификация отключается;
+      5. На текущий емаил отправляется уведомление, что 2FA аутентификация отключена;
+
+      Если включена 2FA аутентификация по TOTP и доступ к TOTP генератору временно невозможен или он был утерян,
+      то предоставляется возможность ввести один из аварийных TOTP кодов, которые были сгенерированы при подключении
+      TOTP генератора.
+    operationId: disableUser2fa
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "200":
+        $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
+      "400":
+        # Текущий пароль или одноразовый пароль (TOTP) или аварийный пароль указан неверно
+        # 2FA аутентификация уже отключена
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/security/apply-operation:
+  patch:
+    summary: Auth/SC/R8. Метод применяет подтверждённую пользователем операцию
+    description: Метод предназначен для применения подтверждённой пользователем операции (изменение защищённого свойства пользователя, отмены 2FA и т.д.)
+    operationId: applyUserOperation
+    tags:
+      - Auth.Security
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Security.Request.Model.ApplyOperation"
+
+    responses:
+      "204":
+        description: Указанная пользователем операция была применена
+      "400":
+        # Токен операции должен быть указан
+        # Токен операции некорректен или недействителен
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

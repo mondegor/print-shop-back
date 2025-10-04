@@ -6,7 +6,8 @@ import (
 )
 
 const (
-	ModelNamePaper = "public-api.Catalog.Paper" // ModelNamePaper - название сущности
+	// ModelNamePaper - название сущности.
+	ModelNamePaper = "public-api.Catalog.Paper"
 )
 
 type (

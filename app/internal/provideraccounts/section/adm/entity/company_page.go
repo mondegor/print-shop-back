@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
 )
 
 const (
-	ModelNameCompanyPage = "admin-api.ProviderAccounts.CompanyPage" // ModelNameCompanyPage - название сущности
+	// ModelNameCompanyPage - название сущности.
+	ModelNameCompanyPage = "admin-api.ProviderAccounts.CompanyPage"
 )
 
 type (

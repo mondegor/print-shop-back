@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
@@ -28,7 +28,7 @@ type (
 		parser     validate.RequestExtendParser
 		sender     mrserver.ResponseSender
 		useCase    adm.MaterialTypeUseCase
-		listSorter mrview.ListSorter
+		listSorter mrtype.ListSorter
 	}
 )
 
@@ -37,7 +37,7 @@ func NewMaterialType(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
 	useCase adm.MaterialTypeUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *MaterialType {
 	return &MaterialType{
 		parser:     parser,
@@ -185,15 +185,15 @@ func (ht *MaterialType) getRawItemID(r *http.Request) string {
 }
 
 func (ht *MaterialType) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if mr.ErrUseCaseEntityNotFound.Is(err) {
 		return api.ErrMaterialTypeNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
+	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
 		return mrerr.NewCustomError("tagVersion", err)
 	}
 
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
+	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
 		return mrerr.NewCustomError("status", err)
 	}
 

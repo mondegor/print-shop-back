@@ -26,6 +26,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
       - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
@@ -48,7 +49,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-                $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
+              $ref: "#/components/schemas/Catalog.Papers.AdminAPI.Response.Model.PaperList"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
@@ -75,6 +76,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
 
     requestBody:
       required: true
@@ -113,6 +115,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
     responses:
@@ -149,6 +152,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
     requestBody:
@@ -185,6 +189,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
     responses:
@@ -219,6 +224,7 @@
     parameters:
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Path.PaperID"
 
     requestBody:

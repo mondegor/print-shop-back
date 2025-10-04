@@ -3,11 +3,11 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
 	"github.com/mondegor/go-webcore/mrstatus"
 	"github.com/mondegor/go-webcore/mrstatus/mrflow"
 
@@ -19,18 +19,22 @@ type (
 	// MaterialType - comment struct.
 	MaterialType struct {
 		storage      adm.MaterialTypeStorage
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		eventEmitter mrevent.Emitter
+		errorWrapper mrerr.UseCaseErrorWrapper
 		statusFlow   mrstatus.Flow
 	}
 )
 
 // NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(storage adm.MaterialTypeStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *MaterialType {
+func NewMaterialType(
+	storage adm.MaterialTypeStorage,
+	eventEmitter mrevent.Emitter,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameMaterialType),
-		errorWrapper: errorWrapper,
+		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameMaterialType),
+		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameMaterialType),
 		statusFlow:   mrflow.ItemStatusFlow(),
 	}
 }
@@ -39,7 +43,7 @@ func NewMaterialType(storage adm.MaterialTypeStorage, eventEmitter mrsender.Even
 func (uc *MaterialType) GetList(ctx context.Context, params entity.MaterialTypeParams) (items []entity.MaterialType, countItems uint64, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameMaterialType)
+		return nil, 0, uc.errorWrapper.WrapErrorFailed(err)
 	}
 
 	if countItems == 0 {
@@ -52,12 +56,12 @@ func (uc *MaterialType) GetList(ctx context.Context, params entity.MaterialTypeP
 // GetItem - comment method.
 func (uc *MaterialType) GetItem(ctx context.Context, itemID uint64) (entity.MaterialType, error) {
 	if itemID == 0 {
-		return entity.MaterialType{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.MaterialType{}, mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.MaterialType{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameMaterialType, itemID)
+		return entity.MaterialType{}, uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
 	}
 
 	return item, nil
@@ -69,10 +73,10 @@ func (uc *MaterialType) Create(ctx context.Context, item entity.MaterialType) (i
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameMaterialType)
+		return 0, uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", mrargs.Group{"id": itemID})
 
 	return itemID, nil
 }
@@ -80,29 +84,29 @@ func (uc *MaterialType) Create(ctx context.Context, item entity.MaterialType) (i
 // Store - comment method.
 func (uc *MaterialType) Store(ctx context.Context, item entity.MaterialType) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return mr.ErrUseCaseEntityVersionInvalid.New()
 	}
 
 	// предварительная проверка существования записи нужна для того,
 	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
 	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameMaterialType, item.ID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", item.ID)
 	}
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameMaterialType)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", mrargs.Group{"id": item.ID, "ver": tagVersion})
 
 	return nil
 }
@@ -110,16 +114,16 @@ func (uc *MaterialType) Store(ctx context.Context, item entity.MaterialType) err
 // ChangeStatus - comment method.
 func (uc *MaterialType) ChangeStatus(ctx context.Context, item entity.MaterialType) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return mr.ErrUseCaseEntityVersionInvalid.New()
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameMaterialType, item.ID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -127,19 +131,19 @@ func (uc *MaterialType) ChangeStatus(ctx context.Context, item entity.MaterialTy
 	}
 
 	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameMaterialType)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrargs.Group{"id": item.ID, "ver": tagVersion, "status": item.Status})
 
 	return nil
 }
@@ -147,14 +151,14 @@ func (uc *MaterialType) ChangeStatus(ctx context.Context, item entity.MaterialTy
 // Remove - comment method.
 func (uc *MaterialType) Remove(ctx context.Context, itemID uint64) error {
 	if itemID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	if err := uc.storage.Delete(ctx, itemID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameMaterialType, itemID)
+		return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", mrargs.Group{"id": itemID})
 
 	return nil
 }

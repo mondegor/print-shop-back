@@ -3,7 +3,6 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -14,8 +13,6 @@ import (
 )
 
 const (
-	tmpAccountID = "b8a75cd5-ddd1-46ab-be84-406e669cbfa9"
-
 	companyPageItemURL             = "/v1/account/company-page"
 	companyPageItemChangeStatusURL = "/v1/account/company-page/status"
 )
@@ -50,7 +47,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 
 // Get - comment method.
 func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.useCase.GetItem(r.Context(), uuid.MustParse(tmpAccountID)) // TODO:
+	item, err := ht.useCase.GetItem(r.Context(), ht.parser.UserID(r))
 	if err != nil {
 		return ht.wrapError(err, r)
 	}
@@ -67,7 +64,7 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	item := entity.CompanyPage{
-		AccountID:   uuid.MustParse(tmpAccountID), // TODO:
+		AccountID:   ht.parser.UserID(r),
 		RewriteName: request.RewriteName,
 		PageTitle:   request.PageTitle,
 		SiteURL:     request.SiteURL,
@@ -89,7 +86,7 @@ func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) erro
 	}
 
 	item := entity.CompanyPage{
-		AccountID: uuid.MustParse(tmpAccountID),
+		AccountID: ht.parser.UserID(r),
 		Status:    request.Status,
 	}
 

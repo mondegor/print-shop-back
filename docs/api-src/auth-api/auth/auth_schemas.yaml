@@ -1,0 +1,216 @@
+Auth.Request.Model.CreateUser:
+  type: object
+  required:
+    - userEmail
+  properties:
+    realm:
+      description: Область, пространство, где должен быть зарегистрирован пользователь
+      type: string
+      maxLength: 32
+      example: "domain_name/user_group"
+    userEmail:
+      description: Eмаил, который будет использован в качестве логина при создании пользователя
+      type: string
+      format: email
+      minLength: 7
+      maxLength: 64
+      example: "user-email@local.host"
+
+Auth.Request.Model.AuthorizeUser:
+  type: object
+  required:
+    - userLogin
+  properties:
+    realm:
+      description: Область, пространство, где должен быть авторизован пользователь
+      type: string
+      maxLength: 32
+      example: "domain_name/user_group"
+    userLogin:
+      description: Eмаил/телефон пользователя зарегистрированного в системе
+      type: string
+      minLength: 7
+      maxLength: 64
+      example: "user-email@local.host"
+
+Auth.Request.Model.LoginByToken:
+  type: object
+  required:
+    - token
+  properties:
+    token:
+      description: Токен подтверждённой операции пользователем или apiToken
+      type: string
+      minLength: 64
+      maxLength: 128
+      example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+    secret:
+      description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
+      type: string
+      minLength: 4
+      maxLength: 32
+      example: "183947"
+    useCookie:
+      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
+      type: boolean
+      example: false
+
+Auth.Request.Model.ContinueSession:
+  type: object
+  required:
+    - refreshToken
+  properties:
+    refreshToken:
+      description: Ранее выданный при авторизации/продолжении сессии refreshToken
+      type: string
+      minLength: 64
+      maxLength: 128
+      example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+
+Auth.Response.Model.WaitingConfirmOperation:
+  type: object
+  required:
+    - token
+    - confirmMethod
+    - remainingAttempts
+    - expiresIn
+  properties:
+    token:
+      description: Токен операции, с помощью которой проводится процедура подтверждения подлинности пользователя
+      type: string
+      minLength: 64
+      maxLength: 128
+      example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+    confirmMethod:
+      $ref: "#/components/schemas/Auth.Enum.ConfirmMethod"
+    remainingAttempts:
+      description: Оставшееся количество попыток ввода кода подтверждения
+      type: integer
+      example: 2
+    remainingResends:
+      description: Оставшееся количество повторных отправок кода подтверждения
+      type: integer
+      example: 1
+    resendsIn:
+      description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
+      type: integer
+      example: 1
+    expiresIn:
+      description: Количество оставшихся секунд до истечения срока действия подтверждения операции
+      type: integer
+      example: 1
+    message:
+      type: string
+      example: "Вы были успешно зарегистрированы, на ваш емаил/телефон отправлен код, с помощью которого необходимо подтвердить регистрацию |
+                Для входа в систему необходимо ввести код подтверждения, отправленный на ваш емаил/телефон |
+                На новый емаил был выслан код для подтверждения его владением |
+                На текущий емаил был выслан код для подтверждения изменения емаила/телефона/пароля"
+
+Auth.Response.Model.ConfirmOperationStatus:
+  type: object
+  required:
+    - remainingAttempts
+    - expiresIn
+  properties:
+    remainingAttempts:
+      description: Оставшееся количество попыток ввода кода подтверждения
+      type: integer
+      example: 2
+    remainingResends:
+      description: Оставшееся количество повторных отправок кода подтверждения
+      type: integer
+      example: 1
+    resendsIn:
+      description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
+      type: integer
+      example: 1
+    expiresIn:
+      description: Количество оставшихся секунд до истечения срока действия подтверждения операции
+      type: integer
+      example: 1
+
+Auth.Response.Model.SuccessAccess:
+  type: object
+  required:
+    - authToken
+  properties:
+    accessToken:
+      type: string
+      example: "425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8"
+    expiresIn:
+      description: Оставшееся время жизни access токена в секундах
+      type: integer
+      example: 1800
+    refreshToken:
+      description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
+      type: string
+      example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
+    message:
+      type: string
+      example: "Ваш аккаунт был успешно зарегистрирован | Доступ к вашему аккаунту разрешён"
+
+Auth.Response.Model.UserInfo:
+  type: object
+  required:
+    - email
+    - lang
+    - lastLoginIp
+    - lastLoggedAt
+    - auth2faType
+    - realms
+    - status
+    - createdAt
+    - updatedAt
+  properties:
+    email:
+      type: string
+      format: email
+      maxLength: 64
+      example: "user-email@local.host"
+    phone:
+      type: string
+      format: phone
+      maxLength: 32
+      example: "+7 999 888 77 66"
+    lang:
+      type: string
+      maxLength: 5
+      example: "ru-RU"
+    lastLoginIp:
+      type: string
+      example: "95.165.01.01"
+    lastLoggedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+    auth2faType:
+      $ref: "#/components/schemas/Custom.Enum.UserAuth2fa"
+    realms:
+      type: array
+      items:
+        $ref: "#/components/schemas/Auth.Response.Model.UserRealm"
+    status:
+      $ref: "#/components/schemas/Custom.Enum.UserStatus"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+
+Auth.Response.Model.UserRealm:
+  type: object
+  required:
+    - name
+    - userKind
+    - createdAt
+    - updatedAt
+  properties:
+    name:
+      type: string
+      maxLength: 32
+      example: "domain_name/user_group"
+    userKind:
+      type: string
+      maxLength: 16
+      example: "standard"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

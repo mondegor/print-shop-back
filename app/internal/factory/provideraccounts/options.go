@@ -2,10 +2,11 @@ package provideraccounts
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlock"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrpath"
-	"github.com/mondegor/go-webcore/mrsender"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
@@ -14,12 +15,14 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		EventEmitter        mrsender.EventEmitter
-		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
-		DBConnManager       mrstorage.DBConnManager
-		Locker              mrlock.Locker
-		RequestParsers      RequestParsers
-		ResponseSender      mrserver.ResponseSender
+		Logger                mrlog.Logger
+		EventEmitter          mrevent.Emitter
+		UsecaseErrorWrapper   mrerr.UseCaseErrorWrapper
+		ImageUserErrorWrapper mrerr.UserErrorWrapper
+		DBConnManager         mrstorage.DBConnManager
+		Locker                mrlock.Locker
+		RequestParsers        RequestParsers
+		ResponseSender        mrserver.ResponseSender
 
 		UnitCompanyPage UnitCompanyPageOptions
 

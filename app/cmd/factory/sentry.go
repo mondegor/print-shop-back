@@ -1,18 +1,17 @@
 package factory
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrsentry"
 
 	"github.com/mondegor/print-shop-back/config"
 )
 
-// NewSentry - создаёт объект mrsentry.Adapter.
-func NewSentry(ctx context.Context, cfg config.Config) (*mrsentry.Adapter, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init sentry")
+// InitSentry - создаёт объект mrsentry.Adapter.
+func InitSentry(logger mrlog.Logger, cfg config.Config) (*mrsentry.Adapter, error) {
+	mrlog.Info(logger, "Create and init sentry")
 
 	client, err := mrsentry.New(
 		mrsentry.Options{

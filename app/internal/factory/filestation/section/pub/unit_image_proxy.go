@@ -1,8 +1,6 @@
 package pub
 
 import (
-	"context"
-
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/factory/filestation"
@@ -10,10 +8,10 @@ import (
 	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/usecase"
 )
 
-func createUnitImageProxy(ctx context.Context, opts filestation.Options) ([]mrserver.HttpController, error) {
+func createUnitImageProxy(opts filestation.Options) ([]mrserver.HttpController, error) {
 	var list []mrserver.HttpController
 
-	if c, err := newUnitImageProxy(ctx, opts); err != nil {
+	if c, err := newUnitImageProxy(opts); err != nil {
 		return nil, err
 	} else {
 		list = append(list, c)
@@ -22,8 +20,8 @@ func createUnitImageProxy(ctx context.Context, opts filestation.Options) ([]mrse
 	return list, nil
 }
 
-func newUnitImageProxy(_ context.Context, opts filestation.Options) (*httpv1.ImageProxy, error) { //nolint:unparam
-	useCase := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.UseCaseErrorWrapper)
+func newUnitImageProxy(opts filestation.Options) (*httpv1.ImageProxy, error) { //nolint:unparam
+	useCase := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.UsecaseErrorWrapper)
 	controller := httpv1.NewImageProxy(
 		opts.RequestParser,
 		opts.ResponseSender,

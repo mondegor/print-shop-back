@@ -1,5 +1,5 @@
 CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage:
-  description: DTO - сохранение публичной страницы компании
+  description: DTO сохранения публичной страницы компании
   type: object
   required:
     - rewriteName
@@ -22,7 +22,7 @@ CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage:
       example: "https://site.localhost/"
 
 CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus:
-  description: DTO - изменения статуса публикации страницы компании
+  description: DTO изменения статуса публикации страницы компании
   type: object
   properties:
     status:

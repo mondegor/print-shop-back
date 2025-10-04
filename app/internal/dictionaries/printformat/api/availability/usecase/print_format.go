@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrargs"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlog"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -16,32 +16,38 @@ type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
 		storage      availability.PrintFormatStorage
-		errorWrapper mrcore.UseCaseErrorWrapper
+		errorWrapper mrerr.UseCaseErrorWrapper
+		trace        mrtrace.Tracer
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(storage availability.PrintFormatStorage, errorWrapper mrcore.UseCaseErrorWrapper) *PrintFormat {
+func NewPrintFormat(
+	storage availability.PrintFormatStorage,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	trace mrtrace.Tracer,
+) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
-		errorWrapper: errorWrapper,
+		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, api.PrintFormatAvailabilityName),
+		trace:        trace,
 	}
 }
 
 // CheckingAvailability - comment method.
 func (uc *PrintFormat) CheckingAvailability(ctx context.Context, itemID uint64) error {
-	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
+	uc.traceCmd(ctx, "CheckingAvailability", mrargs.Group{"id": itemID})
 
 	if itemID == 0 {
 		return api.ErrPrintFormatRequired.New()
 	}
 
 	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
 			return api.ErrPrintFormatNotFound.New(itemID)
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, api.PrintFormatAvailabilityName)
+		return uc.errorWrapper.WrapErrorFailed(err)
 	} else if status != mrenum.ItemStatusEnabled {
 		return api.ErrPrintFormatNotAvailable.New(itemID)
 	}
@@ -49,11 +55,11 @@ func (uc *PrintFormat) CheckingAvailability(ctx context.Context, itemID uint64) 
 	return nil
 }
 
-func (uc *PrintFormat) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrlog.Ctx(ctx).
-		Debug().
-		Str("storage", api.PrintFormatAvailabilityName).
-		Str("cmd", command).
-		Any("data", data).
-		Send()
+func (uc *PrintFormat) traceCmd(ctx context.Context, command string, data mrargs.Group) {
+	uc.trace.Trace(
+		ctx,
+		"storage", api.PrintFormatAvailabilityName,
+		"cmd", command,
+		"data", data,
+	)
 }

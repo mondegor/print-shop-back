@@ -1,0 +1,38 @@
+Auth.ResponseJson.WaitingConfirmOperation:
+  description: |
+    - Ожидается подтверждение регистрации пользователя
+    - Ожидается подтверждение входа пользователя в систему
+    - Ожидается подтверждение изменения значения защищённого поля
+    - Ожидается подтверждение какой либо операции
+  content:
+    application/json;charset=UTF-8:
+      schema:
+        $ref: "#/components/schemas/Auth.Response.Model.WaitingConfirmOperation"
+
+Auth.ResponseJson.SuccessAccess:
+  description: |
+    - Пользователь успешно зарегистрирован в системе
+    - Доступ к аккаунту пользователя разрешён
+    - Refresh и Access токены сгенерированы на основе токена операции
+    - Refresh и Access токены перегенерированы
+  headers:
+    Set-Cookie:
+      $ref: "#/components/headers/Auth.Response.Cookie.Web.RefreshToken"
+  content:
+    application/json;charset=UTF-8:
+      schema:
+        $ref: "#/components/schemas/Auth.Response.Model.SuccessAccess"
+
+Auth.ResponseJson.Error400:
+  description: Некорректный токен операции или код подтверждения
+  content:
+    application/json;charset=UTF-8:
+      schema:
+        type: object
+        required:
+          - errors
+        properties:
+          operationStatus:
+            $ref: "#/components/schemas/Auth.Response.Model.ConfirmOperationStatus"
+          errors:
+            $ref: "#/components/schemas/App.Response.Model.ErrorList"

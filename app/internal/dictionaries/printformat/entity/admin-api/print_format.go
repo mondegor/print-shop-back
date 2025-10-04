@@ -3,14 +3,15 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/measure"
 )
 
 const (
-	ModelNamePrintFormat = "admin-api.Dictionaries.PrintFormat" // ModelNamePrintFormat - название сущности
+	// ModelNamePrintFormat - название сущности.
+	ModelNamePrintFormat = "admin-api.Dictionaries.PrintFormat"
 )
 
 type (

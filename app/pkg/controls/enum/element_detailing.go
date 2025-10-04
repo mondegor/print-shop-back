@@ -4,15 +4,18 @@ package enum
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"math"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+)
+
+// Типы детализации элемента.
+const (
+	ElementDetailingNormal   ElementDetailing = iota + 1 // обычная детализация
+	ElementDetailingExtended                             // расширенная детализация
 )
 
 const (
-	_                        ElementDetailing = iota
-	ElementDetailingNormal                    // ElementDetailingNormal - comment const
-	ElementDetailingExtended                  // ElementDetailingExtended - comment const
-
 	elementDetailingLast     = uint8(ElementDetailingExtended)
 	enumNameElementDetailing = "ElementDetailing"
 )
@@ -42,7 +45,7 @@ func (e *ElementDetailing) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementDetailing)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameElementDetailing)
 }
 
 // Set - устанавливает указанное значение, если оно является enum значением.
@@ -53,7 +56,7 @@ func (e *ElementDetailing) Set(value uint8) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameElementDetailing)
+	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameElementDetailing)
 }
 
 // String - возвращает значение в виде строки.
@@ -61,10 +64,10 @@ func (e ElementDetailing) String() string {
 	return elementDetailingName[e]
 }
 
-// Empty - проверяет, что enum значение не установлено.
-func (e ElementDetailing) Empty() bool {
-	return e == 0
-}
+// // Empty - сообщает, установлено ли enum значение.
+// func (e ElementDetailing) Empty() bool {
+// 	return e == 0
+// }
 
 // MarshalJSON - переводит enum значение в строковое представление.
 func (e ElementDetailing) MarshalJSON() ([]byte, error) {
@@ -84,11 +87,11 @@ func (e *ElementDetailing) UnmarshalJSON(data []byte) error {
 
 // Scan implements the Scanner interface.
 func (e *ElementDetailing) Scan(value any) error {
-	if val, ok := value.(int64); ok {
+	if val, ok := value.(int64); ok && val >= 0 && val <= math.MaxUint8 {
 		return e.Set(uint8(val))
 	}
 
-	return mrcore.ErrInternalTypeAssertion.New(enumNameElementDetailing, value)
+	return mr.ErrInternalTypeAssertion.New(enumNameElementDetailing, value)
 }
 
 // Value implements the driver.Valuer interface.
@@ -98,7 +101,6 @@ func (e ElementDetailing) Value() (driver.Value, error) {
 
 // ParseElementDetailingList - парсит массив строковых значений и
 // возвращает соответствующий массив enum значений.
-// ParseElementDetailingList - comment func.
 func ParseElementDetailingList(items []string) ([]ElementDetailing, error) {
 	var tmp ElementDetailing
 

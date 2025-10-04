@@ -1,9 +1,10 @@
 package remaining
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrlog"
 
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/insideoutside"
 	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/enum"
@@ -13,7 +14,7 @@ import (
 type (
 	// AlgoRemaining - вспомогательный алгоритм расчёта остатка.
 	AlgoRemaining struct {
-		logger mrlog.Logger
+		logger mrlog.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
 	}
 )
 
@@ -25,7 +26,7 @@ func New(logger mrlog.Logger) *AlgoRemaining {
 }
 
 // Calc - расчёт алгоритма.
-func (ri *AlgoRemaining) Calc(inFragment rect2d.Fragment, out rect2d.Format) (rf rect2d.Fragment, err error) {
+func (ri *AlgoRemaining) Calc(ctx context.Context, inFragment rect2d.Fragment, out rect2d.Format) (rf rect2d.Fragment, err error) {
 	out, position := ri.remainingFormat(inFragment, out)
 
 	if !out.IsValid() {
@@ -41,7 +42,8 @@ func (ri *AlgoRemaining) Calc(inFragment rect2d.Fragment, out rect2d.Format) (rf
 
 	// если ни один элемент невозможно разместить в остаточном формате
 	if layout.Quantity() == 0 {
-		ri.logger.Debug().MsgFunc(
+		ri.logger.DebugFunc(
+			ctx,
 			func() string {
 				return fmt.Sprintf(
 					"- skipped: item format %s not on remaining format %s with fict margins",
@@ -54,7 +56,8 @@ func (ri *AlgoRemaining) Calc(inFragment rect2d.Fragment, out rect2d.Format) (rf
 		return rect2d.Fragment{}, nil
 	}
 
-	ri.logger.Debug().MsgFunc(
+	ri.logger.DebugFunc(
+		ctx,
 		func() string {
 			return fmt.Sprintf(
 				"- placed item %s on remaining out format %s with fict margins: %s, %s, %d * %d = %d",

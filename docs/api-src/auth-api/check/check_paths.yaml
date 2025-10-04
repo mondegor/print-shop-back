@@ -1,0 +1,61 @@
+/v1/check/login:
+  post:
+    summary: Auth/CK/R1. Метод проверяет свободен ли указанный емаил/телефон
+    description: Метод предназначен для проверки возможности регистрации пользователя с помощью указанного емаила/телефона
+    operationId: checkLogin
+    tags:
+      - Auth.Check
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Check.Request.Model.CheckLogin"
+
+    responses:
+      "204":
+        description: Указанный емаил/телефон свободен для регистрации пользователя
+      "400": # Емаил/телефон должен быть указан
+        # Емаил/телефон некорректен или уже используется другим пользователем
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/check/password-strength:
+  post:
+    summary: Auth/CK/R2. Метод проверяет надёжность указанного пароля
+    description: Метод предназначен для проверки надёжности указанного пароля
+    operationId: checkPasswordStrength
+    tags:
+      - Auth.Check
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Auth.Check.Request.Model.CheckPasswordStrength"
+
+    responses:
+      "200":
+        description: Сформирован ответ с информацией о надёжности пароля
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Auth.Check.Response.Model.CheckPasswordStrength"
+      "400":
+        # Пароль должен быть указан
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

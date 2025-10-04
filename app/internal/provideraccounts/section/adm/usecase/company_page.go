@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrpath"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
@@ -14,17 +14,21 @@ type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
 		storage      adm.CompanyPageStorage
-		errorWrapper mrcore.UseCaseErrorWrapper
 		imgBaseURL   mrpath.PathBuilder
+		errorWrapper mrerr.UseCaseErrorWrapper
 	}
 )
 
 // NewCompanyPage - создаёт объект CompanyPage.
-func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UseCaseErrorWrapper, imgBaseURL mrpath.PathBuilder) *CompanyPage {
+func NewCompanyPage(
+	storage adm.CompanyPageStorage,
+	imgBaseURL mrpath.PathBuilder,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+) *CompanyPage {
 	return &CompanyPage{
 		storage:      storage,
-		errorWrapper: errorWrapper,
 		imgBaseURL:   imgBaseURL,
+		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameCompanyPage),
 	}
 }
 
@@ -32,7 +36,7 @@ func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UseCaseE
 func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) (items []entity.CompanyPage, countItems uint64, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
+		return nil, 0, uc.errorWrapper.WrapErrorFailed(err)
 	}
 
 	if countItems == 0 {

@@ -5,23 +5,27 @@ import (
 	"strings"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/mrtype"
 )
 
 type (
 	// FileProviderAdapter - comment struct.
 	FileProviderAdapter struct {
 		fileAPI      mrstorage.FileProviderAPI
-		errorWrapper mrcore.UseCaseErrorWrapper
+		errorWrapper mrerr.UseCaseErrorWrapper
 	}
 )
 
 // NewFileProviderAdapter - создаёт объект FileProviderAdapter.
-func NewFileProviderAdapter(fileAPI mrstorage.FileProviderAPI, errorWrapper mrcore.UseCaseErrorWrapper) *FileProviderAdapter {
+func NewFileProviderAdapter(
+	fileAPI mrstorage.FileProviderAPI,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+) *FileProviderAdapter {
 	return &FileProviderAdapter{
 		fileAPI:      fileAPI,
-		errorWrapper: errorWrapper,
+		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, "FileProviderAPI"),
 	}
 }
 
@@ -31,12 +35,12 @@ func (uc *FileProviderAdapter) Get(ctx context.Context, filePath string) (mrtype
 	filePath = strings.TrimLeft(filePath, "/")
 
 	if filePath == "" {
-		return mrtype.File{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return mrtype.File{}, mr.ErrUseCaseEntityNotFound.New()
 	}
 
 	file, err := uc.fileAPI.Download(ctx, filePath)
 	if err != nil {
-		return mrtype.File{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, "FileProviderAPI", filePath)
+		return mrtype.File{}, uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "filePath", filePath)
 	}
 
 	return file, nil

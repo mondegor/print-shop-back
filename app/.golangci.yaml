@@ -41,7 +41,7 @@ linters:
     - errname # Checks that sentinel errors are prefixed with the `Err` and error types are suffixed with the `Error`. [fast: false, auto-fix: false]
     - errorlint # errorlint is a linter for that can be used to find code that will cause problems with the error wrapping scheme introduced in Go 1.13. [fast: false, auto-fix: false]
     # DELAYED - exhaustruct # Checks if all structure fields are initialized [fast: false, auto-fix: false]
-    - exportloopref # checks for pointers to enclosing loop variables [fast: false, auto-fix: false]
+    - copyloopvar # Check all assigning the loop variable to another variable [fast: true, auto-fix: true]
     - forbidigo # Forbids identifiers [fast: false, auto-fix: false]
     - forcetypeassert # finds forced type assertions [fast: true, auto-fix: false]
     - gci # FIXABLE, Gci controls Go package import order and makes it always deterministic. [fast: true, auto-fix: true]
@@ -98,7 +98,7 @@ linters-settings:
   dupl:
     # Tokens count to trigger issue.
     # Default: 150
-    threshold: 200
+    threshold: 250
 
   gci:
     # Section configuration to compare against.
@@ -137,33 +137,33 @@ linters-settings:
     enable-all-rules: false
     # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md
     rules:
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
-#      - name: add-constant
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments:
-#          - maxLitCount: "3"
-#            allowStrs: '""'
-#            allowInts: "0,1,2"
-#            allowFloats: "0.0,0.,1.0,1.,2.0,2."
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#argument-limit
-#      - name: argument-limit
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [4]
-      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#atomic
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#add-constant
+      #      - name: add-constant
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments:
+      #          - maxLitCount: "3"
+      #            allowStrs: '""'
+      #            allowInts: "0,1,2"
+      #            allowFloats: "0.0,0.,1.0,1.,2.0,2."
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#argument-limit
+      #      - name: argument-limit
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [4]
+            # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#atomic
       - name: atomic
         severity: warning
         disabled: false
         exclude: [""]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#banned-characters
-#      - name: banned-characters
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: ["Ω", "Σ", "σ", "7"]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#banned-characters
+      #      - name: banned-characters
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: ["Ω", "Σ", "σ", "7"]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#bare-return
       - name: bare-return
         severity: warning
@@ -184,12 +184,12 @@ linters-settings:
         severity: warning
         disabled: false
         exclude: [""]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#cognitive-complexity
-#      - name: cognitive-complexity
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [7]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#cognitive-complexity
+      #      - name: cognitive-complexity
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [7]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#comment-spacings
       - name: comment-spacings
         severity: warning
@@ -198,11 +198,11 @@ linters-settings:
         arguments:
           - mypragma
           - otherpragma
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#confusing-naming
-#      - name: confusing-naming
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#confusing-naming
+      #      - name: confusing-naming
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#confusing-results
       - name: confusing-results
         severity: warning
@@ -225,12 +225,12 @@ linters-settings:
         severity: warning
         disabled: false
         exclude: [""]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#cyclomatic
-#      - name: cyclomatic
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [3]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#cyclomatic
+      #      - name: cyclomatic
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [3]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#datarace
       - name: datarace
         severity: warning
@@ -283,13 +283,13 @@ linters-settings:
         exclude: [""]
         arguments:
           - "make"
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#enforce-repeated-arg-type-style
-#      - name: enforce-repeated-arg-type-style
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments:
-#          - "short"
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#enforce-repeated-arg-type-style
+      #      - name: enforce-repeated-arg-type-style
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments:
+      #          - "short"
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#enforce-slice-style
       - name: enforce-slice-style
         severity: warning
@@ -325,24 +325,24 @@ linters-settings:
         arguments:
           - "checkPrivateReceivers"
           - "sayRepetitiveInsteadOfStutters"
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#file-header
-#      - name: file-header
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments:
-#          - This is the text that must appear at the top of source files.
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#flag-parameter
-#      - name: flag-parameter
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#function-length
-#      - name: function-length
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [10, 0]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#file-header
+      #      - name: file-header
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments:
+      #          - This is the text that must appear at the top of source files.
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#flag-parameter
+      #      - name: flag-parameter
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#function-length
+      #      - name: function-length
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [10, 0]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#function-result-limit
       - name: function-result-limit
         severity: warning
@@ -396,24 +396,24 @@ linters-settings:
         exclude: [""]
         arguments:
           - "preserveScope"
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
-#      - name: line-length-limit
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [80]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-control-nesting
-#      - name: max-control-nesting
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [3]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
-#      - name: max-public-structs
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments: [3]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#line-length-limit
+      #      - name: line-length-limit
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [80]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-control-nesting
+      #      - name: max-control-nesting
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [3]
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#max-public-structs
+      #      - name: max-public-structs
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments: [3]
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#modifies-parameter
       - name: modifies-parameter
         severity: warning
@@ -536,14 +536,14 @@ linters-settings:
         severity: warning
         disabled: false
         exclude: [""]
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unhandled-error
-#      - name: unhandled-error
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments:
-#          - "fmt.Printf"
-#          - "myFunction"
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unhandled-error
+      #      - name: unhandled-error
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments:
+      #          - "fmt.Printf"
+      #          - "myFunction"
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unnecessary-stmt
       - name: unnecessary-stmt
         severity: warning
@@ -561,13 +561,13 @@ linters-settings:
         exclude: [""]
         arguments:
           - allowRegex: "^_"
-#      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-receiver
-#      - name: unused-receiver
-#        severity: warning
-#        disabled: false
-#        exclude: [""]
-#        arguments:
-#          - allowRegex: "^_"
+      #      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unused-receiver
+      #      - name: unused-receiver
+      #        severity: warning
+      #        disabled: false
+      #        exclude: [""]
+      #        arguments:
+      #          - allowRegex: "^_"
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#use-any
       - name: use-any
         severity: warning
@@ -644,4 +644,7 @@ issues:
   # "/" will be replaced by current OS file path separator to properly work on Windows.
   # Default: []
   exclude-dirs:
+    - img
+    - migrations
+    - roles
     - vendor
