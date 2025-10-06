@@ -30,7 +30,6 @@ import (
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
 	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 )
@@ -77,22 +76,6 @@ type (
 		NotifierAPI                 mrnotifier.NoticeProducer
 		SettingsGetterAPI           mrsettings.DefaultValueGetter
 		SettingsSetterAPI           mrsettings.Setter
-
-		// Modules section
-		AuthModule auth.Options
-		// CalculationsAlgoModule calculationsalgo.Options
-		// CalculationsQueryHistoryModule calculationsquery.Options
-		// CatalogBoxModule               catalogbox.Options
-		// CatalogLaminateModule          cataloglaminate.Options
-		// CatalogPaperModule             catalogpaper.Options
-		// ControlsElementTemplateModule  controlselementtemplate.Options
-		// ControlsSubmitFormModule       controlssubmitform.Options
-		// DictionariesMaterialTypeModule dictionariesmaterialtype.Options
-		// DictionariesPaperColorModule   dictionariespapercolor.Options
-		// DictionariesPaperFactureModule dictionariespaperfacture.Options
-		// DictionariesPrintFormatModule dictionariesprintformat.Options
-		// FileStationModule filestation.Options
-		// ProviderAccountsModule provideraccounts.Options
 
 		// Services and Servers section
 		UserStatRequestCollectorService *collect.MessageCollector

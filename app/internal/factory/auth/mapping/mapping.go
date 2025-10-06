@@ -78,7 +78,7 @@ func OptionUserRealmsToConfirmCreateSessionRealms(realms []auth.UserRealm) []use
 }
 
 // OptionUserRealmsToCreateSessionRealms - comment func.
-func OptionUserRealmsToCreateSessionRealms(realms []auth.UserRealm, jwt2 auth.JWT) []session.CreateSessionRealm {
+func OptionUserRealmsToCreateSessionRealms(realms []auth.UserRealm, jwt2 auth.JWTConfig) []session.CreateSessionRealm {
 	mappedRealms := make([]session.CreateSessionRealm, 0, len(realms))
 
 	for _, realm := range realms {

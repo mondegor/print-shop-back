@@ -23,7 +23,7 @@ func initElementTemplateController(
 	fileUserErrorWrapper mrerr.UserErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
-	responseSender mrserver.FileResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 	pageSizeMax uint64,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.ElementTemplate{})
@@ -44,7 +44,7 @@ func initElementTemplateController(
 
 	controller := httpv1.NewElementTemplate(
 		requestParser,
-		responseSender,
+		responseFileSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 		fileUserErrorWrapper,

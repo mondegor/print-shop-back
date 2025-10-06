@@ -21,9 +21,12 @@ func RegisterRestRouterCustHandlers(
 	memberProvider mraccess.MemberProvider,
 ) error {
 	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
-	prepareHandler := mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider)
 
-	controllers, err := initing.CreateHttpControllers(opts.Logger, getCustomersAPIControllers(opts), prepareHandler)
+	controllers, err := initing.CreateHttpControllers(
+		opts.Logger,
+		getCustomersAPIControllers(opts),
+		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+	)
 	if err != nil {
 		return err
 	}

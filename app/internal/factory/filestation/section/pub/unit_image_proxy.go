@@ -14,7 +14,7 @@ import (
 func initImageProxyController(
 	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	requestParser *mrparser.String,
-	responseSender mrserver.FileResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 	fileAPI mrstorage.FileProviderAPI,
 	basePath mrpath.PathBuilder,
 ) (mrserver.HttpController, error) {
@@ -22,7 +22,7 @@ func initImageProxyController(
 
 	controller := httpv1.NewImageProxy(
 		requestParser,
-		responseSender,
+		responseFileSender,
 		useCase,
 		basePath,
 	)

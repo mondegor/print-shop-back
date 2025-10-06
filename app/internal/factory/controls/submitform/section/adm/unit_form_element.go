@@ -28,7 +28,7 @@ func initFormElementController(
 	storageSubmitForm *repository.SubmitFormPostgres,
 	storageFormElement *repository.FormElementPostgres,
 	requestParser *validate.Parser,
-	responseSender mrserver.FileResponseSender,
+	responseSender mrserver.ResponseSender,
 	elementTemplateAPI api.ElementTemplateHeader,
 ) (mrserver.HttpController, error) {
 	useCase := usecase.NewFormElement(

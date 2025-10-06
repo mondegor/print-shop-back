@@ -26,7 +26,7 @@ func initSubmitFormController(
 	entityMetaSubmitForm *mrsql.EntityMetaOrderBy,
 	locker mrlock.Locker,
 	requestParser *validate.Parser,
-	responseSender mrserver.FileResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 ) (mrserver.HttpController, error) {
 	storageFormVersion := repository.NewFormVersionPostgres(
 		dbConnManager,
@@ -51,7 +51,7 @@ func initSubmitFormController(
 
 	controller := httpv1.NewSubmitForm(
 		requestParser,
-		responseSender,
+		responseFileSender,
 		useCase,
 		useCaseVersion,
 		entityMetaSubmitForm,

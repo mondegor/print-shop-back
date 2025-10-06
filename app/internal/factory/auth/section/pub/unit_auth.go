@@ -4,66 +4,79 @@ import (
 	"time"
 
 	"github.com/mondegor/go-components/mrauth/bag/contactaddress"
-	"github.com/mondegor/go-components/mrauth/bag/crypt"
-	"github.com/mondegor/go-components/mrauth/component/secureoperation"
 	"github.com/mondegor/go-components/mrauth/component/secureoperation/action"
+	"github.com/mondegor/go-components/mrauth/repository"
 	"github.com/mondegor/go-components/mrauth/service"
 	usecaseauth "github.com/mondegor/go-components/mrauth/usecase/auth"
 	"github.com/mondegor/go-components/mrauth/usecase/check"
 	"github.com/mondegor/go-components/mrauth/usecase/operation"
 	"github.com/mondegor/go-components/mrauth/usecase/session"
 	"github.com/mondegor/go-components/mrauth/usecase/session/handler"
+	"github.com/mondegor/go-components/mrnotifier"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1/bag"
 	"github.com/mondegor/print-shop-back/internal/factory/auth"
 	"github.com/mondegor/print-shop-back/internal/factory/auth/mapping"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitAuth(opts auth.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitAuth(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-//nolint:unparam
-func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
+func initUnitAuthController(
+	logger mrlog.Logger,
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	storageUser *repository.UserPostgres,
+	storageCheckUser *repository.CheckUserPostgres,
+	storageUserRealm *repository.UserRealmPostgres,
+	storageAuth2fa *repository.Auth2faPostgres,
+	storageUserActivityStat *repository.UserActivityStatPostgres,
+	storageAuthToken *repository.AuthTokenPostgres,
+	storageSecureOperation *repository.SecureOperationPostgres,
+	useCaseConfirmOperation *operation.ConfirmOperation,
+	locker mrlock.Locker,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	notifierAPI mrnotifier.NoticeProducer,
+	withDebugInfo bool,
+	userRealms []auth.UserRealm,
+	jwtConfig auth.JWTConfig,
+) (mrserver.HttpController, error) {
 	contactAddressParser := contactaddress.NewParser()
 
 	checkUserUseCase := check.NewAuthHelper(
-		createCheckUserPostgres(opts),
-		createUserRealmPostgres(opts),
+		storageCheckUser,
+		storageUserRealm,
 		contactAddressParser,
-		opts.UseCaseErrorWrapper,
+		useCaseErrorWrapper,
 	)
 
 	useCaseCreateUser := usecaseauth.NewCreateUser(
-		opts.DBConnManager,
+		dbConnManager,
 		checkUserUseCase,
-		createSecureOperationPostgres(opts),
-		opts.NotifierAPI,
-		opts.Locker,
+		storageSecureOperation,
+		notifierAPI,
+		locker,
 		contactAddressParser,
-		opts.UseCaseErrorWrapper,
-		mapping.OptionUserRealmsToConfirmCreateUserRealms(opts.UserRealms),
+		useCaseErrorWrapper,
+		mapping.OptionUserRealmsToConfirmCreateUserRealms(userRealms),
 	)
 
 	useCaseConfirmAuthSession := usecaseauth.NewCreateSession(
-		opts.DBConnManager,
+		dbConnManager,
 		checkUserUseCase,
-		createSecureOperationPostgres(opts),
-		opts.NotifierAPI,
+		storageSecureOperation,
+		notifierAPI,
 		contactAddressParser,
 		service.NewFactoryConfirm2FA(
-			createUserPostgres(opts),
-			createAuth2faPostgres(opts),
+			storageUser,
+			storageAuth2fa,
 			action.NewConfirmBy2fa(
 				[]action.Option{
 					action.WithMaxAttempts(5), // TODO: в настройки
@@ -74,68 +87,56 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 					action.WithExpiry(30 * time.Minute),
 				},
 			),
-			opts.UseCaseErrorWrapper,
+			useCaseErrorWrapper,
 		),
-		opts.UseCaseErrorWrapper,
-		mapping.OptionUserRealmsToConfirmCreateSessionRealms(opts.UserRealms),
+		useCaseErrorWrapper,
+		mapping.OptionUserRealmsToConfirmCreateSessionRealms(userRealms),
 	)
 
 	useCaseCreateSession := session.NewSession(
-		opts.DBConnManager,
-		createAuthTokenPostgres(opts),
-		createUserActivityStatPostgres(opts),
-		createSecureOperationPostgres(opts),
+		dbConnManager,
+		storageAuthToken,
+		storageUserActivityStat,
+		storageSecureOperation,
 		handler.NewCreateUser(
-			opts.DBConnManager,
-			createUserPostgres(opts),
-			createUserRealmPostgres(opts),
-			opts.NotifierAPI,
-			opts.UseCaseErrorWrapper,
-			opts.Logger,
+			dbConnManager,
+			storageUser,
+			storageUserRealm,
+			notifierAPI,
+			useCaseErrorWrapper,
+			logger,
 		),
 		handler.NewBeforeAuthUser(
-			createUserPostgres(opts),
-			createUserRealmPostgres(opts),
-			opts.NotifierAPI,
-			opts.UseCaseErrorWrapper,
-			opts.Logger,
+			storageUser,
+			storageUserRealm,
+			notifierAPI,
+			useCaseErrorWrapper,
+			logger,
 		),
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
-		opts.Logger,
-		mapping.OptionUserRealmsToCreateSessionRealms(opts.UserRealms, opts.JWT),
-	)
-
-	// ДУБЛИРУЕТСЯ!!!!
-	useCaseConfirmOperation := operation.NewConfirmOperation(
-		opts.DBConnManager,
-		createSecureOperationPostgres(opts),
-		opts.NotifierAPI,
-		secureoperation.NewConfirmCode(
-			crypt.NewTokenGenerator(int(opts.OperationConfirm.TokenLength)), // DEFAULT
-			crypt.NewCodeGenerator(int(opts.OperationConfirm.CodeLength)),   // DEFAULT
-		),
-		opts.UseCaseErrorWrapper,
+		eventEmitter,
+		useCaseErrorWrapper,
+		logger,
+		mapping.OptionUserRealmsToCreateSessionRealms(userRealms, jwtConfig),
 	)
 
 	useCaseUserInfo := usecaseauth.NewUserInfo(
-		opts.DBConnManager,
-		createUserPostgres(opts),
-		createAuth2faPostgres(opts),
-		createUserActivityStatPostgres(opts),
-		createUserRealmPostgres(opts),
-		opts.UseCaseErrorWrapper,
+		dbConnManager,
+		storageUser,
+		storageAuth2fa,
+		storageUserActivityStat,
+		storageUserRealm,
+		useCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewAuth(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCaseCreateUser,
 		useCaseConfirmAuthSession,
 		useCaseConfirmOperation,
 		useCaseCreateSession,
 		useCaseUserInfo,
-		bag.NewOperationResponse(opts.WithDebugInfo),
+		bag.NewOperationResponse(withDebugInfo),
 	)
 
 	return controller, nil

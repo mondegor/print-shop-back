@@ -37,9 +37,12 @@ func RegisterRestRouterAdmHandlers(
 	memberProvider mraccess.MemberProvider,
 ) error {
 	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
-	prepareHandler := mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider)
 
-	controllers, err := initing.CreateHttpControllers(opts.Logger, getAdminAPIControllers(opts), prepareHandler)
+	controllers, err := initing.CreateHttpControllers(
+		opts.Logger,
+		getAdminAPIControllers(opts),
+		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+	)
 	if err != nil {
 		return err
 	}
@@ -108,6 +111,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 				opts.RequestParsers.FileJson,
 				pkgcontrolsvalidate.NewDetailingParser(opts.Logger),
 			),
+			opts.ResponseSenders.Sender,
 			opts.ResponseSenders.FileSender,
 			controlssubmitformapi.NewElementTemplate(
 				opts.PostgresConnManager,

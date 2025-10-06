@@ -3,15 +3,19 @@ package pub
 import (
 	"github.com/mondegor/go-components/mrauth/repository"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
 
 	"github.com/mondegor/print-shop-back/internal/auth/module"
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
 )
 
-func createUserPostgres(opts auth.Options) *repository.UserPostgres {
+func initUserPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.UserPostgres {
 	return repository.NewUserPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".users",
 			PrimaryKey: "user_id",
@@ -19,10 +23,13 @@ func createUserPostgres(opts auth.Options) *repository.UserPostgres {
 	)
 }
 
-func createCheckUserPostgres(opts auth.Options) *repository.CheckUserPostgres {
+func initCheckUserPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.CheckUserPostgres {
 	return repository.NewCheckUserPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".users",
 			PrimaryKey: "user_id",
@@ -30,18 +37,24 @@ func createCheckUserPostgres(opts auth.Options) *repository.CheckUserPostgres {
 	)
 }
 
-func createUserRealmPostgres(opts auth.Options) *repository.UserRealmPostgres {
+func initUserRealmPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.UserRealmPostgres {
 	return repository.NewUserRealmPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		module.DBSchema+".users_realms",
 	)
 }
 
-func createAuth2faPostgres(opts auth.Options) *repository.Auth2faPostgres {
+func initAuth2faPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.Auth2faPostgres {
 	return repository.NewAuth2faPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".users_auth_2fa",
 			PrimaryKey: "user_id",
@@ -49,10 +62,13 @@ func createAuth2faPostgres(opts auth.Options) *repository.Auth2faPostgres {
 	)
 }
 
-func createUserActivityStatPostgres(opts auth.Options) *repository.UserActivityStatPostgres {
+func initUserActivityStatPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.UserActivityStatPostgres {
 	return repository.NewUserActivityStatPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".users_activity_stat",
 			PrimaryKey: "user_id",
@@ -60,19 +76,24 @@ func createUserActivityStatPostgres(opts auth.Options) *repository.UserActivityS
 	)
 }
 
-// func createUserActivityLogPostgres(opts auth.Options) *repository.UserActivityLogPostgres {
-// 	return repository.NewUserActivityLogPostgres(
-// 		opts.DBConnManager,
-//      opts.StorageErrorWrapper,
-// 		module.DBSchema+".secure_operations_log",
-// 	)
+// func initUserActivityLogPostgres(
+//	 storageErrorWrapper mrerr.ErrorWrapper,
+//	 dbConnManager mrstorage.DBConnManager,
+// ) *repository.UserActivityLogPostgres {
+//	 return repository.NewUserActivityLogPostgres(
+//		 dbConnManager,
+//		 storageErrorWrapper,
+//		 module.DBSchema+".secure_operations_log",
+//	 )
 // }
 
-// 111111111111111111
-func createAuthTokenPostgres(opts auth.Options) *repository.AuthTokenPostgres {
+func initAuthTokenPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.AuthTokenPostgres {
 	return repository.NewAuthTokenPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".auth_tokens",
 			PrimaryKey: "refresh_token",
@@ -80,10 +101,13 @@ func createAuthTokenPostgres(opts auth.Options) *repository.AuthTokenPostgres {
 	)
 }
 
-func createSecureOperationPostgres(opts auth.Options) *repository.SecureOperationPostgres {
+func initSecureOperationPostgres(
+	storageErrorWrapper mrerr.ErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+) *repository.SecureOperationPostgres {
 	return repository.NewSecureOperationPostgres(
-		opts.DBConnManager,
-		opts.StorageErrorWrapper,
+		dbConnManager,
+		storageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       module.DBSchema + ".secure_operations",
 			PrimaryKey: "operation_token",
@@ -91,10 +115,13 @@ func createSecureOperationPostgres(opts auth.Options) *repository.SecureOperatio
 	)
 }
 
-// func createSecureOperationLogPostgres(opts auth.Options) *repository.SecureOperationLogPostgres {
-// 	return repository.NewSecureOperationLogPostgres(
-// 		opts.DBConnManager,
-//      opts.StorageErrorWrapper,
-// 		module.DBSchema+".secure_operations_log",
-// 	)
+// func initSecureOperationLogPostgres(
+//	 storageErrorWrapper mrerr.ErrorWrapper,
+//	 dbConnManager mrstorage.DBConnManager,
+// ) *repository.SecureOperationLogPostgres {
+//	 return repository.NewSecureOperationLogPostgres(
+//		 dbConnManager,
+//		 storageErrorWrapper,
+//		 module.DBSchema+".secure_operations_log",
+//	 )
 // }

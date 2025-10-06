@@ -20,9 +20,12 @@ import (
 // RegisterRestRouterProvHandlers - регистрирует в указанном роутере обработчики секции ProvidersAPI.
 func RegisterRestRouterProvHandlers(router mrserver.HttpRouter, opts app.Options, sect *section.RoutingSection, memberProvider mraccess.MemberProvider) error {
 	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
-	prepareHandler := mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider)
 
-	controllers, err := initing.CreateHttpControllers(opts.Logger, getProvidersAPIControllers(opts), prepareHandler)
+	controllers, err := initing.CreateHttpControllers(
+		opts.Logger,
+		getProvidersAPIControllers(opts),
+		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+	)
 	if err != nil {
 		return err
 	}

@@ -2,42 +2,9 @@ package auth
 
 import (
 	"time"
-
-	"github.com/mondegor/go-components/mrnotifier"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlock"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-webcore/mrserver"
-
-	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
 type (
-	// Options - comment struct.
-	Options struct {
-		Logger              mrlog.Logger
-		EventEmitter        mrevent.Emitter
-		UseCaseErrorWrapper mrerr.UseCaseErrorWrapper
-		StorageErrorWrapper mrerr.ErrorWrapper
-		DBConnManager       mrstorage.DBConnManager
-		RequestParsers      RequestParsers
-		ResponseSender      mrserver.FileResponseSender
-		NotifierAPI         mrnotifier.NoticeProducer
-		Locker              mrlock.Locker
-		UserRealms          []UserRealm
-		OperationConfirm    OperationConfirm
-		JWT                 JWT
-		WithDebugInfo       bool
-	}
-
-	// RequestParsers - comment struct.
-	RequestParsers struct {
-		Parser       *validate.Parser
-		ExtendParser *validate.ExtendParser
-	}
-
 	// UserRealm - comment struct.
 	UserRealm struct {
 		Name             string           `yaml:"name"`
@@ -78,8 +45,8 @@ type (
 		MinResendTime time.Duration `yaml:"min_resend_time"`
 	}
 
-	// JWT - comment struct.
-	JWT struct {
+	// JWTConfig - comment struct.
+	JWTConfig struct {
 		Method string
 		Secret []byte
 	}

@@ -25,7 +25,8 @@ func InitHttpModule(
 	dbConnManager mrstorage.DBConnManager,
 	locker mrlock.Locker,
 	requestModuleParser *validate.Parser,
-	responseSender mrserver.FileResponseSender,
+	responseSender mrserver.ResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 	elementTemplateAPI api.ElementTemplateHeader,
 	pageSizeMax uint64,
 ) initing.HttpModule {
@@ -61,7 +62,7 @@ func InitHttpModule(
 						entityMetaSubmitForm,
 						locker,
 						requestModuleParser,
-						responseSender,
+						responseFileSender,
 					)
 				},
 			},

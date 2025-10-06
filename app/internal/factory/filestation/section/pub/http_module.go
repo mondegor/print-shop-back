@@ -15,7 +15,7 @@ import (
 func InitHttpModule(
 	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	requestParser *mrparser.String,
-	responseSender mrserver.FileResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 	fileAPIFunc func() (mrstorage.FileProviderAPI, mrpath.PathBuilder, error),
 ) initing.HttpModule {
 	return initing.HttpModule{
@@ -34,7 +34,7 @@ func InitHttpModule(
 					return initImageProxyController(
 						useCaseErrorWrapper,
 						requestParser,
-						responseSender,
+						responseFileSender,
 						fileAPI,
 						basePath,
 					)

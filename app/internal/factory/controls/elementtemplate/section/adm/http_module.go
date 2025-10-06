@@ -20,7 +20,7 @@ func InitHttpModule(
 	fileUserErrorWrapper mrerr.UserErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
-	responseSender mrserver.FileResponseSender,
+	responseFileSender mrserver.FileResponseSender,
 	pageSizeMax uint64,
 ) initing.HttpModule {
 	return initing.HttpModule{
@@ -36,7 +36,7 @@ func InitHttpModule(
 						fileUserErrorWrapper,
 						dbConnManager,
 						requestParser,
-						responseSender,
+						responseFileSender,
 						pageSizeMax,
 					)
 				},

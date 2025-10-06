@@ -8,45 +8,50 @@ import (
 	"github.com/mondegor/go-components/mrauth/bag/crypt"
 	"github.com/mondegor/go-components/mrauth/component/secureoperation"
 	"github.com/mondegor/go-components/mrauth/component/secureoperation/action"
+	"github.com/mondegor/go-components/mrauth/repository"
 	"github.com/mondegor/go-components/mrauth/service"
 	"github.com/mondegor/go-components/mrauth/usecase/check"
 	"github.com/mondegor/go-components/mrauth/usecase/security"
 	"github.com/mondegor/go-components/mrauth/usecase/security/handler"
+	"github.com/mondegor/go-components/mrnotifier"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlib/crypt/password"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1/bag"
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitSecurity(opts auth.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitSecurity(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-//nolint:unparam
-func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
+func initSecurityController(
+	logger mrlog.Logger,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	storageUser *repository.UserPostgres,
+	storageCheckUser *repository.CheckUserPostgres,
+	storageUserRealm *repository.UserRealmPostgres,
+	storageAuth2fa *repository.Auth2faPostgres,
+	storageSecureOperation *repository.SecureOperationPostgres,
+	requestParser *validate.Parser,
+	responseFileSender mrserver.FileResponseSender,
+	notifierAPI mrnotifier.NoticeProducer,
+	withDebugInfo bool,
+) (mrserver.HttpController, error) {
 	useCase := security.NewChangeProperty(
-		opts.DBConnManager,
-		createSecureOperationPostgres(opts),
+		dbConnManager,
+		storageSecureOperation,
 		check.NewAuthHelper(
-			createCheckUserPostgres(opts),
-			createUserRealmPostgres(opts),
+			storageCheckUser,
+			storageUserRealm,
 			contactaddress.NewParser(), // ??????
-			opts.UseCaseErrorWrapper,
+			useCaseErrorWrapper,
 		),
-		opts.NotifierAPI,
+		notifierAPI,
 		service.NewFactoryConfirm2FA(
-			createUserPostgres(opts),
-			createAuth2faPostgres(opts),
+			storageUser,
+			storageAuth2fa,
 			action.NewConfirmBy2fa(
 				[]action.Option{
 					action.WithMaxAttempts(5), // TODO: в настройки
@@ -57,7 +62,7 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 					action.WithExpiry(30 * time.Minute),
 				},
 			),
-			opts.UseCaseErrorWrapper,
+			useCaseErrorWrapper,
 		),
 		secureoperation.NewChangeEmail(
 			crypt.NewTokenGenerator(64),
@@ -92,57 +97,57 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 		func() string {
 			return password.NewGenerator().Generate(16, password.CharAll) // TODO: в настройки
 		},
-		opts.UseCaseErrorWrapper,
+		useCaseErrorWrapper,
 	)
 
 	useCaseApplyOperation := security.NewApplyOperation(
-		opts.DBConnManager,
-		createSecureOperationPostgres(opts),
-		opts.UseCaseErrorWrapper,
+		dbConnManager,
+		storageSecureOperation,
+		useCaseErrorWrapper,
 		map[string]mrauth.OperationHandler{
 			secureoperation.NameConfirmChangeEmail: handler.NewChangeEmail(
-				opts.DBConnManager,
-				createUserPostgres(opts),
-				opts.NotifierAPI,
-				opts.UseCaseErrorWrapper,
+				dbConnManager,
+				storageUser,
+				notifierAPI,
+				useCaseErrorWrapper,
 			),
 			secureoperation.NameConfirmChangePhone: handler.NewChangePhone(
-				opts.DBConnManager,
-				createUserPostgres(opts),
-				opts.NotifierAPI,
-				opts.UseCaseErrorWrapper,
+				dbConnManager,
+				storageUser,
+				notifierAPI,
+				useCaseErrorWrapper,
 			),
 			secureoperation.NameConfirmChangePassword: handler.NewChangePassword(
-				createAuth2faPostgres(opts),
-				opts.NotifierAPI,
-				opts.UseCaseErrorWrapper,
-				opts.Logger,
+				storageAuth2fa,
+				notifierAPI,
+				useCaseErrorWrapper,
+				logger,
 			),
 			secureoperation.NameConfirmDisable2FA: handler.NewDisable2FA(
-				opts.DBConnManager,
-				createAuth2faPostgres(opts),
-				opts.NotifierAPI,
-				opts.UseCaseErrorWrapper,
+				dbConnManager,
+				storageAuth2fa,
+				notifierAPI,
+				useCaseErrorWrapper,
 			),
 		},
 	)
 
 	useCaseApplyTOTPGenerator := security.NewApplyTOTPGenerator(
-		opts.DBConnManager,
-		createAuth2faPostgres(opts),
-		createSecureOperationPostgres(opts),
-		opts.NotifierAPI,
-		opts.UseCaseErrorWrapper,
+		dbConnManager,
+		storageAuth2fa,
+		storageSecureOperation,
+		notifierAPI,
+		useCaseErrorWrapper,
 		"PrintShopApp", // TODO:
 	)
 
 	controller := httpv1.NewSecurity(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseFileSender,
 		useCase,
 		useCaseApplyTOTPGenerator,
 		useCaseApplyOperation,
-		bag.NewOperationResponse(opts.WithDebugInfo),
+		bag.NewOperationResponse(withDebugInfo),
 	)
 
 	return controller, nil

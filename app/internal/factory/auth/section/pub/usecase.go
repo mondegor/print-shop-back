@@ -8,43 +8,25 @@ import (
 	"github.com/mondegor/go-components/mrnotifier"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/auth/section/pub/controller/httpv1/bag"
 	"github.com/mondegor/print-shop-back/internal/factory/auth"
-	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func initOperationController(
+func initConfirmOperationUseCase(
 	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	storageSecureOperation *repository.SecureOperationPostgres,
-	useCaseConfirmOperation *operation.ConfirmOperation,
-	requestParser *validate.Parser,
-	responseSender mrserver.ResponseSender,
 	notifierAPI mrnotifier.NoticeProducer,
-	withDebugInfo bool,
 	operationConfirm auth.OperationConfirm,
-) (mrserver.HttpController, error) {
-	useCaseResendConfirmCode := operation.NewResendCode(
+) *operation.ConfirmOperation {
+	return operation.NewConfirmOperation(
 		dbConnManager,
 		storageSecureOperation,
 		notifierAPI,
-		secureoperation.NewResendCode(
+		secureoperation.NewConfirmCode(
 			crypt.NewTokenGenerator(int(operationConfirm.TokenLength)), // DEFAULT
 			crypt.NewCodeGenerator(int(operationConfirm.CodeLength)),   // DEFAULT
 		),
 		useCaseErrorWrapper,
 	)
-
-	controller := httpv1.NewOperation(
-		requestParser,
-		responseSender,
-		useCaseConfirmOperation,
-		useCaseResendConfirmCode,
-		bag.NewOperationResponse(withDebugInfo),
-	)
-
-	return controller, nil
 }

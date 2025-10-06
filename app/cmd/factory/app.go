@@ -12,7 +12,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrwire"
 	"github.com/mondegor/go-webcore/mrrun"
 
-	"github.com/mondegor/print-shop-back/cmd/factory/auth"
 	"github.com/mondegor/print-shop-back/cmd/factory/dictionaries"
 	"github.com/mondegor/print-shop-back/cmd/factory/service"
 	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
@@ -95,11 +94,6 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 
 	// Shared APIs init section (!!! only after create environment)
 	if opts, err = createAppAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	// Shared module's options (!!! only after create APIs)
-	if opts, err = createAppModulesOptions(opts); err != nil {
 		return app.Options{}, err
 	}
 
@@ -251,14 +245,6 @@ func createAppAPI(opts app.Options) (enrichedOpts app.Options, err error) {
 	}
 
 	if opts.DictionariesPrintFormatAPI, err = dictionaries.NewPrintFormatAvailabilityAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	return opts, nil
-}
-
-func createAppModulesOptions(opts app.Options) (enrichedOpts app.Options, err error) {
-	if opts.AuthModule, err = auth.NewAuthModuleOptions(opts); err != nil {
 		return app.Options{}, err
 	}
 
