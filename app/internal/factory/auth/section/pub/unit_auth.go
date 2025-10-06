@@ -36,11 +36,12 @@ func createUnitAuth(opts auth.Options) ([]mrserver.HttpController, error) {
 //nolint:unparam
 func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 	contactAddressParser := contactaddress.NewParser()
+
 	checkUserUseCase := check.NewAuthHelper(
 		createCheckUserPostgres(opts),
 		createUserRealmPostgres(opts),
 		contactAddressParser,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	useCaseCreateUser := usecaseauth.NewCreateUser(
@@ -50,7 +51,7 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 		opts.NotifierAPI,
 		opts.Locker,
 		contactAddressParser,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		mapping.OptionUserRealmsToConfirmCreateUserRealms(opts.UserRealms),
 	)
 
@@ -73,9 +74,9 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 					action.WithExpiry(30 * time.Minute),
 				},
 			),
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 		),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		mapping.OptionUserRealmsToConfirmCreateSessionRealms(opts.UserRealms),
 	)
 
@@ -89,18 +90,18 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 			createUserPostgres(opts),
 			createUserRealmPostgres(opts),
 			opts.NotifierAPI,
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 			opts.Logger,
 		),
 		handler.NewBeforeAuthUser(
 			createUserPostgres(opts),
 			createUserRealmPostgres(opts),
 			opts.NotifierAPI,
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 			opts.Logger,
 		),
 		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		mapping.OptionUserRealmsToCreateSessionRealms(opts.UserRealms, opts.JWT),
 	)
@@ -114,7 +115,7 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 			crypt.NewTokenGenerator(int(opts.OperationConfirm.TokenLength)), // DEFAULT
 			crypt.NewCodeGenerator(int(opts.OperationConfirm.CodeLength)),   // DEFAULT
 		),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	useCaseUserInfo := usecaseauth.NewUserInfo(
@@ -123,7 +124,7 @@ func newUnitAuth(opts auth.Options) (*httpv1.Auth, error) {
 		createAuth2faPostgres(opts),
 		createUserActivityStatPostgres(opts),
 		createUserRealmPostgres(opts),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewAuth(

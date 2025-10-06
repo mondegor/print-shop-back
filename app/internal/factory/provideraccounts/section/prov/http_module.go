@@ -1,0 +1,68 @@
+package prov
+
+import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/initing"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+)
+
+// InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
+func InitHttpModule(
+	logger mrlog.Logger,
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	imageUserErrorWrapper mrerr.UserErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	locker mrlock.Locker,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoFileAPIFunc func() (mrstorage.FileProviderAPI, error),
+	logoURLBuilder mrpath.PathBuilder,
+) initing.HttpModule {
+	return initing.HttpModule{
+		Name:       module.Name,
+		Permission: module.Permission,
+		Controllers: []initing.HttpController{
+			{
+				Create: func() (mrserver.HttpController, error) {
+					return initCompanyPageController(
+						eventEmitter,
+						useCaseErrorWrapper,
+						dbConnManager,
+						requestModuleParser,
+						responseSender,
+						logoURLBuilder,
+					)
+				},
+			},
+			{
+				Create: func() (mrserver.HttpController, error) {
+					logoFileAPI, err := logoFileAPIFunc()
+					if err != nil {
+						return nil, err
+					}
+
+					return initCompanyPageLogoController(
+						logger,
+						eventEmitter,
+						useCaseErrorWrapper,
+						imageUserErrorWrapper,
+						dbConnManager,
+						locker,
+						requestModuleParser,
+						responseSender,
+						logoFileAPI,
+					)
+				},
+			},
+		},
+	}
+}

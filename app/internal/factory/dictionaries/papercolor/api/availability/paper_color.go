@@ -9,10 +9,14 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/api/availability/usecase"
 )
 
-// NewPaperColor - создаёт объект PaperColor.
-func NewPaperColor(client mrstorage.DBConnManager, errorWrapper mrerr.UseCaseErrorWrapper, trace mrtrace.Tracer) *usecase.PaperColor {
+// NewPaperColorAPI - создаёт объект PaperColor.
+func NewPaperColorAPI(
+	dbConnManager mrstorage.DBConnManager,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	trace mrtrace.Tracer,
+) *usecase.PaperColor {
 	return usecase.NewPaperColor(
-		repository.NewPaperColorPostgres(client),
+		repository.NewPaperColorPostgres(dbConnManager),
 		errorWrapper,
 		trace,
 	)

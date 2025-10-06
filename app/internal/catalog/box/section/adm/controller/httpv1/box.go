@@ -33,7 +33,12 @@ type (
 )
 
 // NewBox - создаёт контроллер Box.
-func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.BoxUseCase, listSorter mrtype.ListSorter) *Box {
+func NewBox(
+	parser validate.RequestExtendParser,
+	sender mrserver.ResponseSender,
+	useCase adm.BoxUseCase,
+	listSorter mrtype.ListSorter,
+) *Box {
 	return &Box{
 		parser:     parser,
 		sender:     sender,

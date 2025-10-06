@@ -33,7 +33,7 @@ func newUnitOperation(opts auth.Options) (*httpv1.Operation, error) {
 			crypt.NewTokenGenerator(int(opts.OperationConfirm.TokenLength)), // DEFAULT
 			crypt.NewCodeGenerator(int(opts.OperationConfirm.CodeLength)),   // DEFAULT
 		),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	useCaseResendConfirmCode := operation.NewResendCode(
@@ -44,7 +44,7 @@ func newUnitOperation(opts auth.Options) (*httpv1.Operation, error) {
 			crypt.NewTokenGenerator(int(opts.OperationConfirm.TokenLength)), // DEFAULT
 			crypt.NewCodeGenerator(int(opts.OperationConfirm.CodeLength)),   // DEFAULT
 		),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewOperation(

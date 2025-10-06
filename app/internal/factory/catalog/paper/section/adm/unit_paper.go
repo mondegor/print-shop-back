@@ -3,52 +3,58 @@ package adm
 import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
+	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitPaper(opts paper.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPaper(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPaper(opts paper.Options) (*httpv1.Paper, error) {
-	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.Paper{})
+func initPaperController(
+	logger mrlog.Logger,
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestExtendParser *validate.ExtendParser,
+	responseSender mrserver.ResponseSender,
+	materialTypeAPI api.MaterialTypeAvailability,
+	paperColorAPI api.PaperColorAvailability,
+	paperFactureAPI api.PaperFactureAvailability,
+	pageSizeMax uint64,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.Paper{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewPaperPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
+
 	useCase := usecase.NewPaper(
 		storage,
-		opts.MaterialTypeAPI,
-		opts.PaperColorAPI,
-		opts.PaperFactureAPI,
-		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		materialTypeAPI,
+		paperColorAPI,
+		paperFactureAPI,
+		eventEmitter,
+		useCaseErrorWrapper,
 	)
+
 	controller := httpv1.NewPaper(
-		opts.RequestParsers.ExtendParser,
-		opts.ResponseSender,
+		requestExtendParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

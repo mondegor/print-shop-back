@@ -13,7 +13,7 @@ type (
 	// Options - comment struct.
 	Options struct {
 		Logger              mrlog.Logger
-		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
+		UseCaseErrorWrapper mrerr.UseCaseErrorWrapper
 		RequestParser       *mrparser.String
 		ResponseSender      mrserver.FileResponseSender
 

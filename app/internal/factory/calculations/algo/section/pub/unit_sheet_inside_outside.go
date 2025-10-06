@@ -1,30 +1,24 @@
 package pub
 
 import (
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitSheetInsideOutside(opts algo.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
+func initSheetInsideOutsideController(
+	eventEmitter mrevent.Emitter,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
+	useCase := usecase.NewSheetInsideOutside(eventEmitter)
 
-	if c, err := newUnitSheetInsideOutside(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitSheetInsideOutside(opts algo.Options) (*httpv1.SheetInsideOutside, error) { //nolint:unparam
-	useCase := usecase.NewSheetInsideOutside(opts.EventEmitter)
 	controller := httpv1.NewSheetInsideOutside(
-		opts.RequestParsers.Validator,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

@@ -1,30 +1,24 @@
 package pub
 
 import (
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitSheetCutting(opts algo.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
+func initBoxSheetCuttingController(
+	eventEmitter mrevent.Emitter,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
+	useCase := usecase.NewSheetCutting(eventEmitter)
 
-	if c, err := newUnitSheetCutting(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitSheetCutting(opts algo.Options) (*httpv1.SheetCutting, error) { //nolint:unparam
-	useCase := usecase.NewSheetCutting(opts.EventEmitter)
 	controller := httpv1.NewSheetCutting(
-		opts.RequestParsers.Validator,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

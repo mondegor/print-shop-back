@@ -31,19 +31,6 @@ import (
 
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/factory/auth"
-	calculationsalgo "github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
-	calculationsquery "github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
-	catalogbox "github.com/mondegor/print-shop-back/internal/factory/catalog/box"
-	cataloglaminate "github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
-	catalogpaper "github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
-	controlselementtemplate "github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
-	controlssubmitform "github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
-	dictionariesmaterialtype "github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
-	dictionariespapercolor "github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
-	dictionariespaperfacture "github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
-	dictionariesprintformat "github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
-	"github.com/mondegor/print-shop-back/internal/factory/filestation"
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 )
@@ -62,7 +49,7 @@ type (
 		Prometheus            *mrinit.Prometheus
 		EventEmitter          mrevent.Emitter
 		ErrorHandler          mrerr.ErrorHandler
-		UsecaseErrorWrapper   mrerr.UseCaseErrorWrapper
+		UseCaseErrorWrapper   mrerr.UseCaseErrorWrapper
 		StorageErrorWrapper   mrerr.ErrorWrapper
 		FileUserErrorWrapper  mrerr.UserErrorWrapper
 		ImageUserErrorWrapper mrerr.UserErrorWrapper
@@ -92,20 +79,20 @@ type (
 		SettingsSetterAPI           mrsettings.Setter
 
 		// Modules section
-		AuthModule                     auth.Options
-		CalculationsAlgoModule         calculationsalgo.Options
-		CalculationsQueryHistoryModule calculationsquery.Options
-		CatalogBoxModule               catalogbox.Options
-		CatalogLaminateModule          cataloglaminate.Options
-		CatalogPaperModule             catalogpaper.Options
-		ControlsElementTemplateModule  controlselementtemplate.Options
-		ControlsSubmitFormModule       controlssubmitform.Options
-		DictionariesMaterialTypeModule dictionariesmaterialtype.Options
-		DictionariesPaperColorModule   dictionariespapercolor.Options
-		DictionariesPaperFactureModule dictionariespaperfacture.Options
-		DictionariesPrintFormatModule  dictionariesprintformat.Options
-		FileStationModule              filestation.Options
-		ProviderAccountsModule         provideraccounts.Options
+		AuthModule auth.Options
+		// CalculationsAlgoModule calculationsalgo.Options
+		// CalculationsQueryHistoryModule calculationsquery.Options
+		// CatalogBoxModule               catalogbox.Options
+		// CatalogLaminateModule          cataloglaminate.Options
+		// CatalogPaperModule             catalogpaper.Options
+		// ControlsElementTemplateModule  controlselementtemplate.Options
+		// ControlsSubmitFormModule       controlssubmitform.Options
+		// DictionariesMaterialTypeModule dictionariesmaterialtype.Options
+		// DictionariesPaperColorModule   dictionariespapercolor.Options
+		// DictionariesPaperFactureModule dictionariespaperfacture.Options
+		// DictionariesPrintFormatModule dictionariesprintformat.Options
+		// FileStationModule filestation.Options
+		// ProviderAccountsModule provideraccounts.Options
 
 		// Services and Servers section
 		UserStatRequestCollectorService *collect.MessageCollector

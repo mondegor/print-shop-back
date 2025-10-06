@@ -1,34 +1,33 @@
 package pub
 
 import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/calculations/queryhistory"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitCalcResult(opts queryhistory.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitCalcResult(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitCalcResult(opts queryhistory.Options) (*httpv1.QueryHistory, error) { //nolint:unparam
+func initQueryHistoryController(
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestExtendParser *validate.ExtendParser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewQueryHistoryPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewQueryHistory(storage, opts.EventEmitter, opts.UsecaseErrorWrapper)
+
+	useCase := usecase.NewQueryHistory(storage, eventEmitter, useCaseErrorWrapper)
+
 	controller := httpv1.NewQueryHistory(
-		opts.RequestParsers.ExtendParser,
-		opts.ResponseSender,
+		requestExtendParser,
+		responseSender,
 		useCase,
 	)
 

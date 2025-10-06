@@ -31,7 +31,7 @@ func InitSettingsGetterAPI(opts app.Options) (*liteget.SettingsGetter, *schedule
 			PrimaryKey: serviceSettingsPrimaryKey,
 		},
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
@@ -56,7 +56,7 @@ func InitSettingsSetterAPI(opts app.Options) *set.SettingsSetter {
 
 	return mrsettings.NewComponentSetter(
 		opts.PostgresConnManager,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		opts.EventEmitter,
 		mrsql.DBTableInfo{

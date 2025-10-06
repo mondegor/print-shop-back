@@ -34,7 +34,7 @@ func InitMailerAPI(opts app.Options) *produce.MessageSender {
 	return producer.NewSender(
 		opts.PostgresConnManager,
 		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceMailerTableName,
@@ -92,7 +92,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		opts.Tracer,
 		opts.TraceManager,
@@ -134,7 +134,7 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{

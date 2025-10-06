@@ -1,0 +1,44 @@
+package adm
+
+import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-webcore/mrserver"
+
+	"github.com/mondegor/print-shop-back/internal/initing"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+)
+
+// InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
+func InitHttpModule(
+	logger mrlog.Logger,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoURLBuilder mrpath.PathBuilder,
+	pageSizeMax uint64,
+) initing.HttpModule {
+	return initing.HttpModule{
+		Name:       module.Name,
+		Permission: module.Permission,
+		Controllers: []initing.HttpController{
+			{
+				Create: func() (mrserver.HttpController, error) {
+					return initCompanyPageController(
+						logger,
+						useCaseErrorWrapper,
+						dbConnManager,
+						requestModuleParser,
+						responseSender,
+						logoURLBuilder,
+						pageSizeMax,
+					)
+				},
+			},
+		},
+	}
+}

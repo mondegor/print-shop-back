@@ -3,44 +3,46 @@ package adm
 import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitPaperColor(opts papercolor.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPaperColor(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPaperColor(opts papercolor.Options) (*httpv1.PaperColor, error) {
-	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.PaperColor{})
+func initPaperColorController(
+	logger mrlog.Logger,
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestExtendParser *validate.ExtendParser,
+	responseSender mrserver.ResponseSender,
+	pageSizeMax uint64,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.PaperColor{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewPaperColorPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewPaperColor(storage, opts.EventEmitter, opts.UsecaseErrorWrapper)
+
+	useCase := usecase.NewPaperColor(storage, eventEmitter, useCaseErrorWrapper)
+
 	controller := httpv1.NewPaperColor(
-		opts.RequestParsers.ExtendParser,
-		opts.ResponseSender,
+		requestExtendParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

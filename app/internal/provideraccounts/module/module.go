@@ -16,9 +16,6 @@ const (
 	// DBFieldWithoutDeletedAt - поле удаления записи не используется.
 	DBFieldWithoutDeletedAt = ""
 
-	// UnitCompanyPagePermission - разрешение юнита CompanyPage.
-	UnitCompanyPagePermission = Permission
-
 	// UnitCompanyPageLogoDir - относительный путь для хранения логотипов компаний.
 	UnitCompanyPageLogoDir = "provider-account/companies-logo"
 )

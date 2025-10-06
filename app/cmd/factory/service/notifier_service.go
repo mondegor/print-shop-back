@@ -29,7 +29,7 @@ func InitNotifierAPI(opts app.Options) *produce.NoticeSender {
 	return producer.NewSender(
 		opts.PostgresConnManager,
 		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceNotifierTableName,
@@ -52,7 +52,7 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor {
 		opts.MailerAPI,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
@@ -93,7 +93,7 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{

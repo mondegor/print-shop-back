@@ -3,71 +3,81 @@ package adm
 import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
+	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
 )
 
-func initUnitSubmitFormEnvironment(opts submitform.Options) (submitFormOptions, error) {
-	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.SubmitForm{})
-	if err != nil {
-		return submitFormOptions{}, err
-	}
-
-	storage := repository.NewSubmitFormPostgres(
-		opts.DBConnManager,
-		builder.NewSQL(
-			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
-			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
-		),
+func initSubmitFormController(
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	storageSubmitForm *repository.SubmitFormPostgres,
+	storageFormElement *repository.FormElementPostgres,
+	entityMetaSubmitForm *mrsql.EntityMetaOrderBy,
+	locker mrlock.Locker,
+	requestParser *validate.Parser,
+	responseSender mrserver.FileResponseSender,
+) (mrserver.HttpController, error) {
+	storageFormVersion := repository.NewFormVersionPostgres(
+		dbConnManager,
 	)
 
-	return submitFormOptions{
-		metaOrderBy: entityMeta.MetaOrderBy(),
-		storage:     storage,
-	}, nil
-}
-
-func createUnitSubmitForm(opts moduleOptions) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitSubmitForm(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitSubmitForm(opts moduleOptions) (*httpv1.SubmitForm, error) { //nolint:unparam
 	useCase := usecase.NewSubmitForm(
-		opts.submitForm.storage,
-		opts.formElement.storage,
-		opts.formVersion.storage,
-		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		storageSubmitForm,
+		storageFormElement,
+		storageFormVersion,
+		eventEmitter,
+		useCaseErrorWrapper,
 	)
+
 	useCaseVersion := usecase.NewFormVersion(
-		opts.formVersion.storage,
+		storageFormVersion,
 		useCase,
 		usecase.NewFormCompilerJson(),
-		opts.Locker,
-		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		locker,
+		eventEmitter,
+		useCaseErrorWrapper,
 	)
+
 	controller := httpv1.NewSubmitForm(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 		useCaseVersion,
-		opts.submitForm.metaOrderBy,
+		entityMetaSubmitForm,
 	)
 
 	return controller, nil
+}
+
+func initSubmitFormStorage(
+	logger mrlog.Logger,
+	dbConnManager mrstorage.DBConnManager,
+	pageSizeMax uint64,
+) (*repository.SubmitFormPostgres, *mrsql.EntityMetaOrderBy, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.SubmitForm{})
+	if err != nil {
+		return nil, nil, err
+	}
+
+	storage := repository.NewSubmitFormPostgres(
+		dbConnManager,
+		builder.NewSQL(
+			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
+			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
+		),
+	)
+
+	return storage, entityMeta.MetaOrderBy(), nil
 }

@@ -9,10 +9,14 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability/usecase"
 )
 
-// NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(client mrstorage.DBConnManager, errorWrapper mrerr.UseCaseErrorWrapper, trace mrtrace.Tracer) *usecase.PrintFormat {
+// NewPrintFormatAPI - создаёт объект PrintFormat.
+func NewPrintFormatAPI(
+	dbConnManager mrstorage.DBConnManager,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	trace mrtrace.Tracer,
+) *usecase.PrintFormat {
 	return usecase.NewPrintFormat(
-		repository.NewPrintFormatPostgres(client),
+		repository.NewPrintFormatPostgres(dbConnManager),
 		errorWrapper,
 		trace,
 	)

@@ -1,65 +1,40 @@
 package prov
 
 import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/repository"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
 )
 
-func createUnitCompanyPage(opts provideraccounts.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
+func initCompanyPageController(
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoURLBuilder mrpath.PathBuilder,
+) (mrserver.HttpController, error) {
+	storage := repository.NewCompanyPagePostgres(dbConnManager)
 
-	if c, err := newUnitCompanyPage(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	if c, err := newUnitCompanyPageLogo(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitCompanyPage(opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
-	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
 	useCase := usecase.NewCompanyPage(
-		opts.DBConnManager,
+		dbConnManager,
 		storage,
-		opts.UnitCompanyPage.LogoURLBuilder,
-		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
+		logoURLBuilder,
+		eventEmitter,
+		useCaseErrorWrapper,
 	)
+
 	controller := httpv1.NewCompanyPage(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestModuleParser,
+		responseSender,
 		useCase,
-	)
-
-	return controller, nil
-}
-
-func newUnitCompanyPageLogo(opts provideraccounts.Options) (*httpv1.CompanyPageLogo, error) { //nolint:unparam
-	storage := repository.NewCompanyPageLogoPostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPageLogo(
-		storage,
-		opts.UnitCompanyPage.LogoFileAPI,
-		opts.Locker,
-		opts.EventEmitter,
-		opts.UsecaseErrorWrapper,
-		opts.Logger,
-	)
-	controller := httpv1.NewCompanyPageLogo(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
-		useCase,
-		opts.ImageUserErrorWrapper,
 	)
 
 	return controller, nil

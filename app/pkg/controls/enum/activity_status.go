@@ -93,7 +93,7 @@ func (e *ActivityStatus) UnmarshalJSON(data []byte) error {
 // Scan implements the Scanner interface.
 func (e *ActivityStatus) Scan(value any) error {
 	if val, ok := value.(int64); ok && val >= 0 && val <= math.MaxUint8 {
-		return e.Set(uint8(val))
+		return e.Set(uint8(val)) //nolint:gosec
 	}
 
 	return mr.ErrInternalTypeAssertion.New(enumNameActivityStatus, value)

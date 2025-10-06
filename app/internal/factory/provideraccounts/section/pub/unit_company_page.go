@@ -1,34 +1,31 @@
 package pub
 
 import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-webcore/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/usecase"
+	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
 )
 
-func createUnitCompanyPage(opts provideraccounts.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitCompanyPage(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitCompanyPage(opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
-	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPage(storage, opts.UsecaseErrorWrapper)
+func initCompanyPageController(
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoURLBuilder mrpath.PathBuilder,
+) (mrserver.HttpController, error) {
+	storage := repository.NewCompanyPagePostgres(dbConnManager)
+	useCase := usecase.NewCompanyPage(storage, useCaseErrorWrapper)
 	controller := httpv1.NewCompanyPage(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestModuleParser,
+		responseSender,
 		useCase,
-		opts.UnitCompanyPage.LogoURLBuilder,
+		logoURLBuilder,
 	)
 
 	return controller, nil

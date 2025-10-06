@@ -1,34 +1,31 @@
 package pub
 
 import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/catalog/box"
+	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 
-func createUnitBox(opts box.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitBox(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitBox(opts box.Options) (*httpv1.Box, error) { //nolint:unparam
+func initBoxController(
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewBoxPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewBox(storage, opts.UsecaseErrorWrapper)
+
+	useCase := usecase.NewBox(storage, useCaseErrorWrapper)
+
 	controller := httpv1.NewBox(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

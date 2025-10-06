@@ -27,7 +27,7 @@ func newUnitCheck(opts auth.Options) (*httpv1.Check, error) {
 		createCheckUserPostgres(opts),
 		createUserRealmPostgres(opts),
 		contactaddress.NewParser(), // ??????
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewCheck(

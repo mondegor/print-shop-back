@@ -125,7 +125,7 @@ func createMemberProviderByTokenType(opts app.Options, tokenType string, allowed
 	// JWT режим: принимаются от клиентов JWT токены
 	if tokenType == "jwt" {
 		return mrauth.NewUserProviderJWT(
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 			opts.Cfg.AccessControl.JWTSecret,
 			allowedRealms,
 		)
@@ -134,7 +134,7 @@ func createMemberProviderByTokenType(opts app.Options, tokenType string, allowed
 	// Session режим: принимаются от клиентов токены, хранящиеся в таблице accessTokenTableName
 	return mrauth.NewUserProviderSession(
 		opts.PostgresConnManager,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       accessTokenTableName,

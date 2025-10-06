@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -245,7 +246,12 @@ func (ht *SubmitForm) getItemID(r *http.Request) uuid.UUID {
 }
 
 func (ht *SubmitForm) getItemVersion(r *http.Request) int32 {
-	return int32(ht.parser.PathParamUint64(r, "version"))
+	ver := ht.parser.PathParamUint64(r, "version")
+	if ver > math.MaxInt32 {
+		return math.MaxInt32
+	}
+
+	return int32(ver)
 }
 
 func (ht *SubmitForm) getRawItemID(r *http.Request) string {

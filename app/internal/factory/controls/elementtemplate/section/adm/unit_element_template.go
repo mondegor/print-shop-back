@@ -3,48 +3,51 @@ package adm
 import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
+	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
 )
 
-func createUnitElementTemplate(opts elementtemplate.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitElementTemplate(opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitElementTemplate(opts elementtemplate.Options) (*httpv1.ElementTemplate, error) {
-	entityMeta, err := mrsql.ParseEntity(opts.Logger, entity.ElementTemplate{})
+func initElementTemplateController(
+	logger mrlog.Logger,
+	eventEmitter mrevent.Emitter,
+	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
+	fileUserErrorWrapper mrerr.UserErrorWrapper,
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.FileResponseSender,
+	pageSizeMax uint64,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.ElementTemplate{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewElementTemplatePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewElementTemplate(storage, opts.EventEmitter, opts.UsecaseErrorWrapper)
+
+	useCase := usecase.NewElementTemplate(storage, eventEmitter, useCaseErrorWrapper)
+
 	controller := httpv1.NewElementTemplate(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
-		opts.FileUserErrorWrapper,
+		fileUserErrorWrapper,
 	)
 
 	return controller, nil

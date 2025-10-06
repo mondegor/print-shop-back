@@ -33,7 +33,7 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 	return collector.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
@@ -60,7 +60,7 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	return scheduler.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,

@@ -13,12 +13,7 @@ import (
 	"github.com/mondegor/go-webcore/mrrun"
 
 	"github.com/mondegor/print-shop-back/cmd/factory/auth"
-	"github.com/mondegor/print-shop-back/cmd/factory/calculations"
-	"github.com/mondegor/print-shop-back/cmd/factory/catalog"
-	"github.com/mondegor/print-shop-back/cmd/factory/controls"
 	"github.com/mondegor/print-shop-back/cmd/factory/dictionaries"
-	"github.com/mondegor/print-shop-back/cmd/factory/filestation"
-	"github.com/mondegor/print-shop-back/cmd/factory/provideraccounts"
 	"github.com/mondegor/print-shop-back/cmd/factory/service"
 	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
 	"github.com/mondegor/print-shop-back/config"
@@ -139,7 +134,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 
 	opts.EventEmitter = InitEventEmitter(opts)
 	opts.ErrorHandler = mrwire.InitErrorHandler(opts.Logger)
-	opts.UsecaseErrorWrapper = errorwrapper.NewUseCase()
+	opts.UseCaseErrorWrapper = errorwrapper.NewUseCase()
 	opts.StorageErrorWrapper = errorwrapper.NewInfraStorage()
 	opts.FileUserErrorWrapper = errorwrapper.NewDownloadUserImage()
 	opts.ImageUserErrorWrapper = errorwrapper.NewDownloadUserImage()
@@ -264,40 +259,6 @@ func createAppAPI(opts app.Options) (enrichedOpts app.Options, err error) {
 
 func createAppModulesOptions(opts app.Options) (enrichedOpts app.Options, err error) {
 	if opts.AuthModule, err = auth.NewAuthModuleOptions(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.CalculationsAlgoModule, err = calculations.NewAlgoModuleOptions(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.CalculationsQueryHistoryModule, err = calculations.NewQueryHistoryModuleOptions(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	opts.CatalogBoxModule = catalog.NewBoxModuleOptions(opts)
-
-	opts.CatalogLaminateModule = catalog.NewLaminateModuleOptions(opts)
-
-	opts.CatalogPaperModule = catalog.NewPaperModuleOptions(opts)
-
-	opts.ControlsElementTemplateModule = controls.NewElementTemplateModuleOptions(opts)
-
-	opts.ControlsSubmitFormModule = controls.NewSubmitFormModuleOptions(opts)
-
-	opts.DictionariesMaterialTypeModule = dictionaries.NewMaterialTypeModuleOptions(opts)
-
-	opts.DictionariesPaperColorModule = dictionaries.NewPaperColorModuleOptions(opts)
-
-	opts.DictionariesPaperFactureModule = dictionaries.NewPaperFactureModuleOptions(opts)
-
-	opts.DictionariesPrintFormatModule = dictionaries.NewPrintFormatModuleOptions(opts)
-
-	if opts.FileStationModule, err = filestation.NewModuleOptions(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.ProviderAccountsModule, err = provideraccounts.NewModuleOptions(opts); err != nil {
 		return app.Options{}, err
 	}
 

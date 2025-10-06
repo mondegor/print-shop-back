@@ -17,7 +17,7 @@ func (f *Fragments) TotalQuantity() (total uint64) {
 }
 
 // FragmentDistance - возвращает дистанцию между фрагментами.
-func (f *Fragments) FragmentDistance() (max float64) {
+func (f *Fragments) FragmentDistance() (maxValue float64) {
 	if len(*f) > 1 {
 		for _, fragment := range *f {
 			if fragment.Position == enum.PositionTop {

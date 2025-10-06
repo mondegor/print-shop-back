@@ -34,8 +34,8 @@ const (
 	// JsonPrettyIndent - отступ, который используется при формировании json файлов для скачивания.
 	JsonPrettyIndent = "  "
 
-	// UnitSubmitFormPermission - разрешение юнита SubmitForm.
-	UnitSubmitFormPermission = Permission
+	// UnitFormElementName - название юнита FormElement.
+	UnitFormElementName = "Controls.SubmitForm.FormElement"
 
 	// UnitFormElementPermission - разрешение юнита FormElement.
 	UnitFormElementPermission = Permission

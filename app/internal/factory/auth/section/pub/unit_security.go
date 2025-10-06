@@ -41,7 +41,7 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 			createCheckUserPostgres(opts),
 			createUserRealmPostgres(opts),
 			contactaddress.NewParser(), // ??????
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 		),
 		opts.NotifierAPI,
 		service.NewFactoryConfirm2FA(
@@ -57,7 +57,7 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 					action.WithExpiry(30 * time.Minute),
 				},
 			),
-			opts.UsecaseErrorWrapper,
+			opts.UseCaseErrorWrapper,
 		),
 		secureoperation.NewChangeEmail(
 			crypt.NewTokenGenerator(64),
@@ -92,37 +92,37 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 		func() string {
 			return password.NewGenerator().Generate(16, password.CharAll) // TODO: в настройки
 		},
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 	)
 
 	useCaseApplyOperation := security.NewApplyOperation(
 		opts.DBConnManager,
 		createSecureOperationPostgres(opts),
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		map[string]mrauth.OperationHandler{
 			secureoperation.NameConfirmChangeEmail: handler.NewChangeEmail(
 				opts.DBConnManager,
 				createUserPostgres(opts),
 				opts.NotifierAPI,
-				opts.UsecaseErrorWrapper,
+				opts.UseCaseErrorWrapper,
 			),
 			secureoperation.NameConfirmChangePhone: handler.NewChangePhone(
 				opts.DBConnManager,
 				createUserPostgres(opts),
 				opts.NotifierAPI,
-				opts.UsecaseErrorWrapper,
+				opts.UseCaseErrorWrapper,
 			),
 			secureoperation.NameConfirmChangePassword: handler.NewChangePassword(
 				createAuth2faPostgres(opts),
 				opts.NotifierAPI,
-				opts.UsecaseErrorWrapper,
+				opts.UseCaseErrorWrapper,
 				opts.Logger,
 			),
 			secureoperation.NameConfirmDisable2FA: handler.NewDisable2FA(
 				opts.DBConnManager,
 				createAuth2faPostgres(opts),
 				opts.NotifierAPI,
-				opts.UsecaseErrorWrapper,
+				opts.UseCaseErrorWrapper,
 			),
 		},
 	)
@@ -132,7 +132,7 @@ func newUnitSecurity(opts auth.Options) (*httpv1.Security, error) {
 		createAuth2faPostgres(opts),
 		createSecureOperationPostgres(opts),
 		opts.NotifierAPI,
-		opts.UsecaseErrorWrapper,
+		opts.UseCaseErrorWrapper,
 		"PrintShopApp", // TODO:
 	)
 

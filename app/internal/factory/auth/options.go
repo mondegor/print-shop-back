@@ -19,7 +19,7 @@ type (
 	Options struct {
 		Logger              mrlog.Logger
 		EventEmitter        mrevent.Emitter
-		UsecaseErrorWrapper mrerr.UseCaseErrorWrapper
+		UseCaseErrorWrapper mrerr.UseCaseErrorWrapper
 		StorageErrorWrapper mrerr.ErrorWrapper
 		DBConnManager       mrstorage.DBConnManager
 		RequestParsers      RequestParsers

@@ -209,7 +209,7 @@ func (ht *Auth) OpenSession(w http.ResponseWriter, r *http.Request) error {
 		http.StatusCreated,
 		model.SuccessAccessResponse{
 			AccessToken:  tk.AccessToken,
-			ExpiresIn:    uint32(tk.ExpiresIn / time.Second),
+			ExpiresIn:    uint32(tk.ExpiresIn / time.Second), //nolint:gosec
 			RefreshToken: tk.RefreshToken,
 		},
 	)
@@ -251,7 +251,7 @@ func (ht *Auth) ContinueSession(w http.ResponseWriter, r *http.Request) error {
 		http.StatusOK,
 		model.SuccessAccessResponse{
 			AccessToken:  tk.AccessToken,
-			ExpiresIn:    uint32(tk.ExpiresIn / time.Second),
+			ExpiresIn:    uint32(tk.ExpiresIn / time.Second), //nolint:gosec
 			RefreshToken: tk.RefreshToken,
 		},
 	)

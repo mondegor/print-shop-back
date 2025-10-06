@@ -9,10 +9,14 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability/usecase"
 )
 
-// NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(client mrstorage.DBConnManager, errorWrapper mrerr.UseCaseErrorWrapper, trace mrtrace.Tracer) *usecase.MaterialType {
+// NewMaterialTypeAPI - создаёт объект MaterialType.
+func NewMaterialTypeAPI(
+	dbConnManager mrstorage.DBConnManager,
+	errorWrapper mrerr.UseCaseErrorWrapper,
+	trace mrtrace.Tracer,
+) *usecase.MaterialType {
 	return usecase.NewMaterialType(
-		repository.NewMaterialTypePostgres(client),
+		repository.NewMaterialTypePostgres(dbConnManager),
 		errorWrapper,
 		trace,
 	)
