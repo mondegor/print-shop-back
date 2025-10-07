@@ -34,9 +34,9 @@ func NewPaperColor(
 	}
 }
 
-// CheckingAvailability - comment method.
-func (uc *PaperColor) CheckingAvailability(ctx context.Context, itemID uint64) error {
-	uc.traceCmd(ctx, "CheckingAvailability", mrargs.Group{"id": itemID})
+// CheckAvailability - comment method.
+func (uc *PaperColor) CheckAvailability(ctx context.Context, itemID uint64) error {
+	uc.traceCmd(ctx, "CheckAvailability", mrargs.Group{"id": itemID})
 
 	if itemID == 0 {
 		return api.ErrPaperColorRequired.New()

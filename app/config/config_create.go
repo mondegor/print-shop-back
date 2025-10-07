@@ -12,6 +12,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlib/extfile"
 
 	"github.com/mondegor/print-shop-back/internal/factory/auth"
+	"github.com/mondegor/print-shop-back/internal/initing"
 )
 
 const (
@@ -252,7 +253,7 @@ func isJWTUsed(realms []auth.UserRealm) bool {
 	return false
 }
 
-func validateRoutingSections(sections []RoutingSection, allPrivileges []string) error {
+func validateRoutingSections(sections []initing.RoutingSection, allPrivileges []string) error {
 	uniqNames := make(map[string]struct{}, len(sections))
 	uniqPaths := make(map[string]struct{}, len(sections))
 

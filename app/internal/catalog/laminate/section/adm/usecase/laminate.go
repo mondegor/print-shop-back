@@ -182,7 +182,7 @@ func (uc *Laminate) checkItem(ctx context.Context, item *entity.Laminate) error 
 	}
 
 	if item.ID == 0 || item.TypeID > 0 {
-		if err := uc.materialTypeAPI.CheckingAvailability(ctx, item.TypeID); err != nil {
+		if err := uc.materialTypeAPI.CheckAvailability(ctx, item.TypeID); err != nil {
 			return err
 		}
 	}

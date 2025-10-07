@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrwire"
 	"github.com/mondegor/go-webcore/mrrun"
 
-	"github.com/mondegor/print-shop-back/cmd/factory/dictionaries"
+	dictionariesapi "github.com/mondegor/print-shop-back/cmd/factory/api/dictionaries"
 	"github.com/mondegor/print-shop-back/cmd/factory/service"
 	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
 	"github.com/mondegor/print-shop-back/config"
@@ -93,12 +93,10 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 	}
 
 	// Shared APIs init section (!!! only after create environment)
-	if opts, err = createAppAPI(opts); err != nil {
-		return app.Options{}, err
-	}
+	opts = createSharedAPI(opts)
 
 	// Shared service's options (!!! only after create modules)
-	if opts, err = createAppServices(opts); err != nil {
+	if opts, err = createSharedServices(opts); err != nil {
 		return app.Options{}, err
 	}
 
@@ -209,7 +207,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	return opts, nil
 }
 
-func createAppAPI(opts app.Options) (enrichedOpts app.Options, err error) {
+func createSharedAPI(opts app.Options) app.Options {
 	opts.PostgresNotificationService = mrpostgres.NewProcessWaitForNotification(
 		opts.PostgresConnManager.ConnAdapter(),
 		opts.Logger,
@@ -231,27 +229,15 @@ func createAppAPI(opts app.Options) (enrichedOpts app.Options, err error) {
 
 	opts.MailerAPI = service.InitMailerAPI(opts)
 	opts.NotifierAPI = service.InitNotifierAPI(opts)
+	opts.DictionariesMaterialTypeAPI = dictionariesapi.InitMaterialTypeAvailabilityAPI(opts)
+	opts.DictionariesPaperColorAPI = dictionariesapi.InitPaperColorAvailabilityAPI(opts)
+	opts.DictionariesPaperFactureAPI = dictionariesapi.InitPaperFactureAvailabilityAPI(opts)
+	opts.DictionariesPrintFormatAPI = dictionariesapi.InitPrintFormatAvailabilityAPI(opts)
 
-	if opts.DictionariesMaterialTypeAPI, err = dictionaries.NewMaterialTypeAvailabilityAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperColorAPI, err = dictionaries.NewPaperColorAvailabilityAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperFactureAPI, err = dictionaries.NewPaperFactureAvailabilityAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPrintFormatAPI, err = dictionaries.NewPrintFormatAvailabilityAPI(opts); err != nil {
-		return app.Options{}, err
-	}
-
-	return opts, nil
+	return opts
 }
 
-func createAppServices(opts app.Options) (enrichedOpts app.Options, err error) {
+func createSharedServices(opts app.Options) (enrichedOpts app.Options, err error) {
 	opts.UserStatRequestCollectorService = service.InitUserStatRequestCollectorService(opts)
 
 	opts.MailProcessorService, err = service.InitMailerProcessorService(opts)

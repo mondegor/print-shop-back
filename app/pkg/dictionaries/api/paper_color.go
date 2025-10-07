@@ -1,9 +1,9 @@
 package api
 
 import (
-	"context"
-
 	"github.com/mondegor/go-sysmess/mrerr"
+
+	"github.com/mondegor/print-shop-back/pkg/api"
 )
 
 const (
@@ -12,15 +12,13 @@ const (
 )
 
 type (
-	// PaperColorAvailability - comment interface.
-	PaperColorAvailability interface {
-		// CheckingAvailability - error:
-		//    - ErrPaperColorRequired
-		//	  - ErrPaperColorNotAvailable
-		//	  - ErrPaperColorNotFound
-		//	  - Failed
-		CheckingAvailability(ctx context.Context, itemID uint64) error
-	}
+	// PaperColorAvailability - проверяет доступность цвета бумаги по его ID.
+	// CheckAvailability - error:
+	//    - ErrPaperColorRequired
+	//	  - ErrPaperColorNotAvailable
+	//	  - ErrPaperColorNotFound
+	//	  - Failed
+	PaperColorAvailability api.AvailabilityChecker
 )
 
 var (

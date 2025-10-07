@@ -8,11 +8,9 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat/api/availability"
 )
 
-// TODO: переделать!!!!
-
-// NewPrintFormatAvailabilityAPI - создаёт объект usecase.PrintFormat.
-func NewPrintFormatAvailabilityAPI(opts app.Options) (*usecase.PrintFormat, error) {
+// InitPrintFormatAvailabilityAPI - создаёт объект usecase.PrintFormat.
+func InitPrintFormatAvailabilityAPI(opts app.Options) *usecase.PrintFormat {
 	mrlog.Info(opts.Logger, "Create and init dictionaries print format availability API")
 
-	return availability.NewPrintFormatAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer), nil
+	return availability.NewPrintFormatAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
 }

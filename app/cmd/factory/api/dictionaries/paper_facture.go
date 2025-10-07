@@ -8,11 +8,9 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture/api/availability"
 )
 
-// TODO: переделать!!!!
-
-// NewPaperFactureAvailabilityAPI - создаёт объект usecase.PaperFacture.
-func NewPaperFactureAvailabilityAPI(opts app.Options) (*usecase.PaperFacture, error) {
+// InitPaperFactureAvailabilityAPI - создаёт объект usecase.PaperFacture.
+func InitPaperFactureAvailabilityAPI(opts app.Options) *usecase.PaperFacture {
 	mrlog.Info(opts.Logger, "Create and init dictionaries paper facture availability API")
 
-	return availability.NewPaperFactureAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer), nil
+	return availability.NewPaperFactureAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
 }

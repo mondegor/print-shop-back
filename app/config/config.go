@@ -7,6 +7,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlib/extfile"
 
 	"github.com/mondegor/print-shop-back/internal/factory/auth"
+	"github.com/mondegor/print-shop-back/internal/initing"
 )
 
 type (
@@ -199,22 +200,15 @@ type (
 
 	// AccessControl - comment struct.
 	AccessControl struct {
-		Realms           []auth.UserRealm      `yaml:"realms"`
-		RoutingSections  []RoutingSection      `yaml:"routing_sections"`
-		RolesDirPath     string                `yaml:"roles_dir_path" env:"APPX_ROLES_DIR_PATH"`
-		Roles            []string              `yaml:"roles"`
-		Privileges       []string              `yaml:"privileges"`
-		Permissions      []string              `yaml:"permissions"`
-		OperationConfirm auth.OperationConfirm `yaml:"operation_confirm"`
-		JWTMethod        string                `yaml:"jwt_method" env:"APPX_JWT_METHOD"`
-		JWTSecret        string                `yaml:"jwt_secret" env:"APPX_JWT_SECRET"`
-	}
-
-	// RoutingSection - comment struct.
-	RoutingSection struct {
-		Name      string `yaml:"name"`
-		BasePath  string `yaml:"base_path"`
-		Privilege string `yaml:"privilege"`
+		Realms           []auth.UserRealm         `yaml:"realms"`
+		RoutingSections  []initing.RoutingSection `yaml:"routing_sections"`
+		RolesDirPath     string                   `yaml:"roles_dir_path" env:"APPX_ROLES_DIR_PATH"`
+		Roles            []string                 `yaml:"roles"`
+		Privileges       []string                 `yaml:"privileges"`
+		Permissions      []string                 `yaml:"permissions"`
+		OperationConfirm auth.OperationConfirm    `yaml:"operation_confirm"`
+		JWTMethod        string                   `yaml:"jwt_method" env:"APPX_JWT_METHOD"`
+		JWTSecret        string                   `yaml:"jwt_secret" env:"APPX_JWT_SECRET"`
 	}
 
 	// ModulesSettings - comment struct.

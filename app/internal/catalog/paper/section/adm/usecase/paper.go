@@ -188,19 +188,19 @@ func (uc *Paper) checkItem(ctx context.Context, item *entity.Paper) error {
 	}
 
 	if item.ID == 0 || item.TypeID > 0 {
-		if err := uc.materialTypeAPI.CheckingAvailability(ctx, item.TypeID); err != nil {
+		if err := uc.materialTypeAPI.CheckAvailability(ctx, item.TypeID); err != nil {
 			return err
 		}
 	}
 
 	if item.ID == 0 || item.ColorID > 0 {
-		if err := uc.paperColorAPI.CheckingAvailability(ctx, item.ColorID); err != nil {
+		if err := uc.paperColorAPI.CheckAvailability(ctx, item.ColorID); err != nil {
 			return err
 		}
 	}
 
 	if item.ID == 0 || item.FactureID > 0 {
-		if err := uc.paperFactureAPI.CheckingAvailability(ctx, item.FactureID); err != nil {
+		if err := uc.paperFactureAPI.CheckAvailability(ctx, item.FactureID); err != nil {
 			return err
 		}
 	}

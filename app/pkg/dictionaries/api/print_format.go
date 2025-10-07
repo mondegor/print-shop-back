@@ -1,9 +1,9 @@
 package api
 
 import (
-	"context"
-
 	"github.com/mondegor/go-sysmess/mrerr"
+
+	"github.com/mondegor/print-shop-back/pkg/api"
 )
 
 const (
@@ -12,15 +12,13 @@ const (
 )
 
 type (
-	// PrintFormatAvailability - comment interface.
-	PrintFormatAvailability interface {
-		// CheckingAvailability - error:
-		//    - ErrPrintFormatRequired
-		//	  - ErrPrintFormatNotAvailable
-		//	  - ErrPrintFormatNotFound
-		//	  - Failed
-		CheckingAvailability(ctx context.Context, itemID uint64) error
-	}
+	// PrintFormatAvailability - проверяет доступность печатного формата по его ID.
+	// CheckAvailability - error:
+	//    - ErrPrintFormatRequired
+	//	  - ErrPrintFormatNotAvailable
+	//	  - ErrPrintFormatNotFound
+	//	  - Failed
+	PrintFormatAvailability api.AvailabilityChecker
 )
 
 var (

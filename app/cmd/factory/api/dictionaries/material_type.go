@@ -8,11 +8,9 @@ import (
 	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype/api/availability"
 )
 
-// TODO: переделать!!!!
-
-// NewMaterialTypeAvailabilityAPI - создаёт объект usecase.MaterialType.
-func NewMaterialTypeAvailabilityAPI(opts app.Options) (*usecase.MaterialType, error) {
+// InitMaterialTypeAvailabilityAPI - создаёт объект usecase.MaterialType.
+func InitMaterialTypeAvailabilityAPI(opts app.Options) *usecase.MaterialType {
 	mrlog.Info(opts.Logger, "Create and init dictionaries laminate type availability API")
 
-	return availability.NewMaterialTypeAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer), nil
+	return availability.NewMaterialTypeAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
 }

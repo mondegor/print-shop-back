@@ -1,9 +1,9 @@
 package api
 
 import (
-	"context"
-
 	"github.com/mondegor/go-sysmess/mrerr"
+
+	"github.com/mondegor/print-shop-back/pkg/api"
 )
 
 const (
@@ -12,15 +12,13 @@ const (
 )
 
 type (
-	// MaterialTypeAvailability - comment interface.
-	MaterialTypeAvailability interface {
-		// CheckingAvailability - error:
-		//    - ErrMaterialTypeRequired
-		//	  - ErrMaterialTypeNotAvailable
-		//	  - ErrMaterialTypeNotFound
-		//	  - Failed
-		CheckingAvailability(ctx context.Context, itemID uint64) error
-	}
+	// MaterialTypeAvailability - проверяет доступность типа материала по его ID.
+	// CheckAvailability - error:
+	//    - ErrMaterialTypeRequired
+	//	  - ErrMaterialTypeNotAvailable
+	//	  - ErrMaterialTypeNotFound
+	//	  - Failed
+	MaterialTypeAvailability api.AvailabilityChecker
 )
 
 var (

@@ -34,9 +34,9 @@ func NewMaterialType(
 	}
 }
 
-// CheckingAvailability - comment method.
-func (uc *MaterialType) CheckingAvailability(ctx context.Context, itemID uint64) error {
-	uc.traceCmd(ctx, "CheckingAvailability", mrargs.Group{"id": itemID})
+// CheckAvailability - comment method.
+func (uc *MaterialType) CheckAvailability(ctx context.Context, itemID uint64) error {
+	uc.traceCmd(ctx, "CheckAvailability", mrargs.Group{"id": itemID})
 
 	if itemID == 0 {
 		return api.ErrMaterialTypeRequired.New()

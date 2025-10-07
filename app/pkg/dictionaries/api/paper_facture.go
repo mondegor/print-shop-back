@@ -1,9 +1,9 @@
 package api
 
 import (
-	"context"
-
 	"github.com/mondegor/go-sysmess/mrerr"
+
+	"github.com/mondegor/print-shop-back/pkg/api"
 )
 
 const (
@@ -12,15 +12,13 @@ const (
 )
 
 type (
-	// PaperFactureAvailability - comment interface.
-	PaperFactureAvailability interface {
-		// CheckingAvailability - error:
-		//    - ErrPaperFactureRequired
-		//	  - ErrPaperFactureNotAvailable
-		//	  - ErrPaperFactureNotFound
-		//	  - Failed
-		CheckingAvailability(ctx context.Context, itemID uint64) error
-	}
+	// PaperFactureAvailability - проверяет доступность фактуры бумаги по его ID.
+	// CheckAvailability - error:
+	//    - ErrPaperFactureRequired
+	//	  - ErrPaperFactureNotAvailable
+	//	  - ErrPaperFactureNotFound
+	//	  - Failed
+	PaperFactureAvailability api.AvailabilityChecker
 )
 
 var (
