@@ -7,9 +7,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/mrstatus"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
@@ -18,10 +17,10 @@ import (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
-		storage      adm.MaterialTypeStorage
-		eventEmitter mrevent.Emitter
-		errorWrapper mrerr.UseCaseErrorWrapper
-		statusFlow   mrstatus.Flow
+		storage       adm.MaterialTypeStorage
+		eventEmitter  mrevent.Emitter
+		errorWrapper  mrerr.UseCaseErrorWrapper
+		statusFlowMap mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -32,10 +31,10 @@ func NewMaterialType(
 	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *MaterialType {
 	return &MaterialType{
-		storage:      storage,
-		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameMaterialType),
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameMaterialType),
-		statusFlow:   mrflow.ItemStatusFlow(),
+		storage:       storage,
+		eventEmitter:  mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameMaterialType),
+		errorWrapper:  mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameMaterialType),
+		statusFlowMap: itemstatus.NewFlowMap(),
 	}
 }
 
@@ -69,7 +68,7 @@ func (uc *MaterialType) GetItem(ctx context.Context, itemID uint64) (entity.Mate
 
 // Create - comment method.
 func (uc *MaterialType) Create(ctx context.Context, item entity.MaterialType) (itemID uint64, err error) {
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
@@ -130,7 +129,7 @@ func (uc *MaterialType) ChangeStatus(ctx context.Context, item entity.MaterialTy
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

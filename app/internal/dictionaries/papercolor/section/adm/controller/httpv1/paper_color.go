@@ -101,14 +101,14 @@ func (ht *PaperColor) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *PaperColor) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePaperColorRequest{}
+	req := CreatePaperColorRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperColor{
-		Caption: request.Caption,
+		Caption: req.Caption,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -127,16 +127,16 @@ func (ht *PaperColor) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *PaperColor) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePaperColorRequest{}
+	req := StorePaperColorRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperColor{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -148,16 +148,16 @@ func (ht *PaperColor) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *PaperColor) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperColor{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

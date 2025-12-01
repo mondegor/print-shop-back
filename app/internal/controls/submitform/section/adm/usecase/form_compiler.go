@@ -8,7 +8,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlib/casttype"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementtype"
 	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
 )
 
@@ -34,7 +34,7 @@ func (uc *FormCompilerJson) Compile(_ context.Context, form entity.SubmitForm) (
 		paramName := uiForm.ID + " " + item.ParamName
 
 		switch item.Type {
-		case enum.ElementTypeList:
+		case elementtype.List:
 			var fields []uiform.UIFieldItem
 
 			if err := json.Unmarshal(item.Body, &fields); err != nil {
@@ -54,7 +54,7 @@ func (uc *FormCompilerJson) Compile(_ context.Context, form entity.SubmitForm) (
 
 				uiForm.Fields = append(uiForm.Fields, field)
 			}
-		case enum.ElementTypeGroup:
+		case elementtype.Group:
 			group := uiform.UIFieldItem{
 				ID:         paramName,
 				Caption:    item.Caption,

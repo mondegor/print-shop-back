@@ -3,16 +3,18 @@ package config
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
+	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
 	"github.com/mondegor/go-sysmess/mrapp"
-	"github.com/mondegor/go-sysmess/mrlib/extfile"
-
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
-	"github.com/mondegor/print-shop-back/internal/initing"
+	extfilecfg "github.com/mondegor/go-sysmess/mrlib/extfile/config"
+	accesscfg "github.com/mondegor/go-webcore/mraccess/config"
 )
 
 const (
@@ -47,11 +49,9 @@ func Create(args Args) (cfg Config, err error) {
 		return Config{}, fmt.Errorf("error parsing config file '%s': %w", args.ConfigPath, err)
 	}
 
-	// загружаются ENV переменные из .env файла, если он был указан
-	if args.DotEnvPath != "" {
-		if err = godotenv.Load(args.DotEnvPath); err != nil {
-			return Config{}, fmt.Errorf("error reading ENV file '%s': %w", args.DotEnvPath, err)
-		}
+	// инициализируется ENV окружение
+	if err = prepareEnv(args); err != nil {
+		return Config{}, fmt.Errorf("error prepare ENV: %w", err)
 	}
 
 	// уточняется конфигурация переменными из ENV окружения
@@ -94,21 +94,21 @@ func Create(args Args) (cfg Config, err error) {
 	}
 
 	// дополнительно проверяется загруженная конфигурация
-	if err = validateRealms(cfg.AccessControl.Realms, cfg.AccessControl.Roles); err != nil {
+	if err = authcfg.ValidateRealms(cfg.AccessControl.Realms, cfg.AccessControl.Roles); err != nil {
 		return Config{}, err
 	}
 
-	cfg.AccessControl.Realms = defaultValuesRealm(cfg.AccessControl.Realms, cfg.AccessControl.OperationConfirm)
+	cfg.AccessControl.Realms = authcfg.DefaultValuesRealm(cfg.AccessControl.Realms, cfg.AccessControl.OperationConfirm)
 
-	if err = validateRoutingSections(cfg.AccessControl.RoutingSections, cfg.AccessControl.Privileges); err != nil {
+	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups, cfg.AccessControl.Privileges); err != nil {
 		return Config{}, err
 	}
 
-	if err = validateMimeTypes(cfg.Validation.MimeTypes); err != nil {
+	if err = extfilecfg.ValidateMimeTypes(cfg.Validation.MimeTypes); err != nil {
 		return Config{}, err
 	}
 
-	if err = validateJWT(cfg.AccessControl); err != nil {
+	if err = authcfg.ValidateJWT(cfg.AccessControl); err != nil {
 		return Config{}, err
 	}
 
@@ -127,178 +127,36 @@ func Create(args Args) (cfg Config, err error) {
 	return cfg, nil
 }
 
-func validateRealms(realms []auth.UserRealm, allRoles []string) error {
-	uniqRealms := make(map[string]struct{}, len(realms))
+func prepareEnv(args Args) error {
+	// загружаются ENV переменные из .env файла, если он был указан
+	if args.DotEnvPath != "" {
+		if err := godotenv.Overload(args.DotEnvPath); err != nil {
+			return fmt.Errorf("error reading ENV file '%s': %w", args.DotEnvPath, err)
+		}
+	}
 
-	for _, realm := range realms {
-		if _, ok := uniqRealms[realm.Name]; ok {
-			return fmt.Errorf("duplicate realm name '%s'", realm.Name)
+	// данный код, удаляет двойные кавычки у ENV значений, если они встречаются
+	// это было сделано, потому как ENV, которые приходят через докер, остаются в кавычках
+	for _, item := range os.Environ() {
+		keyValue := strings.SplitN(item, "=", 2)
+
+		// если не указаны ключ/значение, или значение пустое
+		if len(keyValue) != 2 || len(keyValue[1]) < 2 {
+			continue
 		}
 
-		if realm.RegisterUserKind == "" {
-			return fmt.Errorf("registerUser is empty for realm '%s'", realm.Name)
+		// если значение не заключено в двойные кавычки
+		if keyValue[1][0] != '"' || keyValue[1][len(keyValue[1])-1] != '"' {
+			continue
 		}
 
-		if realm.AuthToken.AccessType != "jwt" && realm.AuthToken.AccessType != "session" {
-			return fmt.Errorf("invalid token type '%s' for realm '%s'", realm.AuthToken.AccessType, realm.Name)
+		value, err := strconv.Unquote(keyValue[1])
+		if err != nil {
+			return fmt.Errorf("strconv.Unquote: %w", err)
 		}
 
-		uniqRealms[realm.Name] = struct{}{}
-
-		if err := validateRealm(realm, allRoles); err != nil {
-			return err
-		}
+		_ = os.Setenv(keyValue[0], value)
 	}
 
 	return nil
-}
-
-func validateRealm(realm auth.UserRealm, allRoles []string) error {
-	uniqKinds := make(map[string]struct{}, len(realm.UserKinds))
-	hasRegisterUser := realm.RegisterUserKind == "none"
-
-	for _, kind := range realm.UserKinds {
-		if _, ok := uniqKinds[kind.Name]; ok {
-			return fmt.Errorf("duplicate user kind name '%s' for realm '%s'", kind.Name, realm.Name)
-		}
-
-		uniqKinds[kind.Name] = struct{}{}
-
-		if realm.RegisterUserKind == kind.Name {
-			hasRegisterUser = true
-		}
-
-		for _, role := range kind.Roles {
-			if !stringInArray(role, allRoles) {
-				return fmt.Errorf("role '%s' of user kind '%s' is not found in roles for realm '%s'", role, kind.Name, realm.Name)
-			}
-		}
-	}
-
-	if !hasRegisterUser {
-		return fmt.Errorf("realm.RegisterUserKind '%s' is not found in realm.UserKinds for realm: %s", realm.RegisterUserKind, realm.Name)
-	}
-
-	return nil
-}
-
-func defaultValuesRealm(realms []auth.UserRealm, dop auth.OperationConfirm) []auth.UserRealm {
-	for i := range realms {
-		rop := &realms[i].OperationConfirm
-
-		if rop.TokenLength < 1 {
-			rop.TokenLength = dop.TokenLength
-		}
-
-		if rop.CodeLength < 1 {
-			rop.CodeLength = dop.CodeLength
-		}
-
-		if rop.SessionExpiry < 1 {
-			rop.SessionExpiry = dop.SessionExpiry
-		}
-
-		rop.SendByEmail = defaultValuesCodeSender(rop.SendByEmail, dop.SendByEmail)
-		rop.SendByPhone = defaultValuesCodeSender(rop.SendByPhone, dop.SendByPhone)
-	}
-
-	return realms
-}
-
-func defaultValuesCodeSender(cs, dcs auth.CodeSender) auth.CodeSender {
-	if cs.MaxAttempts < 1 {
-		cs.MaxAttempts = dcs.MaxAttempts
-	}
-
-	if cs.MaxResends < 1 {
-		cs.MaxResends = dcs.MaxResends
-	}
-
-	if cs.MinResendTime < 1 {
-		cs.MinResendTime = dcs.MinResendTime
-	}
-
-	return cs
-}
-
-func validateJWT(accessControl AccessControl) error {
-	if !isJWTUsed(accessControl.Realms) {
-		return nil
-	}
-
-	if accessControl.JWTMethod == "" {
-		return errors.New("JWT method is required")
-	}
-
-	switch accessControl.JWTMethod {
-	case "HS256", "HS512": // TODO: "ES256", "ES512"
-	default:
-		return errors.New("invalid JWT method")
-	}
-
-	if accessControl.JWTSecret == "" {
-		return errors.New("JWT secret is required")
-	}
-
-	return nil
-}
-
-func isJWTUsed(realms []auth.UserRealm) bool {
-	for _, realm := range realms {
-		if realm.AuthToken.AccessType == "jwt" {
-			return true
-		}
-	}
-
-	return false
-}
-
-func validateRoutingSections(sections []initing.RoutingSection, allPrivileges []string) error {
-	uniqNames := make(map[string]struct{}, len(sections))
-	uniqPaths := make(map[string]struct{}, len(sections))
-
-	for _, section := range sections {
-		if _, ok := uniqNames[section.Name]; ok {
-			return fmt.Errorf("duplicate section name '%s'", section.Name)
-		}
-
-		if _, ok := uniqPaths[section.BasePath]; ok {
-			return fmt.Errorf("duplicate base path '%s' for section '%s'", section.BasePath, section.Name)
-		}
-
-		uniqNames[section.Name] = struct{}{}
-		uniqPaths[section.BasePath] = struct{}{}
-
-		if section.Privilege != "public" {
-			if !stringInArray(section.Privilege, allPrivileges) {
-				return fmt.Errorf("'%s' is not found in privileges for section '%s'", section.Privilege, section.Name)
-			}
-		}
-	}
-
-	return nil
-}
-
-func validateMimeTypes(mimeTypes []extfile.MimeType) error {
-	uniqExtensions := make(map[string]struct{}, len(mimeTypes))
-
-	for _, mimeType := range mimeTypes {
-		if _, ok := uniqExtensions[mimeType.Extension]; ok {
-			return fmt.Errorf("duplicate mimeType extension '%s'", mimeType.Extension)
-		}
-
-		uniqExtensions[mimeType.Extension] = struct{}{}
-	}
-
-	return nil
-}
-
-func stringInArray(needle string, haystack []string) bool {
-	for _, val := range haystack {
-		if val == needle {
-			return true
-		}
-	}
-
-	return false
 }

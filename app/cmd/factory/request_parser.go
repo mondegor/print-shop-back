@@ -6,14 +6,14 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 	"github.com/mondegor/go-webcore/mrview"
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
 
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/app"
+	mrcalcvalidate "github.com/mondegor/print-shop-back/pkg/mrcalc/validate"
 	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
 )
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
@@ -44,44 +44,44 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 	}
 
 	parsers := app.RequestParsers{
-		// Bool:       mrparser.NewBool(),
-		// DateTime:   mrparser.NewDateTime(),
-		Int64:      mrparser.NewInt64(pathFunc, opts.Logger),
-		ItemStatus: mrparser.NewItemStatus(opts.Logger),
-		Uint64:     mrparser.NewUint64(pathFunc, opts.Logger),
-		ListSorter: mrparser.NewListSorter(opts.Logger, mrparser.ListSorterOptions{}),
-		ListPager: mrparser.NewListPager(
+		// Bool:       parser.NewBool(),
+		// DateTime:   parser.NewDateTime(),
+		Int64:      parser.NewInt64(opts.Logger),
+		ItemStatus: parser.NewItemStatus(opts.Logger),
+		Uint64:     parser.NewUint64(pathFunc, opts.Logger),
+		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
+		ListPager: parser.NewListPager(
 			opts.Logger,
-			mrparser.ListPagerOptions{
+			parser.ListPagerOptions{
 				PageSizeMax:     opts.Cfg.General.PageSizeMax,
 				PageSizeDefault: opts.Cfg.General.PageSizeDefault,
 			},
 		),
-		String:    mrparser.NewString(pathFunc, opts.Logger),
-		UUID:      mrparser.NewUUID(pathFunc, opts.Logger),
-		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
-		ClientIP:  mrparser.NewClientIP(opts.Logger),
-		User:      mrparser.NewUser(opts.Logger),
-		Locale:    mrparser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
-		FileJson: mrparser.NewFile(
+		String:    parser.NewString(pathFunc, opts.Logger),
+		UUID:      parser.NewUUID(pathFunc, opts.Logger),
+		Validator: parser.NewValidator(mrjson.NewDecoder(), validator),
+		ClientIP:  parser.NewClientIP(opts.Logger),
+		User:      parser.NewUser(opts.Logger),
+		Locale:    parser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
+		FileJson: parser.NewFile(
 			opts.Logger,
-			mrparser.WithFileMinSize(cfgValidation.Files.Json.MinSize),
-			mrparser.WithFileMaxSize(cfgValidation.Files.Json.MaxSize),
-			mrparser.WithFileMaxFiles(cfgValidation.Files.Json.MaxFiles),
-			mrparser.WithFileCheckRequestContentType(cfgValidation.Files.Json.CheckRequestContentType),
-			mrparser.WithFileAllowedMimeTypes(jsonMimeTypes),
+			parser.WithFileMinSize(cfgValidation.Files.Json.MinSize),
+			parser.WithFileMaxSize(cfgValidation.Files.Json.MaxSize),
+			parser.WithFileMaxFiles(cfgValidation.Files.Json.MaxFiles),
+			parser.WithFileCheckRequestContentType(cfgValidation.Files.Json.CheckRequestContentType),
+			parser.WithFileAllowedMimeTypes(jsonMimeTypes),
 		),
-		ImageLogo: mrparser.NewImage(
+		ImageLogo: parser.NewImage(
 			opts.Logger,
-			mrparser.WithImageMaxWidth(cfgValidation.Images.Logo.MaxWidth),
-			mrparser.WithImageMaxHeight(cfgValidation.Images.Logo.MaxHeight),
-			mrparser.WithImageCheckBody(cfgValidation.Images.Logo.CheckBody),
-			mrparser.WithImageFileOptions(
-				mrparser.WithFileMinSize(cfgValidation.Images.Logo.File.MinSize),
-				mrparser.WithFileMaxSize(cfgValidation.Images.Logo.File.MaxSize),
-				mrparser.WithFileMaxFiles(cfgValidation.Images.Logo.File.MaxFiles),
-				mrparser.WithFileCheckRequestContentType(cfgValidation.Images.Logo.File.CheckRequestContentType),
-				mrparser.WithFileAllowedMimeTypes(logoMimeTypes),
+			parser.WithImageMaxWidth(cfgValidation.Images.Logo.MaxWidth),
+			parser.WithImageMaxHeight(cfgValidation.Images.Logo.MaxHeight),
+			parser.WithImageCheckBody(cfgValidation.Images.Logo.CheckBody),
+			parser.WithImageFileOptions(
+				parser.WithFileMinSize(cfgValidation.Images.Logo.File.MinSize),
+				parser.WithFileMaxSize(cfgValidation.Images.Logo.File.MaxSize),
+				parser.WithFileMaxFiles(cfgValidation.Images.Logo.File.MaxFiles),
+				parser.WithFileCheckRequestContentType(cfgValidation.Images.Logo.File.CheckRequestContentType),
+				parser.WithFileAllowedMimeTypes(logoMimeTypes),
 			),
 		),
 	}
@@ -148,15 +148,15 @@ func NewValidator(logger mrlog.Logger, _ config.Config) (*mrplayvalidator.Valida
 		return nil, err
 	}
 
-	if err := validator.Register("tag_password", mrview.ValidatePassword); err != nil {
+	if err := validator.Register("tag_password", mrview.ValidatePassword); err != nil { // TODO: переименовать в validate.Password
 		return nil, err
 	}
 
-	if err := validator.Register("tag_2d_size", view.Validate2dSize); err != nil {
+	if err := validator.Register("tag_2d_size", mrcalcvalidate.Size2d); err != nil {
 		return nil, err
 	}
 
-	if err := validator.Register("tag_3d_size", view.Validate3dSize); err != nil {
+	if err := validator.Register("tag_3d_size", mrcalcvalidate.Size3d); err != nil {
 		return nil, err
 	}
 

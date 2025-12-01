@@ -56,9 +56,9 @@ func InitSettingsSetterAPI(opts app.Options) *set.SettingsSetter {
 
 	return mrsettings.NewComponentSetter(
 		opts.PostgresConnManager,
+		opts.EventEmitter,
 		opts.UseCaseErrorWrapper,
 		opts.StorageErrorWrapper,
-		opts.EventEmitter,
 		mrsql.DBTableInfo{
 			Name:       serviceSettingsTableName,
 			PrimaryKey: serviceSettingsPrimaryKey,

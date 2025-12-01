@@ -3,7 +3,9 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
@@ -17,14 +19,14 @@ const (
 type (
 	// SheetInsideOutside - comment struct.
 	SheetInsideOutside struct {
-		parser  mrserver.RequestParserValidate
+		parser  request.ParserValidate
 		sender  mrserver.ResponseSender
 		useCase pub.SheetInsideOutsideUseCase
 	}
 )
 
 // NewSheetInsideOutside - создаёт контроллер SheetInsideOutside.
-func NewSheetInsideOutside(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.SheetInsideOutsideUseCase) *SheetInsideOutside {
+func NewSheetInsideOutside(parser request.ParserValidate, sender mrserver.ResponseSender, useCase pub.SheetInsideOutsideUseCase) *SheetInsideOutside {
 	return &SheetInsideOutside{
 		parser:  parser,
 		sender:  sender,
@@ -35,20 +37,20 @@ func NewSheetInsideOutside(parser mrserver.RequestParserValidate, sender mrserve
 // Handlers - возвращает обработчики контроллера SheetInsideOutside.
 func (ht *SheetInsideOutside) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetQuantityInsideOnOutsideURL, Permission: mrserver.PermissionAnyUser, Func: ht.CalcQuantity},
-		{Method: http.MethodPost, URL: sheetMaxInsideOnOutsideURL, Permission: mrserver.PermissionAnyUser, Func: ht.CalcMax},
+		{Method: http.MethodPost, URL: sheetQuantityInsideOnOutsideURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcQuantity},
+		{Method: http.MethodPost, URL: sheetMaxInsideOnOutsideURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcMax},
 	}
 }
 
 // CalcQuantity - comment method.
 func (ht *SheetInsideOutside) CalcQuantity(w http.ResponseWriter, r *http.Request) error {
-	request := model.SheetInsideOutsideQuantityRequest{}
+	req := model.SheetInsideOutsideQuantityRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	item, err := ht.parseRequest(request)
+	item, err := ht.parseRequest(req)
 	if err != nil {
 		return err
 	}
@@ -63,13 +65,13 @@ func (ht *SheetInsideOutside) CalcQuantity(w http.ResponseWriter, r *http.Reques
 
 // CalcMax - comment method.
 func (ht *SheetInsideOutside) CalcMax(w http.ResponseWriter, r *http.Request) error {
-	request := model.SheetInsideOutsideMaxRequest{}
+	req := model.SheetInsideOutsideMaxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	item, err := ht.parseRequest(model.SheetInsideOutsideQuantityRequest(request))
+	item, err := ht.parseRequest(model.SheetInsideOutsideQuantityRequest(req))
 	if err != nil {
 		return err
 	}

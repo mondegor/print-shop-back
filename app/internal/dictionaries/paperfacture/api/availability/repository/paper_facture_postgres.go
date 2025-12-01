@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
 )
@@ -13,14 +13,14 @@ import (
 type (
 	// PaperFacturePostgres - comment struct.
 	PaperFacturePostgres struct {
-		repoStatus db.FieldFetcher[uint64, mrenum.ItemStatus]
+		repoStatus db.FieldFetcher[uint64, itemstatus.Enum]
 	}
 )
 
 // NewPaperFacturePostgres - создаёт объект PaperFacturePostgres.
 func NewPaperFacturePostgres(client mrstorage.DBConnManager) *PaperFacturePostgres {
 	return &PaperFacturePostgres{
-		repoStatus: db.NewFieldFetcher[uint64, mrenum.ItemStatus](
+		repoStatus: db.NewFieldFetcher[uint64, itemstatus.Enum](
 			client,
 			module.DBTableNamePaperFactures,
 			"facture_id",
@@ -31,7 +31,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager) *PaperFacturePostgr
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

@@ -9,9 +9,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/mrstatus"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
@@ -22,10 +21,10 @@ type (
 	// ElementTemplate - comment struct.
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
-		storage      adm.ElementTemplateStorage
-		eventEmitter mrevent.Emitter
-		errorWrapper mrerr.UseCaseErrorWrapper
-		statusFlow   mrstatus.Flow
+		storage       adm.ElementTemplateStorage
+		eventEmitter  mrevent.Emitter
+		errorWrapper  mrerr.UseCaseErrorWrapper
+		statusFlowMap mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -36,10 +35,10 @@ func NewElementTemplate(
 	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *ElementTemplate {
 	return &ElementTemplate{
-		storage:      storage,
-		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameElementTemplate),
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameElementTemplate),
-		statusFlow:   mrflow.ItemStatusFlow(),
+		storage:       storage,
+		eventEmitter:  mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameElementTemplate),
+		errorWrapper:  mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameElementTemplate),
+		statusFlowMap: itemstatus.NewFlowMap(),
 	}
 }
 
@@ -101,7 +100,7 @@ func (uc *ElementTemplate) GetItemJson(ctx context.Context, itemID uint64, prett
 
 // Create - comment method.
 func (uc *ElementTemplate) Create(ctx context.Context, item entity.ElementTemplate) (itemID uint64, err error) {
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
@@ -162,7 +161,7 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

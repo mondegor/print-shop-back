@@ -8,9 +8,9 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
@@ -23,7 +23,7 @@ type (
 		sqlBuilder          mrstorage.SQLBuilder
 		repoIDByRewriteName db.FieldFetcher[string, uuid.UUID]
 		repoIDByParamName   db.FieldFetcher[string, uuid.UUID]
-		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, mrenum.ItemStatus]
+		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, itemstatus.Enum]
 		repoSoftDeleter     db.RowSoftDeleter[uuid.UUID]
 		repoTotalRows       db.TotalRowsFetcher[uint64]
 	}
@@ -48,7 +48,7 @@ func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 			"form_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uuid.UUID, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uuid.UUID, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNameSubmitForms,
 			"form_id",
@@ -120,7 +120,7 @@ func (re *SubmitFormPostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -208,8 +208,8 @@ func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName 
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -310,7 +310,7 @@ func (re *SubmitFormPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.S
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("form_id", enums.SortDirectionASC),
+				o.Field("form_id", sortdirection.ASC),
 			)
 		},
 	)

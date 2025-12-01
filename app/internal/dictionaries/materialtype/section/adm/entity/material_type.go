@@ -3,8 +3,8 @@ package entity
 import (
 	"time"
 
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-webcore/mrenum"
 )
 
 const (
@@ -15,12 +15,12 @@ const (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct { // DB: printshop_dictionaries.material_types
-		ID         uint64            `json:"id"` // type_id
-		TagVersion uint32            `json:"tagVersion"`
-		Caption    string            `json:"caption" sort:"caption,default"`
-		Status     mrenum.ItemStatus `json:"status"`
-		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  time.Time         `json:"updatedAt" sort:"updatedAt"`
+		ID         uint64          `json:"id"` // type_id
+		TagVersion uint32          `json:"tagVersion"`
+		Caption    string          `json:"caption" sort:"caption,default"`
+		Status     itemstatus.Enum `json:"status"`
+		CreatedAt  time.Time       `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  time.Time       `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// MaterialTypeParams - comment struct.
@@ -33,6 +33,6 @@ type (
 	// MaterialTypeListFilter - comment struct.
 	MaterialTypeListFilter struct {
 		SearchText string
-		Statuses   []mrenum.ItemStatus
+		Statuses   []itemstatus.Enum
 	}
 )

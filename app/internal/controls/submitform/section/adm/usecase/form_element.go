@@ -10,13 +10,13 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 type (
@@ -212,11 +212,11 @@ func (uc *FormElement) checkForm(ctx context.Context, item *entity.FormElement) 
 		return uc.errorWrapper.WrapErrorFailed(err, "formId", item.FormID)
 	}
 
-	if form.Detailing != enum.ElementDetailingExtended && form.Detailing != item.Detailing {
+	if form.Detailing != elementdetailing.Extended && form.Detailing != item.Detailing {
 		return module.ErrFormElementDetailingNotAllowed.New(item.Detailing, form.Detailing)
 	}
 
-	if form.Status == mrenum.ItemStatusDisabled {
+	if form.Status == itemstatus.Disabled {
 		return module.ErrSubmitFormIsDisabled.New(item.FormID)
 	}
 

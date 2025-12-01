@@ -9,7 +9,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/insideoutside"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
 )
 
 const (

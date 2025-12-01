@@ -117,17 +117,17 @@ func (ht *SubmitForm) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateSubmitFormRequest{}
+	req := CreateSubmitFormRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
-		RewriteName: request.RewriteName,
-		ParamName:   request.ParamName,
-		Caption:     request.Caption,
-		Detailing:   request.Detailing,
+		RewriteName: req.RewriteName,
+		ParamName:   req.ParamName,
+		Caption:     req.Caption,
+		Detailing:   req.Detailing,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -146,18 +146,18 @@ func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreSubmitFormRequest{}
+	req := StoreSubmitFormRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
 		ID:          ht.getItemID(r),
-		TagVersion:  request.TagVersion,
-		RewriteName: request.RewriteName,
-		ParamName:   request.ParamName,
-		Caption:     request.Caption,
+		TagVersion:  req.TagVersion,
+		RewriteName: req.RewriteName,
+		ParamName:   req.ParamName,
+		Caption:     req.Caption,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -169,16 +169,16 @@ func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *SubmitForm) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

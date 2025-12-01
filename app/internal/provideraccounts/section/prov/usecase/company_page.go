@@ -9,25 +9,24 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrpath"
-	"github.com/mondegor/go-webcore/mrstatus"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstatus"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/flow"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
 )
 
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
-		txManager    mrstorage.DBTxManager
-		storage      prov.CompanyPageStorage
-		imgBaseURL   mrpath.PathBuilder
-		eventEmitter mrevent.Emitter
-		errorWrapper mrerr.UseCaseErrorWrapper
-		statusFlow   mrstatus.Flow
+		txManager     mrstorage.DBTxManager
+		storage       prov.CompanyPageStorage
+		imgBaseURL    mrpath.Builder
+		eventEmitter  mrevent.Emitter
+		errorWrapper  mrerr.UseCaseErrorWrapper
+		statusFlowMap mrstatus.FlowMap[publicstatus.Enum]
 	}
 )
 
@@ -35,17 +34,17 @@ type (
 func NewCompanyPage(
 	txManager mrstorage.DBTxManager,
 	storage prov.CompanyPageStorage,
-	imgBaseURL mrpath.PathBuilder,
+	imgBaseURL mrpath.Builder,
 	eventEmitter mrevent.Emitter,
 	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *CompanyPage {
 	return &CompanyPage{
-		txManager:    txManager,
-		storage:      storage,
-		imgBaseURL:   imgBaseURL,
-		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPage),
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameCompanyPage),
-		statusFlow:   flow.PublicStatusFlow(),
+		txManager:     txManager,
+		storage:       storage,
+		imgBaseURL:    imgBaseURL,
+		eventEmitter:  mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPage),
+		errorWrapper:  mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameCompanyPage),
+		statusFlowMap: publicstatus.NewFlowMap(),
 	}
 }
 
@@ -75,7 +74,7 @@ func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error
 		return err
 	}
 
-	item.Status = enum.PublicStatusDraft // only for insert
+	item.Status = publicstatus.Draft // only for insert
 
 	return uc.txManager.Do(ctx, func(ctx context.Context) error {
 		if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
@@ -103,7 +102,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/entity"
@@ -42,7 +42,7 @@ func (re *PrintFormatPostgres) Fetch(ctx context.Context, _ entity.PrintFormatPa
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err

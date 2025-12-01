@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2/rect2d"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 type (

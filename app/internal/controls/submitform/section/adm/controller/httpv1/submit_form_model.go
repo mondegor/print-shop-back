@@ -2,7 +2,7 @@ package httpv1
 
 import (
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 type (
@@ -11,7 +11,7 @@ type (
 		RewriteName string                `json:"rewriteName" validate:"required,min=4,max=32,tag_rewrite_name"`
 		ParamName   string                `json:"paramName" validate:"required,min=4,max=32,tag_variable"`
 		Caption     string                `json:"caption" validate:"required,max=128"`
-		Detailing   enum.ElementDetailing `json:"detailing" validate:"required"`
+		Detailing   elementdetailing.Enum `json:"detailing" validate:"required"`
 	}
 
 	// StoreSubmitFormRequest - comment struct.

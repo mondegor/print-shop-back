@@ -3,9 +3,9 @@ package httpv1
 import (
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2/rect2d"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func (ht *SheetImposition) parseRequest(data model.SheetImpositionRequest) (dto.ParsedData, error) {

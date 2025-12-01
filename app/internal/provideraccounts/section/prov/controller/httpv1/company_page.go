@@ -57,17 +57,17 @@ func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreCompanyPageRequest{}
+	req := StoreCompanyPageRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.CompanyPage{
 		AccountID:   ht.parser.UserID(r),
-		RewriteName: request.RewriteName,
-		PageTitle:   request.PageTitle,
-		SiteURL:     request.SiteURL,
+		RewriteName: req.RewriteName,
+		PageTitle:   req.PageTitle,
+		SiteURL:     req.SiteURL,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -79,15 +79,15 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangePublicStatusRequest{}
+	req := ChangePublicStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.CompanyPage{
 		AccountID: ht.parser.UserID(r),
-		Status:    request.Status,
+		Status:    req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

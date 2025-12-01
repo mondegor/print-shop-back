@@ -3,10 +3,10 @@ package pub
 import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/module"
-	"github.com/mondegor/print-shop-back/internal/initing"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 

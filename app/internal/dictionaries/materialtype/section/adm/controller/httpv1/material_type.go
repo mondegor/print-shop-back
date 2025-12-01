@@ -101,14 +101,14 @@ func (ht *MaterialType) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *MaterialType) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateMaterialTypeRequest{}
+	req := CreateMaterialTypeRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
-		Caption: request.Caption,
+		Caption: req.Caption,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -127,16 +127,16 @@ func (ht *MaterialType) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreMaterialTypeRequest{}
+	req := StoreMaterialTypeRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -148,16 +148,16 @@ func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *MaterialType) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

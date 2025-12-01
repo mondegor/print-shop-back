@@ -6,9 +6,9 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
@@ -19,7 +19,7 @@ type (
 	PaperFacturePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -30,7 +30,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 	return &PaperFacturePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNamePaperFactures,
 			"facture_id",
@@ -102,7 +102,7 @@ func (re *PaperFacturePostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -171,8 +171,8 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -255,7 +255,7 @@ func (re *PaperFacturePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("facture_id", enums.SortDirectionASC),
+				o.Field("facture_id", sortdirection.ASC),
 			)
 		},
 	)

@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 )
@@ -105,23 +105,23 @@ func (ht *Paper) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePaperRequest{}
+	req := CreatePaperRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
-		Article:   request.Article,
-		Caption:   request.Caption,
-		TypeID:    request.TypeID,
-		ColorID:   request.ColorID,
-		FactureID: request.FactureID,
-		Width:     measure.Meter(request.Length * measure.OneThousandth),
-		Height:    measure.Meter(request.Height * measure.OneThousandth),
-		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
-		Density:   measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
-		Sides:     request.Sides,
+		Article:   req.Article,
+		Caption:   req.Caption,
+		TypeID:    req.TypeID,
+		ColorID:   req.ColorID,
+		FactureID: req.FactureID,
+		Width:     measure.Meter(req.Length * measure.OneThousandth),
+		Height:    measure.Meter(req.Height * measure.OneThousandth),
+		Thickness: measure.Meter(req.Thickness * measure.OneMillionth),
+		Density:   measure.KilogramPerMeter2(req.Density * measure.OneThousandth),
+		Sides:     req.Sides,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -140,25 +140,25 @@ func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePaperRequest{}
+	req := StorePaperRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Article:    request.Article,
-		Caption:    request.Caption,
-		TypeID:     request.TypeID,
-		ColorID:    request.ColorID,
-		FactureID:  request.FactureID,
-		Width:      measure.Meter(request.Length * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
-		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
-		Density:    measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
-		Sides:      request.Sides,
+		TagVersion: req.TagVersion,
+		Article:    req.Article,
+		Caption:    req.Caption,
+		TypeID:     req.TypeID,
+		ColorID:    req.ColorID,
+		FactureID:  req.FactureID,
+		Width:      measure.Meter(req.Length * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
+		Thickness:  measure.Meter(req.Thickness * measure.OneMillionth),
+		Density:    measure.KilogramPerMeter2(req.Density * measure.OneThousandth),
+		Sides:      req.Sides,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -170,16 +170,16 @@ func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Paper) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

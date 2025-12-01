@@ -9,7 +9,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
 )
 
 type (
@@ -218,7 +218,7 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
 }
 
 // UpdateStatus - comment method.
-func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus enum.ActivityStatus) error {
+func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus activitystatus.Enum) error {
 	return re.client.Do(ctx, func(ctx context.Context) error {
 		conn := re.client.Conn(ctx)
 
@@ -239,7 +239,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			row.FormID,
 			row.Version,
 			toStatus,
-			enum.ActivityStatusArchived,
+			activitystatus.Archived,
 		)
 		if err != nil {
 			// если это системная ошибка

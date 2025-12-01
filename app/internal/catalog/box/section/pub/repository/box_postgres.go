@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
@@ -46,7 +46,7 @@ func (re *BoxPostgres) Fetch(ctx context.Context, _ entity.BoxParams) ([]entity.
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err

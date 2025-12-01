@@ -134,10 +134,10 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 
 // Create - comment method.
 func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateElementTemplateRequest{}
+	req := CreateElementTemplateRequest{}
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
 		return err
 	}
 
@@ -147,10 +147,10 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 	}
 
 	item := entity.ElementTemplate{
-		ParamName: request.ParamName,
-		Caption:   request.Caption,
-		Type:      request.Type,
-		Detailing: request.Detailing,
+		ParamName: req.ParamName,
+		Caption:   req.Caption,
+		Type:      req.Type,
+		Detailing: req.Detailing,
 		Body:      file.Body,
 	}
 
@@ -170,10 +170,10 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 
 // Store - comment method.
 func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreElementTemplateRequest{}
+	req := StoreElementTemplateRequest{}
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
 		return err
 	}
 
@@ -189,9 +189,9 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 
 	item := entity.ElementTemplate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
 		Body:       file.Body,
 	}
 
@@ -204,16 +204,16 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.ElementTemplate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

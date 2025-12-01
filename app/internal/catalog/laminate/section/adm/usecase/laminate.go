@@ -7,9 +7,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/mrstatus"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
@@ -24,7 +23,7 @@ type (
 		materialTypeAPI api.MaterialTypeAvailability
 		eventEmitter    mrevent.Emitter
 		errorWrapper    mrerr.UseCaseErrorWrapper
-		statusFlow      mrstatus.Flow
+		statusFlowMap   mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -40,7 +39,7 @@ func NewLaminate(
 		materialTypeAPI: materialTypeAPI,
 		eventEmitter:    mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameLaminate),
 		errorWrapper:    mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameLaminate),
-		statusFlow:      mrflow.ItemStatusFlow(),
+		statusFlowMap:   itemstatus.NewFlowMap(),
 	}
 }
 
@@ -78,7 +77,7 @@ func (uc *Laminate) Create(ctx context.Context, item entity.Laminate) (itemID ui
 		return 0, err
 	}
 
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
@@ -143,7 +142,7 @@ func (uc *Laminate) ChangeStatus(ctx context.Context, item entity.Laminate) erro
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

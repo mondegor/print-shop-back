@@ -3,8 +3,9 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/filestation/section/pub"
 )
@@ -12,7 +13,7 @@ import (
 type (
 	// ImageProxy - comment struct.
 	ImageProxy struct {
-		parser    mrserver.RequestParserString
+		parser    request.ParserString
 		sender    mrserver.FileResponseSender
 		useCase   pub.FileProviderAdapterUseCase
 		imagesURL string
@@ -21,10 +22,10 @@ type (
 
 // NewImageProxy - создаёт контроллер ImageProxy.
 func NewImageProxy(
-	parser mrserver.RequestParserString,
+	parser request.ParserString,
 	sender mrserver.FileResponseSender,
 	useCase pub.FileProviderAdapterUseCase,
-	basePath mrpath.PathBuilder,
+	basePath mrpath.Builder,
 ) *ImageProxy {
 	return &ImageProxy{
 		parser:    parser,

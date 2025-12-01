@@ -1,46 +1,46 @@
 package validate
 
 import (
-	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 )
 
 type (
 	// RequestParser - comment interface.
 	RequestParser interface {
-		mrserver.RequestParserInt64
-		mrserver.RequestParserUint64
-		mrserver.RequestParserString
-		mrserver.RequestParserUUID
-		mrserver.RequestParserValidate
-		mrserver.RequestParserClientIP
-		mrserver.RequestParserUser
-		mrserver.RequestParserLocale
+		request.ParserInt64
+		request.ParserUint64
+		request.ParserString
+		request.ParserUUID
+		request.ParserValidate
+		request.ParserClientIP
+		request.ParserUser
+		request.ParserLocale
 	}
 
 	// Parser - comment struct.
 	Parser struct {
-		*mrparser.Int64
-		*mrparser.Uint64
-		*mrparser.String
-		*mrparser.UUID
-		*mrparser.Validator
-		*mrparser.ClientIP
-		*mrparser.User
-		*mrparser.Locale
+		*parser.Int64
+		*parser.Uint64
+		*parser.String
+		*parser.UUID
+		*parser.Validator
+		*parser.ClientIP
+		*parser.User
+		*parser.Locale
 	}
 )
 
 // NewParser - создаёт объект Parser.
 func NewParser(
-	p1 *mrparser.Int64,
-	p2 *mrparser.Uint64,
-	p3 *mrparser.String,
-	p4 *mrparser.UUID,
-	p5 *mrparser.Validator,
-	p6 *mrparser.ClientIP,
-	p7 *mrparser.User,
-	p8 *mrparser.Locale,
+	p1 *parser.Int64,
+	p2 *parser.Uint64,
+	p3 *parser.String,
+	p4 *parser.UUID,
+	p5 *parser.Validator,
+	p6 *parser.ClientIP,
+	p7 *parser.User,
+	p8 *parser.Locale,
 ) *Parser {
 	return &Parser{
 		Int64:     p1,

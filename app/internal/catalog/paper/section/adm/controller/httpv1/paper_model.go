@@ -2,8 +2,8 @@ package httpv1
 
 import (
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/catalog/type/paperside"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 		Height    measure.Millimeter    `json:"height" validate:"required,gte=1,lte=10000"`
 		Thickness measure.Micrometer    `json:"thickness" validate:"required,gte=1,lte=10000"`
 		Density   measure.GramPerMeter2 `json:"density" validate:"required,gte=1,lte=10000"`
-		Sides     enum.PaperSide        `json:"sides" validate:"required"`
+		Sides     paperside.Enum        `json:"sides" validate:"required"`
 	}
 
 	// StorePaperRequest - comment struct.
@@ -33,7 +33,7 @@ type (
 		Height     measure.Millimeter    `json:"height" validate:"omitempty,gte=1,lte=10000"`
 		Thickness  measure.Micrometer    `json:"thickness" validate:"omitempty,gte=1,lte=10000"`
 		Density    measure.GramPerMeter2 `json:"density" validate:"omitempty,gte=1,lte=10000"`
-		Sides      enum.PaperSide        `json:"sides" validate:"omitempty"`
+		Sides      paperside.Enum        `json:"sides" validate:"omitempty"`
 	}
 
 	// PaperListResponse - comment struct.

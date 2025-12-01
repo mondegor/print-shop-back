@@ -7,9 +7,9 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
@@ -20,7 +20,7 @@ type (
 	ElementTemplatePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -31,7 +31,7 @@ func NewElementTemplatePostgres(client mrstorage.DBConnManager, sqlBuilder mrsto
 	return &ElementTemplatePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNameElementTemplates,
 			"template_id",
@@ -106,7 +106,7 @@ func (re *ElementTemplatePostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -186,8 +186,8 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID uint64) (
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -289,7 +289,7 @@ func (re *ElementTemplatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstor
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("template_id", enums.SortDirectionASC),
+				o.Field("template_id", sortdirection.ASC),
 			)
 		},
 	)

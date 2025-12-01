@@ -11,8 +11,8 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 const (

@@ -9,7 +9,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 type (

@@ -3,7 +3,9 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
@@ -16,14 +18,14 @@ const (
 type (
 	// PackInStack - comment struct.
 	PackInStack struct {
-		parser  mrserver.RequestParserValidate
+		parser  request.ParserValidate
 		sender  mrserver.ResponseSender
 		useCase pub.SheetPackInStackUseCase
 	}
 )
 
 // NewSheetPackInStack - создаёт контроллер PackInStack.
-func NewSheetPackInStack(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.SheetPackInStackUseCase) *PackInStack {
+func NewSheetPackInStack(parser request.ParserValidate, sender mrserver.ResponseSender, useCase pub.SheetPackInStackUseCase) *PackInStack {
 	return &PackInStack{
 		parser:  parser,
 		sender:  sender,
@@ -34,19 +36,19 @@ func NewSheetPackInStack(parser mrserver.RequestParserValidate, sender mrserver.
 // Handlers - возвращает обработчики контроллера PackInStack.
 func (ht *PackInStack) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetPackInStackURL, Permission: mrserver.PermissionAnyUser, Func: ht.Calc},
+		{Method: http.MethodPost, URL: sheetPackInStackURL, Permission: mraccess.PermissionAnyUser, Func: ht.Calc},
 	}
 }
 
 // Calc - comment method.
 func (ht *PackInStack) Calc(w http.ResponseWriter, r *http.Request) error {
-	request := model.SheetPackInStackRequest{}
+	req := model.SheetPackInStackRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	item, err := ht.parseRequest(request)
+	item, err := ht.parseRequest(req)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,7 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
@@ -22,7 +22,7 @@ func initCompanyPageController(
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
-	logoURLBuilder mrpath.PathBuilder,
+	logoURLBuilder mrpath.Builder,
 	pageSizeMax uint64,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.CompanyPage{})

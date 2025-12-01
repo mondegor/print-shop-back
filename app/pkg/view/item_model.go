@@ -1,14 +1,12 @@
 package view
 
-import (
-	"github.com/mondegor/go-webcore/mrenum"
-)
+import "github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 type (
 	// ChangeItemStatusRequest - comment struct.
 	ChangeItemStatusRequest struct {
-		TagVersion uint32            `json:"tagVersion" validate:"required,gte=1"`
-		Status     mrenum.ItemStatus `json:"status" validate:"required"`
+		TagVersion uint32          `json:"tagVersion" validate:"required,gte=1"`
+		Status     itemstatus.Enum `json:"status" validate:"required"`
 	}
 
 	// MoveItemRequest - comment struct.

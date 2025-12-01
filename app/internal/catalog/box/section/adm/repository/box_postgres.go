@@ -8,9 +8,9 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
@@ -22,7 +22,7 @@ type (
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
 		repoIDByArticle db.FieldFetcher[string, uint64]
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -40,7 +40,7 @@ func NewBoxPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuil
 			"box_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNameBoxes,
 			"box_id",
@@ -115,7 +115,7 @@ func (re *BoxPostgres) fetch(
 		WHERE
 			` + whereStr + `
 		ORDER BY
-			` + orderBy.String() + limit.String() + `;`
+			` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -207,8 +207,8 @@ func (re *BoxPostgres) FetchIDByArticle(ctx context.Context, article string) (ro
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *BoxPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *BoxPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -317,7 +317,7 @@ func (re *BoxPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartF
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("box_id", enums.SortDirectionASC),
+				o.Field("box_id", sortdirection.ASC),
 			)
 		},
 	)

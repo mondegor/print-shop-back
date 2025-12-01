@@ -11,7 +11,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 )
@@ -105,19 +105,19 @@ func (ht *Box) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateBoxRequest{}
+	req := CreateBoxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
-		Article: request.Article,
-		Caption: request.Caption,
-		Length:  measure.Meter(request.Length * measure.OneThousandth),
-		Width:   measure.Meter(request.Width * measure.OneThousandth),
-		Height:  measure.Meter(request.Height * measure.OneThousandth),
-		Weight:  measure.Kilogram(request.Weight * measure.OneThousandth),
+		Article: req.Article,
+		Caption: req.Caption,
+		Length:  measure.Meter(req.Length * measure.OneThousandth),
+		Width:   measure.Meter(req.Width * measure.OneThousandth),
+		Height:  measure.Meter(req.Height * measure.OneThousandth),
+		Weight:  measure.Kilogram(req.Weight * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -136,21 +136,21 @@ func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreBoxRequest{}
+	req := StoreBoxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Article:    request.Article,
-		Caption:    request.Caption,
-		Length:     measure.Meter(request.Length * measure.OneThousandth),
-		Width:      measure.Meter(request.Width * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
-		Weight:     measure.Kilogram(request.Weight * measure.OneThousandth),
+		TagVersion: req.TagVersion,
+		Article:    req.Article,
+		Caption:    req.Caption,
+		Length:     measure.Meter(req.Length * measure.OneThousandth),
+		Width:      measure.Meter(req.Width * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
+		Weight:     measure.Kilogram(req.Weight * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -162,16 +162,16 @@ func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Box) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

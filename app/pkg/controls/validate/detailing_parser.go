@@ -4,65 +4,46 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-webcore/mrserver/mrreq"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 type (
 	// RequestDetailingParser - comment interface.
 	RequestDetailingParser interface { // TODO: ПЕРЕНЕСТИ
-		FilterElementDetailingList(r *http.Request, key string) []enum.ElementDetailing
+		FilterElementDetailingList(r *http.Request, key string) []elementdetailing.Enum
 	}
 
-	// DetailingParser - comment struct.
+	// DetailingParser - парсер elementdetailing.Enum.
 	DetailingParser struct {
-		logger       mrlog.Logger
-		defaultItems []enum.ElementDetailing
+		*parser.EnumList[elementdetailing.Enum]
 	}
 )
 
 // NewDetailingParser - создаёт объект DetailingParser.
 func NewDetailingParser(logger mrlog.Logger) *DetailingParser {
 	return &DetailingParser{
-		logger: logger,
+		EnumList: parser.NewEnumList(
+			logger,
+			elementdetailing.ParseList,
+		),
 	}
 }
 
-// NewDetailingParserWithDefault - создаёт объект DetailingParser.
-func NewDetailingParserWithDefault(logger mrlog.Logger, items []enum.ElementDetailing) *DetailingParser {
+// NewDetailingParserWithDefault - создаёт объект DetailingParser со статусами по умолчанию.
+func NewDetailingParserWithDefault(logger mrlog.Logger, items []elementdetailing.Enum) *DetailingParser {
 	return &DetailingParser{
-		logger:       logger,
-		defaultItems: items,
+		EnumList: parser.NewEnumListWithDefault(
+			logger,
+			items,
+			elementdetailing.ParseList,
+		),
 	}
 }
 
-// FilterElementDetailingList - comment method.
-func (p *DetailingParser) FilterElementDetailingList(r *http.Request, key string) []enum.ElementDetailing {
-	items, err := p.parseList(r, key)
-	if err != nil {
-		p.logger.Warn(r.Context(), "DetailingParser", "error", err)
-
-		return p.defaultItems
-	}
-
-	if len(items) == 0 {
-		return p.defaultItems
-	}
-
-	return items
-}
-
-func (p *DetailingParser) parseList(r *http.Request, key string) ([]enum.ElementDetailing, error) {
-	enumList, err := mrreq.ParseEnumList(r.URL.Query(), key)
-	if err != nil {
-		return nil, err
-	}
-
-	items, err := enum.ParseElementDetailingList(enumList)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, nil
+// FilterElementDetailingList - возвращает массив elementdetailing.Enum поступивший из внешнего запроса.
+// Если ключ key не найден или возникнет ошибка, то возвращается nil значение.
+func (p *DetailingParser) FilterElementDetailingList(r *http.Request, key string) []elementdetailing.Enum {
+	return p.EnumList.FilterEnumList(r, key)
 }

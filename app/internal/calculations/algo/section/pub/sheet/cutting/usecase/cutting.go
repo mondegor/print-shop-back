@@ -8,7 +8,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/cutting"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/cutting"
 )
 
 const (

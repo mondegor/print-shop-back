@@ -4,28 +4,26 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-webcore/mraccess"
-	"github.com/mondegor/go-webcore/mraccess/section"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/internal/initing"
 )
 
 // RegisterRestRouterCustHandlers - регистрирует в указанном роутере обработчики секции CustomersAPI.
 func RegisterRestRouterCustHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
-	sect *section.RoutingSection,
-	memberProvider mraccess.MemberProvider,
+	actionGroup *mraccess.ActionGroup,
+	userProvider mraccess.UserProvider,
 ) error {
-	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
+	router.HandlerFunc(http.MethodGet, actionGroup.BasePath.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,
 		getCustomersAPIControllers(opts),
-		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+		initing.WithCheckAccessMiddleware(opts.Logger, actionGroup, userProvider, opts.PermsProvider),
 	)
 	if err != nil {
 		return err

@@ -10,7 +10,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 	CompanyPagePostgres struct {
 		client            mrstorage.DBConnManager
 		repoByRewriteName db.FieldFetcher[string, uuid.UUID]
-		repoStatus        db.FieldUpdater[uuid.UUID, enum.PublicStatus]
+		repoStatus        db.FieldUpdater[uuid.UUID, publicstatus.Enum]
 	}
 )
 
@@ -33,7 +33,7 @@ func NewCompanyPagePostgres(client mrstorage.DBConnManager) *CompanyPagePostgres
 			"account_id",
 			module.DBFieldWithoutDeletedAt,
 		),
-		repoStatus: db.NewFieldUpdater[uuid.UUID, enum.PublicStatus](
+		repoStatus: db.NewFieldUpdater[uuid.UUID, publicstatus.Enum](
 			client,
 			module.DBTableNameCompaniesPages,
 			"account_id",
@@ -86,7 +86,7 @@ func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, 
 
 // FetchStatus - comment method.
 // result: enums.PublicStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (enum.PublicStatus, error) {
+func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (publicstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, accountID)
 }
 

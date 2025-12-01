@@ -5,7 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 const (
@@ -21,9 +22,9 @@ type (
 		Version        int32                 `json:"version"`
 		RewriteName    string                `json:"rewriteName"`
 		Caption        string                `json:"caption"`
-		Detailing      enum.ElementDetailing `json:"-"`
+		Detailing      elementdetailing.Enum `json:"-"`
 		Body           []byte                `json:"-"`
-		ActivityStatus enum.ActivityStatus   `json:"activityStatus"`
+		ActivityStatus activitystatus.Enum   `json:"activityStatus"`
 		CreatedAt      time.Time             `json:"createdAt"`
 		UpdatedAt      time.Time             `json:"updatedAt"`
 	}
@@ -40,6 +41,6 @@ type (
 	FormVersionStatus struct {
 		FormID         uuid.UUID
 		Version        int32
-		ActivityStatus enum.ActivityStatus
+		ActivityStatus activitystatus.Enum
 	}
 )

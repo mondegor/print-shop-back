@@ -3,9 +3,9 @@ package httpv1
 import (
 	httpmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/model"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s3/rect3d"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/model"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/s3/rect3d"
 )
 
 func (ht *BoxPackInBox) parseRequest(data httpmodel.CalcBoxPackInBoxRequest) (dto.ParsedData, error) {

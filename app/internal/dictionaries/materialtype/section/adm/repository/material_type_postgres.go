@@ -6,9 +6,9 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
@@ -19,7 +19,7 @@ type (
 	MaterialTypePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -30,7 +30,7 @@ func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 	return &MaterialTypePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNameMaterialTypes,
 			"type_id",
@@ -102,7 +102,7 @@ func (re *MaterialTypePostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -171,8 +171,8 @@ func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -233,7 +233,7 @@ func (re *MaterialTypePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("type_id", enums.SortDirectionASC),
+				o.Field("type_id", sortdirection.ASC),
 			)
 		},
 	)

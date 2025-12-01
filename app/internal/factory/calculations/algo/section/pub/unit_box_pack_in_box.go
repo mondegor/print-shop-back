@@ -7,8 +7,8 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/usecase"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/box/packinbox"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/box/packinbox"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 )
 

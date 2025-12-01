@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-webcore/mraccess"
-	"github.com/mondegor/go-webcore/mraccess/section"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
@@ -23,7 +22,6 @@ import (
 	dictionariespaperfacture "github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture/section/adm"
 	dictionariesprintformat "github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat/section/adm"
 	provideraccounts "github.com/mondegor/print-shop-back/internal/factory/provideraccounts/section/adm"
-	"github.com/mondegor/print-shop-back/internal/initing"
 	provideraccountsvalidate "github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
 	pkgcontrolsvalidate "github.com/mondegor/print-shop-back/pkg/controls/validate"
 	pkgprovideraccountsvalidate "github.com/mondegor/print-shop-back/pkg/provideraccounts/validate"
@@ -33,15 +31,15 @@ import (
 func RegisterRestRouterAdmHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
-	sect *section.RoutingSection,
-	memberProvider mraccess.MemberProvider,
+	actionGroup *mraccess.ActionGroup,
+	userProvider mraccess.UserProvider,
 ) error {
-	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
+	router.HandlerFunc(http.MethodGet, actionGroup.BasePath.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,
 		getAdminAPIControllers(opts),
-		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+		initing.WithCheckAccessMiddleware(opts.Logger, actionGroup, userProvider, opts.PermsProvider),
 	)
 	if err != nil {
 		return err

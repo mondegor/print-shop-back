@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
 	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
 )
 
@@ -31,7 +31,7 @@ type (
 
 	// SubmitFormComponent - comment interface.
 	SubmitFormComponent interface {
-		GetFormStatus(ctx context.Context, formID uuid.UUID) (mrenum.ItemStatus, error)
+		GetFormStatus(ctx context.Context, formID uuid.UUID) (itemstatus.Enum, error)
 		GetFormWithElements(ctx context.Context, formID uuid.UUID) (entity.SubmitForm, error)
 	}
 
@@ -47,7 +47,7 @@ type (
 		FetchOne(ctx context.Context, rowID uuid.UUID) (entity.SubmitForm, error)
 		FetchIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error)
 		FetchIDByParamName(ctx context.Context, paramName string) (rowID uuid.UUID, err error)
-		FetchStatus(ctx context.Context, rowID uuid.UUID) (mrenum.ItemStatus, error)
+		FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error)
 		Insert(ctx context.Context, row entity.SubmitForm) (rowID uuid.UUID, err error)
 		Update(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)
@@ -61,6 +61,6 @@ type (
 		FetchOneLastVersion(ctx context.Context, formID uuid.UUID) (entity.FormVersionStatus, error)
 		Insert(ctx context.Context, row entity.FormVersion) error
 		Update(ctx context.Context, row entity.FormVersion) error
-		UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus enum.ActivityStatus) error
+		UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus activitystatus.Enum) error
 	}
 )

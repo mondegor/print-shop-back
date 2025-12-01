@@ -7,9 +7,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/mrstatus"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
@@ -26,7 +25,7 @@ type (
 		paperFactureAPI api.PaperFactureAvailability
 		eventEmitter    mrevent.Emitter
 		errorWrapper    mrerr.UseCaseErrorWrapper
-		statusFlow      mrstatus.Flow
+		statusFlowMap   mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -46,7 +45,7 @@ func NewPaper(
 		paperFactureAPI: paperFactureAPI,
 		eventEmitter:    mrevent.NewSourceEmitter(eventEmitter, entity.ModelNamePaper),
 		errorWrapper:    mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePaper),
-		statusFlow:      mrflow.ItemStatusFlow(),
+		statusFlowMap:   itemstatus.NewFlowMap(),
 	}
 }
 
@@ -84,7 +83,7 @@ func (uc *Paper) Create(ctx context.Context, item entity.Paper) (itemID uint64, 
 		return 0, err
 	}
 
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
@@ -149,7 +148,7 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

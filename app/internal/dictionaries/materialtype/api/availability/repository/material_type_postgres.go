@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
 )
@@ -13,14 +13,14 @@ import (
 type (
 	// MaterialTypePostgres - comment struct.
 	MaterialTypePostgres struct {
-		repoStatus db.FieldFetcher[uint64, mrenum.ItemStatus]
+		repoStatus db.FieldFetcher[uint64, itemstatus.Enum]
 	}
 )
 
 // NewMaterialTypePostgres - создаёт объект MaterialTypePostgres.
 func NewMaterialTypePostgres(client mrstorage.DBConnManager) *MaterialTypePostgres {
 	return &MaterialTypePostgres{
-		repoStatus: db.NewFieldFetcher[uint64, mrenum.ItemStatus](
+		repoStatus: db.NewFieldFetcher[uint64, itemstatus.Enum](
 			client,
 			module.DBTableNameMaterialTypes,
 			"type_id",
@@ -31,7 +31,7 @@ func NewMaterialTypePostgres(client mrstorage.DBConnManager) *MaterialTypePostgr
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

@@ -3,10 +3,10 @@ package pub
 import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/initing"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
 )
@@ -17,7 +17,7 @@ func InitHttpModule(
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
-	logoURLBuilder mrpath.PathBuilder,
+	logoURLBuilder mrpath.Builder,
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

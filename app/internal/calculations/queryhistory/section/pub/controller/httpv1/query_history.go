@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
@@ -40,8 +41,8 @@ func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера QueryHistory.
 func (ht *QueryHistory) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mrserver.PermissionAnyUser, Func: ht.Get},
-		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mrserver.PermissionAnyUser, Func: ht.Create},
+		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mraccess.PermissionAnyUser, Func: ht.Get},
+		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mraccess.PermissionAnyUser, Func: ht.Create},
 	}
 }
 
@@ -57,16 +58,16 @@ func (ht *QueryHistory) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *QueryHistory) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateQueryHistoryRequest{}
+	req := CreateQueryHistoryRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.QueryHistoryItem{
-		Caption: request.Caption,
-		Params:  request.Params,
-		Result:  request.Result,
+		Caption: req.Caption,
+		Params:  req.Params,
+		Result:  req.Result,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)

@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/model"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/model"
 )
 
 type (

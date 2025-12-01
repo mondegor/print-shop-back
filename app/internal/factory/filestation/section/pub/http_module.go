@@ -3,20 +3,20 @@ package pub
 import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
 	"github.com/mondegor/print-shop-back/internal/filestation/module"
-	"github.com/mondegor/print-shop-back/internal/initing"
 )
 
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
 func InitHttpModule(
 	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	requestParser *mrparser.String,
+	requestParser *parser.String,
 	responseFileSender mrserver.FileResponseSender,
-	fileAPIFunc func() (mrstorage.FileProviderAPI, mrpath.PathBuilder, error),
+	fileAPIFunc func() (mrstorage.FileProviderAPI, mrpath.Builder, error),
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

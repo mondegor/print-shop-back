@@ -3,8 +3,9 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub"
 )
@@ -16,19 +17,19 @@ const (
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
-		parser     mrserver.RequestParserString
+		parser     request.ParserString
 		sender     mrserver.ResponseSender
 		useCase    pub.CompanyPageUseCase
-		imgBaseURL mrpath.PathBuilder
+		imgBaseURL mrpath.Builder
 	}
 )
 
 // NewCompanyPage - создаёт контроллер CompanyPage.
 func NewCompanyPage(
-	parser mrserver.RequestParserString,
+	parser request.ParserString,
 	sender mrserver.ResponseSender,
 	useCase pub.CompanyPageUseCase,
-	imgBaseURL mrpath.PathBuilder,
+	imgBaseURL mrpath.Builder,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:     parser,

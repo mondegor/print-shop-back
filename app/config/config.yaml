@@ -212,7 +212,7 @@ access_control:
           # max_attempts: 5
           # max_resends: 2
           # min_resend_time: 2m
-  routing_sections:
+  action_groups:
     - name: public-api
       base_path: "/"
       privilege: public

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
@@ -14,7 +14,7 @@ type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
 		storage      adm.CompanyPageStorage
-		imgBaseURL   mrpath.PathBuilder
+		imgBaseURL   mrpath.Builder
 		errorWrapper mrerr.UseCaseErrorWrapper
 	}
 )
@@ -22,7 +22,7 @@ type (
 // NewCompanyPage - создаёт объект CompanyPage.
 func NewCompanyPage(
 	storage adm.CompanyPageStorage,
-	imgBaseURL mrpath.PathBuilder,
+	imgBaseURL mrpath.Builder,
 	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *CompanyPage {
 	return &CompanyPage{

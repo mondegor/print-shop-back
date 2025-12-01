@@ -3,7 +3,7 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
 )
@@ -24,7 +24,7 @@ type (
 		FetchWithTotal(ctx context.Context, params entity.PaperParams) (rows []entity.Paper, countRows uint64, err error)
 		FetchOne(ctx context.Context, rowID uint64) (entity.Paper, error)
 		FetchIDByArticle(ctx context.Context, article string) (rowID uint64, err error)
-		FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error)
+		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
 		Insert(ctx context.Context, row entity.Paper) (id uint64, err error)
 		Update(ctx context.Context, row entity.Paper) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.Paper) (tagVersion uint32, err error)

@@ -3,31 +3,30 @@ package rest
 import (
 	"net/http"
 
+	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
+	auth "github.com/mondegor/go-components/factory/mrauth/infra/pub"
+	authvalidate "github.com/mondegor/go-components/mrauth/validate"
 	"github.com/mondegor/go-webcore/mraccess"
-	"github.com/mondegor/go-webcore/mraccess/section"
-	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
-	authpub "github.com/mondegor/print-shop-back/internal/factory/auth/section/pub"
-	"github.com/mondegor/print-shop-back/internal/initing"
 )
 
 // RegisterRestRouterAuthHandlers - регистрирует в указанном роутере обработчики секции AuthAPI.
 func RegisterRestRouterAuthHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
-	sect *section.RoutingSection,
-	memberProvider mraccess.MemberProvider,
+	actionGroup *mraccess.ActionGroup,
+	userProvider mraccess.UserProvider,
 ) error {
-	router.HandlerFunc(http.MethodGet, sect.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
+	router.HandlerFunc(http.MethodGet, actionGroup.BasePath.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,
 		getAuthAPIControllers(opts),
-		mrinit.WithMiddlewareCheckAccess(opts.Logger, sect, memberProvider, opts.RealmKindRights, opts.PermsProvider),
+		initing.WithCheckAccessMiddleware(opts.Logger, actionGroup, userProvider, opts.PermsProvider),
 	)
 	if err != nil {
 		return err
@@ -40,21 +39,31 @@ func RegisterRestRouterAuthHandlers(
 
 func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 	return []initing.HttpModule{
-		authpub.InitHttpModule(
+		auth.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
 			opts.UseCaseErrorWrapper,
 			opts.StorageErrorWrapper,
 			opts.PostgresConnManager,
 			opts.Locker,
-			opts.RequestParsers.Parser,
+			// opts.RequestParsers.Parser,
+			authvalidate.NewParser( // TODO: объединить со стандартным Parser или сделать свой? Может там нужно меньше парсеров
+				opts.RequestParsers.Int64,
+				opts.RequestParsers.Uint64,
+				opts.RequestParsers.String,
+				opts.RequestParsers.UUID,
+				opts.RequestParsers.Validator,
+				opts.RequestParsers.ClientIP,
+				opts.RequestParsers.User,
+				opts.RequestParsers.Locale,
+			),
 			opts.ResponseSenders.Sender,
 			opts.ResponseSenders.FileSender,
 			opts.NotifierAPI,
 			opts.Cfg.Debugging.Debug,
 			opts.Cfg.AccessControl.Realms,
 			opts.Cfg.AccessControl.OperationConfirm,
-			auth.JWTConfig{
+			authcfg.JWT{
 				Method: opts.Cfg.AccessControl.JWTMethod,
 				Secret: []byte(opts.Cfg.AccessControl.JWTSecret),
 			},

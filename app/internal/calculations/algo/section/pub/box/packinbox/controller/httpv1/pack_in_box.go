@@ -3,7 +3,9 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
@@ -16,14 +18,14 @@ const (
 type (
 	// BoxPackInBox - comment struct.
 	BoxPackInBox struct {
-		parser  mrserver.RequestParserValidate
+		parser  request.ParserValidate
 		sender  mrserver.ResponseSender
 		useCase pub.BoxPackInBoxUseCase
 	}
 )
 
 // NewBoxPackInBox - создаёт контроллер BoxPackInBox.
-func NewBoxPackInBox(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.BoxPackInBoxUseCase) *BoxPackInBox {
+func NewBoxPackInBox(parser request.ParserValidate, sender mrserver.ResponseSender, useCase pub.BoxPackInBoxUseCase) *BoxPackInBox {
 	return &BoxPackInBox{
 		parser:  parser,
 		sender:  sender,
@@ -34,19 +36,19 @@ func NewBoxPackInBox(parser mrserver.RequestParserValidate, sender mrserver.Resp
 // Handlers - возвращает обработчики контроллера BoxPackInBox.
 func (ht *BoxPackInBox) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: boxPackInBoxURL, Permission: mrserver.PermissionAnyUser, Func: ht.Calc},
+		{Method: http.MethodPost, URL: boxPackInBoxURL, Permission: mraccess.PermissionAnyUser, Func: ht.Calc},
 	}
 }
 
 // Calc - comment method.
 func (ht *BoxPackInBox) Calc(w http.ResponseWriter, r *http.Request) error {
-	request := model.CalcBoxPackInBoxRequest{}
+	req := model.CalcBoxPackInBoxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	item, err := ht.parseRequest(request)
+	item, err := ht.parseRequest(req)
 	if err != nil {
 		return err
 	}

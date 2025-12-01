@@ -1,6 +1,8 @@
 package model
 
-import "github.com/mondegor/print-shop-back/pkg/libs/measure"
+import (
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+)
 
 type (
 	// CalcBoxPackInBoxRequest - comment struct.

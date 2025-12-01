@@ -5,11 +5,13 @@ import (
 	"io"
 	"net/http"
 
+	authiniting "github.com/mondegor/go-components/factory/mrauth/initing"
+	"github.com/mondegor/go-storage/mrlock/redislocker"
 	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-storage/mrredislock"
 	"github.com/mondegor/go-sysmess/mrerr/errorwrapper"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrwire"
+	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrrun"
 
 	dictionariesapi "github.com/mondegor/print-shop-back/cmd/factory/api/dictionaries"
@@ -172,7 +174,11 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	opts.Locker = mrredislock.NewLockerAdapter(redisCli, opts.Logger, opts.Tracer)
+	opts.Locker = redislocker.NewLockerAdapter(
+		redisCli,
+		opts.Logger,
+		opts.Tracer,
+	)
 
 	if opts.LocalePool, err = LocalePool(opts.Logger, opts.Cfg); err != nil {
 		return app.Options{}, err
@@ -186,11 +192,26 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	if opts.PermsProvider, err = InitPermsProvider(opts.Logger, opts.Cfg); err != nil {
+	if opts.PermsProvider, err = initing.InitPermsProvider(
+		opts.Logger,
+		opts.Cfg.AccessControl.RolesDirPath,
+		opts.Cfg.AccessControl.Roles,
+		opts.Cfg.AccessControl.Privileges,
+		opts.Cfg.AccessControl.Permissions,
+	); err != nil {
 		return app.Options{}, err
 	}
 
-	opts.RealmKindRights = InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider)
+	opts.RealmUserProviders = authiniting.InitUserProviders(
+		opts.Logger,
+		opts.UseCaseErrorWrapper,
+		opts.StorageErrorWrapper,
+		opts.PostgresConnManager,
+		authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider),
+		opts.Cfg.Realms,
+		opts.Cfg.Debugging.AuthorizedUser,
+		opts.Cfg.AccessControl.JWTSecret,
+	)
 
 	if opts.ImageURLBuilder, err = InitImageURLBuilder(opts.Cfg); err != nil {
 		return app.Options{}, err
@@ -242,7 +263,7 @@ func createSharedServices(opts app.Options) (enrichedOpts app.Options, err error
 
 	opts.MailProcessorService, err = service.InitMailerProcessorService(opts)
 	if err != nil {
-		return app.Options{}, fmt.Errorf("factory.InitMailerService(): %w", err)
+		return app.Options{}, fmt.Errorf("factory.InitMailerProcessorService(): %w", err)
 	}
 
 	opts.NoticeProcessorService = service.InitNotifierProcessorService(opts)

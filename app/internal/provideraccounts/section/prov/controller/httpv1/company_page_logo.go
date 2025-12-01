@@ -5,6 +5,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
@@ -24,8 +25,8 @@ type (
 	}
 
 	requestParser interface {
-		mrserver.RequestParserImage
-		mrserver.RequestParserUser
+		request.ParserImage
+		request.ParserUser
 	}
 )
 

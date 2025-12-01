@@ -7,7 +7,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
 )
 
 type (
@@ -43,8 +43,8 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 		ctx,
 		sql,
 		rewriteName,
-		enum.PublicStatusPublished,
-		enum.PublicStatusPublishedShared,
+		publicstatus.Published,
+		publicstatus.PublishedShared,
 	).Scan(
 		&row.PageTitle,
 		&row.LogoURL,

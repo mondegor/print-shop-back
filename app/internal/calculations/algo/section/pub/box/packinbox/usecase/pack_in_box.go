@@ -11,8 +11,8 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/box/packinbox"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/box/packinbox"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 const (

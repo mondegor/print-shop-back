@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 	"github.com/mondegor/print-shop-back/pkg/validate"
 	"github.com/mondegor/print-shop-back/pkg/view"
 )
@@ -104,16 +104,16 @@ func (ht *PrintFormat) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePrintFormatRequest{}
+	req := CreatePrintFormatRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
-		Caption: request.Caption,
-		Width:   measure.Meter(request.Width * measure.OneThousandth),
-		Height:  measure.Meter(request.Height * measure.OneThousandth),
+		Caption: req.Caption,
+		Width:   measure.Meter(req.Width * measure.OneThousandth),
+		Height:  measure.Meter(req.Height * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -132,18 +132,18 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePrintFormatRequest{}
+	req := StorePrintFormatRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
-		Width:      measure.Meter(request.Width * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
+		Width:      measure.Meter(req.Width * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -155,16 +155,16 @@ func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *PrintFormat) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

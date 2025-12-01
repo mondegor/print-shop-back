@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 )
@@ -13,14 +13,14 @@ import (
 type (
 	// PrintFormatPostgres - comment struct.
 	PrintFormatPostgres struct {
-		repoStatus db.FieldFetcher[uint64, mrenum.ItemStatus]
+		repoStatus db.FieldFetcher[uint64, itemstatus.Enum]
 	}
 )
 
 // NewPrintFormatPostgres - создаёт объект PrintFormatPostgres.
 func NewPrintFormatPostgres(client mrstorage.DBConnManager) *PrintFormatPostgres {
 	return &PrintFormatPostgres{
-		repoStatus: db.NewFieldFetcher[uint64, mrenum.ItemStatus](
+		repoStatus: db.NewFieldFetcher[uint64, itemstatus.Enum](
 			client,
 			module.DBTableNamePrintFormats,
 			"format_id",
@@ -31,7 +31,7 @@ func NewPrintFormatPostgres(client mrstorage.DBConnManager) *PrintFormatPostgres
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
 )
 
 const (
@@ -24,7 +24,7 @@ type (
 		PageTitle   string            `json:"pageTitle"`
 		LogoURL     string            `json:"logoUrl,omitempty"` // logo_meta.path
 		SiteURL     string            `json:"siteUrl"`
-		Status      enum.PublicStatus `json:"status"`
+		Status      publicstatus.Enum `json:"status"`
 		CreatedAt   time.Time         `json:"createdAt"`
 		UpdatedAt   time.Time         `json:"updatedAt"`
 	}

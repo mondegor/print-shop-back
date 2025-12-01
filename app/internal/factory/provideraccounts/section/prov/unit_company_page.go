@@ -4,7 +4,7 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/controller/httpv1"
@@ -19,7 +19,7 @@ func initCompanyPageController(
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
-	logoURLBuilder mrpath.PathBuilder,
+	logoURLBuilder mrpath.Builder,
 ) (mrserver.HttpController, error) {
 	storage := repository.NewCompanyPagePostgres(dbConnManager)
 

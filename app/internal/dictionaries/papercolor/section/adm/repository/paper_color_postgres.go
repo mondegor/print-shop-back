@@ -6,9 +6,9 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
@@ -19,7 +19,7 @@ type (
 	PaperColorPostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -30,7 +30,7 @@ func NewPaperColorPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 	return &PaperColorPostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNamePaperColors,
 			"color_id",
@@ -99,7 +99,7 @@ func (re *PaperColorPostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -168,8 +168,8 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID uint64) (entit
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -252,7 +252,7 @@ func (re *PaperColorPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.S
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("color_id", enums.SortDirectionASC),
+				o.Field("color_id", sortdirection.ASC),
 			)
 		},
 	)

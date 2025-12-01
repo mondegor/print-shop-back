@@ -7,7 +7,8 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 type (
@@ -41,8 +42,8 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, _ entity.SubmitFormPara
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		enum.ActivityStatusPublished,
-		enum.ElementDetailingNormal,
+		activitystatus.Published,
+		elementdetailing.Normal,
 	)
 	if err != nil {
 		return nil, err
@@ -89,8 +90,8 @@ func (re *SubmitFormPostgres) FetchByRewriteName(ctx context.Context, rewriteNam
 		ctx,
 		sql,
 		rewriteName,
-		enum.ActivityStatusPublished,
-		enum.ElementDetailingNormal,
+		activitystatus.Published,
+		elementdetailing.Normal,
 	).Scan(
 		&row.Version,
 		&row.RewriteName,

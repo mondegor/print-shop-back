@@ -7,17 +7,17 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-sysmess/mrargs"
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlock"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
 )
 
 type (
@@ -101,10 +101,10 @@ func (uc *FormVersion) PrepareForTest(ctx context.Context, formID uuid.UUID) err
 		return err
 	}
 
-	if lastVersionItem.ActivityStatus == enum.ActivityStatusArchived {
+	if lastVersionItem.ActivityStatus == activitystatus.Archived {
 		return mr.ErrUseCaseSwitchStatusRejected.New(
-			enum.ActivityStatusArchived,
-			enum.ActivityStatusTesting,
+			activitystatus.Archived,
+			activitystatus.Testing,
 		)
 	}
 
@@ -122,14 +122,14 @@ func (uc *FormVersion) PrepareForTest(ctx context.Context, formID uuid.UUID) err
 	eventName := "Create"
 	item.Version = lastVersionItem.Version
 
-	if lastVersionItem.ActivityStatus == enum.ActivityStatusTesting {
+	if lastVersionItem.ActivityStatus == activitystatus.Testing {
 		if err = uc.storage.Update(ctx, item); err != nil {
 			return uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", item.ID)
 		}
 
 		eventName = "Update"
 	} else {
-		if lastVersionItem.ActivityStatus == enum.ActivityStatusPublished {
+		if lastVersionItem.ActivityStatus == activitystatus.Published {
 			item.Version++
 		}
 
@@ -150,14 +150,14 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 		return err
 	}
 
-	if item.ActivityStatus == enum.ActivityStatusPublished {
+	if item.ActivityStatus == activitystatus.Published {
 		return nil // переключения не требуется
 	}
 
-	if item.ActivityStatus != enum.ActivityStatusTesting {
+	if item.ActivityStatus != activitystatus.Testing {
 		return mr.ErrUseCaseSwitchStatusRejected.New(
 			item.ActivityStatus,
-			enum.ActivityStatusPublished,
+			activitystatus.Published,
 		)
 	}
 
@@ -167,7 +167,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 		defer unlock()
 	}
 
-	if err = uc.storage.UpdateStatus(ctx, item, enum.ActivityStatusPublished); err != nil {
+	if err = uc.storage.UpdateStatus(ctx, item, activitystatus.Published); err != nil {
 		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
@@ -191,7 +191,7 @@ func (uc *FormVersion) getItemLastVersion(ctx context.Context, formID uuid.UUID)
 
 	if formStatus, err := uc.formComponent.GetFormStatus(ctx, formID); err != nil {
 		return entity.FormVersionStatus{}, err
-	} else if formStatus != mrenum.ItemStatusEnabled {
+	} else if formStatus != itemstatus.Enabled {
 		return entity.FormVersionStatus{}, mr.ErrUseCaseEntityNotAvailable.New()
 	}
 
@@ -201,7 +201,7 @@ func (uc *FormVersion) getItemLastVersion(ctx context.Context, formID uuid.UUID)
 			return entity.FormVersionStatus{
 				FormID:         formID,
 				Version:        1,
-				ActivityStatus: enum.ActivityStatusDraft,
+				ActivityStatus: activitystatus.Draft,
 			}, nil
 		}
 
@@ -229,6 +229,6 @@ func (uc *FormVersion) createFormVersionForTest(ctx context.Context, formID uuid
 		Caption:        form.Caption,
 		Detailing:      form.Detailing,
 		Body:           body,
-		ActivityStatus: enum.ActivityStatusTesting,
+		ActivityStatus: activitystatus.Testing,
 	}, nil
 }

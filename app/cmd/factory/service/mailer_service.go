@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/mondegor/go-components/factory/mrmailer/processor"
 	"github.com/mondegor/go-components/factory/mrmailer/producer"
 	"github.com/mondegor/go-components/factory/mrmailer/scheduler"
@@ -55,6 +57,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 
 	mailProvider := mrmailer.MessageProvider(nop.New(opts.Tracer))
 	telegramProvider := mrmailer.MessageProvider(nop.New(opts.Tracer))
+	mrlog.Info(opts.Logger, "opts.Cfg.Senders.Mail.DefaultFrom", opts.Cfg.Senders.Mail.DefaultFrom)
 
 	if opts.Cfg.Senders.Mail.SmtpHost != "" {
 		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.Senders.Mail.SmtpHost, "port", opts.Cfg.Senders.Mail.SmtpPort)
@@ -71,7 +74,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 			opts.Cfg.Senders.Mail.DefaultFrom,
 		)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("mail.New(): %w", err)
 		}
 
 		mailProvider = provider
@@ -82,7 +85,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 
 		telegramBot, err := telegrambot.NewMessageClient(opts.Cfg.Senders.TelegramBot.Token, opts.Tracer)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("telegrambot.NewMessageClient(): %w", err)
 		}
 
 		telegramProvider = messenger.New(telegramBot, opts.Tracer)

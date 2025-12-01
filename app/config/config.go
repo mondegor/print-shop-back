@@ -4,10 +4,9 @@ import (
 	"io"
 	"time"
 
+	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
 	"github.com/mondegor/go-sysmess/mrlib/extfile"
-
-	"github.com/mondegor/print-shop-back/internal/factory/auth"
-	"github.com/mondegor/print-shop-back/internal/initing"
+	typecfg "github.com/mondegor/go-sysmess/mrtype/config"
 )
 
 type (
@@ -25,23 +24,23 @@ type (
 	// Config - comment struct.
 	Config struct {
 		Os
-		App             `yaml:"app"`
-		Debugging       `yaml:"debugging"`
-		Log             `yaml:"logger"`
-		Trace           `yaml:"tracer"`
-		Sentry          `yaml:"sentry"`
-		Servers         `yaml:"servers"`
-		Storage         `yaml:"storage"`
-		Redis           `yaml:"redis"`
-		FileSystem      `yaml:"file_system"`
-		FileProviders   `yaml:"file_providers"`
-		Cors            `yaml:"cors"`
-		Localization    `yaml:"localization"`
-		Senders         `yaml:"senders"`
-		AccessControl   `yaml:"access_control"`
-		ModulesSettings `yaml:"modules_settings"`
-		Validation      `yaml:"validation"`
-		TaskSchedule    `yaml:"task_schedule"`
+		App                   `yaml:"app"`
+		Debugging             `yaml:"debugging"`
+		Log                   `yaml:"logger"`
+		Trace                 `yaml:"tracer"`
+		Sentry                `yaml:"sentry"`
+		Servers               `yaml:"servers"`
+		Storage               `yaml:"storage"`
+		Redis                 `yaml:"redis"`
+		FileSystem            `yaml:"file_system"`
+		FileProviders         `yaml:"file_providers"`
+		Cors                  `yaml:"cors"`
+		Localization          `yaml:"localization"`
+		Senders               `yaml:"senders"`
+		authcfg.AccessControl `yaml:"access_control"`
+		ModulesSettings       `yaml:"modules_settings"`
+		Validation            `yaml:"validation"`
+		TaskSchedule          `yaml:"task_schedule"`
 	}
 
 	// Os - comment struct.
@@ -62,15 +61,10 @@ type (
 
 	// Debugging - comment struct.
 	Debugging struct {
-		Debug          bool `yaml:"debug" env:"APPX_DEBUG"`
-		AuthorizedUser struct {
-			ID       string `yaml:"id"`
-			Realm    string `yaml:"realm"`
-			Kind     string `yaml:"kind"`
-			LangCode string `yaml:"lang"`
-		} `yaml:"authorized_user"`
-		UnexpectedHttpStatus int `yaml:"unexpected_http_status"`
-		ErrorCaller          `yaml:"error_caller"`
+		Debug                  bool `yaml:"debug" env:"APPX_DEBUG"`
+		authcfg.AuthorizedUser `yaml:"authorized_user"`
+		UnexpectedHttpStatus   int `yaml:"unexpected_http_status"`
+		ErrorCaller            `yaml:"error_caller"`
 	}
 
 	// ErrorCaller - comment struct.
@@ -198,19 +192,6 @@ type (
 		Token string `yaml:"token" env:"APPX_SENDER_TELEGRAMBOT_TOKEN"`
 	}
 
-	// AccessControl - comment struct.
-	AccessControl struct {
-		Realms           []auth.UserRealm         `yaml:"realms"`
-		RoutingSections  []initing.RoutingSection `yaml:"routing_sections"`
-		RolesDirPath     string                   `yaml:"roles_dir_path" env:"APPX_ROLES_DIR_PATH"`
-		Roles            []string                 `yaml:"roles"`
-		Privileges       []string                 `yaml:"privileges"`
-		Permissions      []string                 `yaml:"permissions"`
-		OperationConfirm auth.OperationConfirm    `yaml:"operation_confirm"`
-		JWTMethod        string                   `yaml:"jwt_method" env:"APPX_JWT_METHOD"`
-		JWTSecret        string                   `yaml:"jwt_secret" env:"APPX_JWT_SECRET"`
-	}
-
 	// ModulesSettings - comment struct.
 	ModulesSettings struct {
 		// General - comment struct.
@@ -239,29 +220,12 @@ type (
 	// Validation - comment struct.
 	Validation struct {
 		Files struct {
-			Json FileType `yaml:"json"`
+			Json typecfg.FileType `yaml:"json"`
 		} `yaml:"files"`
 		Images struct {
-			Logo ImageType `yaml:"logo"`
+			Logo typecfg.ImageType `yaml:"logo"`
 		} `yaml:"images"`
 		MimeTypes []extfile.MimeType `yaml:"mime_types"`
-	}
-
-	// FileType - comment struct.
-	FileType struct {
-		MinSize                 uint64   `yaml:"min_size"`
-		MaxSize                 uint64   `yaml:"max_size"`
-		MaxFiles                int      `yaml:"max_files"`
-		CheckRequestContentType bool     `yaml:"check_request_content_type"`
-		Extensions              []string `yaml:"extensions"`
-	}
-
-	// ImageType - comment struct.
-	ImageType struct {
-		MaxWidth  uint64   `yaml:"max_width"`
-		MaxHeight uint64   `yaml:"max_height"`
-		CheckBody bool     `yaml:"check_body"`
-		File      FileType `yaml:"file"`
 	}
 
 	// TaskSchedule - comment struct.

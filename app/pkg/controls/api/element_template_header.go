@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrerr"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
 )
 
 const (
@@ -20,7 +20,7 @@ type (
 		TagVersion uint32
 		ParamName  string
 		Caption    string
-		Detailing  enum.ElementDetailing
+		Detailing  elementdetailing.Enum
 	}
 
 	// ElementTemplateHeader - comment interface.

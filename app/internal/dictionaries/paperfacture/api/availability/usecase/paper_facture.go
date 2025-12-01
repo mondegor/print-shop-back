@@ -5,8 +5,8 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrargs"
 	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtrace"
-	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -48,7 +48,7 @@ func (uc *PaperFacture) CheckAvailability(ctx context.Context, itemID uint64) er
 		}
 
 		return uc.errorWrapper.WrapErrorFailed(err)
-	} else if status != mrenum.ItemStatusEnabled {
+	} else if status != itemstatus.Enabled {
 		return api.ErrPaperFactureNotAvailable.New(itemID)
 	}
 

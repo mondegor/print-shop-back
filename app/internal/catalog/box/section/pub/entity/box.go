@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 const (

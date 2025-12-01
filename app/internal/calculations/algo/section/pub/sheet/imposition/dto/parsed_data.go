@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2/rect2d"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 type (

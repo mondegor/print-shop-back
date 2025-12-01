@@ -65,18 +65,18 @@ func (ht *FormElement) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateFormElementRequest{}
+	req := CreateFormElementRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.FormElement{
-		FormID:     request.FormID,
-		TemplateID: request.TemplateID,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
-		Required:   &request.Required,
+		FormID:     req.FormID,
+		TemplateID: req.TemplateID,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
+		Required:   &req.Required,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -95,18 +95,18 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreFormElementRequest{}
+	req := StoreFormElementRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.FormElement{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
-		Required:   request.Required,
+		TagVersion: req.TagVersion,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
+		Required:   req.Required,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -127,13 +127,13 @@ func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
 
 // Move - comment method.
 func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
-	request := view.MoveItemRequest{}
+	req := view.MoveItemRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), request.AfterNodeID); err != nil {
+	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), req.AfterNodeID); err != nil {
 		return ht.wrapErrorNode(r, err)
 	}
 

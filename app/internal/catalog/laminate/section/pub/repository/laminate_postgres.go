@@ -5,19 +5,19 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
 	// LaminatePostgres - comment struct.
 	LaminatePostgres struct {
 		client          mrstorage.DBConnManager
-		repoTypeIDs     db.ColumnFetcher[mrenum.ItemStatus, uint64]
-		repoThicknesses db.ColumnFetcher[mrenum.ItemStatus, measure.Meter]
+		repoTypeIDs     db.ColumnFetcher[itemstatus.Enum, uint64]
+		repoThicknesses db.ColumnFetcher[itemstatus.Enum, measure.Meter]
 	}
 )
 
@@ -25,14 +25,14 @@ type (
 func NewLaminatePostgres(client mrstorage.DBConnManager) *LaminatePostgres {
 	return &LaminatePostgres{
 		client: client,
-		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+		repoTypeIDs: db.NewColumnFetcher[itemstatus.Enum, uint64](
 			client,
 			module.DBTableNameLaminates,
 			"laminate_status",
 			"type_id",
 			module.DBFieldDeletedAt,
 		),
-		repoThicknesses: db.NewColumnFetcher[mrenum.ItemStatus, measure.Meter](
+		repoThicknesses: db.NewColumnFetcher[itemstatus.Enum, measure.Meter](
 			client,
 			module.DBTableNameLaminates,
 			"laminate_status",
@@ -64,7 +64,7 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, _ entity.LaminateParams) 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err
@@ -99,10 +99,10 @@ func (re *LaminatePostgres) Fetch(ctx context.Context, _ entity.LaminateParams) 
 
 // FetchTypeIDs - comment method.
 func (re *LaminatePostgres) FetchTypeIDs(ctx context.Context) ([]uint64, error) {
-	return re.repoTypeIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoTypeIDs.Fetch(ctx, itemstatus.Enabled)
 }
 
 // FetchThicknesses - comment method.
 func (re *LaminatePostgres) FetchThicknesses(ctx context.Context) ([]measure.Meter, error) {
-	return re.repoThicknesses.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoThicknesses.Fetch(ctx, itemstatus.Enabled)
 }

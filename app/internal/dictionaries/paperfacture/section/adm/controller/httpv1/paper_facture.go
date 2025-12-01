@@ -101,14 +101,14 @@ func (ht *PaperFacture) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *PaperFacture) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePaperFactureRequest{}
+	req := CreatePaperFactureRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperFacture{
-		Caption: request.Caption,
+		Caption: req.Caption,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -127,16 +127,16 @@ func (ht *PaperFacture) Create(w http.ResponseWriter, r *http.Request) error {
 
 // Store - comment method.
 func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePaperFactureRequest{}
+	req := StorePaperFactureRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperFacture{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
 	}
 
 	if err := ht.useCase.Store(r.Context(), item); err != nil {
@@ -148,16 +148,16 @@ func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *PaperFacture) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := view.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PaperFacture{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {

@@ -7,9 +7,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrerr/mr"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/mrstatus"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/adm/entity"
@@ -18,10 +17,10 @@ import (
 type (
 	// PaperColor - comment struct.
 	PaperColor struct {
-		storage      adm.PaperColorStorage
-		eventEmitter mrevent.Emitter
-		errorWrapper mrerr.UseCaseErrorWrapper
-		statusFlow   mrstatus.Flow
+		storage       adm.PaperColorStorage
+		eventEmitter  mrevent.Emitter
+		errorWrapper  mrerr.UseCaseErrorWrapper
+		statusFlowMap mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -32,10 +31,10 @@ func NewPaperColor(
 	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *PaperColor {
 	return &PaperColor{
-		storage:      storage,
-		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNamePaperColor),
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePaperColor),
-		statusFlow:   mrflow.ItemStatusFlow(),
+		storage:       storage,
+		eventEmitter:  mrevent.NewSourceEmitter(eventEmitter, entity.ModelNamePaperColor),
+		errorWrapper:  mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePaperColor),
+		statusFlowMap: itemstatus.NewFlowMap(),
 	}
 }
 
@@ -69,7 +68,7 @@ func (uc *PaperColor) GetItem(ctx context.Context, itemID uint64) (entity.PaperC
 
 // Create - comment method.
 func (uc *PaperColor) Create(ctx context.Context, item entity.PaperColor) (itemID uint64, err error) {
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
@@ -130,7 +129,7 @@ func (uc *PaperColor) ChangeStatus(ctx context.Context, item entity.PaperColor) 
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
 		return mr.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 

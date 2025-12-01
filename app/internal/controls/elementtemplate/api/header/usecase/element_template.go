@@ -5,8 +5,8 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrargs"
 	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtrace"
-	"github.com/mondegor/go-webcore/mrenum"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
@@ -51,7 +51,7 @@ func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (ap
 		return api.ElementTemplateDTO{}, uc.errorWrapper.WrapErrorFailed(err)
 	}
 
-	if item.Status == mrenum.ItemStatusDisabled {
+	if item.Status == itemstatus.Disabled {
 		return api.ElementTemplateDTO{}, api.ErrElementTemplateIsDisabled.New(itemID)
 	}
 

@@ -8,9 +8,9 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
-	"github.com/mondegor/go-sysmess/mrtype/enums"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
@@ -22,7 +22,7 @@ type (
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
 		repoIDByArticle db.FieldFetcher[string, uint64]
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[uint64]
 	}
@@ -33,7 +33,7 @@ func NewLaminatePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQ
 	return &LaminatePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
 			client,
 			module.DBTableNameLaminates,
 			"laminate_id",
@@ -115,7 +115,7 @@ func (re *LaminatePostgres) fetch(
 		WHERE
 			` + whereStr + `
 		ORDER BY
-			` + orderBy.String() + limit.String() + `;`
+			` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -207,8 +207,8 @@ func (re *LaminatePostgres) FetchIDByArticle(ctx context.Context, article string
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -316,7 +316,7 @@ func (re *LaminatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQL
 		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
 			return o.JoinComma(
 				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("laminate_id", enums.SortDirectionASC),
+				o.Field("laminate_id", sortdirection.ASC),
 			)
 		},
 	)
