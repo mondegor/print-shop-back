@@ -6,7 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (

@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrerr"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (

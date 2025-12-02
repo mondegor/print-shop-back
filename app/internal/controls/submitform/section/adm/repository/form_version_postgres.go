@@ -9,7 +9,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/activitystatus"
 )
 
 type (

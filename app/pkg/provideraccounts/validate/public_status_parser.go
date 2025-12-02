@@ -6,7 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (

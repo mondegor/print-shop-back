@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
-	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/activitystatus"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (

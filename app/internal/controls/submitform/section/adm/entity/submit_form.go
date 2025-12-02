@@ -7,7 +7,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (

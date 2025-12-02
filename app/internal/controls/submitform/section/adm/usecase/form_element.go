@@ -16,7 +16,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/type/elementdetailing"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (

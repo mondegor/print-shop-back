@@ -9,10 +9,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20251128131203-c92ac68673a2
-	github.com/mondegor/go-storage v0.17.2-0.20251128130448-a3a4c06cbc3a
-	github.com/mondegor/go-sysmess v0.15.4-0.20251128110047-5f17fa964782
-	github.com/mondegor/go-webcore v0.29.3-0.20251128110404-7b0a9034ddcb
+	github.com/mondegor/go-components v0.8.3-0.20251202162439-07a9d20df6a8
+	github.com/mondegor/go-storage v0.17.2-0.20251202155317-460e51bd738f
+	github.com/mondegor/go-sysmess v0.15.4-0.20251202154514-e962b350a5ef
+	github.com/mondegor/go-webcore v0.29.3-0.20251202155112-9431d9096ee8
 	github.com/oklog/run v1.2.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
@@ -91,7 +91,7 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.67.4 // indirect
 	github.com/prometheus/procfs v0.19.2 // indirect
-	github.com/redis/go-redis/v9 v9.17.1 // indirect
+	github.com/redis/go-redis/v9 v9.17.2 // indirect
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/shirou/gopsutil/v4 v4.25.11 // indirect

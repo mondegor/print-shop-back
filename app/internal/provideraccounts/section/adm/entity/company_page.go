@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 const (

@@ -7,7 +7,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/type/activitystatus"
+	"github.com/mondegor/print-shop-back/pkg/controls/enum/activitystatus"
 	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
 )
 

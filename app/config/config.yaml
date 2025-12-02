@@ -30,6 +30,7 @@ debugging:
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Err
       - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
       - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
+      - github.com/mondegor/go-sysmess/mrerr.(*useCaseErrorWrapper).WrapErrorFailed
 
 logger:
   level: debug # info, warn, error

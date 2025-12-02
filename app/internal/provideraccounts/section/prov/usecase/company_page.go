@@ -15,7 +15,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/type/publicstatus"
+	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
