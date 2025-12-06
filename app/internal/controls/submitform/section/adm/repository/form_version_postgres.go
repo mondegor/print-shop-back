@@ -204,7 +204,7 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
         WHERE
             form_id = $1 AND version = $2 AND activity_status = $3;`
 
-	return re.client.Conn(ctx).Exec(
+	err := re.client.Conn(ctx).Exec(
 		ctx,
 		sql,
 		row.ID,
@@ -215,6 +215,11 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
 		row.Detailing,
 		row.Body,
 	)
+	if err != nil && mr.ErrStorageRowsNotAffected.Is(err) {
+		return mr.ErrStorageNoRowFound.Wrap(err)
+	}
+
+	return err
 }
 
 // UpdateStatus - comment method.
@@ -241,11 +246,9 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			toStatus,
 			activitystatus.Archived,
 		)
-		if err != nil {
-			// если это системная ошибка
-			if !mr.ErrStorageRowsNotAffected.Is(err) {
-				return err
-			}
+		// если это внутренняя ошибка
+		if err != nil && !mr.ErrStorageRowsNotAffected.Is(err) {
+			return err
 		}
 
 		// переключение только указанной версии в указанный статус
@@ -258,7 +261,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			WHERE
 				form_id = $1 AND version = $2 AND activity_status = $3;`
 
-		return conn.Exec(
+		err = conn.Exec(
 			ctx,
 			sql,
 			row.FormID,
@@ -266,5 +269,10 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			row.ActivityStatus,
 			toStatus,
 		)
+		if err != nil && mr.ErrStorageRowsNotAffected.Is(err) {
+			return mr.ErrStorageNoRowFound.Wrap(err)
+		}
+
+		return err
 	})
 }

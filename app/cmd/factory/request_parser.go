@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"github.com/mondegor/go-components/factory/mrauth/mapping"
 	"github.com/mondegor/go-components/mrauth/bag/contactaddress"
 	"github.com/mondegor/go-sysmess/mrlib/extfile"
 	"github.com/mondegor/go-sysmess/mrlog"
@@ -108,7 +109,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 }
 
 // NewValidator - создаёт объект mrplayvalidator.ValidatorAdapter.
-func NewValidator(logger mrlog.Logger, _ config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
+func NewValidator(logger mrlog.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
 	mrlog.Info(logger, "Create and init data validator")
 
 	validator := mrplayvalidator.New(logger)
@@ -129,7 +130,7 @@ func NewValidator(logger mrlog.Logger, _ config.Config) (*mrplayvalidator.Valida
 
 	if err := validator.Register(
 		"tag_email_phone",
-		mrview.ValidateOr(
+		mrview.NewValidateOR(
 			contactaddress.ValidateEmail,
 			contactaddress.ValidatePhoneWorld,
 		)); err != nil {
@@ -149,6 +150,18 @@ func NewValidator(logger mrlog.Logger, _ config.Config) (*mrplayvalidator.Valida
 	}
 
 	if err := validator.Register("tag_password", mrview.ValidatePassword); err != nil { // TODO: переименовать в validate.Password
+		return nil, err
+	}
+
+	if err := validator.Register(
+		"tag_realm",
+		mrview.NewValidateAND(
+			mrview.ValidateName,
+			mrview.NewValidateInArray(
+				mapping.OptionUserRealmsToStringRealms(cfg.AccessControl.Realms),
+			),
+		),
+	); err != nil {
 		return nil, err
 	}
 

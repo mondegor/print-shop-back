@@ -44,7 +44,7 @@ func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (ap
 
 	item, err := uc.storage.FetchOneHead(ctx, itemID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return api.ElementTemplateDTO{}, api.ErrElementTemplateNotFound.New(itemID)
 		}
 

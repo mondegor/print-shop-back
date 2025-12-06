@@ -98,7 +98,7 @@ func (uc *PrintFormat) Store(ctx context.Context, item entity.PrintFormat) error
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -135,7 +135,7 @@ func (uc *PrintFormat) ChangeStatus(ctx context.Context, item entity.PrintFormat
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 

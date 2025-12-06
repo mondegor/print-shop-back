@@ -115,7 +115,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.PageTitle,
 			row.SiteURL,
 		)
-		// если сохранение удачное или если это системная ошибка
+		// если сохранение удачное или если это внутренняя ошибка
 		if err == nil || !mr.ErrStorageRowsNotAffected.Is(err) {
 			return err
 		}

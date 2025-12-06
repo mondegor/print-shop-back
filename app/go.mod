@@ -9,10 +9,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.7.6
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20251202162439-07a9d20df6a8
-	github.com/mondegor/go-storage v0.17.2-0.20251202155317-460e51bd738f
-	github.com/mondegor/go-sysmess v0.15.4-0.20251202154514-e962b350a5ef
-	github.com/mondegor/go-webcore v0.29.3-0.20251202155112-9431d9096ee8
+	github.com/mondegor/go-components v0.8.3-0.20251206142116-e128ab41281f
+	github.com/mondegor/go-storage v0.17.2-0.20251206141616-aff8014d1409
+	github.com/mondegor/go-sysmess v0.15.4-0.20251206134308-2061d68cc806
+	github.com/mondegor/go-webcore v0.29.3-0.20251206135339-0d470b969e3c
 	github.com/oklog/run v1.2.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
@@ -101,7 +101,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/minio v0.40.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.40.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/redis v0.40.0 // indirect
-	github.com/tinylib/msgp v1.5.0 // indirect
+	github.com/tinylib/msgp v1.6.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect

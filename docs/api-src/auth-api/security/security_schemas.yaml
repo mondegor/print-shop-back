@@ -48,18 +48,6 @@ Auth.Security.Request.Model.ApplyOperation:
       maxLength: 128
       example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
 
-Auth.Security.Response.GeneratedPassword:
-  type: object
-  required:
-    - password
-  properties:
-    password:
-      description: Сгенерированный пароль для пользователя
-      type: string
-      minLength: 8
-      maxLength: 32
-      example: "L$QI.qA6eu7zG%7w"
-
 Auth.Security.Response.TotpGenerator:
   type: object
   required:

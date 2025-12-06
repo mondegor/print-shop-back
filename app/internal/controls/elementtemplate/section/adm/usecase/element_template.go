@@ -130,7 +130,7 @@ func (uc *ElementTemplate) Store(ctx context.Context, item entity.ElementTemplat
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -167,7 +167,7 @@ func (uc *ElementTemplate) ChangeStatus(ctx context.Context, item entity.Element
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 

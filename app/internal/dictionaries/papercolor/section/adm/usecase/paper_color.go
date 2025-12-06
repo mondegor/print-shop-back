@@ -98,7 +98,7 @@ func (uc *PaperColor) Store(ctx context.Context, item entity.PaperColor) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -135,7 +135,7 @@ func (uc *PaperColor) ChangeStatus(ctx context.Context, item entity.PaperColor) 
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 

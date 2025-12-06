@@ -1,4 +1,4 @@
-/v1/check/login:
+/v1/check/check-login:
   post:
     summary: Auth/CK/R1. Метод проверяет свободен ли указанный емаил/телефон
     description: Метод предназначен для проверки возможности регистрации пользователя с помощью указанного емаила/телефона
@@ -27,11 +27,11 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/check/password-strength:
+/v1/check/calc-password-strength:
   post:
-    summary: Auth/CK/R2. Метод проверяет надёжность указанного пароля
-    description: Метод предназначен для проверки надёжности указанного пароля
-    operationId: checkPasswordStrength
+    summary: Auth/CK/R2. Метод рассчитывает надёжность указанного пароля
+    description: Метод предназначен для расчёта надёжности указанного пароля
+    operationId: calcPasswordStrength
     tags:
       - Auth.Check
 
@@ -45,7 +45,7 @@
       content:
         application/json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/Auth.Check.Request.Model.CheckPasswordStrength"
+            $ref: "#/components/schemas/Auth.Check.Request.Model.CalcPasswordStrength"
 
     responses:
       "200":
@@ -53,9 +53,37 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Check.Response.Model.CheckPasswordStrength"
+              $ref: "#/components/schemas/Auth.Check.Response.Model.CalcPasswordStrength"
       "400":
         # Пароль должен быть указан
         $ref: "#/components/responses/App.ResponseJson.Error400"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/check/generate-password:
+  post:
+    summary: Auth/CK/R3. Метод генерации пароля
+    description: Метод предназначен для помощи пользователю при установке нового пароля.
+    operationId: generatePassword
+    tags:
+      - Auth.Check
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    responses:
+      "200":
+        description: Сгенерирован новый пароль
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Auth.Check.Response.GeneratedPassword"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"

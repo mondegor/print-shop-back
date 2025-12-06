@@ -43,6 +43,7 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.Logger,
 			opts.EventEmitter,
 			opts.UseCaseErrorWrapper,
+			opts.ServiceErrorWrapper,
 			opts.StorageErrorWrapper,
 			opts.PostgresConnManager,
 			opts.Locker,

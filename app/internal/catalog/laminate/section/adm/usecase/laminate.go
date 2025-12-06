@@ -111,7 +111,7 @@ func (uc *Laminate) Store(ctx context.Context, item entity.Laminate) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -148,7 +148,7 @@ func (uc *Laminate) ChangeStatus(ctx context.Context, item entity.Laminate) erro
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -192,7 +192,7 @@ func (uc *Laminate) checkItem(ctx context.Context, item *entity.Laminate) error 
 func (uc *Laminate) checkArticle(ctx context.Context, item *entity.Laminate) error {
 	id, err := uc.storage.FetchIDByArticle(ctx, item.Article)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 

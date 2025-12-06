@@ -43,7 +43,7 @@ func (uc *PaperColor) CheckAvailability(ctx context.Context, itemID uint64) erro
 	}
 
 	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return api.ErrPaperColorNotFound.New(itemID)
 		}
 

@@ -168,7 +168,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item, activitystatus.Published); err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -197,7 +197,7 @@ func (uc *FormVersion) getItemLastVersion(ctx context.Context, formID uuid.UUID)
 
 	item, err := uc.storage.FetchOneLastVersion(ctx, formID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return entity.FormVersionStatus{
 				FormID:         formID,
 				Version:        1,

@@ -122,7 +122,7 @@ func (uc *CompanyPage) checkItem(ctx context.Context, item *entity.CompanyPage) 
 func (uc *CompanyPage) checkRewriteName(ctx context.Context, item *entity.CompanyPage) error {
 	accountID, err := uc.storage.FetchAccountIDByRewriteName(ctx, item.RewriteName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 

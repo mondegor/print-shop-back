@@ -141,37 +141,9 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/security/password/generate:
-  post:
-    summary: Auth/SC/R4. Метод генерации пароля
-    description: Метод предназначен для помощи пользователю при установке нового пароля.
-    operationId: generatePassword
-    tags:
-      - Auth.Security
-
-    security:
-      - bearerAuth: []
-
-    parameters:
-      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-      - $ref: "#/components/parameters/App.Request.Query.Language"
-
-    responses:
-      "200":
-        description: Сгенерирован новый пароль
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: "#/components/schemas/Auth.Security.Response.GeneratedPassword"
-      "401":
-        $ref: "#/components/responses/App.ResponseJson.Error401"
-      "500":
-        $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
 /v1/security/totp:
   post:
-    summary: Auth/SC/R5. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
+    summary: Auth/SC/R4. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
     description: |-
       Метод предназначен для создания операции установки/изменения TOTP генератора для 2FA аутентификации текущего пользователя (при этом включается 2FA).
 
@@ -209,7 +181,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   patch:
-    summary: Auth/SC/R6. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
+    summary: Auth/SC/R5. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
     description: Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя
     operationId: applyUserOperationTotpGenerator
     tags:
@@ -250,7 +222,7 @@
 
 /v1/security/disable2fa:
   post:
-    summary: Auth/SC/R7. Метод создания операции отключения 2FA аутентификацию пользователя
+    summary: Auth/SC/R6. Метод создания операции отключения 2FA аутентификацию пользователя
     description: |-
       Метод предназначен для создания операции отключения 2FA аутентификации текущего пользователя.
 
@@ -290,7 +262,7 @@
 
 /v1/security/apply-operation:
   patch:
-    summary: Auth/SC/R8. Метод применяет подтверждённую пользователем операцию
+    summary: Auth/SC/R7. Метод применяет подтверждённую пользователем операцию
     description: Метод предназначен для применения подтверждённой пользователем операции (изменение защищённого свойства пользователя, отмены 2FA и т.д.)
     operationId: applyUserOperation
     tags:

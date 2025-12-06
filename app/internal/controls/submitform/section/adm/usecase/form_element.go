@@ -122,7 +122,7 @@ func (uc *FormElement) Store(ctx context.Context, item entity.FormElement) error
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -205,7 +205,7 @@ func (uc *FormElement) checkForm(ctx context.Context, item *entity.FormElement) 
 
 	form, err := uc.submitFormAPI.FetchOne(ctx, item.FormID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return module.ErrSubmitFormNotFound.New(item.FormID)
 		}
 
@@ -230,7 +230,7 @@ func (uc *FormElement) checkItem(ctx context.Context, item *entity.FormElement) 
 func (uc *FormElement) checkParamName(ctx context.Context, item *entity.FormElement) error {
 	id, err := uc.storage.FetchIDByParamName(ctx, item.FormID, item.ParamName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 

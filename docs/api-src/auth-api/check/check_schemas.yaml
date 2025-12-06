@@ -1,6 +1,7 @@
 Auth.Check.Request.Model.CheckLogin:
   type: object
   required:
+    - realm
     - userLogin
   properties:
     realm:
@@ -15,7 +16,7 @@ Auth.Check.Request.Model.CheckLogin:
       maxLength: 64
       example: "user-email@local.host"
 
-Auth.Check.Request.Model.CheckPasswordStrength:
+Auth.Check.Request.Model.CalcPasswordStrength:
   type: object
   required:
     - password
@@ -27,10 +28,22 @@ Auth.Check.Request.Model.CheckPasswordStrength:
       maxLength: 32
       example: "L$QI.qA6eu7zG%7w"
 
-Auth.Check.Response.Model.CheckPasswordStrength:
+Auth.Check.Response.Model.CalcPasswordStrength:
   type: object
   required:
     - strength
   properties:
     strength:
       $ref: "#/components/schemas/Auth.Enum.PasswordStrength"
+
+Auth.Check.Response.GeneratedPassword:
+  type: object
+  required:
+    - password
+  properties:
+    password:
+      description: Сгенерированный пароль для пользователя
+      type: string
+      minLength: 8
+      maxLength: 32
+      example: "L$QI.qA6eu7zG%7w"

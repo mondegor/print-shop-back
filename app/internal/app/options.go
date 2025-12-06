@@ -48,6 +48,7 @@ type (
 		EventEmitter          mrevent.Emitter
 		ErrorHandler          mrerr.ErrorHandler
 		UseCaseErrorWrapper   mrerr.UseCaseErrorWrapper
+		ServiceErrorWrapper   mrerr.ErrorWrapper
 		StorageErrorWrapper   mrerr.ErrorWrapper
 		FileUserErrorWrapper  mrerr.UserErrorWrapper
 		ImageUserErrorWrapper mrerr.UserErrorWrapper

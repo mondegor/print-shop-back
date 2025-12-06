@@ -117,7 +117,7 @@ func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -154,7 +154,7 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -210,7 +210,7 @@ func (uc *Paper) checkItem(ctx context.Context, item *entity.Paper) error {
 func (uc *Paper) checkArticle(ctx context.Context, item *entity.Paper) error {
 	id, err := uc.storage.FetchIDByArticle(ctx, item.Article)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 

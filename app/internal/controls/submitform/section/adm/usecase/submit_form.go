@@ -114,7 +114,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -151,7 +151,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return mr.ErrUseCaseEntityVersionInvalid.Wrap(err)
 		}
 
@@ -186,7 +186,7 @@ func (uc *SubmitForm) GetFormStatus(ctx context.Context, formID uuid.UUID) (item
 
 	status, err := uc.storage.FetchStatus(ctx, formID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return 0, module.ErrSubmitFormNotFound.New(formID)
 		}
 
@@ -229,7 +229,7 @@ func (uc *SubmitForm) checkItem(ctx context.Context, item *entity.SubmitForm) er
 func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitForm) error {
 	id, err := uc.storage.FetchIDByRewriteName(ctx, item.RewriteName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 
@@ -246,7 +246,7 @@ func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitF
 func (uc *SubmitForm) checkParamName(ctx context.Context, item *entity.SubmitForm) error {
 	id, err := uc.storage.FetchIDByParamName(ctx, item.ParamName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return nil
 		}
 

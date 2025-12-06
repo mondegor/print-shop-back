@@ -43,7 +43,7 @@ func (uc *PrintFormat) CheckAvailability(ctx context.Context, itemID uint64) err
 	}
 
 	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
-		if uc.errorWrapper.IsNotFoundOrNotAffectedError(err) {
+		if uc.errorWrapper.IsNotFoundError(err) {
 			return api.ErrPrintFormatNotFound.New(itemID)
 		}
 
