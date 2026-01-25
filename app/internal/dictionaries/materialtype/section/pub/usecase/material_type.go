@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
@@ -15,18 +15,17 @@ type (
 	// MaterialType - comment struct.
 	MaterialType struct {
 		storage      pub.MaterialTypeStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewMaterialType - создаёт объект MaterialType.
 func NewMaterialType(
 	storage pub.MaterialTypeStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameMaterialType),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -34,7 +33,7 @@ func NewMaterialType(
 func (uc *MaterialType) GetList(ctx context.Context, lz mrcore.Localizer, params entity.MaterialTypeParams) ([]entity.MaterialType, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {

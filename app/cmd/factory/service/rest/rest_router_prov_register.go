@@ -43,8 +43,6 @@ func getProvidersAPIControllers(opts app.Options) []initing.HttpModule {
 		provideraccounts.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
-			opts.ImageUserErrorWrapper,
 			opts.PostgresConnManager,
 			opts.Locker,
 			provideraccountsvalidate.NewParser(

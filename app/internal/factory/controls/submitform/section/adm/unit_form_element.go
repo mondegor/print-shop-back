@@ -1,11 +1,10 @@
 package adm
 
 import (
-	"github.com/mondegor/go-components/factory/mrordering"
+	"github.com/mondegor/go-components/wire/mrordering"
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -22,8 +21,6 @@ import (
 func initFormElementController(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	storageErrorWrapper mrerr.ErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	storageSubmitForm *repository.SubmitFormPostgres,
 	storageFormElement *repository.FormElementPostgres,
@@ -35,10 +32,8 @@ func initFormElementController(
 		storageFormElement,
 		storageSubmitForm,
 		elementTemplateAPI,
-		mrordering.NewComponentMover(
+		mrordering.InitServiceMover(
 			dbConnManager,
-			useCaseErrorWrapper,
-			storageErrorWrapper,
 			eventEmitter,
 			mrsql.DBTableInfo{
 				Name:       module.DBTableNameSubmitFormElements,
@@ -46,7 +41,6 @@ func initFormElementController(
 			},
 		),
 		eventEmitter,
-		useCaseErrorWrapper,
 		logger,
 	)
 

@@ -3,7 +3,7 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/request"
 
@@ -18,10 +18,10 @@ const (
 type (
 	// CompanyPageLogo - comment struct.
 	CompanyPageLogo struct {
-		parser                requestParser
-		sender                mrserver.ResponseSender
-		useCase               prov.CompanyPageLogoUseCase
-		imageUserErrorWrapper mrerr.UserErrorWrapper
+		parser            requestParser
+		sender            mrserver.ResponseSender
+		useCase           prov.CompanyPageLogoUseCase
+		imageErrorWrapper errors.CustomWrapper
 	}
 
 	requestParser interface {
@@ -35,13 +35,12 @@ func NewCompanyPageLogo(
 	parser requestParser,
 	sender mrserver.ResponseSender,
 	useCase prov.CompanyPageLogoUseCase,
-	imageUserErrorWrapper mrerr.UserErrorWrapper,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
-		parser:                parser,
-		sender:                sender,
-		useCase:               useCase,
-		imageUserErrorWrapper: imageUserErrorWrapper,
+		parser:            parser,
+		sender:            sender,
+		useCase:           useCase,
+		imageErrorWrapper: errors.NewDownloadImageWrapper(module.ParamNameFileCompanyLogo),
 	}
 }
 
@@ -57,7 +56,7 @@ func (ht *CompanyPageLogo) Handlers() []mrserver.HttpHandler {
 func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) error {
 	file, err := ht.parser.FormImage(r, module.ParamNameFileCompanyLogo)
 	if err != nil {
-		return ht.imageUserErrorWrapper.WrapError(err, module.ParamNameFileCompanyLogo)
+		return ht.imageErrorWrapper.Wrap(err)
 	}
 
 	defer file.Body.Close()

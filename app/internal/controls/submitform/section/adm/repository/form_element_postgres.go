@@ -195,7 +195,7 @@ func (re *FormElementPostgres) FetchIDByParamName(ctx context.Context, formID uu
 }
 
 // IsExist - comment method.
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
+// result: nil - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error
 func (re *FormElementPostgres) IsExist(ctx context.Context, rowID uint64) error {
 	return re.rowExistChecker.IsExist(ctx, rowID)
 }

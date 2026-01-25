@@ -8,8 +8,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -38,6 +37,7 @@ type (
 		useCase        adm.SubmitFormUseCase
 		useCaseVersion adm.FormVersionUseCase
 		listSorter     mrtype.ListSorter
+		errorWrapper   errors.CustomWrapper
 	}
 )
 
@@ -55,6 +55,12 @@ func NewSubmitForm(
 		useCase:        useCase,
 		useCaseVersion: useCaseVersion,
 		listSorter:     listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			module.ErrSubmitFormRewriteNameAlreadyExists.Code(), "rewriteName",
+			module.ErrSubmitFormParamNameAlreadyExists.Code(), "paramName",
+		),
 	}
 }
 
@@ -259,25 +265,9 @@ func (ht *SubmitForm) getRawItemID(r *http.Request) string {
 }
 
 func (ht *SubmitForm) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrSubmitFormNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrSubmitFormRewriteNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("rewriteName", err)
-	}
-
-	if module.ErrSubmitFormParamNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("paramName", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

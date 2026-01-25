@@ -7,10 +7,10 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlib/extmath"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
@@ -207,7 +207,7 @@ func (re *BoxPostgres) FetchIDByArticle(ctx context.Context, article string) (ro
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *BoxPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -302,10 +302,10 @@ func (re *BoxPostgres) fetchCondition(filter entity.BoxListFilter) mrstorage.SQL
 			return c.JoinAnd(
 				c.Expr("deleted_at IS NULL"),
 				c.FilterLikeFields([]string{"UPPER(box_article)", "UPPER(box_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterRangeFloat64("box_length", mrtype.RangeFloat64(filter.Length), 0, extmath.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_width", mrtype.RangeFloat64(filter.Width), 0, extmath.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_height", mrtype.RangeFloat64(filter.Height), 0, extmath.EqualityThresholdE9),
-				c.FilterRangeFloat64("box_weight", mrtype.RangeFloat64(filter.Weight), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_length", mrtype.RangeFloat64(filter.Length), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_width", mrtype.RangeFloat64(filter.Width), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_height", mrtype.RangeFloat64(filter.Height), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("box_weight", mrtype.RangeFloat64(filter.Weight), 0, xmath.EqualityThresholdE9),
 				c.FilterAnyOf("box_status", filter.Statuses),
 			)
 		},

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mondegor/go-sysmess/mrlog/slog/nopslog"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
@@ -312,7 +312,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			im := imposition.New(nopslog.New())
+			im := imposition.New(mrlog.NopLogger())
 
 			got, err := im.Calc(context.Background(), tt.element, tt.distance, tt.out, imposition.Options{AllowRotation: true})
 			assert.Equal(t, tt.want, got)

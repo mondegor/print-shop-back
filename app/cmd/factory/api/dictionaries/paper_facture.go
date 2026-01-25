@@ -12,5 +12,5 @@ import (
 func InitPaperFactureAvailabilityAPI(opts app.Options) *usecase.PaperFacture {
 	mrlog.Info(opts.Logger, "Create and init dictionaries paper facture availability API")
 
-	return availability.NewPaperFactureAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
+	return availability.NewPaperFactureAPI(opts.PostgresConnManager, opts.Tracer)
 }

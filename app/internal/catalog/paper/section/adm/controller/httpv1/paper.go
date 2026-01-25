@@ -3,8 +3,7 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -26,20 +25,37 @@ const (
 type (
 	// Paper - comment struct.
 	Paper struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.PaperUseCase
-		listSorter mrtype.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.PaperUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
 // NewPaper - создаёт контроллер Paper.
-func NewPaper(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.PaperUseCase, listSorter mrtype.ListSorter) *Paper {
+func NewPaper(
+	parser validate.RequestExtendParser,
+	sender mrserver.ResponseSender,
+	useCase adm.PaperUseCase,
+	listSorter mrtype.ListSorter,
+) *Paper {
 	return &Paper{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			module.ErrPaperArticleAlreadyExists.Code(), "article",
+			api.ErrMaterialTypeRequired.Code(), "typeId",
+			api.ErrMaterialTypeNotFound.Code(), "typeId",
+			api.ErrPaperColorRequired.Code(), "colorId",
+			api.ErrPaperColorNotFound.Code(), "colorId",
+			api.ErrPaperFactureRequired.Code(), "factureId",
+			api.ErrPaperFactureNotFound.Code(), "factureId",
+		),
 	}
 }
 
@@ -207,36 +223,9 @@ func (ht *Paper) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Paper) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrPaperNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrPaperArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	if api.ErrMaterialTypeRequired.Is(err) ||
-		api.ErrMaterialTypeNotFound.Is(err) {
-		return mrerr.NewCustomError("typeId", err)
-	}
-
-	if api.ErrPaperColorRequired.Is(err) ||
-		api.ErrPaperColorNotFound.Is(err) {
-		return mrerr.NewCustomError("colorId", err)
-	}
-
-	if api.ErrPaperFactureRequired.Is(err) ||
-		api.ErrPaperFactureNotFound.Is(err) {
-		return mrerr.NewCustomError("factureId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

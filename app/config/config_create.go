@@ -11,9 +11,9 @@ import (
 
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
-	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	"github.com/mondegor/go-sysmess/mrapp"
-	extfilecfg "github.com/mondegor/go-sysmess/mrlib/extfile/config"
+	extfilecfg "github.com/mondegor/go-sysmess/util/mime/config"
 	accesscfg "github.com/mondegor/go-webcore/mraccess/config"
 )
 

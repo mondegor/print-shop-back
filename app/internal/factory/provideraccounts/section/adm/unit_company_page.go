@@ -4,7 +4,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -18,7 +17,6 @@ import (
 
 func initCompanyPageController(
 	logger mrlog.Logger,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
@@ -38,7 +36,7 @@ func initCompanyPageController(
 		),
 	)
 
-	useCase := usecase.NewCompanyPage(storage, logoURLBuilder, useCaseErrorWrapper)
+	useCase := usecase.NewCompanyPage(storage, logoURLBuilder)
 
 	controller := httpv1.NewCompanyPage(
 		requestModuleParser,

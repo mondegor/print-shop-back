@@ -12,5 +12,5 @@ import (
 func InitPaperColorAvailabilityAPI(opts app.Options) *usecase.PaperColor {
 	mrlog.Info(opts.Logger, "Create and init dictionaries paper color availability API")
 
-	return availability.NewPaperColorAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
+	return availability.NewPaperColorAPI(opts.PostgresConnManager, opts.Tracer)
 }

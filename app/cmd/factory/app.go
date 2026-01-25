@@ -5,12 +5,12 @@ import (
 	"io"
 	"net/http"
 
-	authiniting "github.com/mondegor/go-components/factory/mrauth/initing"
+	authiniting "github.com/mondegor/go-components/wire/mrauth/initing"
 	"github.com/mondegor/go-storage/mrlock/redislocker"
 	"github.com/mondegor/go-storage/mrpostgres"
-	"github.com/mondegor/go-sysmess/mrerr/errorwrapper"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrwire"
+	"github.com/mondegor/go-sysmess/util/xio"
+	"github.com/mondegor/go-sysmess/wire"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrrun"
 
@@ -42,7 +42,7 @@ func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 		return app.Options{}, fmt.Errorf("factory.InitApp(): %w", err)
 	}
 
-	logger, err := InitLogger(cfg)
+	logger, tracer, err := InitLoggerAndTracer(cfg)
 	if err != nil {
 		return app.Options{}, err
 	}
@@ -56,9 +56,9 @@ func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 		app.Options{
 			Cfg:             cfg,
 			Logger:          logger,
-			Tracer:          InitTracer(cfg, logger),
+			Tracer:          tracer,
 			TraceManager:    traceManager,
-			OpenedResources: mrwire.NewCloseManager(logger),
+			OpenedResources: xio.NewCloseManager(logger),
 		},
 	)
 }
@@ -107,16 +107,15 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 
 // createAppEnvironment - создаёт, и настраивает внешнее окружение приложения.
 func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error) {
-	if opts.Cfg.Sentry.DSN != "" {
-		sentry, err := InitSentry(opts.Logger, opts.Cfg)
-		if err != nil {
-			return app.Options{}, err
-		}
-
-		opts.OpenedResources.Register(sentry)
-		opts.Sentry = sentry
-	}
-
+	// if opts.Cfg.Sentry.DSN != "" {
+	// 	sentry, err := InitSentry(opts.Logger, opts.Cfg)
+	// 	if err != nil {
+	// 		return app.Options{}, err
+	// 	}
+	//
+	// 	opts.OpenedResources.Register(sentry)
+	// 	opts.Sentry = sentry
+	// }
 	opts.InternalRouter = http.NewServeMux()
 
 	if opts.Prometheus == nil {
@@ -124,15 +123,16 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	}
 
 	// !!! only after init Sentry and Prometheus
-	InitProtoAppErrors(opts)
+	wire.InitErrors(
+		wire.ErrorConfig{
+			HasCaller:         opts.Cfg.Debugging.ErrorCaller.IsEnabled,
+			CallerDepth:       opts.Cfg.Debugging.ErrorCaller.Depth,
+			CallerUpperBounds: opts.Cfg.Debugging.ErrorCaller.UpperBounds,
+		},
+	)
 
 	opts.EventEmitter = InitEventEmitter(opts)
-	opts.ErrorHandler = mrwire.InitErrorHandler(opts.Logger)
-	opts.UseCaseErrorWrapper = errorwrapper.NewUseCase()
-	opts.ServiceErrorWrapper = errorwrapper.NewService()
-	opts.StorageErrorWrapper = errorwrapper.NewInfraStorage()
-	opts.FileUserErrorWrapper = errorwrapper.NewDownloadUserImage()
-	opts.ImageUserErrorWrapper = errorwrapper.NewDownloadUserImage()
+	opts.ErrorHandler = wire.InitErrorHandler(opts.Logger)
 	opts.AppHealth = mrrun.NewAppHealth()
 
 	if opts.PostgresConnManager == nil {
@@ -205,8 +205,6 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 
 	opts.RealmUserProviders = authiniting.InitUserProviders(
 		opts.Logger,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		opts.PostgresConnManager,
 		authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider),
 		opts.Cfg.Realms,

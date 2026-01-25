@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 
 	"github.com/mondegor/print-shop-back/pkg/api"
 )
@@ -23,11 +23,11 @@ type (
 
 var (
 	// ErrPaperFactureRequired - paper facture ID is required.
-	ErrPaperFactureRequired = mrerr.NewKindUser("PaperFactureRequired", "paper facture ID is required")
+	ErrPaperFactureRequired = errors.NewUserProto("PaperFactureRequired", "paper facture ID is required")
 
 	// ErrPaperFactureNotAvailable - paper facture with ID is not available.
-	ErrPaperFactureNotAvailable = mrerr.NewKindUser("PaperFactureNotAvailable", "paper facture with ID={Id} is not available")
+	ErrPaperFactureNotAvailable = errors.NewUserProto("PaperFactureNotAvailable", "paper facture with ID={Id} is not available")
 
 	// ErrPaperFactureNotFound - paper facture with ID not found.
-	ErrPaperFactureNotFound = mrerr.NewKindUser("PaperFactureNotFound", "paper facture with ID={Id} not found")
+	ErrPaperFactureNotFound = errors.NewUserProto("PaperFactureNotFound", "paper facture with ID={Id} not found")
 )

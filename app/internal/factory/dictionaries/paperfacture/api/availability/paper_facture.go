@@ -2,7 +2,6 @@ package availability
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrtrace"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/api/availability/repository"
@@ -12,12 +11,10 @@ import (
 // NewPaperFactureAPI - создаёт объект PaperFacture.
 func NewPaperFactureAPI(
 	dbConnManager mrstorage.DBConnManager,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 	trace mrtrace.Tracer,
 ) *usecase.PaperFacture {
 	return usecase.NewPaperFacture(
 		repository.NewPaperFacturePostgres(dbConnManager),
-		errorWrapper,
 		trace,
 	)
 }

@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/mondegor/go-components/mrauth/component/produce"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/middleware"
@@ -58,7 +59,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 		AllowedHeaders:   opts.Cfg.Cors.AllowedHeaders,
 		ExposedHeaders:   opts.Cfg.Cors.ExposedHeaders,
 		AllowCredentials: opts.Cfg.Cors.AllowCredentials,
-		Logger:           opts.Logger.WithAttrs("middleware", "cors"),
+		Logger:           mrlog.WithAttrs(opts.Logger, "middleware", "cors"),
 	}
 
 	errorSender, err := NewErrorResponseSender(opts)
@@ -82,7 +83,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 	)
 
 	router := mrchi.New(
-		opts.Logger.WithAttrs("router", "chi"),
+		mrlog.WithAttrs(opts.Logger, "router", "chi"),
 		middleware.HandlerAdapter(errorSender),
 		mrresp.HandlerGetNotFoundAsJSON(opts.Logger),
 		mrresp.HandlerGetMethodNotAllowedAsJSON(opts.Logger),

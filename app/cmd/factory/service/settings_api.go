@@ -1,14 +1,14 @@
 package service
 
 import (
-	"github.com/mondegor/go-components/factory/mrsettings"
-	"github.com/mondegor/go-components/factory/mrsettings/caching"
-	"github.com/mondegor/go-components/mrsettings/usecase/liteget"
-	"github.com/mondegor/go-components/mrsettings/usecase/set"
+	"github.com/mondegor/go-components/mrsettings"
+	"github.com/mondegor/go-components/mrsettings/service/mustget"
+	"github.com/mondegor/go-components/wire/mrsettings/cacheget"
+	"github.com/mondegor/go-components/wire/mrsettings/dbset"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
-	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
 	"github.com/mondegor/print-shop-back/internal/app"
 )
@@ -21,22 +21,20 @@ const (
 
 // InitSettingsGetterAPI - создаёт получателя произвольных настроек из БД
 // с использованием кэша и с периодическим его обновлением.
-func InitSettingsGetterAPI(opts app.Options) (*liteget.SettingsGetter, *schedule.TaskScheduler) {
+func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Process) {
 	mrlog.Info(opts.Logger, "Create and init settings getter")
 
-	getter, reloadScheduler := caching.NewComponentGetter(
+	getter, reloadScheduler := cacheget.InitServiceSettingsGetter(
 		opts.PostgresConnManager,
 		mrsql.DBTableInfo{
 			Name:       serviceSettingsTableName,
 			PrimaryKey: serviceSettingsPrimaryKey,
 		},
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
-		caching.WithCaptionPrefix("Settings/"),
-		caching.WithTaskReloadSettingsOpts(
+		cacheget.WithCaptionPrefix("Settings/"),
+		cacheget.WithTaskReloadSettingsOpts(
 			task.WithCaptionPrefix("Settings/"),
 			task.WithStartup(true),
 			task.WithPeriod(opts.Cfg.TaskSchedule.Settings.ReloadSettings.Period),
@@ -47,18 +45,15 @@ func InitSettingsGetterAPI(opts app.Options) (*liteget.SettingsGetter, *schedule
 		),
 	)
 
-	return liteget.New(getter, opts.Logger), reloadScheduler
+	return mustget.New(getter, opts.Logger), reloadScheduler
 }
 
 // InitSettingsSetterAPI - создаёт объект для сохранения произвольных настроек в БД.
-func InitSettingsSetterAPI(opts app.Options) *set.SettingsSetter {
+func InitSettingsSetterAPI(opts app.Options) mrsettings.Setter {
 	mrlog.Info(opts.Logger, "Create and init settings setter")
 
-	return mrsettings.NewComponentSetter(
+	return dbset.InitServiceSettingsSetter(
 		opts.PostgresConnManager,
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		mrsql.DBTableInfo{
 			Name:       serviceSettingsTableName,
 			PrimaryKey: serviceSettingsPrimaryKey,

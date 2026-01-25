@@ -3,7 +3,7 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
@@ -98,8 +98,8 @@ func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (ht *CompanyPage) wrapError(err error, _ *http.Request) error {
-	if module.ErrCompanyPageRewriteNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("rewriteName", err)
+	if errors.Is(err, module.ErrCompanyPageRewriteNameAlreadyExists) {
+		return errors.WithCustomCode(err, "rewriteName")
 	}
 
 	return err

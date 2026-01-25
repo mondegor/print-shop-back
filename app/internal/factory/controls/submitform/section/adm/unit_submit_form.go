@@ -5,7 +5,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,7 +18,6 @@ import (
 
 func initSubmitFormController(
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	storageSubmitForm *repository.SubmitFormPostgres,
 	storageFormElement *repository.FormElementPostgres,
@@ -37,7 +35,6 @@ func initSubmitFormController(
 		storageFormElement,
 		storageFormVersion,
 		eventEmitter,
-		useCaseErrorWrapper,
 	)
 
 	useCaseVersion := usecase.NewFormVersion(
@@ -46,7 +43,6 @@ func initSubmitFormController(
 		usecase.NewFormCompilerJson(),
 		locker,
 		eventEmitter,
-		useCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewSubmitForm(

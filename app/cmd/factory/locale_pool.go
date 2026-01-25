@@ -3,7 +3,7 @@ package factory
 import (
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors/helper"
 	"github.com/mondegor/go-sysmess/mrlocale"
 	"github.com/mondegor/go-sysmess/mrlocale/provider/gotext"
 	"github.com/mondegor/go-sysmess/mrlog"
@@ -31,22 +31,22 @@ func LocalePool(logger mrlog.Logger, cfg config.Config) (*mrlocale.Pool, error) 
 	)
 
 	bundle, err := mrlocale.NewBundle(
-		mrlocale.WithLanguages(cfg.Localization.Languages...),
+		cfg.Localization.Languages,
 		mrlocale.WithFormatMessage(gotext.MessageConverter("{", "}")),
-		mrlocale.WithFormatError(mr.ErrorToMessage()),
+		mrlocale.WithFormatError(helper.ExtractMessageForLocalization),
 		mrlocale.WithMessageProvider(
 			func(languages []language.Tag) (mrlocale.MessageProvider, error) {
 				localeProvider, err = gotext.NewProvider(
-					gotext.WithLanguages(languages...),
-					gotext.WithCatalog(mrlocale.DefaultMessagesDomain, msgcat.NewCatalog()),
-					gotext.WithCatalog(mrlocale.DefaultErrorsDomain, errcat.NewCatalog()),
-					gotext.WithCatalog("catalog.boxes", boxescat.NewCatalog()),
-					gotext.WithCatalog("catalog.laminates", laminatescat.NewCatalog()),
-					gotext.WithCatalog("catalog.papers", paperscat.NewCatalog()),
-					gotext.WithCatalog("dictionaries.materialtypes", materialtypescat.NewCatalog()),
-					gotext.WithCatalog("dictionaries.papercolors", papercolorscat.NewCatalog()),
-					gotext.WithCatalog("dictionaries.paperfactures", paperfacturescat.NewCatalog()),
-					gotext.WithCatalog("dictionaries.printformats", printformatscat.NewCatalog()),
+					languages,
+					gotext.WithDomainCatalog(mrlocale.DefaultMessagesDomain, msgcat.NewCatalog()),
+					gotext.WithDomainCatalog(mrlocale.DefaultErrorsDomain, errcat.NewCatalog()),
+					gotext.WithDomainCatalog("catalog.boxes", boxescat.NewCatalog()),
+					gotext.WithDomainCatalog("catalog.laminates", laminatescat.NewCatalog()),
+					gotext.WithDomainCatalog("catalog.papers", paperscat.NewCatalog()),
+					gotext.WithDomainCatalog("dictionaries.materialtypes", materialtypescat.NewCatalog()),
+					gotext.WithDomainCatalog("dictionaries.papercolors", papercolorscat.NewCatalog()),
+					gotext.WithDomainCatalog("dictionaries.paperfactures", paperfacturescat.NewCatalog()),
+					gotext.WithDomainCatalog("dictionaries.printformats", printformatscat.NewCatalog()),
 				)
 
 				return localeProvider, err

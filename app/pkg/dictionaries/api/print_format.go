@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 
 	"github.com/mondegor/print-shop-back/pkg/api"
 )
@@ -23,11 +23,11 @@ type (
 
 var (
 	// ErrPrintFormatRequired - print format ID is required.
-	ErrPrintFormatRequired = mrerr.NewKindUser("PrintFormatRequired", "print format ID is required")
+	ErrPrintFormatRequired = errors.NewUserProto("PrintFormatRequired", "print format ID is required")
 
 	// ErrPrintFormatNotAvailable - print format with ID is not available.
-	ErrPrintFormatNotAvailable = mrerr.NewKindUser("PrintFormatNotAvailable", "print format with ID={Id} is not available")
+	ErrPrintFormatNotAvailable = errors.NewUserProto("PrintFormatNotAvailable", "print format with ID={Id} is not available")
 
 	// ErrPrintFormatNotFound - print format with ID not found.
-	ErrPrintFormatNotFound = mrerr.NewKindUser("PrintFormatNotFound", "print format with ID={Id} not found")
+	ErrPrintFormatNotFound = errors.NewUserProto("PrintFormatNotFound", "print format with ID={Id} not found")
 )

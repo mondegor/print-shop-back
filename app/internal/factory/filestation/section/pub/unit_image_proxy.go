@@ -2,7 +2,6 @@ package pub
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
@@ -12,13 +11,12 @@ import (
 )
 
 func initImageProxyController(
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	requestParser *parser.String,
 	responseFileSender mrserver.FileResponseSender,
 	fileAPI mrstorage.FileProviderAPI,
 	basePath mrpath.Builder,
 ) (mrserver.HttpController, error) {
-	useCase := usecase.NewFileProviderAdapter(fileAPI, useCaseErrorWrapper)
+	useCase := usecase.NewFileProviderAdapter(fileAPI)
 
 	controller := httpv1.NewImageProxy(
 		requestParser,

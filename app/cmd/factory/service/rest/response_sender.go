@@ -1,8 +1,11 @@
 package rest
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr/http"
+	"net/http"
+
+	"github.com/mondegor/go-components/mrauth"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
@@ -30,8 +33,9 @@ func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 		opts.ErrorHandler,
 		opts.Logger,
 		opts.RequestParsers.Locale,
-		http.NewErrorStatusGetter(
+		mrserver.NewHttpErrorStatusMapper(
 			opts.Cfg.Debugging.UnexpectedHttpStatus,
+			mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
 		),
 		opts.Cfg.Debugging.Debug,
 	), nil

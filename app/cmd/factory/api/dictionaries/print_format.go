@@ -12,5 +12,5 @@ import (
 func InitPrintFormatAvailabilityAPI(opts app.Options) *usecase.PrintFormat {
 	mrlog.Info(opts.Logger, "Create and init dictionaries print format availability API")
 
-	return availability.NewPrintFormatAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
+	return availability.NewPrintFormatAPI(opts.PostgresConnManager, opts.Tracer)
 }

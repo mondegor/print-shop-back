@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/util/xmath"
 )
 
 const (
@@ -32,5 +32,5 @@ func FormatPositiveFloatToString(value float64) string {
 		return "!BADVALUE"
 	}
 
-	return strconv.FormatFloat(extmath.RoundFloat8(value), 'f', -1, 64)
+	return strconv.FormatFloat(xmath.RoundFloat8(value), 'f', -1, 64)
 }

@@ -3,8 +3,7 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -25,10 +24,11 @@ const (
 type (
 	// Box - comment struct.
 	Box struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.BoxUseCase
-		listSorter mrtype.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.BoxUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -44,6 +44,11 @@ func NewBox(
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			module.ErrBoxArticleAlreadyExists.Code(), "article",
+		),
 	}
 }
 
@@ -199,21 +204,9 @@ func (ht *Box) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Box) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrBoxNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrBoxArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

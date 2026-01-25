@@ -6,10 +6,10 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlib/extmath"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
@@ -177,7 +177,7 @@ func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID uint64) (enti
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -258,8 +258,8 @@ func (re *PrintFormatPostgres) fetchCondition(filter entity.PrintFormatListFilte
 			return c.JoinAnd(
 				c.Expr("deleted_at IS NULL"),
 				c.FilterLike("UPPER(format_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(filter.Width), 0, extmath.EqualityThresholdE9),
-				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(filter.Height), 0, extmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(filter.Width), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(filter.Height), 0, xmath.EqualityThresholdE9),
 				c.FilterAnyOf("format_status", filter.Statuses),
 			)
 		},

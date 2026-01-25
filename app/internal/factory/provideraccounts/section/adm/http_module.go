@@ -2,7 +2,6 @@ package adm
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrcore/initing"
@@ -15,7 +14,6 @@ import (
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
 func InitHttpModule(
 	logger mrlog.Logger,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
@@ -30,7 +28,6 @@ func InitHttpModule(
 				Create: func() (mrserver.HttpController, error) {
 					return initCompanyPageController(
 						logger,
-						useCaseErrorWrapper,
 						dbConnManager,
 						requestModuleParser,
 						responseSender,

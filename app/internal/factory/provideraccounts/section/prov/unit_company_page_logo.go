@@ -3,7 +3,6 @@ package prov
 import (
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -17,8 +16,6 @@ import (
 func initCompanyPageLogoController(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	imageUserErrorWrapper mrerr.UserErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	locker mrlock.Locker,
 	requestModuleParser *validate.Parser,
@@ -32,7 +29,6 @@ func initCompanyPageLogoController(
 		logoFileAPI,
 		locker,
 		eventEmitter,
-		useCaseErrorWrapper,
 		logger,
 	)
 
@@ -40,7 +36,6 @@ func initCompanyPageLogoController(
 		requestModuleParser,
 		responseSender,
 		useCase,
-		imageUserErrorWrapper,
 	)
 
 	return controller, nil

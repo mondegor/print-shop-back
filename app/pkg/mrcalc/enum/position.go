@@ -3,7 +3,7 @@ package enum
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 // Расположения на прямоугольном формате.
@@ -44,7 +44,10 @@ func (e *Position) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNamePosition)
+	return errors.ErrInternalKeyNotFoundInSource.New(
+		"key", value,
+		"source", enumNamePosition,
+	)
 }
 
 // String - возвращает значение в виде строки.

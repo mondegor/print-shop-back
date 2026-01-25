@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
@@ -15,18 +15,17 @@ type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
 		storage      pub.PrintFormatStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
 func NewPrintFormat(
 	storage pub.PrintFormatStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePrintFormat),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -34,7 +33,7 @@ func NewPrintFormat(
 func (uc *PrintFormat) GetList(ctx context.Context, lz mrcore.Localizer, params entity.PrintFormatParams) ([]entity.PrintFormat, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {

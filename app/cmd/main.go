@@ -25,8 +25,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		fmt.Fprintf(os.Stderr, "%s\n", err)
-		os.Exit(1)
+		mrlog.Fatal(err.Error())
 	}
 }
 
@@ -44,9 +43,8 @@ func runApp(args []string, stdout io.Writer) error {
 
 	ctx := context.Background()
 
-	// TODO: ????? нужен ли здесь контекстный логгер
 	appRunner := mrrun.NewAppRunner(&run.Group{}, opts.Logger, opts.TraceManager)
-	ctx, interceptor := signal.NewInterceptor(ctx, opts.Logger)
+	interceptor := signal.NewInterceptor(opts.Logger)
 	lastStarting := appRunner.AddFirstProcess(ctx, interceptor)
 
 	// init services
@@ -79,6 +77,7 @@ func runApp(args []string, stdout io.Writer) error {
 				},
 			),
 			opts.Logger,
+			opts.TraceManager,
 		)
 
 		appRunner.AddNextProcess(ctx, onStartupProcess, lastStarting)

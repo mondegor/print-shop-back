@@ -12,5 +12,5 @@ import (
 func InitMaterialTypeAvailabilityAPI(opts app.Options) *usecase.MaterialType {
 	mrlog.Info(opts.Logger, "Create and init dictionaries laminate type availability API")
 
-	return availability.NewMaterialTypeAPI(opts.PostgresConnManager, opts.UseCaseErrorWrapper, opts.Tracer)
+	return availability.NewMaterialTypeAPI(opts.PostgresConnManager, opts.Tracer)
 }

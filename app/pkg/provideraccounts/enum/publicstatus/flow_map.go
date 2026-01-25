@@ -7,7 +7,7 @@ import (
 // NewFlowMap - возвращает карту возможных переходов PublicStatus.
 func NewFlowMap() mrstatus.FlowMap[Enum] {
 	return mrstatus.NewFlowMap(
-		[]mrstatus.FlowItem[Enum]{
+		[]mrstatus.FlowNode[Enum]{
 			{
 				From: Draft,
 				To: []Enum{

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -93,7 +93,7 @@ func (ht *QueryHistory) getRawItemID(r *http.Request) string {
 }
 
 func (ht *QueryHistory) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrQueryHistoryNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

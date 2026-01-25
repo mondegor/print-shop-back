@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrpath"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
@@ -15,7 +15,7 @@ type (
 	CompanyPage struct {
 		storage      adm.CompanyPageStorage
 		imgBaseURL   mrpath.Builder
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
@@ -23,12 +23,11 @@ type (
 func NewCompanyPage(
 	storage adm.CompanyPageStorage,
 	imgBaseURL mrpath.Builder,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *CompanyPage {
 	return &CompanyPage{
 		storage:      storage,
 		imgBaseURL:   imgBaseURL,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameCompanyPage),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -36,7 +35,7 @@ func NewCompanyPage(
 func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) (items []entity.CompanyPage, countItems uint64, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, 0, uc.errorWrapper.Wrap(err)
 	}
 
 	if countItems == 0 {

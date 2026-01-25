@@ -10,23 +10,21 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlocale"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-sysmess/mrtrace"
-	"github.com/mondegor/go-sysmess/mrwire"
+	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrrun"
-	"github.com/mondegor/go-webcore/mrsentry"
 	"github.com/mondegor/go-webcore/mrserver/httpserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 	"github.com/mondegor/go-webcore/mrworker/process/collect"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
-	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
@@ -40,19 +38,14 @@ type (
 		Logger          mrlog.Logger
 		Tracer          mrtrace.Tracer
 		TraceManager    mrtrace.ContextManager
-		OpenedResources *mrwire.CloseManager
+		OpenedResources *xio.CloseManager
 
-		InternalRouter        *http.ServeMux
-		Sentry                *mrsentry.Adapter
-		Prometheus            *mrinit.Prometheus
-		EventEmitter          mrevent.Emitter
-		ErrorHandler          mrerr.ErrorHandler
-		UseCaseErrorWrapper   mrerr.UseCaseErrorWrapper
-		ServiceErrorWrapper   mrerr.ErrorWrapper
-		StorageErrorWrapper   mrerr.ErrorWrapper
-		FileUserErrorWrapper  mrerr.UserErrorWrapper
-		ImageUserErrorWrapper mrerr.UserErrorWrapper
-		AppHealth             *mrrun.AppHealth
+		InternalRouter *http.ServeMux
+		// Sentry         *sentry.Adapter
+		Prometheus   *mrinit.Prometheus
+		EventEmitter mrevent.Emitter
+		ErrorHandler errors.Handler
+		AppHealth    *mrrun.AppHealth
 
 		PostgresConnManager          *mrpostgres.ConnManager
 		PostgresNotificationService  *mrpostgres.ProcessWaitForNotification
@@ -73,8 +66,8 @@ type (
 		DictionariesPaperFactureAPI api.PaperFactureAvailability
 		DictionariesPrintFormatAPI  api.PrintFormatAvailability
 		MailerAPI                   mrmailer.MessageProducer
-		NotifierAPI                 mrnotifier.NoticeProducer
-		SettingsGetterAPI           mrsettings.DefaultValueGetter
+		NotifierAPI                 mrnotifier.NoteProducer
+		SettingsGetterAPI           mrsettings.MustGetter
 		SettingsSetterAPI           mrsettings.Setter
 
 		// Services and Servers section
@@ -83,7 +76,7 @@ type (
 		NoticeProcessorService          *consume.MessageProcessor
 		HttpServer                      *httpserver.Adapter
 		HttpInternalServer              *httpserver.Adapter
-		TaskSchedulerServices           []*schedule.TaskScheduler // можно добавлять начиная с формирования API
+		TaskSchedulerServices           []mrrun.Process // можно добавлять начиная с формирования API
 	}
 
 	// RequestParsers - comment struct.

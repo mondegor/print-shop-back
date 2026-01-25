@@ -2,7 +2,6 @@ package pub
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -12,7 +11,6 @@ import (
 
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
 func InitHttpModule(
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
@@ -24,7 +22,6 @@ func InitHttpModule(
 			{
 				Create: func() (mrserver.HttpController, error) {
 					return initPaperFactureController(
-						useCaseErrorWrapper,
 						dbConnManager,
 						requestParser,
 						responseSender,

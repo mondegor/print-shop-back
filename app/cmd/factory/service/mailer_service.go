@@ -3,19 +3,17 @@ package service
 import (
 	"fmt"
 
-	"github.com/mondegor/go-components/factory/mrmailer/processor"
-	"github.com/mondegor/go-components/factory/mrmailer/producer"
-	"github.com/mondegor/go-components/factory/mrmailer/scheduler"
-	"github.com/mondegor/go-components/mrmailer"
-	"github.com/mondegor/go-components/mrmailer/provider/mail"
-	"github.com/mondegor/go-components/mrmailer/provider/messenger"
-	"github.com/mondegor/go-components/mrmailer/provider/nop"
-	"github.com/mondegor/go-components/mrmailer/usecase/handle"
-	"github.com/mondegor/go-components/mrmailer/usecase/produce"
+	"github.com/mondegor/go-components/mrmailer/sendmessage"
+	"github.com/mondegor/go-components/mrmailer/sendmessage/adapter"
+	"github.com/mondegor/go-components/mrmailer/sendmessage/provider"
+	"github.com/mondegor/go-components/mrmailer/service/produce"
+	"github.com/mondegor/go-components/wire/mrmailer/processor"
+	"github.com/mondegor/go-components/wire/mrmailer/producer"
+	"github.com/mondegor/go-components/wire/mrmailer/scheduler"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-webcore/mrsender/mail/smtp"
-	"github.com/mondegor/go-webcore/mrsender/telegrambot"
+	"github.com/mondegor/go-webcore/mrclient/mail"
+	"github.com/mondegor/go-webcore/mrclient/telegram"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
@@ -30,13 +28,11 @@ const (
 )
 
 // InitMailerAPI - создаёт отправителя персонализированных уведомлений получателям.
-func InitMailerAPI(opts app.Options) *produce.MessageSender {
+func InitMailerAPI(opts app.Options) *produce.MessageProducer {
 	mrlog.Info(opts.Logger, "Create and init mailer sender API")
 
-	return producer.NewSender(
+	return producer.InitService(
 		opts.PostgresConnManager,
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceMailerTableName,
@@ -55,49 +51,46 @@ func InitMailerAPI(opts app.Options) *produce.MessageSender {
 func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, error) {
 	mrlog.Info(opts.Logger, "Create and init mail processor service")
 
-	mailProvider := mrmailer.MessageProvider(nop.New(opts.Tracer))
-	telegramProvider := mrmailer.MessageProvider(nop.New(opts.Tracer))
+	mailSender := sendmessage.NewNopSender()
+	messengerSender := sendmessage.NewNopSender()
+
 	mrlog.Info(opts.Logger, "opts.Cfg.Senders.Mail.DefaultFrom", opts.Cfg.Senders.Mail.DefaultFrom)
 
 	if opts.Cfg.Senders.Mail.SmtpHost != "" {
 		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.Senders.Mail.SmtpHost, "port", opts.Cfg.Senders.Mail.SmtpPort)
 
-		provider, err := mail.New(
-			smtp.NewMailClient(
+		sender, err := adapter.NewMailSender(
+			mail.NewSMTPClient(
 				opts.Cfg.Senders.Mail.SmtpHost,
 				opts.Cfg.Senders.Mail.SmtpPort,
 				opts.Cfg.Senders.Mail.SmtpUserName,
 				opts.Cfg.Senders.Mail.SmtpPassword,
 				opts.Tracer,
 			),
-			opts.Tracer,
 			opts.Cfg.Senders.Mail.DefaultFrom,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("mail.New(): %w", err)
 		}
 
-		mailProvider = provider
+		mailSender = sender
 	}
 
 	if opts.Cfg.Senders.TelegramBot.Token != "" {
 		mrlog.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.Senders.TelegramBot.Name)
 
-		telegramBot, err := telegrambot.NewMessageClient(opts.Cfg.Senders.TelegramBot.Token, opts.Tracer)
+		sender, err := telegram.NewBotClient(opts.Cfg.Senders.TelegramBot.Token, opts.Tracer)
 		if err != nil {
 			return nil, fmt.Errorf("telegrambot.NewMessageClient(): %w", err)
 		}
 
-		telegramProvider = messenger.New(telegramBot, opts.Tracer)
+		messengerSender = adapter.NewMessengerSender(sender)
 	}
 
-	return processor.NewService(
+	return processor.InitService(
 		opts.PostgresConnManager,
-		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
 		opts.Logger,
-		opts.Tracer,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceMailerTableName,
@@ -122,9 +115,10 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.NotificationChannel),
 			),
 		),
-		processor.WithMessageHandlerOpts(
-			handle.WithClientEmail(mailProvider),
-			handle.WithClientMessenger(telegramProvider),
+		processor.WithSenderProviderOpts(
+			provider.WithTracer(opts.Tracer),
+			provider.WithClientMail(mailSender),
+			provider.WithClientMessenger(messengerSender),
 		),
 	), nil
 }
@@ -133,11 +127,10 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	mrlog.Info(opts.Logger, "Create and init mail scheduler service")
 
-	return scheduler.NewService(
+	return scheduler.InitService(
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
@@ -149,10 +142,10 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Mailer/"),
-		scheduler.WithChangeLimit(opts.Cfg.TaskSchedule.Mailer.ChangeQueueLimit),
+		scheduler.WithChangeBatchSize(opts.Cfg.TaskSchedule.Mailer.ChangeQueueBatchSize),
 		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Mailer.ChangeRetryTimeout),
 		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Mailer.ChangeRetryDelayed),
-		scheduler.WithCleanLimit(opts.Cfg.TaskSchedule.Mailer.CleanQueueLimit),
+		scheduler.WithCleanBatchSize(opts.Cfg.TaskSchedule.Mailer.CleanQueueBatchSize),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),

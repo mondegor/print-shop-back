@@ -4,10 +4,9 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrargs"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
@@ -18,7 +17,7 @@ type (
 	QueryHistory struct {
 		storage      pub.QueryResultStorage
 		eventEmitter mrevent.Emitter
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
@@ -26,24 +25,23 @@ type (
 func NewQueryHistory(
 	storage pub.QueryResultStorage,
 	eventEmitter mrevent.Emitter,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *QueryHistory {
 	return &QueryHistory{
 		storage:      storage,
-		eventEmitter: mrevent.NewSourceEmitter(eventEmitter, entity.ModelNameQueryHistory),
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameQueryHistory),
+		eventEmitter: mrevent.EmitterWithSource(eventEmitter, entity.ModelNameQueryHistory),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
 // GetItem - comment method.
 func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.QueryHistoryItem, error) {
 	if itemID == uuid.Nil {
-		return entity.QueryHistoryItem{}, mr.ErrUseCaseEntityNotFound.New()
+		return entity.QueryHistoryItem{}, errors.ErrUseCaseEntityNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.QueryHistoryItem{}, uc.errorWrapper.WrapErrorNotFoundOrFailed(err, "itemId", itemID)
+		return entity.QueryHistoryItem{}, uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	// обновление счётчика посещений
@@ -61,10 +59,10 @@ func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Q
 func (uc *QueryHistory) Create(ctx context.Context, item entity.QueryHistoryItem) (itemID uuid.UUID, err error) {
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return uuid.Nil, uc.errorWrapper.WrapErrorFailed(err)
+		return uuid.Nil, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrargs.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", conv.Group{"id": itemID})
 
 	return itemID, nil
 }

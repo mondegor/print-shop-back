@@ -3,9 +3,9 @@ package rest
 import (
 	"net/http"
 
-	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
-	auth "github.com/mondegor/go-components/factory/mrauth/infra/pub"
 	authvalidate "github.com/mondegor/go-components/mrauth/validate"
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
+	auth "github.com/mondegor/go-components/wire/mrauth/infra/pub"
 	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -42,9 +42,6 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 		auth.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
-			opts.ServiceErrorWrapper,
-			opts.StorageErrorWrapper,
 			opts.PostgresConnManager,
 			opts.Locker,
 			// opts.RequestParsers.Parser,

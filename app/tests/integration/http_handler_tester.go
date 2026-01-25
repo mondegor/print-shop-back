@@ -8,9 +8,10 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-sysmess/mrlog/slog/nopslog"
-	"github.com/mondegor/go-sysmess/mrtrace/noptracer"
-	"github.com/mondegor/go-sysmess/mrwire"
+	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/util/xio"
+	"github.com/mondegor/go-sysmess/wire"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
@@ -48,9 +49,9 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	)
 	require.NoError(t, err)
 
-	logger := nopslog.New()
-	tracer := noptracer.New()
-	traceManager, err := mrwire.InitTraceContextManager(logger)
+	logger := mrlog.NopLogger()
+	tracer := mrtrace.NopTracer()
+	traceManager, err := wire.InitTraceContextManager(wire.DefaultProcessIDs(), logger)
 	require.NoError(t, err)
 
 	pgt := infra.NewPostgresTester(t, tests.DBSchemas(), tests.ExcludedDBTables())
@@ -67,7 +68,7 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 			Logger:              logger,
 			Tracer:              tracer,
 			TraceManager:        traceManager,
-			OpenedResources:     mrwire.NewCloseManager(logger),
+			OpenedResources:     xio.NewCloseManager(logger),
 			PostgresConnManager: pgt.ConnManager(),
 			RedisAdapter:        rds.Conn(),
 			FileProviderPool:    fpool,

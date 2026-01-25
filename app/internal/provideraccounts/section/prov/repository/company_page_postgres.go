@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
@@ -85,7 +85,7 @@ func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, 
 }
 
 // FetchStatus - comment method.
-// result: enums.PublicStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: enums.PublicStatus - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (publicstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, accountID)
 }
@@ -116,7 +116,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.SiteURL,
 		)
 		// если сохранение удачное или если это внутренняя ошибка
-		if err == nil || !mr.ErrStorageRowsNotAffected.Is(err) {
+		if err == nil || !errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
 			return err
 		}
 

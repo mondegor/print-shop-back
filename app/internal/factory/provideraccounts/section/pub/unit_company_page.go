@@ -2,7 +2,6 @@ package pub
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -13,14 +12,13 @@ import (
 )
 
 func initCompanyPageController(
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
 	logoURLBuilder mrpath.Builder,
 ) (mrserver.HttpController, error) {
 	storage := repository.NewCompanyPagePostgres(dbConnManager)
-	useCase := usecase.NewCompanyPage(storage, useCaseErrorWrapper)
+	useCase := usecase.NewCompanyPage(storage)
 	controller := httpv1.NewCompanyPage(
 		requestModuleParser,
 		responseSender,

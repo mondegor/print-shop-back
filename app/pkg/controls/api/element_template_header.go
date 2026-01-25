@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 
 	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
 )
@@ -35,11 +35,11 @@ type (
 
 var (
 	// ErrElementTemplateRequired - element template ID is required.
-	ErrElementTemplateRequired = mrerr.NewKindUser("ElementTemplateRequired", "element template ID is required")
+	ErrElementTemplateRequired = errors.NewUserProto("ElementTemplateRequired", "element template ID is required")
 
 	// ErrElementTemplateNotFound - element template with ID not found.
-	ErrElementTemplateNotFound = mrerr.NewKindUser("ElementTemplateNotFound", "element template with ID={Id} not found")
+	ErrElementTemplateNotFound = errors.NewUserProto("ElementTemplateNotFound", "element template with ID={Id} not found")
 
 	// ErrElementTemplateIsDisabled - element template with ID is disabled.
-	ErrElementTemplateIsDisabled = mrerr.NewKindUser("ElementTemplateIsDisabled", "element template with ID={Id} is disabled")
+	ErrElementTemplateIsDisabled = errors.NewUserProto("ElementTemplateIsDisabled", "element template with ID={Id} is disabled")
 )

@@ -4,7 +4,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -20,7 +19,6 @@ import (
 func initPaperController(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
@@ -49,7 +47,6 @@ func initPaperController(
 		paperColorAPI,
 		paperFactureAPI,
 		eventEmitter,
-		useCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewPaper(

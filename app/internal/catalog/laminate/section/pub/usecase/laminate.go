@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
@@ -16,18 +16,17 @@ type (
 	// Laminate - comment struct.
 	Laminate struct {
 		storage      pub.LaminateStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewLaminate - создаёт объект Laminate.
 func NewLaminate(
 	storage pub.LaminateStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *Laminate {
 	return &Laminate{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameLaminate),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -35,7 +34,7 @@ func NewLaminate(
 func (uc *Laminate) GetList(ctx context.Context, lz mrcore.Localizer, params entity.LaminateParams) ([]entity.Laminate, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {
@@ -53,7 +52,7 @@ func (uc *Laminate) GetList(ctx context.Context, lz mrcore.Localizer, params ent
 func (uc *Laminate) GetTypeList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchTypeIDs(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil
@@ -63,7 +62,7 @@ func (uc *Laminate) GetTypeList(ctx context.Context) ([]uint64, error) {
 func (uc *Laminate) GetThicknessList(ctx context.Context) ([]measure.Meter, error) {
 	items, err := uc.storage.FetchThicknesses(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil

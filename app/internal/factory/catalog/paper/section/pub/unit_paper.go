@@ -2,7 +2,6 @@ package pub
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/controller/httpv1"
@@ -12,7 +11,6 @@ import (
 )
 
 func initPaperController(
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
@@ -21,7 +19,7 @@ func initPaperController(
 		dbConnManager,
 	)
 
-	useCase := usecase.NewPaper(storage, useCaseErrorWrapper)
+	useCase := usecase.NewPaper(storage)
 
 	controller := httpv1.NewPaper(
 		requestParser,

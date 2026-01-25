@@ -31,7 +31,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager) *PaperFacturePostgr
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

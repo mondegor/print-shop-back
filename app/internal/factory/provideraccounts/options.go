@@ -3,7 +3,6 @@ package provideraccounts
 import (
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
@@ -15,14 +14,12 @@ import (
 type (
 	// Options - comment struct.
 	Options struct {
-		Logger                mrlog.Logger
-		EventEmitter          mrevent.Emitter
-		UseCaseErrorWrapper   mrerr.UseCaseErrorWrapper
-		ImageUserErrorWrapper mrerr.UserErrorWrapper
-		DBConnManager         mrstorage.DBConnManager
-		Locker                mrlock.Locker
-		RequestParsers        RequestParsers
-		ResponseSender        mrserver.ResponseSender
+		Logger         mrlog.Logger
+		EventEmitter   mrevent.Emitter
+		DBConnManager  mrstorage.DBConnManager
+		Locker         mrlock.Locker
+		RequestParsers RequestParsers
+		ResponseSender mrserver.ResponseSender
 
 		UnitCompanyPage UnitCompanyPageOptions
 

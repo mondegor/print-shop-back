@@ -55,7 +55,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		catalogbox.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -64,7 +63,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		cataloglaminate.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -74,7 +72,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		catalogpaper.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -86,8 +83,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		controlselementtemplate.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
-			opts.FileUserErrorWrapper,
 			opts.PostgresConnManager,
 			controlselementtemplatevalidate.NewParser(
 				opts.RequestParsers.ExtendParser,
@@ -100,8 +95,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		controlssubmitform.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
-			opts.StorageErrorWrapper,
 			opts.PostgresConnManager,
 			opts.Locker,
 			controlssubmitformvalidate.NewParser(
@@ -113,7 +106,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.FileSender,
 			controlssubmitformapi.NewElementTemplate(
 				opts.PostgresConnManager,
-				opts.UseCaseErrorWrapper,
 				opts.Tracer,
 			),
 			opts.Cfg.General.PageSizeMax,
@@ -121,7 +113,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		dictionariesmaterialtype.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -130,7 +121,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		dictionariespapercolor.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -139,7 +129,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		dictionariespaperfacture.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -148,7 +137,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		dictionariesprintformat.InitHttpModule(
 			opts.Logger,
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
@@ -156,7 +144,6 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 		),
 		provideraccounts.InitHttpModule(
 			opts.Logger,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			provideraccountsvalidate.NewParser(
 				opts.RequestParsers.ExtendParser,

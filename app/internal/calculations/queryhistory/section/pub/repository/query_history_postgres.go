@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
@@ -100,8 +100,8 @@ func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.U
 		sql,
 		rowID,
 	)
-	if err != nil && mr.ErrStorageRowsNotAffected.Is(err) {
-		return mr.ErrStorageNoRowFound.Wrap(err)
+	if err != nil && errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
+		return errors.ErrEventStorageNoRowFound
 	}
 
 	return err
@@ -125,7 +125,7 @@ func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration
 		limit,
 	)
 	// если это внутренняя ошибка
-	if err != nil && !mr.ErrStorageRowsNotAffected.Is(err) {
+	if err != nil && !errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
 		return err
 	}
 

@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
@@ -15,18 +15,17 @@ type (
 	// Box - comment struct.
 	Box struct {
 		storage      pub.BoxStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewBox - создаёт объект Box.
 func NewBox(
 	storage pub.BoxStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *Box {
 	return &Box{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNameBox),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -34,7 +33,7 @@ func NewBox(
 func (uc *Box) GetList(ctx context.Context, lz mrcore.Localizer, params entity.BoxParams) ([]entity.Box, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {

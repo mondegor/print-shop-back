@@ -3,7 +3,7 @@ package uiform
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 // Типы данных.
@@ -50,7 +50,10 @@ func (e *UIDataType) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
+	return errors.ErrInternalKeyNotFoundInSource.New(
+		"key", value,
+		"source", enumNameUIDataType,
+	)
 }
 
 // String - возвращает значение в виде строки.

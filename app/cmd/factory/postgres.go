@@ -96,7 +96,7 @@ func ApplyPostgresMigrations(opts app.Options) error {
 	}
 	defer dbMigrate.Close()
 
-	dbMigrate.Log = gomigrate.NewLoggerAdapter(opts.Logger.WithAttrs("migrator", "go-migrate"))
+	dbMigrate.Log = gomigrate.NewLoggerAdapter(mrlog.WithAttrs(opts.Logger, "migrator", "go-migrate"))
 
 	if err = dbMigrate.Up(); err != nil {
 		if !errors.Is(err, migrate.ErrNoChange) {

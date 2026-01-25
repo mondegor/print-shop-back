@@ -3,8 +3,7 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -26,10 +25,11 @@ const (
 type (
 	// Laminate - comment struct.
 	Laminate struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.LaminateUseCase
-		listSorter mrtype.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.LaminateUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -40,6 +40,13 @@ func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSe
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			module.ErrLaminateArticleAlreadyExists.Code(), "article",
+			api.ErrMaterialTypeRequired.Code(), "typeId",
+			api.ErrMaterialTypeNotFound.Code(), "typeId",
+		),
 	}
 }
 
@@ -196,26 +203,9 @@ func (ht *Laminate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Laminate) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrLaminateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mr.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrLaminateArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	if api.ErrMaterialTypeRequired.Is(err) ||
-		api.ErrMaterialTypeNotFound.Is(err) {
-		return mrerr.NewCustomError("typeId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

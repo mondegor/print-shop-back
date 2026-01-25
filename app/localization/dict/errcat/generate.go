@@ -17,7 +17,7 @@ func list() {
 	p.Sprintf("Internal") // DefaultErrorCodeInternal - 5xx
 	p.Sprintf("System")   // DefaultErrorCodeSystem - 5xx
 
-	p.Sprintf("unexpected internal error")         // ErrorCodeUnexpectedInternal - 418, 500
+	p.Sprintf("unexpected internal error")         // ErrorCodeUnexpectedInternal - 500, 599
 	p.Sprintf("system is temporarily unavailable") // ErrorCodeTemporarilyUnavailable - 503
 
 	p.Sprintf("the file with the specified key '%[1]s' was not uploaded", "Key")
@@ -34,7 +34,7 @@ func list() {
 	p.Sprintf("entity not found") // 404
 	p.Sprintf("entity is not available")
 	p.Sprintf("entity already exists")
-	p.Sprintf("entity version is invalid")
+	p.Sprintf("entity version conflict") // 409
 	p.Sprintf("switching from '%[1]s' to '%[2]s' is rejected", "StatusFrom", "StatusTo")
 	p.Sprintf("file is invalid")
 	p.Sprintf("login is invalid")
@@ -73,7 +73,7 @@ func list() {
 	p.Sprintf("print format ID is required")
 	p.Sprintf("print format with ID=%[1]s is not available", "Id")
 	p.Sprintf("print format with ID=%[1]s not found", "Id")
-	p.Sprintf("token is expired")
+	p.Sprintf("token not found or expired : %[1]s, %[2]s, %[1]s", "Value1", "Value2")
 	p.Sprintf("token is invalid")
 	p.Sprintf("token section %[1]s is invalid", "Key")
 	p.Sprintf("token is already revoked")

@@ -168,7 +168,7 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID uint64) (entit
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

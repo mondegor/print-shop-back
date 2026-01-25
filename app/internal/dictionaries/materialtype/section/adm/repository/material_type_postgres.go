@@ -171,7 +171,7 @@ func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

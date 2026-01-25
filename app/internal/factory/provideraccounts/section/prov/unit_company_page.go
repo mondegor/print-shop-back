@@ -2,7 +2,6 @@ package prov
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -15,7 +14,6 @@ import (
 
 func initCompanyPageController(
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
@@ -28,7 +26,6 @@ func initCompanyPageController(
 		storage,
 		logoURLBuilder,
 		eventEmitter,
-		useCaseErrorWrapper,
 	)
 
 	controller := httpv1.NewCompanyPage(

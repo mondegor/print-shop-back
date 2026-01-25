@@ -1,10 +1,10 @@
 package factory
 
 import (
-	"github.com/mondegor/go-components/factory/mrauth/mapping"
 	"github.com/mondegor/go-components/mrauth/bag/contactaddress"
-	"github.com/mondegor/go-sysmess/mrlib/extfile"
+	"github.com/mondegor/go-components/wire/mrauth/mapping"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-sysmess/util/mime"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
@@ -32,14 +32,14 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 	// поэтому её можно менять только при смене самого роутера
 	pathFunc := mrchi.URLPathParam
 
-	registeredMimeTypes := extfile.NewMimeTypeList(cfgValidation.MimeTypes)
+	registeredMimeTypes := mime.NewTypeList(cfgValidation.MimeTypes)
 
-	jsonMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfgValidation.Files.Json.Extensions)
+	jsonMimeTypes, err := registeredMimeTypes.TypesByExts(cfgValidation.Files.Json.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
-	logoMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfgValidation.Images.Logo.File.Extensions)
+	logoMimeTypes, err := registeredMimeTypes.TypesByExts(cfgValidation.Images.Logo.File.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -77,7 +77,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 			parser.WithImageMaxWidth(cfgValidation.Images.Logo.MaxWidth),
 			parser.WithImageMaxHeight(cfgValidation.Images.Logo.MaxHeight),
 			parser.WithImageCheckBody(cfgValidation.Images.Logo.CheckBody),
-			parser.WithImageFileOptions(
+			parser.WithImageFileOpts(
 				parser.WithFileMinSize(cfgValidation.Images.Logo.File.MinSize),
 				parser.WithFileMaxSize(cfgValidation.Images.Logo.File.MaxSize),
 				parser.WithFileMaxFiles(cfgValidation.Images.Logo.File.MaxFiles),

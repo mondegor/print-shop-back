@@ -2,7 +2,6 @@ package pub
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -13,7 +12,6 @@ import (
 
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.
 func InitHttpModule(
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	requestParser *parser.String,
 	responseFileSender mrserver.FileResponseSender,
 	fileAPIFunc func() (mrstorage.FileProviderAPI, mrpath.Builder, error),
@@ -32,7 +30,6 @@ func InitHttpModule(
 					}
 
 					return initImageProxyController(
-						useCaseErrorWrapper,
 						requestParser,
 						responseFileSender,
 						fileAPI,

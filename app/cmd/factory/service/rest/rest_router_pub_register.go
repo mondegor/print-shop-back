@@ -55,25 +55,21 @@ func RegisterRestRouterPubHandlers(
 func getPublicAPIControllers(opts app.Options) []initing.HttpModule {
 	return []initing.HttpModule{
 		catalogbox.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		cataloglaminate.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		catalogpaper.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		controlssubmitform.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			controlssubmitformvalidate.NewParser(
 				opts.RequestParsers.ExtendParser,
@@ -83,31 +79,26 @@ func getPublicAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.Sender,
 		),
 		dictionariesmaterialtype.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		dictionariespapercolor.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		dictionariespaperfacture.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		dictionariesprintformat.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.Parser,
 			opts.ResponseSenders.Sender,
 		),
 		provideraccount.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			provideraccountsvalidate.NewParser(
 				opts.RequestParsers.ExtendParser,
@@ -119,7 +110,6 @@ func getPublicAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ImageURLBuilder,
 		),
 		filestation.InitHttpModule(
-			opts.UseCaseErrorWrapper,
 			opts.RequestParsers.String,
 			opts.ResponseSenders.FileSender,
 			func() (mrstorage.FileProviderAPI, mrpath.Builder, error) {
@@ -143,7 +133,6 @@ func getPublicAPIControllers(opts app.Options) []initing.HttpModule {
 		),
 		calculationsquery.InitHttpModule(
 			opts.EventEmitter,
-			opts.UseCaseErrorWrapper,
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,

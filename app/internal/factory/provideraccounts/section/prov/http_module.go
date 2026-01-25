@@ -3,7 +3,6 @@ package prov
 import (
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
@@ -18,8 +17,6 @@ import (
 func InitHttpModule(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	imageUserErrorWrapper mrerr.UserErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	locker mrlock.Locker,
 	requestModuleParser *validate.Parser,
@@ -35,7 +32,6 @@ func InitHttpModule(
 				Create: func() (mrserver.HttpController, error) {
 					return initCompanyPageController(
 						eventEmitter,
-						useCaseErrorWrapper,
 						dbConnManager,
 						requestModuleParser,
 						responseSender,
@@ -53,8 +49,6 @@ func InitHttpModule(
 					return initCompanyPageLogoController(
 						logger,
 						eventEmitter,
-						useCaseErrorWrapper,
-						imageUserErrorWrapper,
 						dbConnManager,
 						locker,
 						requestModuleParser,

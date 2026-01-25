@@ -3,7 +3,7 @@ package uiform
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 // Типы элементов интерфейса.
@@ -56,7 +56,10 @@ func (e *UIItemView) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameUIItemView)
+	return errors.ErrInternalKeyNotFoundInSource.New(
+		"key", value,
+		"source", enumNameUIItemView,
+	)
 }
 
 // String - возвращает значение в виде строки.

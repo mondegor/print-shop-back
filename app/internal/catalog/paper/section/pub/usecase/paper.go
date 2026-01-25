@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
@@ -16,18 +16,17 @@ type (
 	// Paper - comment struct.
 	Paper struct {
 		storage      pub.PaperStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewPaper - создаёт объект Paper.
 func NewPaper(
 	storage pub.PaperStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *Paper {
 	return &Paper{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePaper),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -35,7 +34,7 @@ func NewPaper(
 func (uc *Paper) GetList(ctx context.Context, lz mrcore.Localizer, params entity.PaperParams) ([]entity.Paper, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {
@@ -53,7 +52,7 @@ func (uc *Paper) GetList(ctx context.Context, lz mrcore.Localizer, params entity
 func (uc *Paper) GetTypeList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchTypeIDs(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil
@@ -63,7 +62,7 @@ func (uc *Paper) GetTypeList(ctx context.Context) ([]uint64, error) {
 func (uc *Paper) GetColorList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchColorIDs(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil
@@ -73,7 +72,7 @@ func (uc *Paper) GetColorList(ctx context.Context) ([]uint64, error) {
 func (uc *Paper) GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter2, error) {
 	items, err := uc.storage.FetchDensities(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil
@@ -83,7 +82,7 @@ func (uc *Paper) GetDensityList(ctx context.Context) ([]measure.KilogramPerMeter
 func (uc *Paper) GetFactureList(ctx context.Context) ([]uint64, error) {
 	items, err := uc.storage.FetchFactureIDs(ctx)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	return items, nil

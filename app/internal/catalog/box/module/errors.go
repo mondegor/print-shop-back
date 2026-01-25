@@ -1,13 +1,13 @@
 package module
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 var (
 	// ErrBoxNotFound - box with ID not found.
-	ErrBoxNotFound = mrerr.NewKindUser("BoxNotFound", "box with ID={Id} not found")
+	ErrBoxNotFound = errors.NewUserProto("BoxNotFound", "box with ID={Id} not found")
 
 	// ErrBoxArticleAlreadyExists - box article already exists.
-	ErrBoxArticleAlreadyExists = mrerr.NewKindUser("BoxArticleAlreadyExists", "box article '{Name}' already exists")
+	ErrBoxArticleAlreadyExists = errors.NewUserProto("BoxArticleAlreadyExists", "box article '{Name}' already exists")
 )

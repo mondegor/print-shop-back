@@ -1,7 +1,7 @@
 package rect2d
 
 import (
-	"github.com/mondegor/go-sysmess/mrlib/extmath"
+	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
 	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2"
@@ -143,7 +143,7 @@ func (f Format) Transform(coefficient float64) Format {
 // Round - возвращает округлённый формат.
 func (f Format) Round() Format {
 	return Format{
-		Width:  extmath.RoundFloat4(f.Width),
-		Height: extmath.RoundFloat4(f.Height),
+		Width:  xmath.RoundFloat4(f.Width),
+		Height: xmath.RoundFloat4(f.Height),
 	}
 }

@@ -3,7 +3,7 @@ package enum
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 // Ориентации формата.
@@ -41,7 +41,10 @@ func (e *Orientation) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mr.ErrInternalKeyNotFoundInSource.New(value, enumNameOrientation)
+	return errors.ErrInternalKeyNotFoundInSource.New(
+		"key", value,
+		"source", enumNameOrientation,
+	)
 }
 
 // String - возвращает значение в виде строки.

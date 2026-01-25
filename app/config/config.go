@@ -4,9 +4,9 @@ import (
 	"io"
 	"time"
 
-	authcfg "github.com/mondegor/go-components/factory/mrauth/config"
-	"github.com/mondegor/go-sysmess/mrlib/extfile"
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	typecfg "github.com/mondegor/go-sysmess/mrtype/config"
+	"github.com/mondegor/go-sysmess/util/mime"
 )
 
 type (
@@ -225,7 +225,7 @@ type (
 		Images struct {
 			Logo typecfg.ImageType `yaml:"logo"`
 		} `yaml:"images"`
-		MimeTypes []extfile.MimeType `yaml:"mime_types"`
+		MimeTypes []mime.Type `yaml:"mime_types"`
 	}
 
 	// TaskSchedule - comment struct.
@@ -245,26 +245,26 @@ type (
 		} `yaml:"auth"`
 		Mailer struct {
 			// Caption             string           `yaml:"caption"`
-			MessageProcessor    MessageProcessor `yaml:"message_processor"`
-			ChangeFromToRetry   SchedulerTask    `yaml:"change_from_to_retry"`
-			CleanQueue          SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts   uint32           `yaml:"send_retry_attempts"`
-			SendDelayCorrection time.Duration    `yaml:"send_delay_correction"`
-			ChangeQueueLimit    int              `yaml:"change_queue_limit"`
-			ChangeRetryTimeout  time.Duration    `yaml:"change_retry_timeout"`
-			ChangeRetryDelayed  time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit     int              `yaml:"clean_queue_limit"`
+			MessageProcessor     MessageProcessor `yaml:"message_processor"`
+			ChangeFromToRetry    SchedulerTask    `yaml:"change_from_to_retry"`
+			CleanQueue           SchedulerTask    `yaml:"clean_queue"`
+			SendRetryAttempts    uint32           `yaml:"send_retry_attempts"`
+			SendDelayCorrection  time.Duration    `yaml:"send_delay_correction"`
+			ChangeQueueBatchSize int              `yaml:"change_queue_batch_size"`
+			ChangeRetryTimeout   time.Duration    `yaml:"change_retry_timeout"`
+			ChangeRetryDelayed   time.Duration    `yaml:"change_retry_delayed"`
+			CleanQueueBatchSize  int              `yaml:"clean_queue_batch_size"`
 		} `yaml:"mailer"`
 		Notifier struct {
 			// Caption            string           `yaml:"caption"`
-			NoticeProcessor    MessageProcessor `yaml:"notice_processor"`
-			ChangeFromToRetry  SchedulerTask    `yaml:"change_from_to_retry"`
-			CleanQueue         SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts  uint32           `yaml:"send_retry_attempts"`
-			ChangeQueueLimit   int              `yaml:"change_queue_limit"`
-			ChangeRetryTimeout time.Duration    `yaml:"change_retry_timeout"`
-			ChangeRetryDelayed time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit    int              `yaml:"clean_queue_limit"`
+			NoticeProcessor      MessageProcessor `yaml:"notice_processor"`
+			ChangeFromToRetry    SchedulerTask    `yaml:"change_from_to_retry"`
+			CleanQueue           SchedulerTask    `yaml:"clean_queue"`
+			SendRetryAttempts    uint32           `yaml:"send_retry_attempts"`
+			ChangeQueueBatchSize int              `yaml:"change_queue_batch_size"`
+			ChangeRetryTimeout   time.Duration    `yaml:"change_retry_timeout"`
+			ChangeRetryDelayed   time.Duration    `yaml:"change_retry_delayed"`
+			CleanQueueBatchSize  int              `yaml:"clean_queue_batch_size"`
 		} `yaml:"notifier"`
 	}
 

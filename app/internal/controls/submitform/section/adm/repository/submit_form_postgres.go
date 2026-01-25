@@ -208,7 +208,7 @@ func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName 
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, ErrStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
 func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

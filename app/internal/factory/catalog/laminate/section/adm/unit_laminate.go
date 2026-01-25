@@ -4,7 +4,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -20,7 +19,6 @@ import (
 func initLaminateController(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
@@ -41,7 +39,7 @@ func initLaminateController(
 		),
 	)
 
-	useCase := usecase.NewLaminate(storage, materialTypeAPI, eventEmitter, useCaseErrorWrapper)
+	useCase := usecase.NewLaminate(storage, materialTypeAPI, eventEmitter)
 
 	controller := httpv1.NewLaminate(
 		requestExtendParser,

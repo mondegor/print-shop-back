@@ -1,10 +1,11 @@
 package service
 
 import (
-	"github.com/mondegor/go-components/factory/mrnotifier/processor"
-	"github.com/mondegor/go-components/factory/mrnotifier/producer"
-	"github.com/mondegor/go-components/factory/mrnotifier/scheduler"
-	"github.com/mondegor/go-components/mrnotifier/notifier/usecase/produce"
+	"github.com/mondegor/go-components/mrnotifier/notifier/service/produce"
+	"github.com/mondegor/go-components/wire/mrmailer"
+	"github.com/mondegor/go-components/wire/mrnotifier/processor"
+	"github.com/mondegor/go-components/wire/mrnotifier/producer"
+	"github.com/mondegor/go-components/wire/mrnotifier/scheduler"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
@@ -23,13 +24,11 @@ const (
 )
 
 // InitNotifierAPI - создаёт отправителя сообщений получателям.
-func InitNotifierAPI(opts app.Options) *produce.NoticeSender {
+func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
 	mrlog.Info(opts.Logger, "Create and init notifier sender API")
 
-	return producer.NewSender(
+	return producer.InitService(
 		opts.PostgresConnManager,
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
 			Name:       serviceNotifierTableName,
@@ -47,13 +46,10 @@ func InitNotifierAPI(opts app.Options) *produce.NoticeSender {
 func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor {
 	mrlog.Info(opts.Logger, "Create and init notice processor service")
 
-	return processor.NewService(
+	return processor.InitService(
 		opts.PostgresConnManager,
-		opts.MailerAPI,
-		opts.EventEmitter,
+		mrmailer.NoticeToMessageAdapterFunc(opts.MailerAPI.Send),
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
@@ -89,11 +85,10 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor {
 func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	mrlog.Info(opts.Logger, "Create and init notice scheduler service")
 
-	return scheduler.NewService(
+	return scheduler.InitService(
 		opts.PostgresConnManager,
 		opts.EventEmitter,
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
@@ -105,10 +100,10 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceNotifierPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Notifier/"),
-		scheduler.WithChangeLimit(opts.Cfg.TaskSchedule.Notifier.ChangeQueueLimit),
+		scheduler.WithChangeBatchSize(opts.Cfg.TaskSchedule.Notifier.ChangeQueueBatchSize),
 		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Notifier.ChangeRetryTimeout),
 		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Notifier.ChangeRetryDelayed),
-		scheduler.WithCleanLimit(opts.Cfg.TaskSchedule.Notifier.CleanQueueLimit),
+		scheduler.WithCleanBatchSize(opts.Cfg.TaskSchedule.Notifier.CleanQueueBatchSize),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),

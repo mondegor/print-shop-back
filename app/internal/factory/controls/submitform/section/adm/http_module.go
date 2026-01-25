@@ -4,7 +4,6 @@ import (
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/initing"
@@ -20,8 +19,6 @@ import (
 func InitHttpModule(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	storageErrorWrapper mrerr.ErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	locker mrlock.Locker,
 	requestModuleParser *validate.Parser,
@@ -55,7 +52,6 @@ func InitHttpModule(
 				Create: func() (mrserver.HttpController, error) {
 					return initSubmitFormController(
 						eventEmitter,
-						useCaseErrorWrapper,
 						dbConnManager,
 						storageSubmitForm,
 						storageFormElement,
@@ -73,8 +69,6 @@ func InitHttpModule(
 					return initFormElementController(
 						logger,
 						eventEmitter,
-						useCaseErrorWrapper,
-						storageErrorWrapper,
 						dbConnManager,
 						storageSubmitForm,
 						storageFormElement,

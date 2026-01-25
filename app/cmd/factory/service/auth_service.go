@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/mondegor/go-components/factory/mrauth/scheduler"
-	"github.com/mondegor/go-components/factory/mrauth/userstat/collector"
+	"github.com/mondegor/go-components/wire/mrauth/scheduler"
+	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
@@ -33,8 +33,6 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 	return collector.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{
@@ -60,8 +58,6 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	return scheduler.NewService(
 		opts.PostgresConnManager,
 		opts.ErrorHandler,
-		opts.UseCaseErrorWrapper,
-		opts.StorageErrorWrapper,
 		opts.Logger,
 		opts.TraceManager,
 		mrsql.DBTableInfo{

@@ -18,25 +18,8 @@
         {
             "id": "unexpected internal error",
             "message": "unexpected internal error",
-            "translation": "Internal server error [problem]\n\n418. unexpected error",
+            "translation": "Internal server error [problem]\n\n599. unexpected error",
             "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "request body is not valid: '{Reason}'",
-            "message": "request body is not valid: '{Reason}'",
-            "translation": "Request body is not valid: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
-            "translatorComment": "Copied from source.",
-            "placeholders": [
-                {
-                    "id": "Reason",
-                    "string": "%[1]s",
-                    "type": "string",
-                    "underlyingType": "string",
-                    "argNum": 1,
-                    "expr": "\"Reason\""
-                }
-            ],
             "fuzzy": true
         },
         {
@@ -82,6 +65,23 @@
             "message": "404. resource not found",
             "translation": "Resource not found",
             "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "request body is not valid: '{Reason}'",
+            "message": "request body is not valid: '{Reason}'",
+            "translation": "Request body is not valid: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ],
             "fuzzy": true
         },
         {
@@ -189,16 +189,16 @@
             "message": "input data is incorrect: '{Reason}'",
             "translation": "Input data is incorrect: '{Reason}'",
             "translatorComment": "Copied from source.",
-          "placeholders": [
-            {
-              "id": "Reason",
-              "string": "%[1]s",
-              "type": "string",
-              "underlyingType": "string",
-              "argNum": 1,
-              "expr": "\"Reason\""
-            }
-          ],
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ],
             "fuzzy": true
         },
         {
@@ -230,9 +230,9 @@
             "fuzzy": true
         },
         {
-            "id": "entity version is invalid",
-            "message": "entity version is invalid",
-            "translation": "entity version is invalid",
+            "id": "entity version conflict",
+            "message": "entity version conflict",
+            "translation": "entity version conflict",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
@@ -745,10 +745,36 @@
             "fuzzy": true
         },
         {
-            "id": "token is expired",
-            "message": "token is expired",
-            "translation": "token is expired",
+            "id": "token not found or expired : {Value1}, {Value2}, {Value1}",
+            "message": "token not found or expired : {Value1}, {Value2}, {Value1}",
+            "translation": "token not found or expired : {Value1}, {Value2}, {Value1}",
             "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Value1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value1\""
+                },
+                {
+                    "id": "Value2",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Value2\""
+                },
+                {
+                    "id": "Value1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value1\""
+                }
+            ],
             "fuzzy": true
         },
         {

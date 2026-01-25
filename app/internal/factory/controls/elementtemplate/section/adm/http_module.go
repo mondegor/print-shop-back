@@ -2,7 +2,6 @@ package adm
 
 import (
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/initing"
@@ -16,8 +15,6 @@ import (
 func InitHttpModule(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
-	fileUserErrorWrapper mrerr.UserErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
 	responseFileSender mrserver.FileResponseSender,
@@ -32,8 +29,6 @@ func InitHttpModule(
 					return initElementTemplateController(
 						logger,
 						eventEmitter,
-						useCaseErrorWrapper,
-						fileUserErrorWrapper,
 						dbConnManager,
 						requestParser,
 						responseFileSender,

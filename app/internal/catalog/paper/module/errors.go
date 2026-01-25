@@ -1,11 +1,13 @@
 package module
 
-import "github.com/mondegor/go-sysmess/mrerr"
+import (
+	"github.com/mondegor/go-sysmess/errors"
+)
 
 var (
 	// ErrPaperNotFound - paper with ID not found.
-	ErrPaperNotFound = mrerr.NewKindUser("PaperNotFound", "paper with ID={Id} not found")
+	ErrPaperNotFound = errors.NewUserProto("PaperNotFound", "paper with ID={Id} not found")
 
 	// ErrPaperArticleAlreadyExists - paper article already exists.
-	ErrPaperArticleAlreadyExists = mrerr.NewKindUser("PaperArticleAlreadyExists", "paper article '{Name}' already exists")
+	ErrPaperArticleAlreadyExists = errors.NewUserProto("PaperArticleAlreadyExists", "paper article '{Name}' already exists")
 )

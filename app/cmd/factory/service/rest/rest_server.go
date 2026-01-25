@@ -28,7 +28,7 @@ func InitRestServer(opts app.Options) (*httpserver.Adapter, error) {
 		router,
 		httpserver.WithLogger(opts.Logger),
 		httpserver.WithCaption(restServerCaption),
-		httpserver.WithHostAndPort(srvOpts.Listen.BindIP, srvOpts.Listen.Port),
+		httpserver.WithHostPort(srvOpts.Listen.BindIP, srvOpts.Listen.Port),
 		httpserver.WithReadTimeout(srvOpts.ReadTimeout),
 		httpserver.WithWriteTimeout(srvOpts.WriteTimeout),
 		httpserver.WithShutdownTimeout(srvOpts.ShutdownTimeout),

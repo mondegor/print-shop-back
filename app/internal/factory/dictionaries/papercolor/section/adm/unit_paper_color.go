@@ -4,7 +4,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrerr"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
@@ -19,7 +18,6 @@ import (
 func initPaperColorController(
 	logger mrlog.Logger,
 	eventEmitter mrevent.Emitter,
-	useCaseErrorWrapper mrerr.UseCaseErrorWrapper,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
@@ -38,7 +36,7 @@ func initPaperColorController(
 		),
 	)
 
-	useCase := usecase.NewPaperColor(storage, eventEmitter, useCaseErrorWrapper)
+	useCase := usecase.NewPaperColor(storage, eventEmitter)
 
 	controller := httpv1.NewPaperColor(
 		requestExtendParser,

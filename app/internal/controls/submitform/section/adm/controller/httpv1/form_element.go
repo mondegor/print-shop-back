@@ -4,8 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-components/mrordering"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-sysmess/mrerr/mr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
@@ -25,9 +24,10 @@ const (
 type (
 	// FormElement - comment struct.
 	FormElement struct {
-		parser  validate.RequestSubmitFormParser
-		sender  mrserver.ResponseSender
-		useCase adm.FormElementUseCase
+		parser       validate.RequestSubmitFormParser
+		sender       mrserver.ResponseSender
+		useCase      adm.FormElementUseCase
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -37,6 +37,15 @@ func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.Res
 		parser:  parser,
 		sender:  sender,
 		useCase: useCase,
+		errorWrapper: errors.NewCustomWrapper(
+			module.ErrSubmitFormNotFound.Code(), "formId",
+			module.ErrFormElementDetailingNotAllowed.Code(), "formId",
+			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			module.ErrFormElementParamNameAlreadyExists.Code(), "paramName",
+			api.ErrElementTemplateNotFound.Code(), "templateId",
+			api.ErrElementTemplateIsDisabled.Code(), "templateId",
+			mrordering.ErrAfterNodeNotFound.Code(), "afterNodeId",
+		),
 	}
 }
 
@@ -134,7 +143,7 @@ func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), req.AfterNodeID); err != nil {
-		return ht.wrapErrorNode(r, err)
+		return ht.wrapError(err, r)
 	}
 
 	return ht.sender.SendNoContent(w)
@@ -149,39 +158,9 @@ func (ht *FormElement) getRawItemID(r *http.Request) string {
 }
 
 func (ht *FormElement) wrapError(err error, r *http.Request) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if module.ErrSubmitFormNotFound.Is(err) ||
-		module.ErrFormElementDetailingNotAllowed.Is(err) {
-		return mrerr.NewCustomError("formId", err)
-	}
-
-	if mr.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if module.ErrFormElementParamNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("paramName", err)
-	}
-
-	if api.ErrElementTemplateNotFound.Is(err) ||
-		api.ErrElementTemplateIsDisabled.Is(err) {
-		return mrerr.NewCustomError("templateId", err)
-	}
-
-	return err
-}
-
-func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
-	if mr.ErrUseCaseEntityNotFound.Is(err) {
-		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
-	}
-
-	if mrordering.ErrAfterNodeNotFound.Is(err) {
-		return mrerr.NewCustomError("afterNodeId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

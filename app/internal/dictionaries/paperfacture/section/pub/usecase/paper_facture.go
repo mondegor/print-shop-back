@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
@@ -15,18 +15,17 @@ type (
 	// PaperFacture - comment struct.
 	PaperFacture struct {
 		storage      pub.PaperFactureStorage
-		errorWrapper mrerr.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewPaperFacture - создаёт объект PaperFacture.
 func NewPaperFacture(
 	storage pub.PaperFactureStorage,
-	errorWrapper mrerr.UseCaseErrorWrapper,
 ) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
-		errorWrapper: mrerr.NewUseCaseErrorWrapper(errorWrapper, entity.ModelNamePaperFacture),
+		errorWrapper: errors.NewUseCaseWrapper(),
 	}
 }
 
@@ -34,7 +33,7 @@ func NewPaperFacture(
 func (uc *PaperFacture) GetList(ctx context.Context, lz mrcore.Localizer, params entity.PaperFactureParams) ([]entity.PaperFacture, error) {
 	items, err := uc.storage.Fetch(ctx, params)
 	if err != nil {
-		return nil, uc.errorWrapper.WrapErrorFailed(err)
+		return nil, uc.errorWrapper.Wrap(err)
 	}
 
 	if len(items) == 0 {

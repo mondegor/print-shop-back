@@ -6,9 +6,9 @@ import (
 
 	"github.com/mondegor/go-storage/mrfilestorage"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlib/extfile"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/util/mime"
 
 	"github.com/mondegor/print-shop-back/config"
 )
@@ -20,7 +20,7 @@ func NewFileSystem(logger mrlog.Logger, cfg config.Config) *mrfilestorage.FileSy
 	return mrfilestorage.New(
 		os.FileMode(cfg.FileSystem.DirMode),
 		cfg.FileSystem.CreateDirs,
-		extfile.NewMimeTypeList(cfg.MimeTypes), // TODO: можно вынести в общую переменную
+		mime.NewTypeList(cfg.MimeTypes), // TODO: можно вынести в общую переменную
 	)
 }
 

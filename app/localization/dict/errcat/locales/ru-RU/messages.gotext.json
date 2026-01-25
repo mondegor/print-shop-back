@@ -17,21 +17,6 @@
             "translation": "Внутренняя ошибка сервера [problem]"
         },
         {
-            "id": "request body is not valid: '{Reason}'",
-            "message": "request body is not valid: '{Reason}'",
-            "translation": "11111Тело запроса невалидное: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
-            "placeholders": [
-                {
-                    "id": "Reason",
-                    "string": "%[1]s",
-                    "type": "string",
-                    "underlyingType": "string",
-                    "argNum": 1,
-                    "expr": "\"Reason\""
-                }
-            ]
-        },
-        {
             "id": "system is temporarily unavailable",
             "message": "system is temporarily unavailable",
             "translation": "Система временно не может обработать ваш запрос. Пожалуйста, повторите запрос позже"
@@ -65,6 +50,21 @@
             "id": "404. resource not found",
             "message": "404. resource not found",
             "translation": "Запрашиваемый ресурс не был найден"
+        },
+        {
+            "id": "request body is not valid: '{Reason}'",
+            "message": "request body is not valid: '{Reason}'",
+            "translation": "11111Тело запроса невалидное: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ]
         },
         {
             "id": "request param with key '{Key}' of type '{Type}' contains incorrect value '{Value}'",
@@ -194,8 +194,8 @@
             "translation": ""
         },
         {
-            "id": "entity version is invalid",
-            "message": "entity version is invalid",
+            "id": "entity version conflict",
+            "message": "entity version conflict",
             "translation": ""
         },
         {
@@ -635,9 +635,35 @@
             ]
         },
         {
-            "id": "token is expired",
-            "message": "token is expired",
-            "translation": ""
+            "id": "token not found or expired : {Value1}, {Value2}, {Value1}",
+            "message": "token not found or expired : {Value1}, {Value2}, {Value1}",
+            "translation": "",
+            "placeholders": [
+                {
+                    "id": "Value1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value1\""
+                },
+                {
+                    "id": "Value2",
+                    "string": "%[2]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 2,
+                    "expr": "\"Value2\""
+                },
+                {
+                    "id": "Value1",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Value1\""
+                }
+            ]
         },
         {
             "id": "token is invalid",
