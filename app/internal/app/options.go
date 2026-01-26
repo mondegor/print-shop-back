@@ -18,6 +18,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-webcore/mrclient/sentry"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrserver/httpserver"
@@ -41,11 +42,11 @@ type (
 		OpenedResources *xio.CloseManager
 
 		InternalRouter *http.ServeMux
-		// Sentry         *sentry.Adapter
-		Prometheus   *mrinit.Prometheus
-		EventEmitter mrevent.Emitter
-		ErrorHandler errors.Handler
-		AppHealth    *mrrun.AppHealth
+		Sentry         *sentry.Adapter
+		Prometheus     *mrinit.Prometheus
+		EventEmitter   mrevent.Emitter
+		ErrorHandler   errors.Handler
+		AppHealth      *mrrun.AppHealth
 
 		PostgresConnManager          *mrpostgres.ConnManager
 		PostgresNotificationService  *mrpostgres.ProcessWaitForNotification

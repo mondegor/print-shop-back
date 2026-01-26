@@ -8,6 +8,7 @@ import (
 	authiniting "github.com/mondegor/go-components/wire/mrauth/initing"
 	"github.com/mondegor/go-storage/mrlock/redislocker"
 	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-sysmess/wire"
@@ -107,15 +108,15 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 
 // createAppEnvironment - создаёт, и настраивает внешнее окружение приложения.
 func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error) {
-	// if opts.Cfg.Sentry.DSN != "" {
-	// 	sentry, err := InitSentry(opts.Logger, opts.Cfg)
-	// 	if err != nil {
-	// 		return app.Options{}, err
-	// 	}
-	//
-	// 	opts.OpenedResources.Register(sentry)
-	// 	opts.Sentry = sentry
-	// }
+	if sentry, err := InitSentry(opts.Logger, opts.Cfg); err != nil {
+		if !errors.Is(err, errSentryDisabled) {
+			return app.Options{}, err
+		}
+	} else {
+		opts.OpenedResources.Register(sentry)
+		opts.Sentry = sentry
+	}
+
 	opts.InternalRouter = http.NewServeMux()
 
 	if opts.Prometheus == nil {

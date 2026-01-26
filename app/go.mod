@@ -9,11 +9,12 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20260125151110-eafa7a4893e9
-	github.com/mondegor/go-storage v0.17.2-0.20260125150702-f3540d81872c
-	github.com/mondegor/go-sysmess v0.15.4-0.20260125150427-e379e79d5eb6
-	github.com/mondegor/go-webcore v0.29.3-0.20260125150839-fede7846af8e
+	github.com/mondegor/go-components v0.8.3-0.20260126232819-e28b5a266457
+	github.com/mondegor/go-storage v0.17.2-0.20260126231943-af1b14049a4b
+	github.com/mondegor/go-sysmess v0.15.4-0.20260126231627-d1a21262b0ea
+	github.com/mondegor/go-webcore v0.29.3-0.20260126232337-72cf63a46cd1
 	github.com/oklog/run v1.2.0
+	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.33.0
@@ -44,6 +45,7 @@ require (
 	github.com/ebitengine/purego v0.9.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
+	github.com/getsentry/sentry-go v0.41.0 // indirect
 	github.com/go-chi/chi/v5 v5.2.4 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -83,7 +85,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/pquerna/otp v1.5.0 // indirect
