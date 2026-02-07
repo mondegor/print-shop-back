@@ -1,7 +1,7 @@
 package factory
 
 import (
-	"github.com/mondegor/go-components/mrauth/bag/contactaddress"
+	"github.com/mondegor/go-components/mrauth/model/contactaddress"
 	"github.com/mondegor/go-components/wire/mrauth/mapping"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/mime"
