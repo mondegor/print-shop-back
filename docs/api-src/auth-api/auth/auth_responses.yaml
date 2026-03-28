@@ -32,7 +32,7 @@ Auth.ResponseJson.Error400:
         required:
           - errors
         properties:
-          operationStatus:
+          operation_status:
             $ref: "#/components/schemas/Auth.Response.Model.ConfirmOperationStatus"
           errors:
             $ref: "#/components/schemas/App.Response.Model.ErrorList"

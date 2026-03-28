@@ -25,7 +25,7 @@ func NewPrintFormat(
 ) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

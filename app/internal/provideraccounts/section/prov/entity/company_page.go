@@ -10,10 +10,10 @@ import (
 
 const (
 	// ModelNameCompanyPage - название сущности.
-	ModelNameCompanyPage = "providers-api.ProviderAccounts.CompanyPage"
+	ModelNameCompanyPage = "provider-api.ProviderAccounts.CompanyPage"
 
 	// ModelNameCompanyPageLogo - название сущности.
-	ModelNameCompanyPageLogo = "providers-api.ProviderAccounts.CompanyPageLogo"
+	ModelNameCompanyPageLogo = "provider-api.ProviderAccounts.CompanyPageLogo"
 )
 
 type (

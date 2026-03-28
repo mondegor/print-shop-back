@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrmodel"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -56,8 +57,8 @@ func NewSubmitForm(
 		useCaseVersion: useCaseVersion,
 		listSorter:     listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 			module.ErrSubmitFormRewriteNameAlreadyExists.Code(), "rewriteName",
 			module.ErrSubmitFormParamNameAlreadyExists.Code(), "paramName",
 		),
@@ -71,7 +72,7 @@ func (ht *SubmitForm) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: submitFormListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: submitFormItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: submitFormItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: submitFormItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: submitFormItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: submitFormItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -150,8 +151,8 @@ func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *SubmitForm) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreSubmitFormRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -166,7 +167,7 @@ func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
 		Caption:     req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -218,11 +219,11 @@ func (ht *SubmitForm) GetVersionJson(w http.ResponseWriter, r *http.Request) err
 	return ht.sender.SendAttachmentFile(
 		r.Context(),
 		w,
-		mrtype.File{
-			FileInfo: mrtype.FileInfo{
+		mrmodel.File{
+			FileInfo: mrmodel.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, primary.FormID, primary.Version),
-				Size:         uint64(len(body)),
+				Size:         int64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -265,7 +266,7 @@ func (ht *SubmitForm) getRawItemID(r *http.Request) string {
 }
 
 func (ht *SubmitForm) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrSubmitFormNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

@@ -23,7 +23,7 @@ func initLaminateController(
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
 	materialTypeAPI api.MaterialTypeAvailability,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.Laminate{})
 	if err != nil {

@@ -7,7 +7,7 @@
       Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
       - caption;
 
-      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;

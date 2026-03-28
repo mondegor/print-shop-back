@@ -28,7 +28,7 @@ func NewPaperFacture(
 ) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 		trace:        trace,
 	}
 }
@@ -42,7 +42,7 @@ func (uc *PaperFacture) CheckAvailability(ctx context.Context, itemID uint64) er
 	}
 
 	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return api.ErrPaperFactureNotFound.Wrap(err, itemID)
 		}
 

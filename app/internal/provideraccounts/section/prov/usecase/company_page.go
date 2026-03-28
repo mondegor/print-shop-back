@@ -41,7 +41,7 @@ func NewCompanyPage(
 		storage:       storage,
 		imgBaseURL:    imgBaseURL,
 		eventEmitter:  mrevent.EmitterWithSource(eventEmitter, entity.ModelNameCompanyPage),
-		errorWrapper:  errors.NewUseCaseWrapper(),
+		errorWrapper:  errors.NewServiceRecordNotFoundWrapper(),
 		statusFlowMap: publicstatus.NewFlowMap(),
 	}
 }
@@ -49,7 +49,7 @@ func NewCompanyPage(
 // GetItem - comment method.
 func (uc *CompanyPage) GetItem(ctx context.Context, accountID uuid.UUID) (entity.CompanyPage, error) {
 	if accountID == uuid.Nil {
-		return entity.CompanyPage{}, errors.ErrUseCaseEntityNotFound
+		return entity.CompanyPage{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, accountID)
@@ -62,10 +62,10 @@ func (uc *CompanyPage) GetItem(ctx context.Context, accountID uuid.UUID) (entity
 	return item, nil
 }
 
-// Store - comment method.
-func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error {
+// Save - comment method.
+func (uc *CompanyPage) Save(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
@@ -88,7 +88,7 @@ func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error
 // ChangeStatus - comment method.
 func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.AccountID)
@@ -101,7 +101,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage
 	}
 
 	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
-		return errors.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item); err != nil {
@@ -120,7 +120,7 @@ func (uc *CompanyPage) checkItem(ctx context.Context, item *entity.CompanyPage) 
 func (uc *CompanyPage) checkRewriteName(ctx context.Context, item *entity.CompanyPage) error {
 	accountID, err := uc.storage.FetchAccountIDByRewriteName(ctx, item.RewriteName)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 

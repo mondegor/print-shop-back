@@ -215,8 +215,8 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
 		row.Detailing,
 		row.Body,
 	)
-	if err != nil && errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
-		return errors.ErrEventStorageNoRowFound
+	if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+		return errors.ErrEventStorageNoRecordFound
 	}
 
 	return err
@@ -247,7 +247,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			activitystatus.Archived,
 		)
 		// если это внутренняя ошибка
-		if err != nil && !errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
+		if err != nil && !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
 			return err
 		}
 
@@ -269,8 +269,8 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			row.ActivityStatus,
 			toStatus,
 		)
-		if err != nil && errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
-			return errors.ErrEventStorageNoRowFound
+		if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+			return errors.ErrEventStorageNoRecordFound
 		}
 
 		return err

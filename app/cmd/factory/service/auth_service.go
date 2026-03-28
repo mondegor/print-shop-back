@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/mondegor/go-components/mrauth/dto"
 	"github.com/mondegor/go-components/wire/mrauth/scheduler"
 	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
 	"github.com/mondegor/go-storage/mrsql"
@@ -27,7 +28,7 @@ const (
 )
 
 // InitUserStatRequestCollectorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
-func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageCollector {
+func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageCollector[dto.UserActivityLogMessage] {
 	mrlog.Info(opts.Logger, "Create and init user request collector service")
 
 	return collector.NewService(
@@ -41,12 +42,12 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 		},
 		serviceUserLogTableName,
 		collector.WithMessageCollectorOpts(
-			collect.WithCaptionPrefix("UserStat/"),
-			collect.WithReadyTimeout(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.ReadyTimeout),
-			collect.WithFlushPeriod(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.FlushPeriod),
-			collect.WithHandlerTimeout(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.HandlerTimeout),
-			collect.WithBatchSize(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.BatchSize),
-			collect.WithWorkersCount(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.WorkersCount),
+			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
+			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.ReadyTimeout),
+			collect.WithFlushPeriod[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.FlushPeriod),
+			collect.WithHandlerTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.HandlerTimeout),
+			collect.WithBatchSize[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.BatchSize)),
+			collect.WithWorkersCount[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.WorkersCount)),
 		),
 	)
 }
@@ -71,7 +72,7 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		serviceOperationLogTableName,
 		serviceUserLogTableName,
 		scheduler.WithCaptionPrefix("Auth/"),
-		scheduler.WithCleanLimit(opts.Cfg.TaskSchedule.Auth.CleanRecordsLimit),
+		scheduler.WithCleanLimit(int(opts.Cfg.TaskSchedule.Auth.CleanRecordsLimit)),
 		scheduler.WithLogLifeTime(opts.Cfg.TaskSchedule.Auth.LogsLifeTime),
 		scheduler.WithTaskCleanRecordsOpts(
 			task.WithCaptionPrefix("Auth/"),

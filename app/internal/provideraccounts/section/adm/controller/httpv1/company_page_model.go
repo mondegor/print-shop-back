@@ -8,6 +8,6 @@ type (
 	// CompanyPageListResponse - comment struct.
 	CompanyPageListResponse struct {
 		Items []entity.CompanyPage `json:"items"`
-		Total uint64               `json:"total"`
+		Total int                  `json:"total"`
 	}
 )

@@ -6,7 +6,6 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
@@ -18,7 +17,7 @@ type (
 	CompanyPagePostgres struct {
 		client        mrstorage.DBConnManager
 		sqlBuilder    mrstorage.SQLBuilder
-		repoTotalRows db.TotalRowsFetcher[uint64]
+		repoTotalRows db.TotalRowsFetcher[int]
 	}
 )
 
@@ -27,7 +26,7 @@ func NewCompanyPagePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 	return &CompanyPagePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNameCompaniesPages,
 		),
@@ -35,8 +34,15 @@ func NewCompanyPagePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 }
 
 // FetchWithTotal - comment method.
-func (re *CompanyPagePostgres) FetchWithTotal(ctx context.Context, params entity.CompanyPageParams) (rows []entity.CompanyPage, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *CompanyPagePostgres) FetchWithTotal(ctx context.Context, params entity.CompanyPageParams) (rows []entity.CompanyPage, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(page_title)", "UPPER(site_url)"}, strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("page_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -47,7 +53,14 @@ func (re *CompanyPagePostgres) FetchWithTotal(ctx context.Context, params entity
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("account_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -64,7 +77,7 @@ func (re *CompanyPagePostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.CompanyPage, error) {
 	whereStr, whereArgs := condition.WithPrefix(" WHERE ").ToSQL()
 
@@ -118,26 +131,4 @@ func (re *CompanyPagePostgres) fetch(
 	}
 
 	return rows, cursor.Err()
-}
-
-func (re *CompanyPagePostgres) fetchCondition(filter entity.CompanyPageListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(page_title)", "UPPER(site_url)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("page_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *CompanyPagePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("account_id", sortdirection.ASC),
-			)
-		},
-	)
 }

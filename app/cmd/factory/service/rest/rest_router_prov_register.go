@@ -26,7 +26,7 @@ func RegisterRestRouterProvHandlers(
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,
-		getProvidersAPIControllers(opts),
+		getProviderAPIControllers(opts),
 		initing.WithCheckAccessMiddleware(opts.Logger, actionGroup, userProvider, opts.PermsProvider),
 	)
 	if err != nil {
@@ -38,7 +38,7 @@ func RegisterRestRouterProvHandlers(
 	return nil
 }
 
-func getProvidersAPIControllers(opts app.Options) []initing.HttpModule {
+func getProviderAPIControllers(opts app.Options) []initing.HttpModule {
 	return []initing.HttpModule{
 		provideraccounts.InitHttpModule(
 			opts.Logger,

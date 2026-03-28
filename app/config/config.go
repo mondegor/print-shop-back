@@ -5,7 +5,7 @@ import (
 	"time"
 
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
-	typecfg "github.com/mondegor/go-sysmess/mrtype/config"
+	modelcfg "github.com/mondegor/go-sysmess/mrmodel/config"
 	"github.com/mondegor/go-sysmess/util/mime"
 )
 
@@ -63,7 +63,7 @@ type (
 	Debugging struct {
 		Debug                  bool `yaml:"debug" env:"APPX_DEBUG"`
 		authcfg.AuthorizedUser `yaml:"authorized_user"`
-		UnexpectedHttpStatus   int `yaml:"unexpected_http_status"`
+		UnexpectedHttpStatus   uint16 `yaml:"unexpected_http_status"`
 		ErrorCaller            `yaml:"error_caller"`
 	}
 
@@ -71,6 +71,7 @@ type (
 	ErrorCaller struct {
 		IsEnabled   bool     `yaml:"is_enabled" env:"APPX_ERR_CALLER_IS_ENABLED"`
 		Depth       uint8    `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
+		ShowFunc    bool     `yaml:"show_func" env:"APPX_ERR_CALLER_SHOW_FUNC"`
 		UpperBounds []string `yaml:"upper_bounds"`
 	}
 
@@ -127,7 +128,7 @@ type (
 		Database        string        `yaml:"database" env:"APPX_DB_NAME"`
 		MigrationsDir   string        `yaml:"migrations_dir"`
 		MigrationsTable string        `yaml:"migrations_table" env:"APPX_DB_MIGRATIONS_TABLE"`
-		MaxPoolSize     int           `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
+		MaxPoolSize     uint16        `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
 		MaxConnLifetime time.Duration `yaml:"max_conn_lifetime" env:"APPX_DB_MAX_CONN_LIFETIME"`
 		MaxConnIdleTime time.Duration `yaml:"max_conn_idle_time" env:"APPX_DB_MAX_CONN_IDLE_TIME"`
 		Timeout         time.Duration `yaml:"timeout"`
@@ -196,8 +197,8 @@ type (
 	ModulesSettings struct {
 		// General - comment struct.
 		General struct {
-			PageSizeMax     uint64 `yaml:"page_size_max"`
-			PageSizeDefault uint64 `yaml:"page_size_default"`
+			PageSizeMax     uint16 `yaml:"page_size_max"`
+			PageSizeDefault uint16 `yaml:"page_size_default"`
 		} `yaml:"general"`
 		// ProviderAccount - comment struct.
 		ProviderAccount struct {
@@ -220,10 +221,10 @@ type (
 	// Validation - comment struct.
 	Validation struct {
 		Files struct {
-			Json typecfg.FileType `yaml:"json"`
+			Json modelcfg.FileType `yaml:"json"`
 		} `yaml:"files"`
 		Images struct {
-			Logo typecfg.ImageType `yaml:"logo"`
+			Logo modelcfg.ImageType `yaml:"logo"`
 		} `yaml:"images"`
 		MimeTypes []mime.Type `yaml:"mime_types"`
 	}
@@ -237,7 +238,7 @@ type (
 		Auth struct {
 			// Caption           string        `yaml:"caption"`
 			CleanRecords      SchedulerTask `yaml:"clean_records"`
-			CleanRecordsLimit int           `yaml:"clean_records_limit"`
+			CleanRecordsLimit uint32        `yaml:"clean_records_limit"`
 			LogsLifeTime      time.Duration `yaml:"logs_life_time"`
 			UserStat          struct {
 				RequestCollector MessageCollector `yaml:"request_collector"`
@@ -248,23 +249,23 @@ type (
 			MessageProcessor     MessageProcessor `yaml:"message_processor"`
 			ChangeFromToRetry    SchedulerTask    `yaml:"change_from_to_retry"`
 			CleanQueue           SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts    uint32           `yaml:"send_retry_attempts"`
+			SendRetryAttempts    uint8            `yaml:"send_retry_attempts"`
 			SendDelayCorrection  time.Duration    `yaml:"send_delay_correction"`
-			ChangeQueueBatchSize int              `yaml:"change_queue_batch_size"`
+			ChangeQueueBatchSize uint32           `yaml:"change_queue_batch_size"`
 			ChangeRetryTimeout   time.Duration    `yaml:"change_retry_timeout"`
 			ChangeRetryDelayed   time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueBatchSize  int              `yaml:"clean_queue_batch_size"`
+			CleanQueueBatchSize  uint32           `yaml:"clean_queue_batch_size"`
 		} `yaml:"mailer"`
 		Notifier struct {
 			// Caption            string           `yaml:"caption"`
 			NoticeProcessor      MessageProcessor `yaml:"notice_processor"`
 			ChangeFromToRetry    SchedulerTask    `yaml:"change_from_to_retry"`
 			CleanQueue           SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts    uint32           `yaml:"send_retry_attempts"`
-			ChangeQueueBatchSize int              `yaml:"change_queue_batch_size"`
+			SendRetryAttempts    uint8            `yaml:"send_retry_attempts"`
+			ChangeQueueBatchSize uint32           `yaml:"change_queue_batch_size"`
 			ChangeRetryTimeout   time.Duration    `yaml:"change_retry_timeout"`
 			ChangeRetryDelayed   time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueBatchSize  int              `yaml:"clean_queue_batch_size"`
+			CleanQueueBatchSize  uint32           `yaml:"clean_queue_batch_size"`
 		} `yaml:"notifier"`
 	}
 
@@ -274,8 +275,8 @@ type (
 		ReadyTimeout   time.Duration `yaml:"ready_timeout"`
 		FlushPeriod    time.Duration `yaml:"flush_period"`
 		HandlerTimeout time.Duration `yaml:"handler_timeout"`
-		BatchSize      int           `yaml:"batch_size"`
-		WorkersCount   int           `yaml:"workers_count"`
+		BatchSize      uint32        `yaml:"batch_size"`
+		WorkersCount   uint8         `yaml:"workers_count"`
 	}
 
 	// MessageProcessor - comment struct.
@@ -286,8 +287,8 @@ type (
 		ConsumerReadTimeout  time.Duration `yaml:"consumer_read_timeout"`
 		ConsumerWriteTimeout time.Duration `yaml:"consumer_write_timeout"`
 		HandlerTimeout       time.Duration `yaml:"handler_timeout"`
-		QueueSize            int           `yaml:"queue_size"`
-		WorkersCount         int           `yaml:"workers_count"`
+		QueueSize            uint16        `yaml:"queue_size"`
+		WorkersCount         uint8         `yaml:"workers_count"`
 		NotificationChannel  string        `yaml:"notification_channel,omitempty"`
 	}
 

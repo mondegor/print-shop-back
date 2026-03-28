@@ -17,10 +17,12 @@ import (
 type (
 	// Box - comment struct.
 	Box struct {
-		storage       adm.BoxStorage
-		eventEmitter  mrevent.Emitter
-		errorWrapper  errors.Wrapper
-		statusFlowMap mrstatus.FlowMap[itemstatus.Enum]
+		storage                     adm.BoxStorage
+		eventEmitter                mrevent.Emitter
+		errorWrapper                errors.Wrapper
+		errorNotFoundWrapper        errors.Wrapper
+		errorVersionConflictWrapper errors.Wrapper
+		statusFlowMap               mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -30,15 +32,17 @@ func NewBox(
 	eventEmitter mrevent.Emitter,
 ) *Box {
 	return &Box{
-		storage:       storage,
-		eventEmitter:  mrevent.EmitterWithSource(eventEmitter, entity.ModelNameBox),
-		errorWrapper:  errors.NewUseCaseWrapper(),
-		statusFlowMap: itemstatus.NewFlowMap(),
+		storage:                     storage,
+		eventEmitter:                mrevent.EmitterWithSource(eventEmitter, entity.ModelNameBox),
+		errorWrapper:                errors.NewServiceOperationFailedWrapper(),
+		errorNotFoundWrapper:        errors.NewServiceRecordNotFoundWrapper(),
+		errorVersionConflictWrapper: errors.NewServiceRecordVersionConflictWrapper(),
+		statusFlowMap:               itemstatus.NewFlowMap(),
 	}
 }
 
 // GetList - comment method.
-func (uc *Box) GetList(ctx context.Context, params entity.BoxParams) (items []entity.Box, countItems uint64, err error) {
+func (uc *Box) GetList(ctx context.Context, params entity.BoxParams) (items []entity.Box, countItems int, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.Wrap(err)
@@ -54,12 +58,12 @@ func (uc *Box) GetList(ctx context.Context, params entity.BoxParams) (items []en
 // GetItem - comment method.
 func (uc *Box) GetItem(ctx context.Context, itemID uint64) (entity.Box, error) {
 	if itemID == 0 {
-		return entity.Box{}, errors.ErrUseCaseEntityNotFound
+		return entity.Box{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.Box{}, uc.errorWrapper.Wrap(err, "itemId", itemID)
+		return entity.Box{}, uc.errorNotFoundWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	return item, nil
@@ -83,20 +87,20 @@ func (uc *Box) Create(ctx context.Context, item entity.Box) (itemID uint64, err 
 	return itemID, nil
 }
 
-// Store - comment method.
-func (uc *Box) Store(ctx context.Context, item entity.Box) error {
+// Save - comment method.
+func (uc *Box) Save(ctx context.Context, item entity.Box) error {
 	if item.ID == 0 {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return errors.ErrUseCaseEntityVersionConflict
+		return errors.ErrRecordVersionConflict
 	}
 
 	// предварительная проверка существования записи нужна для того,
-	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
+	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionConflict
 	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
-		return uc.errorWrapper.Wrap(err, "itemId", item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if err := uc.checkArticle(ctx, &item); err != nil {
@@ -105,11 +109,7 @@ func (uc *Box) Store(ctx context.Context, item entity.Box) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
-			return errors.ErrUseCaseEntityVersionConflict.Wrap(err)
-		}
-
-		return uc.errorWrapper.Wrap(err)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "Store", conv.Group{"id": item.ID, "ver": tagVersion})
@@ -120,16 +120,16 @@ func (uc *Box) Store(ctx context.Context, item entity.Box) error {
 // ChangeStatus - comment method.
 func (uc *Box) ChangeStatus(ctx context.Context, item entity.Box) error {
 	if item.ID == 0 {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return errors.ErrUseCaseEntityVersionConflict
+		return errors.ErrRecordVersionConflict
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 	if err != nil {
-		return uc.errorWrapper.Wrap(err, "itemId", item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -137,16 +137,12 @@ func (uc *Box) ChangeStatus(ctx context.Context, item entity.Box) error {
 	}
 
 	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
-		return errors.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
-			return errors.ErrUseCaseEntityVersionConflict.Wrap(err)
-		}
-
-		return uc.errorWrapper.Wrap(err)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "ChangeStatus", conv.Group{"id": item.ID, "ver": tagVersion, "status": item.Status})
@@ -157,7 +153,7 @@ func (uc *Box) ChangeStatus(ctx context.Context, item entity.Box) error {
 // Remove - comment method.
 func (uc *Box) Remove(ctx context.Context, itemID uint64) error {
 	if itemID == 0 {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.storage.Delete(ctx, itemID); err != nil {
@@ -172,7 +168,7 @@ func (uc *Box) Remove(ctx context.Context, itemID uint64) error {
 func (uc *Box) checkArticle(ctx context.Context, item *entity.Box) error {
 	id, err := uc.storage.FetchIDByArticle(ctx, item.Article)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 

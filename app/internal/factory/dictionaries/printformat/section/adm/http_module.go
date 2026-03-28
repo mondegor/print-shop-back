@@ -18,7 +18,7 @@ func InitHttpModule(
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

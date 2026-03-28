@@ -6,7 +6,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrmodel"
 )
 
 type (
@@ -23,22 +23,22 @@ func NewFileProviderAdapter(
 ) *FileProviderAdapter {
 	return &FileProviderAdapter{
 		fileAPI:      fileAPI,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
 // Get - comment method.
 // WARNING you don't forget to call item.File.Body.Close().
-func (uc *FileProviderAdapter) Get(ctx context.Context, filePath string) (mrtype.File, error) {
+func (uc *FileProviderAdapter) Get(ctx context.Context, filePath string) (mrmodel.File, error) {
 	filePath = strings.TrimLeft(filePath, "/")
 
 	if filePath == "" {
-		return mrtype.File{}, errors.ErrUseCaseEntityNotFound
+		return mrmodel.File{}, errors.ErrRecordNotFound
 	}
 
 	file, err := uc.fileAPI.Download(ctx, filePath)
 	if err != nil {
-		return mrtype.File{}, uc.errorWrapper.Wrap(err, "filePath", filePath)
+		return mrmodel.File{}, uc.errorWrapper.Wrap(err, "filePath", filePath)
 	}
 
 	return file, nil

@@ -1,14 +1,14 @@
 Auth.Request.Model.CreateUser:
   type: object
   required:
-    - userEmail
+    - user_email
   properties:
     realm:
       description: Область, пространство, где должен быть зарегистрирован пользователь
       type: string
       maxLength: 32
       example: "domain_name/user_group"
-    userEmail:
+    user_email:
       description: Eмаил, который будет использован в качестве логина при создании пользователя
       type: string
       format: email
@@ -19,14 +19,14 @@ Auth.Request.Model.CreateUser:
 Auth.Request.Model.AuthorizeUser:
   type: object
   required:
-    - userLogin
+    - user_login
   properties:
     realm:
       description: Область, пространство, где должен быть авторизован пользователь
       type: string
       maxLength: 32
       example: "domain_name/user_group"
-    userLogin:
+    user_login:
       description: Eмаил/телефон пользователя зарегистрированного в системе
       type: string
       minLength: 7
@@ -50,17 +50,13 @@ Auth.Request.Model.LoginByToken:
       minLength: 4
       maxLength: 32
       example: "183947"
-    useCookie:
-      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
-      type: boolean
-      example: false
 
 Auth.Request.Model.ContinueSession:
   type: object
   required:
-    - refreshToken
+    - refresh_token
   properties:
-    refreshToken:
+    refresh_token:
       description: Ранее выданный при авторизации/продолжении сессии refreshToken
       type: string
       minLength: 64
@@ -71,9 +67,9 @@ Auth.Response.Model.WaitingConfirmOperation:
   type: object
   required:
     - token
-    - confirmMethod
-    - remainingAttempts
-    - expiresIn
+    - confirm_method
+    - remaining_attempts
+    - expires_in
   properties:
     token:
       description: Токен операции, с помощью которой проводится процедура подтверждения подлинности пользователя
@@ -81,21 +77,21 @@ Auth.Response.Model.WaitingConfirmOperation:
       minLength: 64
       maxLength: 128
       example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-    confirmMethod:
+    confirm_method:
       $ref: "#/components/schemas/Auth.Enum.ConfirmMethod"
-    remainingAttempts:
+    remaining_attempts:
       description: Оставшееся количество попыток ввода кода подтверждения
       type: integer
       example: 2
-    remainingResends:
+    remaining_resends:
       description: Оставшееся количество повторных отправок кода подтверждения
       type: integer
       example: 1
-    resendsIn:
+    resends_in:
       description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
       type: integer
       example: 1
-    expiresIn:
+    expires_in:
       description: Количество оставшихся секунд до истечения срока действия подтверждения операции
       type: integer
       example: 1
@@ -109,22 +105,22 @@ Auth.Response.Model.WaitingConfirmOperation:
 Auth.Response.Model.ConfirmOperationStatus:
   type: object
   required:
-    - remainingAttempts
-    - expiresIn
+    - remaining_attempts
+    - expires_in
   properties:
-    remainingAttempts:
+    remaining_attempts:
       description: Оставшееся количество попыток ввода кода подтверждения
       type: integer
       example: 2
-    remainingResends:
+    remaining_resends:
       description: Оставшееся количество повторных отправок кода подтверждения
       type: integer
       example: 1
-    resendsIn:
+    resends_in:
       description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
       type: integer
       example: 1
-    expiresIn:
+    expires_in:
       description: Количество оставшихся секунд до истечения срока действия подтверждения операции
       type: integer
       example: 1
@@ -132,16 +128,16 @@ Auth.Response.Model.ConfirmOperationStatus:
 Auth.Response.Model.SuccessAccess:
   type: object
   required:
-    - authToken
+    - access_token
   properties:
-    accessToken:
+    access_token:
       type: string
       example: "425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8"
-    expiresIn:
+    expires_in:
       description: Оставшееся время жизни access токена в секундах
       type: integer
       example: 1800
-    refreshToken:
+    refresh_token:
       description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
       type: string
       example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
@@ -154,13 +150,13 @@ Auth.Response.Model.UserInfo:
   required:
     - email
     - lang
-    - lastLoginIp
-    - lastLoggedAt
-    - auth2faType
+    - last_login_ip
+    - last_logged_at
+    - auth_2fa_type
     - realms
     - status
-    - createdAt
-    - updatedAt
+    - created_at
+    - updated_at
   properties:
     email:
       type: string
@@ -176,12 +172,12 @@ Auth.Response.Model.UserInfo:
       type: string
       maxLength: 5
       example: "ru-RU"
-    lastLoginIp:
+    last_login_ip:
       type: string
       example: "95.165.01.01"
-    lastLoggedAt:
+    last_logged_at:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-    auth2faType:
+    auth_2fa_type:
       $ref: "#/components/schemas/Custom.Enum.UserAuth2fa"
     realms:
       type: array
@@ -189,28 +185,28 @@ Auth.Response.Model.UserInfo:
         $ref: "#/components/schemas/Auth.Response.Model.UserRealm"
     status:
       $ref: "#/components/schemas/Custom.Enum.UserStatus"
-    createdAt:
+    created_at:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
+    updated_at:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
 Auth.Response.Model.UserRealm:
   type: object
   required:
     - name
-    - userKind
-    - createdAt
-    - updatedAt
+    - user_kind
+    - created_at
+    - updated_at
   properties:
     name:
       type: string
       maxLength: 32
       example: "domain_name/user_group"
-    userKind:
+    user_kind:
       type: string
       maxLength: 16
       example: "standard"
-    createdAt:
+    created_at:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
+    updated_at:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

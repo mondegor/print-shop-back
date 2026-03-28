@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-components/mrauth"
+	"github.com/mondegor/go-sysmess/errors/runtime/hint"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
@@ -28,15 +29,29 @@ func CreateResponseSenders(logger mrlog.Logger) (app.ResponseSenders, error) {
 func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 	mrlog.Info(opts.Logger, "Create and init error response sender")
 
+	statusMapper, err := mrserver.NewHttpErrorStatusMapper(
+		int(opts.Cfg.Debugging.UnexpectedHttpStatus),
+		mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
+	)
+	if err != nil {
+		return nil, err
+	}
+
 	return mrresp.NewErrorSender(
 		mrjson.NewEncoder(),
 		opts.ErrorHandler,
+		func(err error) string {
+			return hint.Extract(err).ErrorID()
+		},
 		opts.Logger,
 		opts.RequestParsers.Locale,
-		mrserver.NewHttpErrorStatusMapper(
-			opts.Cfg.Debugging.UnexpectedHttpStatus,
-			mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
-		),
-		opts.Cfg.Debugging.Debug,
+		statusMapper,
+		func(err error) string {
+			if opts.Cfg.Debugging.Debug {
+				return hint.DetailedError(err)
+			}
+
+			return ""
+		},
 	), nil
 }

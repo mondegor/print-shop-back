@@ -1,0 +1,409 @@
+---
+openapi: 3.0.3
+info:
+  version: v0.6.0
+  title: Protected User API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  contact:
+    name: Andrey Nazarov
+  description: |-
+    Protected REST User API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local/user
+    description: Local Domain
+  - url: http://localhost:8080/user
+    description: Local Host
+tags:
+  - name: Warehousing.Container
+    description: Protected API Warehousing containers
+
+paths:
+  /v1/warehousing/containers:
+    get:
+      summary: Метод получения списка контейнеров
+      description: |-
+        Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
+
+        Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+        - code;
+
+      operationId: getContainerList
+      tags:
+        - Warehousing.Container
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
+        - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+
+      responses:
+        "200":
+          description: Получен список контейнеров
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.ContainerList"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    post:
+      summary: Метод добавления нового контейнера
+      description: |-
+        Метод предназначен для создания информации о новом контейнере в БД
+
+      operationId: createContainer
+      tags:
+        - Warehousing.Container
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
+
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.CreateContainer"
+
+      responses:
+        "201":
+          description: Информация о контейнере успешно добавлена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Custom.Response.Model.SuccessCreatedWarehousingContainer"
+        "400":
+          $ref: "#/components/responses/App.ResponseJson.Error400"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  /v1/warehousing/containers/{containerCode}:
+    get:
+      summary: Метод получения контейнера
+      description: Метод предназначен для получения информации о контейнере и его содержимом из БД
+      operationId: getContainer
+      tags:
+        - Warehousing.Container
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
+        - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+      responses:
+        "200":
+          description: Получена информация о контейнере
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+    delete:
+      summary: Метод удаления контейнера
+      description: Метод предназначен для удаления информации о контейнере из БД
+      operationId: removeContainer
+      tags:
+        - Warehousing.Container
+
+      security:
+        - bearerAuth: []
+
+      parameters:
+        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+        - $ref: "#/components/parameters/App.Request.Query.Language"
+        - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+      responses:
+        "204":
+          description: Информация о контейнере успешно удалена
+        "401":
+          $ref: "#/components/responses/App.ResponseJson.Error401"
+        "403":
+          $ref: "#/components/responses/App.ResponseJson.Error403"
+        "404":
+          $ref: "#/components/responses/App.ResponseJson.Error404"
+        "500":
+          $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+components:
+
+  parameters:
+    App.Request.Header.AcceptLanguage:
+      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
+
+    App.Request.Header.CorrelationID:
+      description: Уникальный идентификатор клиента
+      name: X-Correlation-Id
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
+
+    App.Request.Query.Language:
+      description: Явное указание языка запроса. Приоритетнее Accept-Language.
+      name: lang
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "ru-RU"
+
+    App.Request.Query.Filter.SearchText:
+      description: Поисковая строка
+      name: query
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 128
+      example: "перфокарта"
+
+    Warehousing.Containers.UserAPI.Request.Path.ContainerCode:
+      description: Уникальный код контейнера
+      name: containerCode
+      in: path
+      required: true
+      schema:
+        type: string
+        minimum: 4
+      example: "JKLOSH"
+
+  schemas:
+    App.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+03:00"
+
+    App.Field.DateTimeUpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      example: "2023-01-01T12:00:00.000+03:00"
+
+    App.Field.ListPager.Total:
+      description: Количество записей в БД с учётом указанных в запросе фильтров
+      type: integer
+      # format: uint64
+      minimum: 0
+      example: 584
+
+    App.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
+
+    App.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - id
+        - value
+      properties:
+        id:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: "attributeName"
+        value:
+          description: Описание ошибки
+          type: string
+          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
+
+    App.Response.Model.ErrorDetails: # RFC 7807 (Problem Details for HTTP APIs)
+      description: DTO следующих ошибок - 401, 403, 404, 5XX
+      type: object
+      required:
+        - title
+        - details
+        - request
+        - time
+      properties:
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: "Resource not found"
+        details:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+        request:
+          description: Метод и URL запроса
+          type: string
+          example: "PUT /users/123456"
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: "2023-01-01T12:00:00.000+03:00"
+        errorTraceId:
+          description: Идентификатор конкретного возникновения ошибки
+          type: string
+          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
+
+    Custom.Field.Warehousing.ContainerCode:
+      description: Уникальный код контейнера в рамках аккаунта (модуль - Warehousing.Container)
+      type: string
+      maxLength: 8
+      example: "JKLOSH"
+
+    Custom.Response.Model.SuccessCreatedWarehousingContainer:
+      description: DTO результата создания контейнера
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          description: Уникальный код контейнера в рамках аккаунта (модуль - Warehousing.Container)
+          type: string
+          maxLength: 8
+          example: "JKLOSH"
+
+    Warehousing.Containers.UserAPI.Request.Model.CreateContainer:
+      description: DTO добавления нового контейнера
+      type: object
+      properties:
+        tags:
+          description: Хеш теги содержимого контейнера
+          type: string
+          maxLength: 512
+          example: "ОТВЁРТКА, ШУРУПЫ"
+
+    Warehousing.Containers.UserAPI.Response.Model.ContainerList:
+      description: DTO - список контейнеров
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          description: Список записей ограниченный фильтром и pageSize
+          type: array
+          items:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
+        total:
+          $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+    Warehousing.Containers.UserAPI.Response.Model.Container:
+      description: DTO - контейнер
+      type: object
+      required:
+        - code
+        - tags
+        - createdAt
+        - updatedAt
+      properties:
+        code:
+          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+        tags:
+          description: Хеш теги содержимого контейнера
+          type: string
+          maxLength: 512
+          example: "ОТВЁРТКА, ШУРУПЫ"
+        createdAt:
+          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+        updatedAt:
+          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+
+  responses:
+    App.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorList"
+
+    App.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error5XX:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+    App.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
+
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

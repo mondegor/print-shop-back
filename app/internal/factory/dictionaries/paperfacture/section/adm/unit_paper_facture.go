@@ -21,7 +21,7 @@ func initPaperFactureController(
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.PaperFacture{})
 	if err != nil {

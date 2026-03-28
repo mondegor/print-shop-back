@@ -9,10 +9,11 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
 	"github.com/mondegor/print-shop-back/internal/app"
+	warehousing "github.com/mondegor/print-shop-back/internal/factory/warehousing/actiongroup/usr"
 )
 
-// RegisterRestRouterCustHandlers - регистрирует в указанном роутере обработчики секции CustomersAPI.
-func RegisterRestRouterCustHandlers(
+// RegisterRestRouterUsrHandlers - регистрирует в указанном роутере обработчики секции UserAPI.
+func RegisterRestRouterUsrHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
 	actionGroup *mraccess.ActionGroup,
@@ -22,7 +23,7 @@ func RegisterRestRouterCustHandlers(
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,
-		getCustomersAPIControllers(opts),
+		getUserAPIControllers(opts),
 		initing.WithCheckAccessMiddleware(opts.Logger, actionGroup, userProvider, opts.PermsProvider),
 	)
 	if err != nil {
@@ -34,6 +35,14 @@ func RegisterRestRouterCustHandlers(
 	return nil
 }
 
-func getCustomersAPIControllers(_ app.Options) []initing.HttpModule {
-	return nil
+func getUserAPIControllers(opts app.Options) []initing.HttpModule {
+	return []initing.HttpModule{
+		warehousing.InitHttpModule(
+			opts.Logger,
+			opts.EventEmitter,
+			opts.PostgresConnManager,
+			opts.RequestParsers.ExtendParser,
+			opts.ResponseSenders.Sender,
+		),
+	}
 }

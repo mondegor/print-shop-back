@@ -8,7 +8,7 @@
       - article;
       - caption;
 
-      Возможные значения `App.Request.Query.ListSorter.SortField`:
+      Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;
@@ -34,7 +34,7 @@
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
       - $ref: "#/components/parameters/App.Request.Query.Filter.Statuses"
-      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortField"
+      - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortColumn"
       - $ref: "#/components/parameters/App.Request.Query.ListSorter.SortDirection"
       - $ref: "#/components/parameters/App.Request.Query.ListPager.PageIndex"
       - $ref: "#/components/parameters/App.Request.Query.ListPager.PageSize"

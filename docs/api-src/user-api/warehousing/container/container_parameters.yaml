@@ -1,0 +1,9 @@
+Warehousing.Containers.UserAPI.Request.Path.ContainerCode:
+  description: Уникальный код контейнера
+  name: containerCode
+  in: path
+  required: true
+  schema:
+    type: string
+    minimum: 4
+  example: "JKLOSH"

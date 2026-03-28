@@ -21,7 +21,7 @@ func initCompanyPageController(
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
 	logoURLBuilder mrpath.Builder,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.CompanyPage{})
 	if err != nil {

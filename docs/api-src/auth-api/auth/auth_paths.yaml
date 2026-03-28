@@ -108,6 +108,7 @@
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
       - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Auth.Request.Header.Web.UseCookie"
 
     requestBody:
       required: true

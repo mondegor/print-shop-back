@@ -42,7 +42,7 @@ func NewBoxPackInBox(algo *packinbox.Algo, logger mrlog.Logger, eventEmitter mre
 func (uc *BoxPackInBox) Calc(ctx context.Context, data dto.ParsedData) (model.BoxPackInBoxResponse, error) {
 	result, err := uc.algo.Calc(ctx, data.Box, data.ProductHeap)
 	if err != nil {
-		return model.BoxPackInBoxResponse{}, errors.ErrUseCaseIncorrectInputData.New(err)
+		return model.BoxPackInBoxResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
 	var (

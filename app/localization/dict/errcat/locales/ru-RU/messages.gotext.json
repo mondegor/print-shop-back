@@ -2,14 +2,14 @@
     "language": "ru-RU",
     "messages": [
         {
-            "id": "Internal",
-            "message": "Internal",
+            "id": "internal error",
+            "message": "internal error",
             "translation": "Внутренняя ошибка сервера"
         },
         {
-            "id": "System",
-            "message": "System",
-            "translation": "Системная ошибка сервера"
+            "id": "system error",
+            "message": "system error",
+            "translation": "Сервис временно не может обработать ваш запрос. Пожалуйста, повторите запрос позже"
         },
         {
             "id": "unexpected internal error",
@@ -17,9 +17,59 @@
             "translation": "Внутренняя ошибка сервера [problem]"
         },
         {
-            "id": "system is temporarily unavailable",
-            "message": "system is temporarily unavailable",
-            "translation": "Система временно не может обработать ваш запрос. Пожалуйста, повторите запрос позже"
+            "id": "not implemented",
+            "message": "not implemented",
+            "translation": ""
+        },
+        {
+            "id": "401. client is unauthorized",
+            "message": "401. client is unauthorized",
+            "translation": "Требуется авторизация пользователя"
+        },
+        {
+            "id": "403. access forbidden",
+            "message": "403. access forbidden",
+            "translation": "Доступ к ресурсу отклонён"
+        },
+        {
+            "id": "access forbidden",
+            "message": "access forbidden",
+            "translation": "Доступ к ресурсу отклонён"
+        },
+        {
+            "id": "404. resource not found",
+            "message": "404. resource not found",
+            "translation": "Запрашиваемый ресурс не был найден"
+        },
+        {
+            "id": "record not found",
+            "message": "record not found",
+            "translation": ""
+        },
+        {
+            "id": "record version conflict",
+            "message": "record version conflict",
+            "translation": ""
+        },
+        {
+            "id": "request body is not valid: '{Reason}'",
+            "message": "request body is not valid: '{Reason}'",
+            "translation": "Тело запроса невалидное: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
+            "placeholders": [
+                {
+                    "id": "Reason",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Reason\""
+                }
+            ]
+        },
+        {
+            "id": "too many requests",
+            "message": "too many requests",
+            "translation": ""
         },
         {
             "id": "the file with the specified key '{Key}' was not uploaded",
@@ -33,36 +83,6 @@
                     "underlyingType": "string",
                     "argNum": 1,
                     "expr": "\"Key\""
-                }
-            ]
-        },
-        {
-            "id": "401. client is unauthorized",
-            "message": "401. client is unauthorized",
-            "translation": "Требуется авторизация пользователя"
-        },
-        {
-            "id": "403. access forbidden",
-            "message": "403. access forbidden",
-            "translation": "Доступ к ресурсу отклонён"
-        },
-        {
-            "id": "404. resource not found",
-            "message": "404. resource not found",
-            "translation": "Запрашиваемый ресурс не был найден"
-        },
-        {
-            "id": "request body is not valid: '{Reason}'",
-            "message": "request body is not valid: '{Reason}'",
-            "translation": "11111Тело запроса невалидное: '{Reason}'\n\nпроверьте параметры запроса, правильность формата json и соответствующих ему типов",
-            "placeholders": [
-                {
-                    "id": "Reason",
-                    "string": "%[1]s",
-                    "type": "string",
-                    "underlyingType": "string",
-                    "argNum": 1,
-                    "expr": "\"Reason\""
                 }
             ]
         },
@@ -174,16 +194,6 @@
             ]
         },
         {
-            "id": "access forbidden",
-            "message": "access forbidden",
-            "translation": ""
-        },
-        {
-            "id": "entity not found",
-            "message": "entity not found",
-            "translation": ""
-        },
-        {
             "id": "entity is not available",
             "message": "entity is not available",
             "translation": ""
@@ -191,11 +201,6 @@
         {
             "id": "entity already exists",
             "message": "entity already exists",
-            "translation": ""
-        },
-        {
-            "id": "entity version conflict",
-            "message": "entity version conflict",
             "translation": ""
         },
         {

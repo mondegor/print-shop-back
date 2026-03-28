@@ -40,7 +40,7 @@ func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.Res
 		errorWrapper: errors.NewCustomWrapper(
 			module.ErrSubmitFormNotFound.Code(), "formId",
 			module.ErrFormElementDetailingNotAllowed.Code(), "formId",
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
 			module.ErrFormElementParamNameAlreadyExists.Code(), "paramName",
 			api.ErrElementTemplateNotFound.Code(), "templateId",
 			api.ErrElementTemplateIsDisabled.Code(), "templateId",
@@ -55,7 +55,7 @@ func (ht *FormElement) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: formElementListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: formElementItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: formElementItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: formElementItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: formElementItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: formElementItemMoveURL, Func: ht.Move},
@@ -102,8 +102,8 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *FormElement) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreFormElementRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -118,7 +118,7 @@ func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
 		Required:   req.Required,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -158,7 +158,7 @@ func (ht *FormElement) getRawItemID(r *http.Request) string {
 }
 
 func (ht *FormElement) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

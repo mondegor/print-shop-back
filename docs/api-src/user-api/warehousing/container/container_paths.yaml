@@ -1,0 +1,136 @@
+/v1/warehousing/containers:
+  get:
+    summary: Метод получения списка контейнеров
+    description: |-
+      Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
+
+      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+      - code;
+
+    operationId: getContainerList
+    tags:
+      - Warehousing.Container
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+
+    responses:
+      "200":
+        description: Получен список контейнеров
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.ContainerList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  post:
+    summary: Метод добавления нового контейнера
+    description: |-
+      Метод предназначен для создания информации о новом контейнере в БД
+
+    operationId: createContainer
+    tags:
+      - Warehousing.Container
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.CreateContainer"
+
+    responses:
+      "201":
+        description: Информация о контейнере успешно добавлена
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Custom.Response.Model.SuccessCreatedWarehousingContainer"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/warehousing/containers/{containerCode}:
+  get:
+    summary: Метод получения контейнера
+    description: Метод предназначен для получения информации о контейнере и его содержимом из БД
+    operationId: getContainer
+    tags:
+      - Warehousing.Container
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+    responses:
+      "200":
+        description: Получена информация о контейнере
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+  delete:
+    summary: Метод удаления контейнера
+    description: Метод предназначен для удаления информации о контейнере из БД
+    operationId: removeContainer
+    tags:
+      - Warehousing.Container
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+    responses:
+      "204":
+        description: Информация о контейнере успешно удалена
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "404":
+        $ref: "#/components/responses/App.ResponseJson.Error404"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

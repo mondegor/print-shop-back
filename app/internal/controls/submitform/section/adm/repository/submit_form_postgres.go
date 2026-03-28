@@ -9,7 +9,6 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
@@ -25,7 +24,7 @@ type (
 		repoIDByParamName   db.FieldFetcher[string, uuid.UUID]
 		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, itemstatus.Enum]
 		repoSoftDeleter     db.RowSoftDeleter[uuid.UUID]
-		repoTotalRows       db.TotalRowsFetcher[uint64]
+		repoTotalRows       db.TotalRowsFetcher[int]
 	}
 )
 
@@ -63,7 +62,7 @@ func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNameSubmitForms,
 		),
@@ -71,8 +70,17 @@ func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 }
 
 // FetchWithTotal - comment method.
-func (re *SubmitFormPostgres) FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *SubmitFormPostgres) FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(param_name)", "UPPER(form_caption)"}, strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("form_detailing", params.Filter.Detailing),
+				c.FilterAnyOf("form_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -83,7 +91,14 @@ func (re *SubmitFormPostgres) FetchWithTotal(ctx context.Context, params entity.
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("form_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -100,7 +115,7 @@ func (re *SubmitFormPostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.SubmitForm, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -208,7 +223,7 @@ func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName 
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
 func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -290,28 +305,4 @@ func (re *SubmitFormPostgres) UpdateStatus(ctx context.Context, row entity.Submi
 // Delete - comment method.
 func (re *SubmitFormPostgres) Delete(ctx context.Context, rowID uuid.UUID) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *SubmitFormPostgres) fetchCondition(filter entity.SubmitFormListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLikeFields([]string{"UPPER(rewrite_name)", "UPPER(param_name)", "UPPER(form_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("form_detailing", filter.Detailing),
-				c.FilterAnyOf("form_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *SubmitFormPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("form_id", sortdirection.ASC),
-			)
-		},
-	)
 }

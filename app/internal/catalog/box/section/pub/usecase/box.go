@@ -25,7 +25,7 @@ func NewBox(
 ) *Box {
 	return &Box{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

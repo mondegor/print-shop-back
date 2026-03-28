@@ -2,16 +2,16 @@
     "language": "en-US",
     "messages": [
         {
-            "id": "Internal",
-            "message": "Internal",
+            "id": "internal error",
+            "message": "internal error",
             "translation": "Internal server error",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
         {
-            "id": "System",
-            "message": "System",
-            "translation": "System server error",
+            "id": "system error",
+            "message": "system error",
+            "translation": "The service is temporarily unable to process your request. Please try again later",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
@@ -23,27 +23,10 @@
             "fuzzy": true
         },
         {
-            "id": "system is temporarily unavailable",
-            "message": "system is temporarily unavailable",
-            "translation": "The system is temporarily unable to process your request. Please try again later",
+            "id": "not implemented",
+            "message": "not implemented",
+            "translation": "not implemented",
             "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "the file with the specified key '{Key}' was not uploaded",
-            "message": "the file with the specified key '{Key}' was not uploaded",
-            "translation": "the file with the specified key '{Key}' was not uploaded",
-            "translatorComment": "Copied from source.",
-            "placeholders": [
-                {
-                    "id": "Key",
-                    "string": "%[1]s",
-                    "type": "string",
-                    "underlyingType": "string",
-                    "argNum": 1,
-                    "expr": "\"Key\""
-                }
-            ],
             "fuzzy": true
         },
         {
@@ -61,9 +44,30 @@
             "fuzzy": true
         },
         {
+            "id": "access forbidden",
+            "message": "access forbidden",
+            "translation": "Forbidden - You don't have permission to access",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
             "id": "404. resource not found",
             "message": "404. resource not found",
             "translation": "Resource not found",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "record not found",
+            "message": "record not found",
+            "translation": "record not found",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "record version conflict",
+            "message": "record version conflict",
+            "translation": "record version conflict",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },
@@ -80,6 +84,30 @@
                     "underlyingType": "string",
                     "argNum": 1,
                     "expr": "\"Reason\""
+                }
+            ],
+            "fuzzy": true
+        },
+        {
+            "id": "too many requests",
+            "message": "too many requests",
+            "translation": "too many requests",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        },
+        {
+            "id": "the file with the specified key '{Key}' was not uploaded",
+            "message": "the file with the specified key '{Key}' was not uploaded",
+            "translation": "the file with the specified key '{Key}' was not uploaded",
+            "translatorComment": "Copied from source.",
+            "placeholders": [
+                {
+                    "id": "Key",
+                    "string": "%[1]s",
+                    "type": "string",
+                    "underlyingType": "string",
+                    "argNum": 1,
+                    "expr": "\"Key\""
                 }
             ],
             "fuzzy": true
@@ -202,20 +230,6 @@
             "fuzzy": true
         },
         {
-            "id": "access forbidden",
-            "message": "access forbidden",
-            "translation": "access forbidden",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "entity not found",
-            "message": "entity not found",
-            "translation": "entity not found",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
             "id": "entity is not available",
             "message": "entity is not available",
             "translation": "entity is not available",
@@ -226,13 +240,6 @@
             "id": "entity already exists",
             "message": "entity already exists",
             "translation": "entity already exists",
-            "translatorComment": "Copied from source.",
-            "fuzzy": true
-        },
-        {
-            "id": "entity version conflict",
-            "message": "entity version conflict",
-            "translation": "entity version conflict",
             "translatorComment": "Copied from source.",
             "fuzzy": true
         },

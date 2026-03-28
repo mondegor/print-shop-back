@@ -45,8 +45,8 @@ func NewPaperColor(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 		),
 	}
 }
@@ -58,7 +58,7 @@ func (ht *PaperColor) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: paperColorListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: paperColorItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: paperColorItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: paperColorItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: paperColorItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: paperColorItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -129,8 +129,8 @@ func (ht *PaperColor) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *PaperColor) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *PaperColor) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StorePaperColorRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -143,7 +143,7 @@ func (ht *PaperColor) Store(w http.ResponseWriter, r *http.Request) error {
 		Caption:    req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -189,7 +189,7 @@ func (ht *PaperColor) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PaperColor) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrPaperColorNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

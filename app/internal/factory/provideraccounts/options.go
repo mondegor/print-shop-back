@@ -23,8 +23,8 @@ type (
 
 		UnitCompanyPage UnitCompanyPageOptions
 
-		PageSizeMax     uint64
-		PageSizeDefault uint64
+		PageSizeMax     int
+		PageSizeDefault int
 	}
 
 	// UnitCompanyPageOptions - comment struct.

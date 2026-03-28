@@ -85,7 +85,7 @@ func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, 
 }
 
 // FetchStatus - comment method.
-// result: enums.PublicStatus - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
+// result: enums.PublicStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
 func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (publicstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, accountID)
 }
@@ -116,7 +116,7 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.SiteURL,
 		)
 		// если сохранение удачное или если это внутренняя ошибка
-		if err == nil || !errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
+		if err == nil || !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
 			return err
 		}
 

@@ -171,6 +171,7 @@ paths:
         - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
         - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
         - $ref: "#/components/parameters/App.Request.Query.Language"
+        - $ref: "#/components/parameters/Auth.Request.Header.Web.UseCookie"
 
       requestBody:
         required: true
@@ -904,6 +905,15 @@ components:
         maxLength: 128
       example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
 
+    Auth.Request.Header.Web.UseCookie:
+      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
+      name: X-Use-Cookie
+      in: header
+      required: false
+      schema:
+        type: boolean
+      example: true
+
   schemas:
     App.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
@@ -1033,14 +1043,14 @@ components:
     Auth.Request.Model.CreateUser:
       type: object
       required:
-        - userEmail
+        - user_email
       properties:
         realm:
           description: Область, пространство, где должен быть зарегистрирован пользователь
           type: string
           maxLength: 32
           example: "domain_name/user_group"
-        userEmail:
+        user_email:
           description: Eмаил, который будет использован в качестве логина при создании пользователя
           type: string
           format: email
@@ -1051,14 +1061,14 @@ components:
     Auth.Request.Model.AuthorizeUser:
       type: object
       required:
-        - userLogin
+        - user_login
       properties:
         realm:
           description: Область, пространство, где должен быть авторизован пользователь
           type: string
           maxLength: 32
           example: "domain_name/user_group"
-        userLogin:
+        user_login:
           description: Eмаил/телефон пользователя зарегистрированного в системе
           type: string
           minLength: 7
@@ -1082,17 +1092,13 @@ components:
           minLength: 4
           maxLength: 32
           example: "183947"
-        useCookie:
-          description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
-          type: boolean
-          example: false
 
     Auth.Request.Model.ContinueSession:
       type: object
       required:
-        - refreshToken
+        - refresh_token
       properties:
-        refreshToken:
+        refresh_token:
           description: Ранее выданный при авторизации/продолжении сессии refreshToken
           type: string
           minLength: 64
@@ -1103,9 +1109,9 @@ components:
       type: object
       required:
         - token
-        - confirmMethod
-        - remainingAttempts
-        - expiresIn
+        - confirm_method
+        - remaining_attempts
+        - expires_in
       properties:
         token:
           description: Токен операции, с помощью которой проводится процедура подтверждения подлинности пользователя
@@ -1113,21 +1119,21 @@ components:
           minLength: 64
           maxLength: 128
           example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-        confirmMethod:
+        confirm_method:
           $ref: "#/components/schemas/Auth.Enum.ConfirmMethod"
-        remainingAttempts:
+        remaining_attempts:
           description: Оставшееся количество попыток ввода кода подтверждения
           type: integer
           example: 2
-        remainingResends:
+        remaining_resends:
           description: Оставшееся количество повторных отправок кода подтверждения
           type: integer
           example: 1
-        resendsIn:
+        resends_in:
           description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
           type: integer
           example: 1
-        expiresIn:
+        expires_in:
           description: Количество оставшихся секунд до истечения срока действия подтверждения операции
           type: integer
           example: 1
@@ -1141,22 +1147,22 @@ components:
     Auth.Response.Model.ConfirmOperationStatus:
       type: object
       required:
-        - remainingAttempts
-        - expiresIn
+        - remaining_attempts
+        - expires_in
       properties:
-        remainingAttempts:
+        remaining_attempts:
           description: Оставшееся количество попыток ввода кода подтверждения
           type: integer
           example: 2
-        remainingResends:
+        remaining_resends:
           description: Оставшееся количество повторных отправок кода подтверждения
           type: integer
           example: 1
-        resendsIn:
+        resends_in:
           description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
           type: integer
           example: 1
-        expiresIn:
+        expires_in:
           description: Количество оставшихся секунд до истечения срока действия подтверждения операции
           type: integer
           example: 1
@@ -1164,16 +1170,16 @@ components:
     Auth.Response.Model.SuccessAccess:
       type: object
       required:
-        - authToken
+        - access_token
       properties:
-        accessToken:
+        access_token:
           type: string
           example: "425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8"
-        expiresIn:
+        expires_in:
           description: Оставшееся время жизни access токена в секундах
           type: integer
           example: 1800
-        refreshToken:
+        refresh_token:
           description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
           type: string
           example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
@@ -1186,13 +1192,13 @@ components:
       required:
         - email
         - lang
-        - lastLoginIp
-        - lastLoggedAt
-        - auth2faType
+        - last_login_ip
+        - last_logged_at
+        - auth_2fa_type
         - realms
         - status
-        - createdAt
-        - updatedAt
+        - created_at
+        - updated_at
       properties:
         email:
           type: string
@@ -1208,12 +1214,12 @@ components:
           type: string
           maxLength: 5
           example: "ru-RU"
-        lastLoginIp:
+        last_login_ip:
           type: string
           example: "95.165.01.01"
-        lastLoggedAt:
+        last_logged_at:
           $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-        auth2faType:
+        auth_2fa_type:
           $ref: "#/components/schemas/Custom.Enum.UserAuth2fa"
         realms:
           type: array
@@ -1221,44 +1227,44 @@ components:
             $ref: "#/components/schemas/Auth.Response.Model.UserRealm"
         status:
           $ref: "#/components/schemas/Custom.Enum.UserStatus"
-        createdAt:
+        created_at:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
+        updated_at:
           $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Auth.Response.Model.UserRealm:
       type: object
       required:
         - name
-        - userKind
-        - createdAt
-        - updatedAt
+        - user_kind
+        - created_at
+        - updated_at
       properties:
         name:
           type: string
           maxLength: 32
           example: "domain_name/user_group"
-        userKind:
+        user_kind:
           type: string
           maxLength: 16
           example: "standard"
-        createdAt:
+        created_at:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
+        updated_at:
           $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
 
     Auth.Check.Request.Model.CheckLogin:
       type: object
       required:
         - realm
-        - userLogin
+        - user_login
       properties:
         realm:
           description: Область, пространство, где планируется регистрация
           type: string
           maxLength: 32
           example: "domain_name/user_group"
-        userLogin:
+        user_login:
           description: Eмаил/телефон пользователя под которым планируется регистрация
           type: string
           minLength: 7
@@ -1332,9 +1338,9 @@ components:
     Auth.Security.Request.Model.ChangeEmail:
       type: object
       required:
-        - newEmail
+        - new_email
       properties:
-        newEmail:
+        new_email:
           description: Новый емаил пользователя
           type: string
           format: email
@@ -1345,9 +1351,9 @@ components:
     Auth.Security.Request.Model.ChangePhone:
       type: object
       required:
-        - newPhone
+        - new_phone
       properties:
-        newPhone:
+        new_phone:
           description: Новый телефон пользователя
           type: string
           format: phone
@@ -1358,9 +1364,9 @@ components:
     Auth.Security.Request.Model.ChangePassword:
       type: object
       required:
-        - newPassword
+        - new_password
       properties:
-        newPassword:
+        new_password:
           description: Новый пароль пользователя
           type: string
           minLength: 8
@@ -1370,9 +1376,9 @@ components:
     Auth.Security.Request.Model.ApplyOperation:
       type: object
       required:
-        - operationToken
+        - operation_token
       properties:
-        operationToken:
+        operation_token:
           description: Токен операции, которая подтверждена пользователем
           type: string
           minLength: 64
@@ -1382,9 +1388,9 @@ components:
     Auth.Security.Response.TotpGenerator:
       type: object
       required:
-        - totpUrl
+        - totp_url
       properties:
-        totpUrl:
+        totp_url:
           description: URL для добавления его в приложение 2FA аутентификации
           type: string
           minLength: 64
@@ -1412,26 +1418,26 @@ components:
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
-        - sessionHash
-        - appName
-        - deviceName
-        - lastIP
+        - session_hash
+        - app_name
+        - device_name
+        - last_ip
         - location
-        - isCurrent
+        - is_current
       properties:
-        sessionHash:
+        session_hash:
           description: Идентификатор открытой сессии
           type: string
           example: "1f3bc817fb1d50cb"
-        appName:
+        app_name:
           description: Приложение, в котором открыта сессия
           type: string
           example: "Web, Firefox"
-        deviceName:
+        device_name:
           description: Название устройства, на котором открыта сессия
           type: string
           example: "Device 1"
-        lastIP:
+        last_ip:
           description: IP адрес последнего посещения
           type: string
           example: "95.165.01.01"
@@ -1439,7 +1445,7 @@ components:
           description: Местоположение на основе IP
           type: string
           example: "Moscow, Russia"
-        isCurrent:
+        is_current:
           description: Признак, что сессия является текущей
           type: boolean
           example: false
@@ -1514,7 +1520,7 @@ components:
             required:
               - errors
             properties:
-              operationStatus:
+              operation_status:
                 $ref: "#/components/schemas/Auth.Response.Model.ConfirmOperationStatus"
               errors:
                 $ref: "#/components/schemas/App.Response.Model.ErrorList"

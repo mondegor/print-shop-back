@@ -93,7 +93,7 @@ func (ht *QueryHistory) getRawItemID(r *http.Request) string {
 }
 
 func (ht *QueryHistory) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrQueryHistoryNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

@@ -14,10 +14,10 @@ import (
 type (
 	// SubmitFormUseCase - comment interface.
 	SubmitFormUseCase interface {
-		GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems uint64, err error)
+		GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems int, err error)
 		GetItem(ctx context.Context, itemID uuid.UUID) (entity.SubmitForm, error)
 		Create(ctx context.Context, item entity.SubmitForm) (itemID uuid.UUID, err error)
-		Store(ctx context.Context, item entity.SubmitForm) error
+		Save(ctx context.Context, item entity.SubmitForm) error
 		ChangeStatus(ctx context.Context, item entity.SubmitForm) error
 		Remove(ctx context.Context, itemID uuid.UUID) error
 	}
@@ -43,7 +43,7 @@ type (
 
 	// SubmitFormStorage - comment interface.
 	SubmitFormStorage interface {
-		FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows uint64, err error)
+		FetchWithTotal(ctx context.Context, params entity.SubmitFormParams) (rows []entity.SubmitForm, countRows int, err error)
 		FetchOne(ctx context.Context, rowID uuid.UUID) (entity.SubmitForm, error)
 		FetchIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error)
 		FetchIDByParamName(ctx context.Context, paramName string) (rowID uuid.UUID, err error)

@@ -7,7 +7,6 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
@@ -21,7 +20,7 @@ type (
 		sqlBuilder      mrstorage.SQLBuilder
 		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -45,7 +44,7 @@ func NewPaperColorPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNamePaperColors,
 		),
@@ -53,8 +52,16 @@ func NewPaperColorPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 }
 
 // FetchWithTotal - comment method.
-func (re *PaperColorPostgres) FetchWithTotal(ctx context.Context, params entity.PaperColorParams) (rows []entity.PaperColor, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *PaperColorPostgres) FetchWithTotal(ctx context.Context, params entity.PaperColorParams) (rows []entity.PaperColor, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(color_caption)", strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("color_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -65,7 +72,14 @@ func (re *PaperColorPostgres) FetchWithTotal(ctx context.Context, params entity.
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("color_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -82,7 +96,7 @@ func (re *PaperColorPostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.PaperColor, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -168,7 +182,7 @@ func (re *PaperColorPostgres) FetchOne(ctx context.Context, rowID uint64) (entit
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
 func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -233,27 +247,4 @@ func (re *PaperColorPostgres) UpdateStatus(ctx context.Context, row entity.Paper
 // Delete - comment method.
 func (re *PaperColorPostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *PaperColorPostgres) fetchCondition(filter entity.PaperColorListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLike("UPPER(color_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("color_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *PaperColorPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("color_id", sortdirection.ASC),
-			)
-		},
-	)
 }

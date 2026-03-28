@@ -14,27 +14,28 @@ import (
 func list() {
 	p := message.NewPrinter(language.MustParse("en-US"))
 
-	p.Sprintf("Internal") // DefaultErrorCodeInternal - 5xx
-	p.Sprintf("System")   // DefaultErrorCodeSystem - 5xx
+	p.Sprintf("internal error")            // 500
+	p.Sprintf("system error")              // 503
+	p.Sprintf("unexpected internal error") // 500, 599
+	p.Sprintf("not implemented")           // 501
 
-	p.Sprintf("unexpected internal error")         // ErrorCodeUnexpectedInternal - 500, 599
-	p.Sprintf("system is temporarily unavailable") // ErrorCodeTemporarilyUnavailable - 503
-
-	p.Sprintf("the file with the specified key '%[1]s' was not uploaded", "Key")
 	p.Sprintf("401. client is unauthorized")                  // 401
 	p.Sprintf("403. access forbidden")                        // 403
+	p.Sprintf("access forbidden")                             // 403
 	p.Sprintf("404. resource not found")                      // 404
+	p.Sprintf("record not found")                             // 404
+	p.Sprintf("record version conflict")                      // 409
 	p.Sprintf("request body is not valid: '%[1]s'", "Reason") // 422
+	p.Sprintf("too many requests")                            // 429
+
+	p.Sprintf("the file with the specified key '%[1]s' was not uploaded", "Key")
 	p.Sprintf("request param with key '%[1]s' of type '%[2]s' contains incorrect value '%[3]s'", "Key", "Type", "Value")
 	p.Sprintf("request param with key '%[1]s' is empty", "Key")
 	p.Sprintf("request param with key '%[1]s' contains value greater then max '%[2]s'", "Key", "Max")
 	p.Sprintf("request param with key '%[1]s' has value length greater then max '%[2]s' characters", "Key", "MaxLength")
 	p.Sprintf("input data is incorrect: '%[1]s'", "Reason")
-	p.Sprintf("access forbidden") // 403
-	p.Sprintf("entity not found") // 404
 	p.Sprintf("entity is not available")
 	p.Sprintf("entity already exists")
-	p.Sprintf("entity version conflict") // 409
 	p.Sprintf("switching from '%[1]s' to '%[2]s' is rejected", "StatusFrom", "StatusTo")
 	p.Sprintf("file is invalid")
 	p.Sprintf("login is invalid")

@@ -25,7 +25,7 @@ func NewPaperColor(
 ) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

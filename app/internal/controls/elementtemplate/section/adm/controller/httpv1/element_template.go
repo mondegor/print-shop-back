@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrmodel"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
@@ -50,8 +51,8 @@ func NewElementTemplate(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 		),
 		fileErrorWrapper: errors.NewDownloadFileWrapper(module.ParamNameElementTemplateAttachment),
 	}
@@ -64,7 +65,7 @@ func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: elementListTemplateURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: elementTemplateItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: elementTemplateItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: elementTemplateItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: elementTemplateItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: elementTemplateItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -124,11 +125,11 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 	return ht.sender.SendAttachmentFile(
 		r.Context(),
 		w,
-		mrtype.File{
-			FileInfo: mrtype.FileInfo{
+		mrmodel.File{
+			FileInfo: mrmodel.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, itemID),
-				Size:         uint64(len(body)),
+				Size:         int64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -171,8 +172,8 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 	)
 }
 
-// Store - comment method.
-func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *ElementTemplate) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreElementTemplateRequest{}
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
@@ -198,7 +199,7 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 		Body:       file.Body,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -244,7 +245,7 @@ func (ht *ElementTemplate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

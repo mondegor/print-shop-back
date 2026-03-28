@@ -18,12 +18,14 @@ import (
 type (
 	// SubmitForm - comment struct.
 	SubmitForm struct {
-		storage        adm.SubmitFormStorage
-		storageElement adm.FormElementStorage
-		storageVersion adm.FormVersionStorage
-		eventEmitter   mrevent.Emitter
-		errorWrapper   errors.Wrapper
-		statusFlowMap  mrstatus.FlowMap[itemstatus.Enum]
+		storage                     adm.SubmitFormStorage
+		storageElement              adm.FormElementStorage
+		storageVersion              adm.FormVersionStorage
+		eventEmitter                mrevent.Emitter
+		errorWrapper                errors.Wrapper
+		errorNotFoundWrapper        errors.Wrapper
+		errorVersionConflictWrapper errors.Wrapper
+		statusFlowMap               mrstatus.FlowMap[itemstatus.Enum]
 	}
 )
 
@@ -35,17 +37,19 @@ func NewSubmitForm(
 	eventEmitter mrevent.Emitter,
 ) *SubmitForm {
 	return &SubmitForm{
-		storage:        storage,
-		storageElement: storageElement,
-		storageVersion: storageVersion,
-		eventEmitter:   mrevent.EmitterWithSource(eventEmitter, entity.ModelNameSubmitForm),
-		errorWrapper:   errors.NewUseCaseWrapper(),
-		statusFlowMap:  itemstatus.NewFlowMap(),
+		storage:                     storage,
+		storageElement:              storageElement,
+		storageVersion:              storageVersion,
+		eventEmitter:                mrevent.EmitterWithSource(eventEmitter, entity.ModelNameSubmitForm),
+		errorWrapper:                errors.NewServiceOperationFailedWrapper(),
+		errorNotFoundWrapper:        errors.NewServiceRecordNotFoundWrapper(),
+		errorVersionConflictWrapper: errors.NewServiceRecordVersionConflictWrapper(),
+		statusFlowMap:               itemstatus.NewFlowMap(),
 	}
 }
 
 // GetList - comment method.
-func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems uint64, err error) {
+func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParams) (items []entity.SubmitForm, countItems int, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
 		return nil, 0, uc.errorWrapper.Wrap(err)
@@ -90,20 +94,20 @@ func (uc *SubmitForm) Create(ctx context.Context, item entity.SubmitForm) (itemI
 	return itemID, nil
 }
 
-// Store - comment method.
-func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
+// Save - comment method.
+func (uc *SubmitForm) Save(ctx context.Context, item entity.SubmitForm) error {
 	if item.ID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return errors.ErrUseCaseEntityVersionConflict
+		return errors.ErrRecordVersionConflict
 	}
 
 	// предварительная проверка существования записи нужна для того,
-	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
+	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionConflict
 	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
-		return uc.errorWrapper.Wrap(err, "itemId", item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
@@ -112,11 +116,7 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
-			return errors.ErrUseCaseEntityVersionConflict.Wrap(err)
-		}
-
-		return uc.errorWrapper.Wrap(err)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "Store", conv.Group{"id": item.ID, "ver": tagVersion})
@@ -127,16 +127,16 @@ func (uc *SubmitForm) Store(ctx context.Context, item entity.SubmitForm) error {
 // ChangeStatus - comment method.
 func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) error {
 	if item.ID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return errors.ErrUseCaseEntityVersionConflict
+		return errors.ErrRecordVersionConflict
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 	if err != nil {
-		return uc.errorWrapper.Wrap(err, "itemId", item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if currentStatus == item.Status {
@@ -144,16 +144,12 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 	}
 
 	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
-		return errors.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
-			return errors.ErrUseCaseEntityVersionConflict.Wrap(err)
-		}
-
-		return uc.errorWrapper.Wrap(err)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "ChangeStatus", conv.Group{"id": item.ID, "ver": tagVersion, "status": item.Status})
@@ -164,7 +160,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 // Remove - comment method.
 func (uc *SubmitForm) Remove(ctx context.Context, itemID uuid.UUID) error {
 	if itemID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.storage.Delete(ctx, itemID); err != nil {
@@ -184,7 +180,7 @@ func (uc *SubmitForm) GetFormStatus(ctx context.Context, formID uuid.UUID) (item
 
 	status, err := uc.storage.FetchStatus(ctx, formID)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return 0, module.ErrSubmitFormNotFound.Wrap(err, formID)
 		}
 
@@ -201,12 +197,12 @@ func (uc *SubmitForm) GetFormWithElements(ctx context.Context, formID uuid.UUID)
 
 func (uc *SubmitForm) getForm(ctx context.Context, itemID uuid.UUID) (entity.SubmitForm, error) {
 	if itemID == uuid.Nil {
-		return entity.SubmitForm{}, errors.ErrUseCaseEntityNotFound
+		return entity.SubmitForm{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.SubmitForm{}, uc.errorWrapper.Wrap(err, "itemId", itemID)
+		return entity.SubmitForm{}, uc.errorNotFoundWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	if err = uc.setElements(ctx, &item); err != nil {
@@ -227,7 +223,7 @@ func (uc *SubmitForm) checkItem(ctx context.Context, item *entity.SubmitForm) er
 func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitForm) error {
 	id, err := uc.storage.FetchIDByRewriteName(ctx, item.RewriteName)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 
@@ -244,7 +240,7 @@ func (uc *SubmitForm) checkRewriteName(ctx context.Context, item *entity.SubmitF
 func (uc *SubmitForm) checkParamName(ctx context.Context, item *entity.SubmitForm) error {
 	id, err := uc.storage.FetchIDByParamName(ctx, item.ParamName)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 

@@ -32,6 +32,6 @@ type (
 	// BoxListResponse - comment struct.
 	BoxListResponse struct {
 		Items []entity.Box `json:"items"`
-		Total uint64       `json:"total"`
+		Total int          `json:"total"`
 	}
 )

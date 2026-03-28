@@ -13,7 +13,7 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrmodel"
 	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
@@ -46,19 +46,19 @@ func NewCompanyPageLogo(
 		fileAPI:      fileAPI,
 		locker:       locker,
 		eventEmitter: mrevent.EmitterWithSource(eventEmitter, entity.ModelNameCompanyPageLogo),
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 		logger:       logger,
 	}
 }
 
 // StoreFile - comment method.
-func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, image mrtype.Image) error {
+func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, image mrmodel.Image) error {
 	if accountID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if image.OriginalName == "" || image.Size == 0 {
-		return errors.ErrUseCaseInvalidFile
+		return errors.ErrValidateInvalidFile
 	}
 
 	newLogoPath, err := uc.getLogoPath(accountID, image.OriginalName)
@@ -105,7 +105,7 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 // RemoveFile - comment method.
 func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID uuid.UUID) error {
 	if accountID == uuid.Nil {
-		return errors.ErrUseCaseEntityNotFound
+		return errors.ErrRecordNotFound
 	}
 
 	if unlock, err := uc.locker.Lock(ctx, uc.getLockKey(accountID)); err != nil {

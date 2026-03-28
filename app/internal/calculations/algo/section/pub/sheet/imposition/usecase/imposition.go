@@ -42,7 +42,7 @@ func NewSheetImposition(algo *imposition.Algo, eventEmitter mrevent.Emitter) *Sh
 func (uc *SheetImposition) Calc(ctx context.Context, data dto.ParsedData) (model.SheetImpositionResponse, error) {
 	result, err := uc.algo.Calc(ctx, data.Element, data.Distance, data.Out, data.Opts)
 	if err != nil {
-		return model.SheetImpositionResponse{}, errors.ErrUseCaseIncorrectInputData.New(err)
+		return model.SheetImpositionResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "Calc", conv.Group{"data": data})
@@ -59,7 +59,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 	if almostEqual(data.Element.Width, data.Element.Height) && almostEqual(data.Distance.Width, data.Distance.Height) {
 		result, err := uc.algo.Calc(ctx, data.Element, data.Distance, data.Out, data.Opts)
 		if err != nil {
-			return nil, errors.ErrUseCaseIncorrectInputData.New(err)
+			return nil, errors.ErrIncorrectInputData.New(err)
 		}
 
 		uc.eventEmitter.Emit(ctx, "CalcVariants", conv.Group{"data": data})
@@ -82,7 +82,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 	}
 
 	if countVariants == 0 {
-		return nil, errors.ErrUseCaseIncorrectInputData.New(errV1.Error())
+		return nil, errors.ErrIncorrectInputData.New(errV1.Error())
 	}
 
 	results := make(model.SheetImpositionVariantsResponse, 0, countVariants)

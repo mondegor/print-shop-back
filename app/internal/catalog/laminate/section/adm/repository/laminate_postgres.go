@@ -24,7 +24,7 @@ type (
 		repoIDByArticle db.FieldFetcher[string, uint64]
 		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -55,7 +55,7 @@ func NewLaminatePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQ
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNameLaminates,
 		),
@@ -63,8 +63,19 @@ func NewLaminatePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQ
 }
 
 // FetchWithTotal - comment method.
-func (re *LaminatePostgres) FetchWithTotal(ctx context.Context, params entity.LaminateParams) (rows []entity.Laminate, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *LaminatePostgres) FetchWithTotal(ctx context.Context, params entity.LaminateParams) (rows []entity.Laminate, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("type_id", params.Filter.TypeIDs),
+				c.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(params.Filter.Length), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(params.Filter.Width), 0, xmath.EqualityThresholdE9),
+				c.FilterAnyOf("laminate_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -75,7 +86,14 @@ func (re *LaminatePostgres) FetchWithTotal(ctx context.Context, params entity.La
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("laminate_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -92,7 +110,7 @@ func (re *LaminatePostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.Laminate, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -207,7 +225,7 @@ func (re *LaminatePostgres) FetchIDByArticle(ctx context.Context, article string
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
 func (re *LaminatePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -294,30 +312,4 @@ func (re *LaminatePostgres) UpdateStatus(ctx context.Context, row entity.Laminat
 // Delete - comment method.
 func (re *LaminatePostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *LaminatePostgres) fetchCondition(filter entity.LaminateListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLikeFields([]string{"UPPER(laminate_article)", "UPPER(laminate_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("type_id", filter.TypeIDs),
-				c.FilterRangeFloat64("laminate_length", mrtype.RangeFloat64(filter.Length), 0, xmath.EqualityThresholdE9),
-				c.FilterRangeFloat64("laminate_width", mrtype.RangeFloat64(filter.Width), 0, xmath.EqualityThresholdE9),
-				c.FilterAnyOf("laminate_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *LaminatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("laminate_id", sortdirection.ASC),
-			)
-		},
-	)
 }

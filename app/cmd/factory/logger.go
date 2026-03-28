@@ -13,12 +13,13 @@ import (
 func InitLoggerAndTracer(cfg config.Config) (mrlog.Logger, mrtrace.Tracer, error) {
 	logger, err := slog.InitLogger(
 		wire.LoggerConfig{
-			Environment: cfg.App.Environment,
-			Version:     cfg.App.Version,
-			Level:       cfg.Log.Level,
-			JsonFormat:  cfg.Log.JsonFormat,
-			TimeFormat:  cfg.Log.TimeFormat,
-			ColorMode:   cfg.Log.ColorMode,
+			Environment:       cfg.App.Environment,
+			Version:           cfg.App.Version,
+			Level:             cfg.Log.Level,
+			JsonFormat:        cfg.Log.JsonFormat,
+			TimeFormat:        cfg.Log.TimeFormat,
+			ColorMode:         cfg.Log.ColorMode,
+			ContextProcessIDs: wire.DefaultProcessIDs(),
 		},
 	)
 	if err != nil {

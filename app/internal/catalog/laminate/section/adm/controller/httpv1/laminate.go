@@ -41,8 +41,8 @@ func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSe
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 			module.ErrLaminateArticleAlreadyExists.Code(), "article",
 			api.ErrMaterialTypeRequired.Code(), "typeId",
 			api.ErrMaterialTypeNotFound.Code(), "typeId",
@@ -57,7 +57,7 @@ func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: laminateListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: laminateItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: laminateItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: laminateItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: laminateItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: laminateItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -137,8 +137,8 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *Laminate) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreLaminateRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -157,7 +157,7 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 		WeightM2:   measure.KilogramPerMeter2(req.WeightM2 * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -203,7 +203,7 @@ func (ht *Laminate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Laminate) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrLaminateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

@@ -46,8 +46,8 @@ func NewPrintFormat(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 		),
 	}
 }
@@ -59,7 +59,7 @@ func (ht *PrintFormat) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: printFormatListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: printFormatItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: printFormatItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: printFormatItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: printFormatItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: printFormatItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -134,8 +134,8 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *PrintFormat) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StorePrintFormatRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -150,7 +150,7 @@ func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
 		Height:     measure.Meter(req.Height * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -196,7 +196,7 @@ func (ht *PrintFormat) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PrintFormat) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrPrintFormatNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

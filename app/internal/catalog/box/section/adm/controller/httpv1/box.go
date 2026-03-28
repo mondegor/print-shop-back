@@ -45,8 +45,8 @@ func NewBox(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 			module.ErrBoxArticleAlreadyExists.Code(), "article",
 		),
 	}
@@ -59,7 +59,7 @@ func (ht *Box) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: boxListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: boxItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: boxItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: boxItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: boxItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: boxItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -139,8 +139,8 @@ func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *Box) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreBoxRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -158,7 +158,7 @@ func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
 		Weight:     measure.Kilogram(req.Weight * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -204,7 +204,7 @@ func (ht *Box) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Box) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrBoxNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

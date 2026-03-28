@@ -34,17 +34,17 @@ func InitRestRouterWithHandlers(opts app.Options) (*mrchi.RouterAdapter, error) 
 		return nil, err
 	}
 
-	err = RegisterRestRouterCustHandlers(router, opts, name2group["customer-api"], opts.RealmUserProviders["printshop/customers"])
-	if err != nil {
-		return nil, err
-	}
-
 	err = RegisterRestRouterProvHandlers(router, opts, name2group["provider-api"], opts.RealmUserProviders["printshop/providers"])
 	if err != nil {
 		return nil, err
 	}
 
 	err = RegisterRestRouterPubHandlers(router, opts, name2group["public-api"], opts.RealmUserProviders["printshop/*"])
+	if err != nil {
+		return nil, err
+	}
+
+	err = RegisterRestRouterUsrHandlers(router, opts, name2group["user-api"], opts.RealmUserProviders["printshop/users"])
 	if err != nil {
 		return nil, err
 	}

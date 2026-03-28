@@ -16,3 +16,4 @@ permissions:
   - modDictionariesPrintFormat
   - modFileStation
   - modProviderAccounts
+  - modWarehousing

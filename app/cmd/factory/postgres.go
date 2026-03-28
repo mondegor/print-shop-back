@@ -34,7 +34,7 @@ func InitPostgres(opts app.Options) (*mrpostgres.ConnAdapter, error) {
 		Database:        cfg.Database,
 		Username:        cfg.Username,
 		Password:        cfg.Password,
-		MaxPoolSize:     cfg.MaxPoolSize,
+		MaxPoolSize:     int(cfg.MaxPoolSize),
 		MaxConnLifetime: cfg.MaxConnLifetime,
 		MaxConnIdleTime: cfg.MaxConnIdleTime,
 		ConnTimeout:     cfg.Timeout,

@@ -59,7 +59,7 @@ func initSubmitFormController(
 func initSubmitFormStorage(
 	logger mrlog.Logger,
 	dbConnManager mrstorage.DBConnManager,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (*repository.SubmitFormPostgres, *mrsql.EntityMetaOrderBy, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.SubmitForm{})
 	if err != nil {

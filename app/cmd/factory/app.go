@@ -128,6 +128,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		wire.ErrorConfig{
 			HasCaller:         opts.Cfg.Debugging.ErrorCaller.IsEnabled,
 			CallerDepth:       opts.Cfg.Debugging.ErrorCaller.Depth,
+			CallerShowFunc:    opts.Cfg.Debugging.ErrorCaller.ShowFunc,
 			CallerUpperBounds: opts.Cfg.Debugging.ErrorCaller.UpperBounds,
 		},
 	)

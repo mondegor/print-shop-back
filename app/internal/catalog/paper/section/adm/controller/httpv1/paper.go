@@ -46,8 +46,8 @@ func NewPaper(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 			module.ErrPaperArticleAlreadyExists.Code(), "article",
 			api.ErrMaterialTypeRequired.Code(), "typeId",
 			api.ErrMaterialTypeNotFound.Code(), "typeId",
@@ -66,7 +66,7 @@ func (ht *Paper) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: paperListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: paperItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: paperItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: paperItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: paperItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: paperItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -154,8 +154,8 @@ func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *Paper) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StorePaperRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -177,7 +177,7 @@ func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
 		Sides:      req.Sides,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -223,7 +223,7 @@ func (ht *Paper) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Paper) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrPaperNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

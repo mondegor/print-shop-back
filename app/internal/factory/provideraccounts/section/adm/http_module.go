@@ -18,7 +18,7 @@ func InitHttpModule(
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,
 	logoURLBuilder mrpath.Builder,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

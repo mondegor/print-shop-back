@@ -1,6 +1,6 @@
-App.Request.Query.ListSorter.SortField:
+App.Request.Query.ListSorter.SortColumn:
   description: Название колонки, по которой происходит сортировка
-  name: sortField
+  name: sortColumn
   in: query
   required: false
   schema:

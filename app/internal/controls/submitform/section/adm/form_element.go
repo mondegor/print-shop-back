@@ -14,7 +14,7 @@ type (
 	FormElementUseCase interface {
 		GetItem(ctx context.Context, itemID uint64) (entity.FormElement, error)
 		Create(ctx context.Context, item entity.FormElement) (itemID uint64, err error)
-		Store(ctx context.Context, item entity.FormElement) error
+		Save(ctx context.Context, item entity.FormElement) error
 		Remove(ctx context.Context, itemID uint64) error
 		MoveAfterID(ctx context.Context, itemID, afterID uint64) error
 	}

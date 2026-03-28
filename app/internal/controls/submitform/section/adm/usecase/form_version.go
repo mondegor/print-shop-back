@@ -23,12 +23,14 @@ type (
 	// FormVersion - comment struct.
 	// FormVersion - comment struct.
 	FormVersion struct {
-		storage       adm.FormVersionStorage
-		formComponent adm.SubmitFormComponent
-		formCompiler  adm.FormCompilerComponent
-		locker        mrlock.Locker
-		eventEmitter  mrevent.Emitter
-		errorWrapper  errors.Wrapper
+		storage                     adm.FormVersionStorage
+		formComponent               adm.SubmitFormComponent
+		formCompiler                adm.FormCompilerComponent
+		locker                      mrlock.Locker
+		eventEmitter                mrevent.Emitter
+		errorWrapper                errors.Wrapper
+		errorNotFoundWrapper        errors.Wrapper
+		errorVersionConflictWrapper errors.Wrapper
 	}
 )
 
@@ -41,19 +43,21 @@ func NewFormVersion(
 	eventEmitter mrevent.Emitter,
 ) *FormVersion {
 	return &FormVersion{
-		storage:       storage,
-		formComponent: formComponent,
-		formCompiler:  formCompiler,
-		locker:        locker,
-		eventEmitter:  mrevent.EmitterWithSource(eventEmitter, entity.ModelNameFormVersion),
-		errorWrapper:  errors.NewUseCaseWrapper(),
+		storage:                     storage,
+		formComponent:               formComponent,
+		formCompiler:                formCompiler,
+		locker:                      locker,
+		eventEmitter:                mrevent.EmitterWithSource(eventEmitter, entity.ModelNameFormVersion),
+		errorWrapper:                errors.NewServiceOperationFailedWrapper(),
+		errorNotFoundWrapper:        errors.NewServiceRecordNotFoundWrapper(),
+		errorVersionConflictWrapper: errors.NewServiceRecordVersionConflictWrapper(),
 	}
 }
 
 // GetItemJson - comment method.
 func (uc *FormVersion) GetItemJson(ctx context.Context, primary entity.PrimaryKey, pretty bool) ([]byte, error) {
 	if primary.FormID == uuid.Nil || primary.Version < 0 {
-		return nil, errors.ErrUseCaseEntityNotFound
+		return nil, errors.ErrRecordNotFound
 	}
 
 	if _, err := uc.formComponent.GetFormStatus(ctx, primary.FormID); err != nil {
@@ -75,7 +79,7 @@ func (uc *FormVersion) GetItemJson(ctx context.Context, primary entity.PrimaryKe
 		// TODO: можно оптимизировать получая только body
 		item, err = uc.storage.FetchOne(ctx, primary)
 		if err != nil {
-			return nil, uc.errorWrapper.Wrap(err, "primary", primary)
+			return nil, uc.errorNotFoundWrapper.Wrap(err, "primary", primary)
 		}
 	}
 
@@ -100,7 +104,7 @@ func (uc *FormVersion) PrepareForTest(ctx context.Context, formID uuid.UUID) err
 	}
 
 	if lastVersionItem.ActivityStatus == activitystatus.Archived {
-		return errors.ErrUseCaseSwitchStatusRejected.New(
+		return errors.ErrSwitchStatusRejected.New(
 			activitystatus.Archived,
 			activitystatus.Testing,
 		)
@@ -153,7 +157,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 	}
 
 	if item.ActivityStatus != activitystatus.Testing {
-		return errors.ErrUseCaseSwitchStatusRejected.New(
+		return errors.ErrSwitchStatusRejected.New(
 			item.ActivityStatus,
 			activitystatus.Published,
 		)
@@ -166,11 +170,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item, activitystatus.Published); err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
-			return errors.ErrUseCaseEntityVersionConflict.Wrap(err)
-		}
-
-		return uc.errorWrapper.Wrap(err)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "Publish", conv.Group{"formId": formID, "version": item.Version})
@@ -184,21 +184,21 @@ func (uc *FormVersion) getLockKey(formID uuid.UUID) string {
 
 func (uc *FormVersion) getItemLastVersion(ctx context.Context, formID uuid.UUID) (entity.FormVersionStatus, error) {
 	if formID == uuid.Nil {
-		return entity.FormVersionStatus{}, errors.ErrUseCaseEntityNotFound
+		return entity.FormVersionStatus{}, errors.ErrRecordNotFound
 	}
 
 	formStatus, err := uc.formComponent.GetFormStatus(ctx, formID)
 	if err != nil {
-		return entity.FormVersionStatus{}, uc.errorWrapper.Wrap(err)
+		return entity.FormVersionStatus{}, uc.errorNotFoundWrapper.Wrap(err)
 	}
 
 	if formStatus != itemstatus.Enabled {
-		return entity.FormVersionStatus{}, errors.ErrUseCaseEntityNotFound // TODO: ErrUseCaseEntityNotAvailable
+		return entity.FormVersionStatus{}, errors.ErrRecordNotFound // TODO: ErrUseCaseEntityNotAvailable
 	}
 
 	item, err := uc.storage.FetchOneLastVersion(ctx, formID)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return entity.FormVersionStatus{
 				FormID:         formID,
 				Version:        1,

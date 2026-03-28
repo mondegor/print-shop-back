@@ -26,7 +26,7 @@ func NewLaminate(
 ) *Laminate {
 	return &Laminate{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

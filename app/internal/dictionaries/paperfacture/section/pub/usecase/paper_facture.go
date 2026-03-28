@@ -25,7 +25,7 @@ func NewPaperFacture(
 ) *PaperFacture {
 	return &PaperFacture{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

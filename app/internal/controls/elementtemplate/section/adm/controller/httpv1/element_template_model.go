@@ -25,6 +25,6 @@ type (
 	// ElementTemplateListResponse - comment struct.
 	ElementTemplateListResponse struct {
 		Items []entity.ElementTemplate `json:"items"`
-		Total uint64                   `json:"total"`
+		Total int                      `json:"total"`
 	}
 )

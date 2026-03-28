@@ -13,7 +13,7 @@ type (
 	// CompanyPageUseCase - comment interface.
 	CompanyPageUseCase interface {
 		GetItem(ctx context.Context, accountID uuid.UUID) (entity.CompanyPage, error)
-		Store(ctx context.Context, item entity.CompanyPage) error
+		Save(ctx context.Context, item entity.CompanyPage) error
 		ChangeStatus(ctx context.Context, item entity.CompanyPage) error
 	}
 

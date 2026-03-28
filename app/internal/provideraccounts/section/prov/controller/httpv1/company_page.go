@@ -39,7 +39,7 @@ func NewCompanyPage(parser validate.RequestParser, sender mrserver.ResponseSende
 func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: companyPageItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: companyPageItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: companyPageItemURL, Func: ht.Save},
 
 		{Method: http.MethodPatch, URL: companyPageItemChangeStatusURL, Func: ht.ChangeStatus},
 	}
@@ -55,8 +55,8 @@ func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-// Store - comment method.
-func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *CompanyPage) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreCompanyPageRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -70,7 +70,7 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 		SiteURL:     req.SiteURL,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 

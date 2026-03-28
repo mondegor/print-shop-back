@@ -28,7 +28,7 @@ func NewElementTemplate(
 ) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 		trace:        trace,
 	}
 }
@@ -43,7 +43,7 @@ func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (ap
 
 	item, err := uc.storage.FetchOneHead(ctx, itemID)
 	if err != nil {
-		if errors.Is(err, errors.ErrEventStorageNoRowFound) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return api.ElementTemplateDTO{}, api.ErrElementTemplateNotFound.Wrap(err, itemID)
 		}
 

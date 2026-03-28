@@ -25,6 +25,6 @@ type (
 	// SubmitFormListResponse - comment struct.
 	SubmitFormListResponse struct {
 		Items []entity.SubmitForm `json:"items"`
-		Total uint64              `json:"total"`
+		Total int                 `json:"total"`
 	}
 )

@@ -25,7 +25,7 @@ func InitHttpModule(
 	responseSender mrserver.ResponseSender,
 	responseFileSender mrserver.FileResponseSender,
 	elementTemplateAPI api.ElementTemplateHeader,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) initing.HttpModule {
 	// переменные, которые должны быть инициализированы в InitSharedComponents модуля
 	var (

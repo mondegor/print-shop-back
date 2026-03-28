@@ -3,8 +3,11 @@ package app
 import (
 	"net/http"
 
+	"github.com/mondegor/go-components/mrauth/dto"
 	"github.com/mondegor/go-components/mrmailer"
+	mailerentity "github.com/mondegor/go-components/mrmailer/entity"
 	"github.com/mondegor/go-components/mrnotifier"
+	notifierentity "github.com/mondegor/go-components/mrnotifier/notifier/entity"
 	"github.com/mondegor/go-components/mrsettings"
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrpostgres"
@@ -72,9 +75,9 @@ type (
 		SettingsSetterAPI           mrsettings.Setter
 
 		// Services and Servers section
-		UserStatRequestCollectorService *collect.MessageCollector
-		MailProcessorService            *consume.MessageProcessor
-		NoticeProcessorService          *consume.MessageProcessor
+		UserStatRequestCollectorService *collect.MessageCollector[dto.UserActivityLogMessage]
+		MailProcessorService            *consume.MessageProcessor[mailerentity.Message]
+		NoticeProcessorService          *consume.MessageProcessor[notifierentity.Note]
 		HttpServer                      *httpserver.Adapter
 		HttpInternalServer              *httpserver.Adapter
 		TaskSchedulerServices           []mrrun.Process // можно добавлять начиная с формирования API
@@ -88,6 +91,7 @@ type (
 		ItemStatus *parser.ItemStatus
 		Uint64     *parser.Uint64
 		ListSorter *parser.ListSorter
+		ListCursor *parser.ListCursor
 		ListPager  *parser.ListPager
 		String     *parser.String
 		UUID       *parser.UUID

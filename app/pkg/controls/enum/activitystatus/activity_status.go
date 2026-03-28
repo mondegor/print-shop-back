@@ -12,7 +12,7 @@ const (
 	Draft     Enum = iota + 1 // черновик
 	Testing                   // на тестировании
 	Published                 // опубликован
-	Archived                  // заархивирован
+	Archived                  // в архиве
 )
 
 const (

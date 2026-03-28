@@ -100,8 +100,8 @@ func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.U
 		sql,
 		rowID,
 	)
-	if err != nil && errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
-		return errors.ErrEventStorageNoRowFound
+	if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+		return errors.ErrEventStorageNoRecordFound
 	}
 
 	return err
@@ -125,7 +125,7 @@ func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration
 		limit,
 	)
 	// если это внутренняя ошибка
-	if err != nil && !errors.Is(err, errors.ErrEventStorageRowsNotAffected) {
+	if err != nil && !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
 		return err
 	}
 

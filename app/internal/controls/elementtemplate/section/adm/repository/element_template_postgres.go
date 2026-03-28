@@ -8,7 +8,6 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
@@ -22,7 +21,7 @@ type (
 		sqlBuilder      mrstorage.SQLBuilder
 		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -46,7 +45,7 @@ func NewElementTemplatePostgres(client mrstorage.DBConnManager, sqlBuilder mrsto
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNameElementTemplates,
 		),
@@ -57,8 +56,17 @@ func NewElementTemplatePostgres(client mrstorage.DBConnManager, sqlBuilder mrsto
 func (re *ElementTemplatePostgres) FetchWithTotal(
 	ctx context.Context,
 	params entity.ElementTemplateParams,
-) (rows []entity.ElementTemplate, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+) (rows []entity.ElementTemplate, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(param_name)", "UPPER(template_caption)"}, strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("element_detailing", params.Filter.Detailing),
+				c.FilterAnyOf("template_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -69,7 +77,14 @@ func (re *ElementTemplatePostgres) FetchWithTotal(
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("template_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -86,7 +101,7 @@ func (re *ElementTemplatePostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.ElementTemplate, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -186,7 +201,7 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID uint64) (
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRowFound - not exists, error - query error.
+// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
 func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
@@ -269,28 +284,4 @@ func (re *ElementTemplatePostgres) UpdateStatus(ctx context.Context, row entity.
 // Delete - comment method.
 func (re *ElementTemplatePostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *ElementTemplatePostgres) fetchCondition(filter entity.ElementTemplateListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLikeFields([]string{"UPPER(param_name)", "UPPER(template_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("element_detailing", filter.Detailing),
-				c.FilterAnyOf("template_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *ElementTemplatePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("template_id", sortdirection.ASC),
-			)
-		},
-	)
 }

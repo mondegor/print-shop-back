@@ -1,0 +1,45 @@
+Warehousing.Containers.UserAPI.Request.Model.CreateContainer:
+  description: DTO добавления нового контейнера
+  type: object
+  properties:
+    tags:
+      description: Хеш теги содержимого контейнера
+      type: string
+      maxLength: 512
+      example: "ОТВЁРТКА, ШУРУПЫ"
+
+Warehousing.Containers.UserAPI.Response.Model.ContainerList:
+  description: DTO - список контейнеров
+  type: object
+  required:
+    - items
+    - total
+  properties:
+    items:
+      description: Список записей ограниченный фильтром и pageSize
+      type: array
+      items:
+        $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
+    total:
+      $ref: "#/components/schemas/App.Field.ListPager.Total"
+
+Warehousing.Containers.UserAPI.Response.Model.Container:
+  description: DTO - контейнер
+  type: object
+  required:
+    - code
+    - tags
+    - createdAt
+    - updatedAt
+  properties:
+    code:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+    tags:
+      description: Хеш теги содержимого контейнера
+      type: string
+      maxLength: 512
+      example: "ОТВЁРТКА, ШУРУПЫ"
+    createdAt:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updatedAt:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

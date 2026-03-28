@@ -19,6 +19,6 @@ type (
 	// MaterialTypeListResponse - comment struct.
 	MaterialTypeListResponse struct {
 		Items []entity.MaterialType `json:"items"`
-		Total uint64                `json:"total"`
+		Total int                   `json:"total"`
 	}
 )

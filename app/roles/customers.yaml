@@ -1,7 +1,0 @@
----
-privileges:
-  - api/customers
-
-permissions:
-  - modAuth
-  - modFileStation

@@ -21,7 +21,7 @@ func initPaperColorController(
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.PaperColor{})
 	if err != nil {

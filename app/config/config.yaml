@@ -8,25 +8,19 @@ debugging:
   debug: true
   authorized_user:
     id: "137b652a-2380-480f-bb95-3c78183f68f3"
-    realm: "" # "printshop/customers"
+    realm: "" # "printshop/users"
     kind: "standard" # "pro"
     lang: "ru-RU"
   unexpected_http_status: 599 # instead of http.StatusInternalServerError for unprocessed (unwrapped) errors
   error_caller:
     is_enabled: true
     depth: 2
+    show_func: false
     upper_bounds:
-      - github.com/mondegor/go-sysmess/errors/runtimeerr.(*proto).New
-      - github.com/mondegor/go-sysmess/errors/runtimeerr.(*proto).WithDetails
-      - github.com/mondegor/go-sysmess/errors/runtimeerr.(*proto).WithError
-      - github.com/mondegor/go-sysmess/errors/runtimeerr.(*proto).Wrap
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).begin
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Exec
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRow).Scan
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Err
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
-      - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
+      - github.com/mondegor/go-sysmess/errors/runtime
+      - github.com/mondegor/go-sysmess/errors/helper
+      - github.com/mondegor/go-storage/mrpostgres
+      - github.com/mondegor/go-storage/mrpostgres/db
 
 logger:
   level: debug # info, warn, error
@@ -104,6 +98,7 @@ cors:
     - Authorization
     - X-Correlation-Id
     - X-Idempotency-Key
+    - X-Use-Cookie
   exposed_headers:
     - X-Request-Id
   allow_credentials: true
@@ -151,35 +146,6 @@ access_control:
           max_attempts: 3
           max_resends: 2
           # min_resend_time: 2m
-    - name: "printshop/customers"
-      auth_token:
-        access_type: jwt
-        access_expiry: 168h # tmp -> 60m
-        refresh_expiry: 4320h # 180 days
-        length: 64
-      user_kinds:
-        - name: standard
-          roles:
-            - customers
-          session_max: 4
-        - name: pro
-          roles:
-            - customers
-            - customers/pro
-          session_max: 8
-      register_user_kind: standard
-      operation_confirm:
-        token_length: 64
-        code_length: 4
-        # session_expiry: 10m
-        send_by_email:
-          max_attempts: 3
-          # max_resends: 8
-          # min_resend_time: 1m
-        send_by_phone:
-          max_attempts: 3
-          # max_resends: 2
-          min_resend_time: 3m
     - name: "printshop/providers"
       auth_token:
         access_type: jwt
@@ -209,6 +175,30 @@ access_control:
           # max_attempts: 5
           # max_resends: 2
           # min_resend_time: 2m
+    - name: "printshop/users"
+      auth_token:
+        access_type: jwt
+        access_expiry: 168h # tmp -> 60m
+        refresh_expiry: 4320h # 180 days
+        length: 64
+      user_kinds:
+        - name: standard
+          roles:
+            - users
+          session_max: 4
+      register_user_kind: standard
+      operation_confirm:
+        token_length: 64
+        code_length: 4
+        # session_expiry: 10m
+        send_by_email:
+          max_attempts: 3
+          # max_resends: 8
+          # min_resend_time: 1m
+        send_by_phone:
+          max_attempts: 3
+          # max_resends: 2
+          min_resend_time: 3m
   action_groups:
     - name: public-api
       base_path: "/"
@@ -219,23 +209,22 @@ access_control:
     - name: admin-api
       base_path: "/backend/"
       privilege: api/admin
-    - name: customer-api
+    - name: user-api
       base_path: "/user/"
-      privilege: api/customers
+      privilege: api/users
     - name: provider-api
       base_path: "/prov/"
       privilege: api/providers
   roles_dir_path: "./roles"
   roles:
     - administrators # will be searched for administrators.yaml in dir_path and etc
-    - customers
-    - customers/pro
     - providers
     - providers/pro
+    - users
   privileges:
     - api/admin
-    - api/customers
     - api/providers
+    - api/users
   permissions:
     - modAuth
     - modCatalogBox
@@ -250,6 +239,7 @@ access_control:
     - modDictionariesPrintFormat
     - modFileStation
     - modProviderAccounts
+    - modWarehousing
   operation_confirm: # settings by default
     token_length: 80
     code_length: 6

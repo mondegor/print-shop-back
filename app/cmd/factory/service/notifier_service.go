@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/mondegor/go-components/mrnotifier/notifier/entity"
 	"github.com/mondegor/go-components/mrnotifier/notifier/service/produce"
 	"github.com/mondegor/go-components/wire/mrmailer"
 	"github.com/mondegor/go-components/wire/mrnotifier/processor"
@@ -38,12 +39,12 @@ func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
 			Name:       serviceNotifierQueueTableName,
 			PrimaryKey: serviceNotifierPrimaryKey,
 		},
-		produce.WithRetryAttempts(opts.Cfg.TaskSchedule.Notifier.SendRetryAttempts),
+		produce.WithRetryAttempts(int16(opts.Cfg.TaskSchedule.Notifier.SendRetryAttempts)),
 	)
 }
 
 // InitNotifierProcessorService - создаёт сервис для обработки уведомлений и связанных с ним задачи.
-func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor {
+func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[entity.Note] {
 	mrlog.Info(opts.Logger, "Create and init notice processor service")
 
 	return processor.InitService(
@@ -64,17 +65,17 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor {
 		serviceNotifierTemplateVarsTableName,
 		processor.WithDefaultLang(opts.Cfg.Localization.Languages[0]),
 		processor.WithNoticeProcessorOpts(
-			consume.WithCaptionPrefix("Notifier/"),
-			consume.WithReadyTimeout(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadyTimeout),
-			consume.WithReadPeriod(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadPeriod),
-			consume.WithConsumerTimeout(
+			consume.WithCaptionPrefix[entity.Note]("Notifier/"),
+			consume.WithReadyTimeout[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadyTimeout),
+			consume.WithReadPeriod[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadPeriod),
+			consume.WithConsumerTimeout[entity.Note](
 				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerReadTimeout,
 				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerWriteTimeout,
 			),
-			consume.WithHandlerTimeout(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.HandlerTimeout),
-			consume.WithQueueSize(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.QueueSize),
-			consume.WithWorkersCount(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.WorkersCount),
-			consume.WithSignalExecuteHandler(
+			consume.WithHandlerTimeout[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.HandlerTimeout),
+			consume.WithQueueSize[entity.Note](int(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.QueueSize)),
+			consume.WithWorkersCount[entity.Note](int(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.WorkersCount)),
+			consume.WithSignalExecuteHandler[entity.Note](
 				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.NotificationChannel),
 			),
 		),
@@ -100,10 +101,10 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceNotifierPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Notifier/"),
-		scheduler.WithChangeBatchSize(opts.Cfg.TaskSchedule.Notifier.ChangeQueueBatchSize),
+		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskSchedule.Notifier.ChangeQueueBatchSize)),
 		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Notifier.ChangeRetryTimeout),
 		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Notifier.ChangeRetryDelayed),
-		scheduler.WithCleanBatchSize(opts.Cfg.TaskSchedule.Notifier.CleanQueueBatchSize),
+		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskSchedule.Notifier.CleanQueueBatchSize)),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),

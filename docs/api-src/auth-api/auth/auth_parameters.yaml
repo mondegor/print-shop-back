@@ -7,3 +7,12 @@ Auth.Request.Cookie.Web.RefreshToken:
     minLength: 64
     maxLength: 128
   example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
+
+Auth.Request.Header.Web.UseCookie:
+  description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
+  name: X-Use-Cookie
+  in: header
+  required: false
+  schema:
+    type: boolean
+  example: true

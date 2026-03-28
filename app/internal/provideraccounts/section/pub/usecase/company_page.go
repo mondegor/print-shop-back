@@ -23,14 +23,14 @@ func NewCompanyPage(
 ) *CompanyPage {
 	return &CompanyPage{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
 // GetItemByRewriteName - comment method.
 func (uc *CompanyPage) GetItemByRewriteName(ctx context.Context, rewriteName string) (entity.CompanyPage, error) {
 	if rewriteName == "" {
-		return entity.CompanyPage{}, errors.ErrUseCaseEntityNotFound
+		return entity.CompanyPage{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchByRewriteName(ctx, rewriteName)

@@ -1,9 +1,9 @@
 Auth.Security.Request.Model.ChangeEmail:
   type: object
   required:
-    - newEmail
+    - new_email
   properties:
-    newEmail:
+    new_email:
       description: Новый емаил пользователя
       type: string
       format: email
@@ -14,9 +14,9 @@ Auth.Security.Request.Model.ChangeEmail:
 Auth.Security.Request.Model.ChangePhone:
   type: object
   required:
-    - newPhone
+    - new_phone
   properties:
-    newPhone:
+    new_phone:
       description: Новый телефон пользователя
       type: string
       format: phone
@@ -27,9 +27,9 @@ Auth.Security.Request.Model.ChangePhone:
 Auth.Security.Request.Model.ChangePassword:
   type: object
   required:
-    - newPassword
+    - new_password
   properties:
-    newPassword:
+    new_password:
       description: Новый пароль пользователя
       type: string
       minLength: 8
@@ -39,9 +39,9 @@ Auth.Security.Request.Model.ChangePassword:
 Auth.Security.Request.Model.ApplyOperation:
   type: object
   required:
-    - operationToken
+    - operation_token
   properties:
-    operationToken:
+    operation_token:
       description: Токен операции, которая подтверждена пользователем
       type: string
       minLength: 64
@@ -51,9 +51,9 @@ Auth.Security.Request.Model.ApplyOperation:
 Auth.Security.Response.TotpGenerator:
   type: object
   required:
-    - totpUrl
+    - totp_url
   properties:
-    totpUrl:
+    totp_url:
       description: URL для добавления его в приложение 2FA аутентификации
       type: string
       minLength: 64

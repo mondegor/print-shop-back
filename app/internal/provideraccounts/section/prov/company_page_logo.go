@@ -5,13 +5,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrmodel"
 )
 
 type (
 	// CompanyPageLogoUseCase - comment interface.
 	CompanyPageLogoUseCase interface {
-		StoreFile(ctx context.Context, accountID uuid.UUID, image mrtype.Image) error
+		StoreFile(ctx context.Context, accountID uuid.UUID, image mrmodel.Image) error
 		RemoveFile(ctx context.Context, accountID uuid.UUID) error
 	}
 

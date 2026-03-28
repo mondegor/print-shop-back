@@ -39,7 +39,7 @@ func NewSheetPackInStack(algo *packinstack.AlgoSheet, eventEmitter mrevent.Emitt
 func (uc *SheetPackInStack) Calc(ctx context.Context, data dto.ParsedData) (model.SheetPackInStackResponse, error) {
 	result, err := uc.algo.Calc(data.SheetHeap, data.QuantityInStack)
 	if err != nil {
-		return model.SheetPackInStackResponse{}, errors.ErrUseCaseIncorrectInputData.New(err)
+		return model.SheetPackInStackResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
 	var (

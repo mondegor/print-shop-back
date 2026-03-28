@@ -19,26 +19,26 @@ Auth.Sessions.Request.Model.SessionHash:
 Auth.Sessions.Response.Model.UserSession:
   type: object
   required:
-    - sessionHash
-    - appName
-    - deviceName
-    - lastIP
+    - session_hash
+    - app_name
+    - device_name
+    - last_ip
     - location
-    - isCurrent
+    - is_current
   properties:
-    sessionHash:
+    session_hash:
       description: Идентификатор открытой сессии
       type: string
       example: "1f3bc817fb1d50cb"
-    appName:
+    app_name:
       description: Приложение, в котором открыта сессия
       type: string
       example: "Web, Firefox"
-    deviceName:
+    device_name:
       description: Название устройства, на котором открыта сессия
       type: string
       example: "Device 1"
-    lastIP:
+    last_ip:
       description: IP адрес последнего посещения
       type: string
       example: "95.165.01.01"
@@ -46,7 +46,7 @@ Auth.Sessions.Response.Model.UserSession:
       description: Местоположение на основе IP
       type: string
       example: "Moscow, Russia"
-    isCurrent:
+    is_current:
       description: Признак, что сессия является текущей
       type: boolean
       example: false

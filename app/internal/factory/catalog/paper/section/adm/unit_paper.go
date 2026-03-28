@@ -25,7 +25,7 @@ func initPaperController(
 	materialTypeAPI api.MaterialTypeAvailability,
 	paperColorAPI api.PaperColorAvailability,
 	paperFactureAPI api.PaperFactureAvailability,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.Paper{})
 	if err != nil {

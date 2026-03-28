@@ -21,7 +21,7 @@ CREATE TABLE printshop_global.notifier_queue (
     updated_at timestamp with time zone NOT NULL DEFAULT NOW() -- item with status = READY and updated_at > NOW() = delayed
 );
 
-CREATE INDEX ix_notifier_queue_item_status ON printshop_global.notifier_queue  (item_status, updated_at);
+CREATE INDEX ix_notifier_queue_item_status ON printshop_global.notifier_queue (item_status, updated_at);
 
 CREATE OR REPLACE FUNCTION printshop_global.event_notifier_queue_inserted()
 RETURNS trigger AS $$

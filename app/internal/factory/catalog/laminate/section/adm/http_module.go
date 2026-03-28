@@ -20,7 +20,7 @@ func InitHttpModule(
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,
 	materialTypeAPI api.MaterialTypeAvailability,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

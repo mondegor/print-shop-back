@@ -19,6 +19,6 @@ type (
 	// PaperColorListResponse - comment struct.
 	PaperColorListResponse struct {
 		Items []entity.PaperColor `json:"items"`
-		Total uint64              `json:"total"`
+		Total int                 `json:"total"`
 	}
 )

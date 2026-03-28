@@ -29,14 +29,14 @@ func NewQueryHistory(
 	return &QueryHistory{
 		storage:      storage,
 		eventEmitter: mrevent.EmitterWithSource(eventEmitter, entity.ModelNameQueryHistory),
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
 // GetItem - comment method.
 func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.QueryHistoryItem, error) {
 	if itemID == uuid.Nil {
-		return entity.QueryHistoryItem{}, errors.ErrUseCaseEntityNotFound
+		return entity.QueryHistoryItem{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)

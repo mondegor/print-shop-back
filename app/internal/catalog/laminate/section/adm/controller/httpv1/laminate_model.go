@@ -32,6 +32,6 @@ type (
 	// LaminateListResponse - comment struct.
 	LaminateListResponse struct {
 		Items []entity.Laminate `json:"items"`
-		Total uint64            `json:"total"`
+		Total int               `json:"total"`
 	}
 )

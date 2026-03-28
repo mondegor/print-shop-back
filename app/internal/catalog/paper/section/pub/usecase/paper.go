@@ -26,7 +26,7 @@ func NewPaper(
 ) *Paper {
 	return &Paper{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

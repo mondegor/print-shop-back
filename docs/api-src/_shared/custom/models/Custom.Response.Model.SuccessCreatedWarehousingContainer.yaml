@@ -1,0 +1,11 @@
+Custom.Response.Model.SuccessCreatedWarehousingContainer:
+  description: DTO результата создания контейнера
+  type: object
+  required:
+    - code
+  properties:
+    code:
+      description: Уникальный код контейнера в рамках аккаунта (модуль - Warehousing.Container)
+      type: string
+      maxLength: 8
+      example: "JKLOSH"

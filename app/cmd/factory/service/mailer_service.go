@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 
+	"github.com/mondegor/go-components/mrmailer/entity"
 	"github.com/mondegor/go-components/mrmailer/sendmessage"
 	"github.com/mondegor/go-components/mrmailer/sendmessage/adapter"
 	"github.com/mondegor/go-components/mrmailer/sendmessage/provider"
@@ -42,13 +43,13 @@ func InitMailerAPI(opts app.Options) *produce.MessageProducer {
 			Name:       serviceMailerQueueTableName,
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
-		produce.WithRetryAttempts(opts.Cfg.TaskSchedule.Mailer.SendRetryAttempts),
+		produce.WithRetryAttempts(int16(opts.Cfg.TaskSchedule.Mailer.SendRetryAttempts)),
 		produce.WithDelayCorrection(opts.Cfg.TaskSchedule.Mailer.SendDelayCorrection),
 	)
 }
 
 // InitMailerProcessorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
-func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, error) {
+func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[entity.Message], error) {
 	mrlog.Info(opts.Logger, "Create and init mail processor service")
 
 	mailSender := sendmessage.NewNopSender()
@@ -101,17 +102,17 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor, er
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
 		processor.WithMessageProcessorOpts(
-			consume.WithCaptionPrefix("Mailer/"),
-			consume.WithReadyTimeout(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadyTimeout),
-			consume.WithReadPeriod(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadPeriod),
-			consume.WithConsumerTimeout(
+			consume.WithCaptionPrefix[entity.Message]("Mailer/"),
+			consume.WithReadyTimeout[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadyTimeout),
+			consume.WithReadPeriod[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadPeriod),
+			consume.WithConsumerTimeout[entity.Message](
 				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerReadTimeout,
 				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerWriteTimeout,
 			),
-			consume.WithHandlerTimeout(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.HandlerTimeout),
-			consume.WithQueueSize(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.QueueSize),
-			consume.WithWorkersCount(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.WorkersCount),
-			consume.WithSignalExecuteHandler(
+			consume.WithHandlerTimeout[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.HandlerTimeout),
+			consume.WithQueueSize[entity.Message](int(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.QueueSize)),
+			consume.WithWorkersCount[entity.Message](int(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.WorkersCount)),
+			consume.WithSignalExecuteHandler[entity.Message](
 				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.NotificationChannel),
 			),
 		),
@@ -142,10 +143,10 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Mailer/"),
-		scheduler.WithChangeBatchSize(opts.Cfg.TaskSchedule.Mailer.ChangeQueueBatchSize),
+		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskSchedule.Mailer.ChangeQueueBatchSize)),
 		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Mailer.ChangeRetryTimeout),
 		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Mailer.ChangeRetryDelayed),
-		scheduler.WithCleanBatchSize(opts.Cfg.TaskSchedule.Mailer.CleanQueueBatchSize),
+		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskSchedule.Mailer.CleanQueueBatchSize)),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),

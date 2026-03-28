@@ -45,8 +45,8 @@ func NewPaperFacture(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 		),
 	}
 }
@@ -58,7 +58,7 @@ func (ht *PaperFacture) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: paperFactureListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: paperFactureItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: paperFactureItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: paperFactureItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: paperFactureItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: paperFactureItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -129,8 +129,8 @@ func (ht *PaperFacture) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *PaperFacture) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StorePaperFactureRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -143,7 +143,7 @@ func (ht *PaperFacture) Store(w http.ResponseWriter, r *http.Request) error {
 		Caption:    req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -189,7 +189,7 @@ func (ht *PaperFacture) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PaperFacture) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrPaperFactureNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

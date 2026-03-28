@@ -24,6 +24,6 @@ type (
 	// PrintFormatListResponse - comment struct.
 	PrintFormatListResponse struct {
 		Items []entity.PrintFormat `json:"items"`
-		Total uint64               `json:"total"`
+		Total int                  `json:"total"`
 	}
 )

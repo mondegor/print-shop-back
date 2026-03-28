@@ -21,7 +21,7 @@ func initElementTemplateController(
 	dbConnManager mrstorage.DBConnManager,
 	requestParser *validate.Parser,
 	responseFileSender mrserver.FileResponseSender,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) (mrserver.HttpController, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.ElementTemplate{})
 	if err != nil {

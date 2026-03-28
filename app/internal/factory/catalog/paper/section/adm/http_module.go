@@ -22,7 +22,7 @@ func InitHttpModule(
 	materialTypeAPI api.MaterialTypeAvailability,
 	paperColorAPI api.PaperColorAvailability,
 	paperFactureAPI api.PaperFactureAvailability,
-	pageSizeMax uint64,
+	pageSizeMax int,
 ) initing.HttpModule {
 	return initing.HttpModule{
 		Name:       module.Name,

@@ -23,7 +23,7 @@ func NewSubmitForm(
 ) *SubmitForm {
 	return &SubmitForm{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
@@ -40,7 +40,7 @@ func (uc *SubmitForm) GetList(ctx context.Context, params entity.SubmitFormParam
 // GetItemByRewriteName - comment method.
 func (uc *SubmitForm) GetItemByRewriteName(ctx context.Context, rewriteName string) (entity.SubmitForm, error) {
 	if rewriteName == "" {
-		return entity.SubmitForm{}, errors.ErrUseCaseEntityNotFound
+		return entity.SubmitForm{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchByRewriteName(ctx, rewriteName)

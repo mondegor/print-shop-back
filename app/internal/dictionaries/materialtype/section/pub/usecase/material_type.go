@@ -25,7 +25,7 @@ func NewMaterialType(
 ) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
-		errorWrapper: errors.NewUseCaseWrapper(),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 

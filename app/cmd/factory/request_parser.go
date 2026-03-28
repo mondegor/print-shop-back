@@ -51,11 +51,18 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		ItemStatus: parser.NewItemStatus(opts.Logger),
 		Uint64:     parser.NewUint64(pathFunc, opts.Logger),
 		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
+		ListCursor: parser.NewListCursor(
+			opts.Logger,
+			parser.ListCursorOptions{
+				LimitMax:     int(opts.Cfg.General.PageSizeMax),
+				LimitDefault: int(opts.Cfg.General.PageSizeDefault),
+			},
+		),
 		ListPager: parser.NewListPager(
 			opts.Logger,
 			parser.ListPagerOptions{
-				PageSizeMax:     opts.Cfg.General.PageSizeMax,
-				PageSizeDefault: opts.Cfg.General.PageSizeDefault,
+				PageSizeMax:     int(opts.Cfg.General.PageSizeMax),
+				PageSizeDefault: int(opts.Cfg.General.PageSizeDefault),
 			},
 		),
 		String:    parser.NewString(pathFunc, opts.Logger),
@@ -66,21 +73,21 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		Locale:    parser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
 		FileJson: parser.NewFile(
 			opts.Logger,
-			parser.WithFileMinSize(cfgValidation.Files.Json.MinSize),
-			parser.WithFileMaxSize(cfgValidation.Files.Json.MaxSize),
-			parser.WithFileMaxFiles(cfgValidation.Files.Json.MaxFiles),
+			parser.WithFileMinSize(int64(cfgValidation.Files.Json.MinSize)),
+			parser.WithFileMaxSize(int64(cfgValidation.Files.Json.MaxSize)),
+			parser.WithFileMaxFiles(int(cfgValidation.Files.Json.MaxFiles)),
 			parser.WithFileCheckRequestContentType(cfgValidation.Files.Json.CheckRequestContentType),
 			parser.WithFileAllowedMimeTypes(jsonMimeTypes),
 		),
 		ImageLogo: parser.NewImage(
 			opts.Logger,
-			parser.WithImageMaxWidth(cfgValidation.Images.Logo.MaxWidth),
-			parser.WithImageMaxHeight(cfgValidation.Images.Logo.MaxHeight),
+			parser.WithImageMaxWidth(int32(cfgValidation.Images.Logo.MaxWidth)),
+			parser.WithImageMaxHeight(int32(cfgValidation.Images.Logo.MaxHeight)),
 			parser.WithImageCheckBody(cfgValidation.Images.Logo.CheckBody),
 			parser.WithImageFileOpts(
-				parser.WithFileMinSize(cfgValidation.Images.Logo.File.MinSize),
-				parser.WithFileMaxSize(cfgValidation.Images.Logo.File.MaxSize),
-				parser.WithFileMaxFiles(cfgValidation.Images.Logo.File.MaxFiles),
+				parser.WithFileMinSize(int64(cfgValidation.Images.Logo.File.MinSize)),
+				parser.WithFileMaxSize(int64(cfgValidation.Images.Logo.File.MaxSize)),
+				parser.WithFileMaxFiles(int(cfgValidation.Images.Logo.File.MaxFiles)),
 				parser.WithFileCheckRequestContentType(cfgValidation.Images.Logo.File.CheckRequestContentType),
 				parser.WithFileAllowedMimeTypes(logoMimeTypes),
 			),
@@ -96,6 +103,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		parsers.ClientIP,
 		parsers.User,
 		parsers.Locale,
+		parsers.ListCursor,
 	)
 
 	parsers.ExtendParser = validate.NewExtendParser(

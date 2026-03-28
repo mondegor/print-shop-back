@@ -45,8 +45,8 @@ func NewMaterialType(
 		useCase:    useCase,
 		listSorter: listSorter,
 		errorWrapper: errors.NewCustomWrapper(
-			errors.ErrUseCaseEntityVersionConflict.Code(), "tagVersion",
-			errors.ErrUseCaseSwitchStatusRejected.Code(), "status",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
 		),
 	}
 }
@@ -58,7 +58,7 @@ func (ht *MaterialType) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: materialTypeListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: materialTypeItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: materialTypeItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: materialTypeItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: materialTypeItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: materialTypeItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -129,8 +129,8 @@ func (ht *MaterialType) Create(w http.ResponseWriter, r *http.Request) error {
 	)
 }
 
-// Store - comment method.
-func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
+// Save - comment method.
+func (ht *MaterialType) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreMaterialTypeRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
@@ -143,7 +143,7 @@ func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
 		Caption:    req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -189,7 +189,7 @@ func (ht *MaterialType) getRawItemID(r *http.Request) string {
 }
 
 func (ht *MaterialType) wrapError(err error, r *http.Request) error {
-	if errors.Is(err, errors.ErrUseCaseEntityNotFound) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrMaterialTypeNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

@@ -16,6 +16,7 @@ type (
 		request.ParserClientIP
 		request.ParserUser
 		request.ParserLocale
+		request.ParserListCursor
 	}
 
 	// Parser - comment struct.
@@ -28,6 +29,7 @@ type (
 		*parser.ClientIP
 		*parser.User
 		*parser.Locale
+		*parser.ListCursor
 	}
 )
 
@@ -41,15 +43,17 @@ func NewParser(
 	p6 *parser.ClientIP,
 	p7 *parser.User,
 	p8 *parser.Locale,
+	p9 *parser.ListCursor,
 ) *Parser {
 	return &Parser{
-		Int64:     p1,
-		Uint64:    p2,
-		String:    p3,
-		UUID:      p4,
-		Validator: p5,
-		ClientIP:  p6,
-		User:      p7,
-		Locale:    p8,
+		Int64:      p1,
+		Uint64:     p2,
+		String:     p3,
+		UUID:       p4,
+		Validator:  p5,
+		ClientIP:   p6,
+		User:       p7,
+		Locale:     p8,
+		ListCursor: p9,
 	}
 }

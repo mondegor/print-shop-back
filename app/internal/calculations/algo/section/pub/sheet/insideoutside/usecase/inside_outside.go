@@ -35,7 +35,7 @@ func NewSheetInsideOutside(eventEmitter mrevent.Emitter) *SheetInsideOutside {
 func (uc *SheetInsideOutside) CalcQuantity(ctx context.Context, data dto.ParsedData) (model.SheetInsideOutsideQuantityResponse, error) {
 	result, err := insideoutside.AlgoQuantity(data.In, data.Out)
 	if err != nil {
-		return model.SheetInsideOutsideQuantityResponse{}, errors.ErrUseCaseIncorrectInputData.New(err)
+		return model.SheetInsideOutsideQuantityResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "CalcQuantity", conv.Group{"data": data})
@@ -50,7 +50,7 @@ func (uc *SheetInsideOutside) CalcQuantity(ctx context.Context, data dto.ParsedD
 func (uc *SheetInsideOutside) CalcMax(ctx context.Context, data dto.ParsedData) (model.SheetInsideOutsideMaxResponse, error) {
 	result, err := insideoutside.AlgoMax(data.In, data.Out)
 	if err != nil {
-		return model.SheetInsideOutsideMaxResponse{}, errors.ErrUseCaseIncorrectInputData.New(err)
+		return model.SheetInsideOutsideMaxResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
 	uc.eventEmitter.Emit(ctx, "CalcMax", conv.Group{"data": data})
