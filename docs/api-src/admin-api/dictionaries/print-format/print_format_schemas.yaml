@@ -1,5 +1,5 @@
 Dictionaries.PrintFormats.AdminAPI.Request.Model.CreatePrintFormat:
-  description: DTO добавления нового печатного формата
+  description: DTO создания нового печатного формата
   type: object
   required:
     - caption

@@ -44,7 +44,7 @@ CREATE TABLE warehousing.stores (
     store_kind int2 NOT NULL, -- 1=NORMAL, 2=ENTRY_POINT, 3=EXIT_POINT
     store_code character varying(16) NOT NULL, -- (store|zone|room)-row-shelf/place
     store_volume jsonb NOT NULL, -- width, length, height
-    activity_status int2 NOT NULL, -- 1=ENABLED, 2=CLEANING_UP, 3=BLOCKED, 4=ARCHIVED
+    activity_status int2 NOT NULL, -- 1=ENABLED, 2=CLEANING_UP, 3=ARCHIVED
     containers_volume double precision NOT NULL, -- meter3 (auto calculated)
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NOT NULL DEFAULT NOW(),

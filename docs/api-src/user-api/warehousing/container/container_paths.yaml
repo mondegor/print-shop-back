@@ -4,9 +4,6 @@
     description: |-
       Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
 
-      Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
-      - code;
-
     operationId: getContainerList
     tags:
       - Warehousing.Container
@@ -18,7 +15,8 @@
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
       - $ref: "#/components/parameters/App.Request.Query.Language"
-      - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
+      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Query.Filter.SearchCode"
+      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Query.Filter.SearchTags"
 
     responses:
       "200":
@@ -35,7 +33,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   post:
-    summary: Метод добавления нового контейнера
+    summary: Метод создания нового контейнера
     description: |-
       Метод предназначен для создания информации о новом контейнере в БД
 
@@ -64,7 +62,7 @@
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Custom.Response.Model.SuccessCreatedWarehousingContainer"
+              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer"
       "400":
         $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
@@ -74,11 +72,13 @@
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-/v1/warehousing/containers/{containerCode}:
-  get:
-    summary: Метод получения контейнера
-    description: Метод предназначен для получения информации о контейнере и его содержимом из БД
-    operationId: getContainer
+/v1/warehousing/containers/groups:
+  post:
+    summary: Метод создания новой группы контейнеров
+    description: |-
+      Метод предназначен для создания информации о новой группе контейнеров в БД
+
+    operationId: createContainerGroup
     tags:
       - Warehousing.Container
 
@@ -89,28 +89,37 @@
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
       - $ref: "#/components/parameters/App.Request.Query.Language"
-      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.CreateContainerGroup"
 
     responses:
-      "200":
-        description: Получена информация о контейнере
+      "201":
+        description: Информация о группе контейнеров успешно добавлена
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
+              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
         $ref: "#/components/responses/App.ResponseJson.Error403"
-      "404":
-        $ref: "#/components/responses/App.ResponseJson.Error404"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
-  delete:
-    summary: Метод удаления контейнера
-    description: Метод предназначен для удаления информации о контейнере из БД
-    operationId: removeContainer
+/v1/warehousing/containers/tags:
+  patch:
+    summary: Метод обновления тегов контейнера
+    description: |-
+      Метод предназначен для обновления тегов указанного контейнера в БД
+
+    operationId: saveContainerTags
     tags:
       - Warehousing.Container
 
@@ -121,16 +130,26 @@
       - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
       - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
       - $ref: "#/components/parameters/App.Request.Query.Language"
-      - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Path.ContainerCode"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.SaveContainerTags"
 
     responses:
-      "204":
-        description: Информация о контейнере успешно удалена
+      "201":
+        description: Теги контейнера успешно обновлены
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessSavedItem"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
       "401":
         $ref: "#/components/responses/App.ResponseJson.Error401"
       "403":
         $ref: "#/components/responses/App.ResponseJson.Error403"
-      "404":
-        $ref: "#/components/responses/App.ResponseJson.Error404"
       "500":
         $ref: "#/components/responses/App.ResponseJson.Error5XX"

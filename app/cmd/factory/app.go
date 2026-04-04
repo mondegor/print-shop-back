@@ -60,6 +60,7 @@ func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 			Tracer:          tracer,
 			TraceManager:    traceManager,
 			OpenedResources: xio.NewCloseManager(logger),
+			DebugFunc:       InitDebugInfo(cfg.Debugging.Debug),
 		},
 	)
 }

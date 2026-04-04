@@ -1,9 +1,19 @@
-Warehousing.Containers.UserAPI.Request.Path.ContainerCode:
-  description: Уникальный код контейнера
-  name: containerCode
-  in: path
-  required: true
+Warehousing.Containers.UserAPI.Request.Query.Filter.SearchCode:
+  description: Код контейнера
+  name: query
+  in: query
+  required: false
   schema:
     type: string
-    minimum: 4
-  example: "JKLOSH"
+    maxLength: 32
+  example: "E-48"
+
+Warehousing.Containers.UserAPI.Request.Query.Filter.SearchTags:
+  description: Список тегов через ","
+  name: tags
+  in: query
+  required: false
+  schema:
+    type: string
+    maxLength: 256
+  example: "КУРТКИ,ОТВЁРТКИ"

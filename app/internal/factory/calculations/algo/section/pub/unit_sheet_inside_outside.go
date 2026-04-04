@@ -6,7 +6,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/usecase"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initSheetInsideOutsideController(

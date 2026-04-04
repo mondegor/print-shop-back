@@ -11,8 +11,8 @@ import (
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"github.com/mondegor/print-shop-back/pkg/transport/model"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -78,7 +78,7 @@ func (ht *QueryHistory) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		model.SuccessCreatedItemResponse{
 			ItemID: itemID.String(),
 		},
 	)

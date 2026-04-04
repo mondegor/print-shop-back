@@ -8,13 +8,13 @@
       - article;
       - caption;
 
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
       Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
 
     operationId: getBoxList
     tags:

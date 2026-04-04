@@ -3,7 +3,7 @@ App.ResponseJson.Error400:
   content:
     application/json;charset=UTF-8:
       schema:
-        $ref: "#/components/schemas/App.Response.Model.ErrorList"
+        $ref: "#/components/schemas/App.Response.Model.Error400"
 
 App.ResponseJson.Error404:
   description: Запрашиваемый ресурс не был найден

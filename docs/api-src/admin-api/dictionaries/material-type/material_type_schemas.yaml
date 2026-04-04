@@ -1,5 +1,5 @@
 Dictionaries.MaterialTypes.AdminAPI.Request.Model.CreateMaterialType:
-  description: DTO добавления нового типа материала
+  description: DTO создания нового типа материала
   type: object
   required:
     - caption

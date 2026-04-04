@@ -4,7 +4,7 @@ Controls.SubmitForms.AdminAPI.Field.ElementRequired:
   example: true
 
 Controls.SubmitForms.AdminAPI.Request.Model.CreateFormElement:
-  description: DTO добавления элемента формы
+  description: DTO создания элемента формы
   type: object
   required:
     - formId

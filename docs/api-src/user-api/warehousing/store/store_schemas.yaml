@@ -1,0 +1,58 @@
+Warehousing.Stores.UserAPI.Response.Model.StoreList:
+  description: DTO - список мест хранения
+  type: object
+  required:
+    - stores
+    - cursor
+    - has_next
+  properties:
+    stores:
+      description: Список мест хранения ограниченный фильтром и limit
+      type: array
+      items:
+        $ref: "#/components/schemas/Warehousing.Stores.UserAPI.Response.Model.Store"
+    cursor:
+      $ref: "#/components/schemas/App.Field.ListCursor.Cursor"
+    has_next:
+      $ref: "#/components/schemas/App.Field.ListCursor.HasNext"
+
+Warehousing.Stores.UserAPI.Response.Model.Store:
+  description: DTO - место хранения
+  type: object
+  required:
+    - id
+    - tag_version
+    - territory_id
+    - kind
+    - code
+    - status
+    - containers_volume
+    - fullness
+    - created_at
+    - updated_at
+  properties:
+    id: # storeId
+      $ref: "#/components/schemas/Custom.Field.Warehousing.StoreID"
+    tag_version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    territory_id:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.TerritoryID"
+    kind:
+      $ref: "#/components/schemas/Custom.Enum.Warehousing.StoreKind"
+    code:
+      allOf:
+        - $ref: "#/components/schemas/App.Field.Caption"
+        - maxLength: 16
+        - example: "E-48-23/121"
+    volume:
+      $ref: "#/components/schemas/App.Response.Model.Volume"
+    status:
+      $ref: "#/components/schemas/Custom.Enum.Warehousing.StoreStatus"
+    containers_volume:
+      $ref: "#/components/schemas/App.Field.Measure.Meter3"
+    fullness:
+      $ref: "#/components/schemas/App.Field.Percent"
+    created_at:
+      $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+    updated_at:
+      $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"

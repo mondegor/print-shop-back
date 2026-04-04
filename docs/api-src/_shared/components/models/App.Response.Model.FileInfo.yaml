@@ -24,11 +24,11 @@ App.Response.Model.FileInfo:
       description: URL файла
       type: string
       maxLength: 128
-      example: "http://localhost/path/file-name.zip"
+      example: "https://local.host/path/file-name.zip"
     size:
       description: Размер файла в байтах
       type: integer
-      # format: uint64
+      # format: int64
       example: 7
     createdAt:
       description: Дата и время создания файла (UTC)

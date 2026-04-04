@@ -82,7 +82,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 	}
 
 	if countVariants == 0 {
-		return nil, errors.ErrIncorrectInputData.New(errV1.Error())
+		return nil, errors.ErrIncorrectInputData.New(errV1)
 	}
 
 	results := make(model.SheetImpositionVariantsResponse, 0, countVariants)

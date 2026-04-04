@@ -6,13 +6,13 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	repository2 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/cmd/repository"
-	usecase3 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/cmd/usecase"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/controller/httpv1"
+	repository2 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/repository"
+	usecase3 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/usecase"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/repository"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/service"
+	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/transport/httpv1"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/usecase"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initContainerController(

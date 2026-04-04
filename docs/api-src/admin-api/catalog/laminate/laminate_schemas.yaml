@@ -1,5 +1,5 @@
 Catalog.Laminates.AdminAPI.Request.Model.CreateLaminate:
-  description: DTO добавления новой ламината
+  description: DTO создания нового ламината
   type: object
   required:
     - article

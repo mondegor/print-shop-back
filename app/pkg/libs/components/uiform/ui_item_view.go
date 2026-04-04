@@ -26,8 +26,9 @@ type (
 	UIItemView uint8
 )
 
+//nolint:gochecknoglobals
 var (
-	uiItemViewName = map[UIItemView]string{ //nolint:gochecknoglobals
+	uiItemViewName = map[UIItemView]string{
 		UIItemViewBlock: "BLOCK",
 		UIItemViewCheck: "CHECK",
 		UIItemViewCombo: "COMBO",
@@ -37,7 +38,7 @@ var (
 		UIItemViewText:  "TEXT",
 	}
 
-	uiItemViewValue = map[string]UIItemView{ //nolint:gochecknoglobals
+	uiItemViewValue = map[string]UIItemView{
 		"BLOCK": UIItemViewBlock,
 		"CHECK": UIItemViewCheck,
 		"COMBO": UIItemViewCombo,

@@ -3,4 +3,4 @@ App.Field.Email:
   type: string
   format: email
   maxLength: 128
-  example: "email@localhost.sample"
+  example: "email@local.host"

@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"github.com/mondegor/print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -96,7 +96,7 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
@@ -136,7 +136,7 @@ func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
 
 // Move - comment method.
 func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
-	req := view.MoveItemRequest{}
+	req := model.MoveItemRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
 		return err

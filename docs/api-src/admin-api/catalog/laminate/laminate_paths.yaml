@@ -8,13 +8,13 @@
       - article;
       - caption;
 
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
       Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
 
     operationId: getLaminateList
     tags:
@@ -54,7 +54,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   post:
-    summary: Метод добавления нового ламината
+    summary: Метод создания нового ламината
     description: |-
       Метод предназначен для создания информации о новом ламинате в БД
 

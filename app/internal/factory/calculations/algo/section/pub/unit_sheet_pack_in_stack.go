@@ -7,7 +7,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/usecase"
 	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/packinstack"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initSheetPackInStackController(

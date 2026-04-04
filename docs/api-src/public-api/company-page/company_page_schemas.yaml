@@ -11,9 +11,9 @@ CompanyPage.PublicAPI.Response.Model.CompanyPage:
       description: URL логотипа компании
       type: string
       maxLength: 128
-      example: "https://localhost/company-logo.png"
+      example: "https://local.host/company-logo.png"
     siteUrl:
       description: URL страницы сайта компании
       type: string
       maxLength: 256
-      example: "https://site.localhost/"
+      example: "https://site.local.host/"

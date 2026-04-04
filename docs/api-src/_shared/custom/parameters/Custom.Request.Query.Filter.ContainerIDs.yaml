@@ -1,0 +1,8 @@
+Custom.Request.Query.Filter.ContainerIDs:
+  description: Список идентификаторов контейнеров через ","
+  name: container_ids
+  in: query
+  required: false
+  schema:
+    type: string
+  example: "1,2,3"

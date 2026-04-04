@@ -22,14 +22,15 @@ type (
 	Position uint8
 )
 
+//nolint:gochecknoglobals
 var (
-	positionName = map[Position]string{ //nolint:gochecknoglobals
+	positionName = map[Position]string{
 		PositionTop:    "TOP",
 		PositionOnside: "ONSIDE",
 		PositionBottom: "BOTTOM",
 	}
 
-	positionValue = map[string]Position{ //nolint:gochecknoglobals
+	positionValue = map[string]Position{
 		"TOP":    PositionTop,
 		"ONSIDE": PositionOnside,
 		"BOTTOM": PositionBottom,

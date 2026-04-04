@@ -1,5 +1,5 @@
 Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttachment:
-  description: DTO добавления нового json шаблона элемента (multipart)
+  description: DTO создания нового json шаблона элемента (multipart)
   type: object
   required:
     - elementTemplate
@@ -11,7 +11,7 @@ Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplateWithAttach
       $ref: "#/components/schemas/App.Response.Model.JsonFile"
 
 Controls.ElementTemplates.AdminAPI.Request.Model.CreateElementTemplate:
-  description: DTO мета данных json шаблона элемента
+  description: DTO создания мета данных json шаблона элемента
   type: object
   required:
     - paramName

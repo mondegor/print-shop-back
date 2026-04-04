@@ -7,7 +7,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/controller/httpv1"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initPaperColorController(

@@ -1,0 +1,6 @@
+Custom.Field.Warehousing.LocationID:
+  description: Идентификатор места хранения / группового контейнера (модуль - Warehousing)
+  type: integer
+  # format: uint64
+  minimum: 1
+  example: 2

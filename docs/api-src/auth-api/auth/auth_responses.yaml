@@ -32,7 +32,20 @@ Auth.ResponseJson.Error400:
         required:
           - errors
         properties:
+          status:
+            description: Код HTTP статуса (дублируется из заголовка)
+            type: integer
+            example: 400
+          instance:
+            description: Метод и URL запроса
+            type: string
+            example: "PUSH /users/123456"
           operation_status:
             $ref: "#/components/schemas/Auth.Response.Model.ConfirmOperationStatus"
           errors:
             $ref: "#/components/schemas/App.Response.Model.ErrorList"
+          time:
+            description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+            type: string
+            format: date-time
+            example: "2023-01-01T12:00:00.000+03:00"

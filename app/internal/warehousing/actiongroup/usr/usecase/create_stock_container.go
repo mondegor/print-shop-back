@@ -67,13 +67,13 @@ func NewCreateStockContainer(
 }
 
 // Execute - comment method.
-func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateStockContainer) (id dto.CreateStockContainerResult, err error) {
+func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateContainer) (id dto.CreateContainerResult, err error) {
 	if item.AccountID == uuid.Nil {
-		return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("accountId is empty")
+		return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("accountId is empty")
 	}
 
 	if item.LocationID == 0 {
-		return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("locationId is zero")
+		return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("locationId is zero")
 	}
 
 	if item.Quantity < 1 {
@@ -84,20 +84,20 @@ func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateStoc
 	case locationkind.Container:
 	case locationkind.Group:
 		if item.Quantity != 1 {
-			return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("quantity for group must be only one")
+			return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("quantity for group must be only one")
 		}
 
 		// ограничение на вложение групповых контейнеров
 		if !locationkind.Is(item.LocationID, locationkind.Store) {
-			return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("G/ container add error") // user error
+			return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("G/ container add error") // user error
 		}
 	default:
-		return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("unexpected container kind")
+		return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("unexpected container kind")
 	}
 
 	if item.Code == "" {
 		if item.Code, err = uc.serviceSequence.ContainerCode(ctx, item.AccountID, item.Kind); err != nil {
-			return dto.CreateStockContainerResult{}, uc.errorWrapper.Wrap(err) // system error
+			return dto.CreateContainerResult{}, uc.errorWrapper.Wrap(err) // system error
 		}
 	}
 
@@ -121,16 +121,16 @@ func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateStoc
 
 	for {
 		if err = uc.serviceStore.CheckAvailability(ctx, item.AccountID, item.LocationID); err != nil {
-			return dto.CreateStockContainerResult{}, uc.errorWrapper.Wrap(err) // user error
+			return dto.CreateContainerResult{}, uc.errorWrapper.Wrap(err) // user error
 		}
 
 		c.Marker, err = uc.storageContainer.FetchMaxMarker(ctx, item.AccountID, item.Code)
 		if err != nil && !errors.Is(err, errors.ErrEventStorageNoRecordFound) {
-			return dto.CreateStockContainerResult{}, uc.errorWrapper.Wrap(err)
+			return dto.CreateContainerResult{}, uc.errorWrapper.Wrap(err)
 		}
 
 		if c.Marker >= math.MaxInt16 {
-			return dto.CreateStockContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("marker has reached its maximum value") // user error
+			return dto.CreateContainerResult{}, errors.ErrInternalIncorrectInputData.WithDetails("marker has reached its maximum value") // user error
 		}
 
 		c.Marker++ // для нового контейнера всегда присваиваем новый маркер
@@ -178,10 +178,10 @@ func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateStoc
 				continue
 			}
 
-			return dto.CreateStockContainerResult{}, err
+			return dto.CreateContainerResult{}, err
 		}
 
-		return dto.CreateStockContainerResult{
+		return dto.CreateContainerResult{
 			ID:      s.ContainerID,
 			Code:    c.Code,
 			Marker:  c.Marker,

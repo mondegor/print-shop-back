@@ -1,5 +1,5 @@
 App.Request.Query.ListPager.PageIndex:
-  description: Индекс страницы списка с записями
+  description: Индекс страницы с записями
   name: pageIndex
   in: query
   required: false
@@ -7,12 +7,11 @@ App.Request.Query.ListPager.PageIndex:
     type: integer
     # format: uint64
     minimum: 0
-    maximum: 1024
     default: 0
   example: 2
 
 App.Request.Query.ListPager.PageSize:
-  description: Количество записей на страницу списка
+  description: Количество записей на страницу
   name: pageSize
   in: query
   required: false
@@ -20,6 +19,6 @@ App.Request.Query.ListPager.PageSize:
     type: integer
     # format: uint64
     minimum: 1
-    maximum: 1024
+    maximum: 1000
     default: 50
   example: 70

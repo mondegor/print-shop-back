@@ -8,13 +8,13 @@
       - article;
       - caption;
 
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
       Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
 
     operationId: getPaperList
     tags:
@@ -29,8 +29,8 @@
       - $ref: "#/components/parameters/App.Request.Query.Language"
       - $ref: "#/components/parameters/App.Request.Query.Filter.SearchText"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.MaterialTypeIDs"
-      - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperColorIDs"
-      - $ref: "#/components/parameters/Catalog.Papers.AdminAPI.Request.Query.Filter.PaperFactureIDs"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.PaperColorIDs"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.PaperFactureIDs"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMin"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.WidthMax"
       - $ref: "#/components/parameters/Custom.Request.Query.Filter.HeightMin"

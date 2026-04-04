@@ -24,21 +24,21 @@ App.Response.Model.ImageInfo:
       description: URL изображения
       type: string
       maxLength: 128
-      example: "http://localhost/path/image-name.jpg"
+      example: "https://local.host/path/image-name.jpg"
     width:
       description: Ширина изображения (px)
       type: integer
-      # format: uint64
+      # format: int32
       example: 1024
     height:
       description: Высота изображения (px)
       type: integer
-      # format: uint64
+      # format: int32
       example: 768
     size:
       description: Размер файла изображения в байтах
       type: integer
-      # format: uint64
+      # format: int64
       example: 7
     createdAt:
       description: Дата и время создания изображения (UTC)

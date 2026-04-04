@@ -16,7 +16,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
 	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"github.com/mondegor/print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -166,7 +166,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
@@ -208,7 +208,7 @@ func (ht *ElementTemplate) Save(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	req := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
 		return err

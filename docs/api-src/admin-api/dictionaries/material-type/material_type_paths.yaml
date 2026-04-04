@@ -7,13 +7,13 @@
       Фильтр `App.Request.Query.Filter.SearchText` использует для поиска следующие поля:
       - caption;
 
+      Возможные значения `App.Request.Query.ListPager.PageSize`:
+      - от 1 до 1000 (default: 50)
+
       Возможные значения `App.Request.Query.ListSorter.SortColumn`:
       - caption,default,asc;
       - createdAt;
       - updatedAt;
-
-      Возможные значения `App.Request.Query.ListPager.PageSize`:
-      - от 1 до 1000 (default: 50)
 
     operationId: getMaterialTypeList
     tags:
@@ -48,7 +48,7 @@
         $ref: "#/components/responses/App.ResponseJson.Error5XX"
 
   post:
-    summary: Метод добавления нового типа материала
+    summary: Метод создания нового типа материала
     description: |-
       Метод предназначен для создания информации о новом типе материала в БД
 

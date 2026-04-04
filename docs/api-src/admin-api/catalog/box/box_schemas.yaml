@@ -1,5 +1,5 @@
 Catalog.Boxes.AdminAPI.Request.Model.CreateBox:
-  description: DTO добавления новой упаковочной коробки
+  description: DTO создания новой упаковочной коробки
   type: object
   required:
     - article

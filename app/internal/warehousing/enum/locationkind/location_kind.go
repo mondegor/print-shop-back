@@ -52,7 +52,11 @@ func ByID(id uint64) Enum {
 
 // String - возвращает значение в виде строки.
 func (e Enum) String() string {
-	return enumKeys[e]
+	if v, ok := enumKeys[e]; ok {
+		return v
+	}
+
+	return "UNKNOWN"
 }
 
 // MarshalJSON - переводит enum значение в строковое представление.

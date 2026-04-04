@@ -1,6 +1,6 @@
 Custom.Request.Query.Filter.MaterialTypeIDs:
   description: Список идентификаторов типов материала через ","
-  name: types
+  name: material_type_ids
   in: query
   required: false
   schema:

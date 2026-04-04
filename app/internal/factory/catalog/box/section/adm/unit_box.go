@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initBoxController(

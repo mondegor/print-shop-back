@@ -12,8 +12,8 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
 	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"github.com/mondegor/print-shop-back/pkg/transport/model"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -131,7 +131,7 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
@@ -166,7 +166,7 @@ func (ht *Laminate) Save(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Laminate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	req := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
 		return err

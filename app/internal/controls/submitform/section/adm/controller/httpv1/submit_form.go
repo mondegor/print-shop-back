@@ -17,7 +17,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"github.com/mondegor/print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -145,7 +145,7 @@ func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		model.SuccessCreatedItemResponse{
 			ItemID: itemID.String(),
 		},
 	)
@@ -176,7 +176,7 @@ func (ht *SubmitForm) Save(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *SubmitForm) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	req := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
 	if err := ht.parser.Validate(r, &req); err != nil {
 		return err

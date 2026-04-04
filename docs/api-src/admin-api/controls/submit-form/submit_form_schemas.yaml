@@ -1,5 +1,5 @@
 Controls.SubmitForms.AdminAPI.Request.Model.CreateForm:
-  description: DTO добавления новой формы
+  description: DTO создания новой формы
   type: object
   required:
     - rewriteName

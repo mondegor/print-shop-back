@@ -12,7 +12,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initMaterialTypeController(

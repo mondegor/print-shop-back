@@ -40,6 +40,6 @@ ProviderAccounts.CompanyPages.AdminAPI.Response.Model.CompanyPage:
       description: URL страницы сайта компании
       type: string
       maxLength: 256
-      example: "https://site.localhost/"
+      example: "https://site.local.host/"
     status:
       $ref: "#/components/schemas/ProviderAccounts.CompanyPages.AdminAPI.Field.Status"

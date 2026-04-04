@@ -1,0 +1,154 @@
+/v1/warehousing/stocks:
+  get:
+    summary: Метод получения списка остатков контейнеров
+    description: |-
+      Метод предназначен для получения списка всех остатков контейнеров на местах хранения текущего аккаунта, сохраненных в БД
+
+    operationId: getStockList
+    tags:
+      - Warehousing.Stock
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.ContainerIDs"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.LocationIDs"
+      - $ref: "#/components/parameters/App.Request.Query.ListCursor.Cursor"
+      - $ref: "#/components/parameters/App.Request.Query.ListCursor.Limit"
+
+    responses:
+      "200":
+        description: Получен список остатков контейнеров
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Warehousing.Stocks.UserAPI.Response.Model.StockList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/warehousing/stocks/add-more:
+  post:
+    summary: Метод прибавления остатков контейнеру
+    description: |-
+      Метод предназначен для прибавления остатков указанному контейнеру и сохранения их в БД
+
+    operationId: addMoreStock
+    tags:
+      - Warehousing.Stock
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.AddMoreStock"
+
+    responses:
+      "201":
+        description: Остатки для контейнера успешно прибавлены
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/warehousing/stocks/move:
+  post:
+    summary: Метод перемещения остатков контейнера
+    description: |-
+      Метод предназначен для перемещения указанных остатков контейнера и сохранения их в БД
+
+    operationId: moveStock
+    tags:
+      - Warehousing.Stock
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.MoveStock"
+
+    responses:
+      "201":
+        description: Остатки контейнера успешно перенесены
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"
+
+/v1/warehousing/stocks/transfer:
+  post:
+    summary: Метод списания остатков
+    description: |-
+      Метод предназначен для списания указанных остатков контейнера и сохранения их в БД
+
+    operationId: transferStock
+    tags:
+      - Warehousing.Stock
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+
+    requestBody:
+      required: true
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.TransferStock"
+
+    responses:
+      "204":
+        description: Остатки контейнера успешно списаны
+      "400":
+        $ref: "#/components/responses/App.ResponseJson.Error400"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

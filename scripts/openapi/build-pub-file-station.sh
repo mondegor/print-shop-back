@@ -31,10 +31,11 @@ mrcmd_func_openapi_build_pub_file_station() {
   OPENAPI_COMPONENTS_PARAMETERS=(
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
-    # "${sharedDir}/components/parameters/App.Request.Header.CurrentPage.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Header.IdempotencyKey.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.Filter.SearchText.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.Filter.Statuses.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.ListCursor.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.ListPager.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
 
@@ -64,6 +65,8 @@ mrcmd_func_openapi_build_pub_file_station() {
     # "${sharedDir}/components/fields/App.Field.Int32.yaml"
     # "${sharedDir}/components/fields/App.Field.Int64.yaml"
     # "${sharedDir}/components/fields/App.Field.JsonData.yaml"
+    # "${sharedDir}/components/fields/App.Field.ListCursor.Cursor.yaml"
+    # "${sharedDir}/components/fields/App.Field.ListCursor.HasNext.yaml"
     # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
     # "${sharedDir}/components/fields/App.Field.OrderIndex.yaml"
     # "${sharedDir}/components/fields/App.Field.Percent.yaml"
@@ -106,6 +109,9 @@ mrcmd_func_openapi_build_pub_file_station() {
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemUint.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.SuccessSavedItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.TextFile.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.Volume.yaml"
 
     "${fileStationDir}/schemas.yaml"
   )

@@ -1,5 +1,5 @@
 Dictionaries.PaperColors.AdminAPI.Request.Model.CreatePaperColor:
-  description: DTO добавления нового цвета бумаги
+  description: DTO создания нового цвета бумаги
   type: object
   required:
     - caption

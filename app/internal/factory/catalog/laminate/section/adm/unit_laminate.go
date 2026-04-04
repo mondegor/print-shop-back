@@ -13,7 +13,7 @@ import (
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/repository"
 	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/usecase"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 func initLaminateController(

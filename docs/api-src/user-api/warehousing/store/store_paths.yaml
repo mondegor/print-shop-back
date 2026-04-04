@@ -1,0 +1,35 @@
+/v1/warehousing/stores:
+  get:
+    summary: Метод получения списка мест хранения
+    description: |-
+      Метод предназначен для получения списка всех мест хранения текущего аккаунта, сохраненных в БД
+
+    operationId: getStoreList
+    tags:
+      - Warehousing.Store
+
+    security:
+      - bearerAuth: []
+
+    parameters:
+      - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
+      - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
+      - $ref: "#/components/parameters/App.Request.Query.Language"
+      - $ref: "#/components/parameters/Warehousing.Stores.UserAPI.Request.Query.Filter.SearchCode"
+      - $ref: "#/components/parameters/Custom.Request.Query.Filter.TerritoryIDs"
+      - $ref: "#/components/parameters/App.Request.Query.ListCursor.Cursor"
+      - $ref: "#/components/parameters/App.Request.Query.ListCursor.Limit"
+
+    responses:
+      "200":
+        description: Получен список мест хранения
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: "#/components/schemas/Warehousing.Stores.UserAPI.Response.Model.StoreList"
+      "401":
+        $ref: "#/components/responses/App.ResponseJson.Error401"
+      "403":
+        $ref: "#/components/responses/App.ResponseJson.Error403"
+      "500":
+        $ref: "#/components/responses/App.ResponseJson.Error5XX"

@@ -30,7 +30,13 @@ mrcmd_func_openapi_build_int() {
   OPENAPI_COMPONENTS_PARAMETERS=(
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Header.IdempotencyKey.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.Filter.SearchText.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.Filter.Statuses.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.ListCursor.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.ListPager.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
   )
 
   OPENAPI_COMPONENTS_SCHEMAS=(

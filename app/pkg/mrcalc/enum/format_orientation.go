@@ -21,13 +21,14 @@ type (
 	Orientation uint8
 )
 
+//nolint:gochecknoglobals
 var (
-	orientationName = map[Orientation]string{ //nolint:gochecknoglobals
+	orientationName = map[Orientation]string{
 		FormatOrientationBook:  "BOOK",
 		FormatOrientationAlbum: "ALBUM",
 	}
 
-	orientationValue = map[string]Orientation{ //nolint:gochecknoglobals
+	orientationValue = map[string]Orientation{
 		"BOOK":  FormatOrientationBook,
 		"ALBUM": FormatOrientationAlbum,
 	}

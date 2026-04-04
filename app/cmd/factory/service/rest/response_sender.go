@@ -46,12 +46,6 @@ func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 		opts.Logger,
 		opts.RequestParsers.Locale,
 		statusMapper,
-		func(err error) string {
-			if opts.Cfg.Debugging.Debug {
-				return hint.DetailedError(err)
-			}
-
-			return ""
-		},
+		opts.DebugFunc,
 	), nil
 }

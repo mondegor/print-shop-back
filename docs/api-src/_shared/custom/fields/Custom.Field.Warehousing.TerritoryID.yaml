@@ -1,0 +1,6 @@
+Custom.Field.Warehousing.TerritoryID:
+  description: Идентификатор территории (модуль - Warehousing)
+  type: integer
+  # format: uint64
+  minimum: 1
+  example: 2

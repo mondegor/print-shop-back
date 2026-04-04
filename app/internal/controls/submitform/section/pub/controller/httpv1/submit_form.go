@@ -7,7 +7,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 const (

@@ -2,9 +2,9 @@ package module
 
 // Названия параметров фильтра используемых в URL.
 const (
-	ParamNameFilterCatalogPaperColorIDs   = "colors"
-	ParamNameFilterCatalogPaperFactureIDs = "factures"
-	ParamNameFilterCatalogPaperTypeIDs    = "types"
+	ParamNameFilterCatalogPaperColorIDs   = "color_ids"
+	ParamNameFilterCatalogPaperFactureIDs = "facture_ids"
+	ParamNameFilterCatalogPaperTypeIDs    = "material_type_ids"
 	ParamNameFilterDensityRange           = "density"
 	ParamNameFilterHeightRange            = "height"
 	ParamNameFilterLengthRange            = "length"

@@ -2,4 +2,4 @@ App.Field.ExternalURL:
   description: Ссылка на внешний ресурс (https, ftp, ...)
   type: string
   maxLength: 1024
-  example: "http://localhost/resource.html"
+  example: "https://local.host/resource.html"

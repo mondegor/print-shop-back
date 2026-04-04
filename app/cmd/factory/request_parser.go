@@ -14,7 +14,7 @@ import (
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/internal/app"
 	mrcalcvalidate "github.com/mondegor/print-shop-back/pkg/mrcalc/validate"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	validate2 "github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
@@ -50,7 +50,6 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		Int64:      parser.NewInt64(opts.Logger),
 		ItemStatus: parser.NewItemStatus(opts.Logger),
 		Uint64:     parser.NewUint64(pathFunc, opts.Logger),
-		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
 		ListCursor: parser.NewListCursor(
 			opts.Logger,
 			parser.ListCursorOptions{
@@ -65,12 +64,13 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 				PageSizeDefault: int(opts.Cfg.General.PageSizeDefault),
 			},
 		),
-		String:    parser.NewString(pathFunc, opts.Logger),
-		UUID:      parser.NewUUID(pathFunc, opts.Logger),
-		Validator: parser.NewValidator(mrjson.NewDecoder(), validator),
-		ClientIP:  parser.NewClientIP(opts.Logger),
-		User:      parser.NewUser(opts.Logger),
-		Locale:    parser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
+		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
+		String:     parser.NewString(pathFunc, opts.Logger),
+		UUID:       parser.NewUUID(pathFunc, opts.Logger),
+		Validator:  parser.NewValidator(mrjson.NewDecoder(), validator),
+		ClientIP:   parser.NewClientIP(opts.Logger),
+		User:       parser.NewUser(opts.Logger),
+		Locale:     parser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
 		FileJson: parser.NewFile(
 			opts.Logger,
 			parser.WithFileMinSize(int64(cfgValidation.Files.Json.MinSize)),
@@ -94,7 +94,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		),
 	}
 
-	parsers.Parser = validate.NewParser(
+	parsers.Parser = validate2.NewParser(
 		parsers.Int64,
 		parsers.Uint64,
 		parsers.String,
@@ -106,11 +106,11 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		parsers.ListCursor,
 	)
 
-	parsers.ExtendParser = validate.NewExtendParser(
+	parsers.ExtendParser = validate2.NewExtendParser(
 		parsers.Parser,
 		parsers.ItemStatus,
-		parsers.ListSorter,
 		parsers.ListPager,
+		parsers.ListSorter,
 	)
 
 	return parsers, nil

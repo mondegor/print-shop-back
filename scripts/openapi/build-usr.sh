@@ -3,7 +3,9 @@ mrcmd_func_openapi_build_usr() {
   local sectionDir="${1:?}" # sample: .../admin-api, .../public-api
   local sharedDir="${2:?}" # sample: .../_shared
 
-  local containerDir="${sectionDir}/warehousing/container"
+  local warehousingContainerDir="${sectionDir}/warehousing/container"
+  local warehousingStockDir="${sectionDir}/warehousing/stock"
+  local warehousingStoreDir="${sectionDir}/warehousing/store"
 
   # OPENAPI_VERSION="3.0.3"
 
@@ -17,11 +19,15 @@ mrcmd_func_openapi_build_usr() {
   )
 
   OPENAPI_TAGS=(
-    "${containerDir}/tags.yaml"
+    "${warehousingContainerDir}/tags.yaml"
+    "${warehousingStockDir}/tags.yaml"
+    "${warehousingStoreDir}/tags.yaml"
   )
 
   OPENAPI_PATHS=(
-    "${containerDir}/container_paths.yaml"
+    "${warehousingContainerDir}/container_paths.yaml"
+    "${warehousingStockDir}/stock_paths.yaml"
+    "${warehousingStoreDir}/store_paths.yaml"
   )
 
 #  OPENAPI_COMPONENTS_HEADERS=(
@@ -31,23 +37,21 @@ mrcmd_func_openapi_build_usr() {
   OPENAPI_COMPONENTS_PARAMETERS=(
     "${sharedDir}/components/parameters/App.Request.Header.AcceptLanguage.yaml"
     "${sharedDir}/components/parameters/App.Request.Header.CorrelationID.yaml"
-    # "${sharedDir}/components/parameters/App.Request.Header.CurrentPage.yaml"
+    # "${sharedDir}/components/parameters/App.Request.Header.IdempotencyKey.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Language.yaml"
     "${sharedDir}/components/parameters/App.Request.Query.Filter.SearchText.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.Filter.Statuses.yaml"
+    "${sharedDir}/components/parameters/App.Request.Query.ListCursor.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.ListPager.yaml"
     # "${sharedDir}/components/parameters/App.Request.Query.ListSorter.yaml"
 
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.DensityRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ElementDetailing.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.HeightRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LengthRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.MaterialTypeIDs.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.PriceRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WeightRange.yaml"
-    # "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.WidthRange.yaml"
+    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.ContainerIDs.yaml"
+    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.LocationIDs.yaml"
+    "${sharedDir}/custom/parameters/Custom.Request.Query.Filter.TerritoryIDs.yaml"
 
-    "${containerDir}/container_parameters.yaml"
+    "${warehousingContainerDir}/container_parameters.yaml"
+    "${warehousingStockDir}/stock_parameters.yaml"
+    "${warehousingStoreDir}/store_parameters.yaml"
   )
 
   OPENAPI_COMPONENTS_SCHEMAS=(
@@ -58,7 +62,7 @@ mrcmd_func_openapi_build_usr() {
 
     # "${sharedDir}/components/fields/App.Field.Article.yaml"
     # "${sharedDir}/components/fields/App.Field.Boolean.yaml"
-    # "${sharedDir}/components/fields/App.Field.Caption.yaml"
+    "${sharedDir}/components/fields/App.Field.Caption.yaml"
     "${sharedDir}/components/fields/App.Field.DateTimeCreatedAt.yaml"
     "${sharedDir}/components/fields/App.Field.DateTimeUpdatedAt.yaml"
     # "${sharedDir}/components/fields/App.Field.Date.yaml"
@@ -71,18 +75,20 @@ mrcmd_func_openapi_build_usr() {
     # "${sharedDir}/components/fields/App.Field.ImageURL.yaml"
     # "${sharedDir}/components/fields/App.Field.Int16.yaml"
     # "${sharedDir}/components/fields/App.Field.Int32.yaml"
-    # "${sharedDir}/components/fields/App.Field.Int64.yaml"
+    "${sharedDir}/components/fields/App.Field.Int64.yaml"
     # "${sharedDir}/components/fields/App.Field.JsonData.yaml"
-    "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml"
+    "${sharedDir}/components/fields/App.Field.ListCursor.Cursor.yaml"
+    "${sharedDir}/components/fields/App.Field.ListCursor.HasNext.yaml"
+    # "${sharedDir}/components/fields/App.Field.ListPager.Total.yaml" #
     # "${sharedDir}/components/fields/App.Field.OrderIndex.yaml"
-    # "${sharedDir}/components/fields/App.Field.Percent.yaml"
+    "${sharedDir}/components/fields/App.Field.Percent.yaml"
     # "${sharedDir}/components/fields/App.Field.Phone.yaml"
     # "${sharedDir}/components/fields/App.Field.RewriteName.yaml"
     # "${sharedDir}/components/fields/App.Field.Size2D.yaml"
     # "${sharedDir}/components/fields/App.Field.Size3D.yaml"
-    # "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
+    "${sharedDir}/components/fields/App.Field.TagVersion.yaml"
     # "${sharedDir}/components/fields/App.Field.Timezone.yaml"
-    # "${sharedDir}/components/fields/App.Field.Uint.yaml"
+    "${sharedDir}/components/fields/App.Field.Uint.yaml"
     # "${sharedDir}/components/fields/App.Field.UUID.yaml"
     # "${sharedDir}/components/fields/App.Field.VariableCamelCase.yaml"
 
@@ -93,7 +99,7 @@ mrcmd_func_openapi_build_usr() {
     # "${sharedDir}/components/fields/measures/App.Field.Measure.KilogramPerMeter2.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter2.yaml"
-    # "${sharedDir}/components/fields/measures/App.Field.Measure.Meter3.yaml"
+    "${sharedDir}/components/fields/measures/App.Field.Measure.Meter3.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Micrometer.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Milligram.yaml"
     # "${sharedDir}/components/fields/measures/App.Field.Measure.Millimeter.yaml"
@@ -114,35 +120,24 @@ mrcmd_func_openapi_build_usr() {
     # "${sharedDir}/components/models/App.Response.Model.ImageInfo.yaml"
     # "${sharedDir}/components/models/App.Response.Model.Success.yaml"
     # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItem.yaml"
-    # "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemUint.yaml"
+    "${sharedDir}/components/models/App.Response.Model.SuccessCreatedItemUint.yaml"
+    "${sharedDir}/components/models/App.Response.Model.SuccessSavedItem.yaml"
+    # "${sharedDir}/components/models/App.Response.Model.TextFile.yaml"
+    "${sharedDir}/components/models/App.Response.Model.Volume.yaml"
 
-    # "${sharedDir}/custom/enums/Custom.Enum.CompanyPublicStatus.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.FormElementDetailing.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.FormElementType.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.FragmentPosition.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.PaperSides.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.SubmitFormActivityStatus.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.UserAuth2fa.yaml"
-    # "${sharedDir}/custom/enums/Custom.Enum.UserStatus.yaml"
+    "${sharedDir}/custom/enums/Custom.Enum.Warehousing.StoreKind.yaml"
+    "${sharedDir}/custom/enums/Custom.Enum.Warehousing.StoreStatus.yaml"
 
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.BoxID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.LaminateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Catalog.PaperID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.ElementTemplateID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.FormElementID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Controls.SubmitFormID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.MaterialTypeID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperColorID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PaperFactureID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Dictionaries.PrintFormatID.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Fragment.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Layout.yaml"
-    # "${sharedDir}/custom/fields/Custom.Field.Rect2dFormat.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Warehousing.ContainerID.yaml"
     "${sharedDir}/custom/fields/Custom.Field.Warehousing.ContainerCode.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Warehousing.LocationID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Warehousing.StockID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Warehousing.StoreID.yaml"
+    "${sharedDir}/custom/fields/Custom.Field.Warehousing.TerritoryID.yaml"
 
-    "${sharedDir}/custom/models/Custom.Response.Model.SuccessCreatedWarehousingContainer.yaml"
-
-    "${containerDir}/container_schemas.yaml"
+    "${warehousingContainerDir}/container_schemas.yaml"
+    "${warehousingStockDir}/stock_schemas.yaml"
+    "${warehousingStoreDir}/store_schemas.yaml"
   )
 
   OPENAPI_COMPONENTS_RESPONSES=(

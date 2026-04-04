@@ -32,7 +32,7 @@ import (
 
 	"github.com/mondegor/print-shop-back/config"
 	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	validate2 "github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 type (
@@ -43,6 +43,7 @@ type (
 		Tracer          mrtrace.Tracer
 		TraceManager    mrtrace.ContextManager
 		OpenedResources *xio.CloseManager
+		DebugFunc       func(value any) string
 
 		InternalRouter *http.ServeMux
 		Sentry         *sentry.Adapter
@@ -90,9 +91,9 @@ type (
 		Int64      *parser.Int64
 		ItemStatus *parser.ItemStatus
 		Uint64     *parser.Uint64
-		ListSorter *parser.ListSorter
 		ListCursor *parser.ListCursor
 		ListPager  *parser.ListPager
+		ListSorter *parser.ListSorter
 		String     *parser.String
 		UUID       *parser.UUID
 		Validator  *parser.Validator
@@ -102,8 +103,8 @@ type (
 		FileJson   *parser.File
 		ImageLogo  *parser.Image
 
-		Parser       *validate.Parser
-		ExtendParser *validate.ExtendParser
+		Parser       *validate2.Parser
+		ExtendParser *validate2.ExtendParser
 	}
 
 	// ResponseSenders - comment struct.

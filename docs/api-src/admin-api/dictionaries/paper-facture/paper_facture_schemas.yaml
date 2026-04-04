@@ -1,5 +1,5 @@
 Dictionaries.PaperFactures.AdminAPI.Request.Model.CreatePaperFacture:
-  description: DTO добавления нового фактуры бумаги
+  description: DTO создания нового фактуры бумаги
   type: object
   required:
     - caption

@@ -57,12 +57,18 @@ func RegisterSystemHandlers(opts app.Options) error {
 			IsDebug:     opts.Cfg.Debugging.Debug,
 			LogLevel:    opts.Cfg.Log.Level,
 			StartedAt:   opts.Cfg.App.StartedAt,
-			Processes: func(ctx context.Context) map[string]string {
+			ProcessesFunc: func(ctx context.Context) []mrresp.SystemInfoProcess {
 				finishedProbes := probesFunc(ctx)
-				processes := make(map[string]string, len(finishedProbes))
+				processes := make([]mrresp.SystemInfoProcess, 0, len(finishedProbes))
 
 				for _, probe := range finishedProbes {
-					processes[probe.Caption] = strconv.Itoa(probe.Status) + " " + http.StatusText(probe.Status)
+					processes = append(
+						processes,
+						mrresp.SystemInfoProcess{
+							Caption: probe.Caption,
+							Status:  strconv.Itoa(probe.Status) + " " + http.StatusText(probe.Status),
+						},
+					)
 				}
 
 				return processes

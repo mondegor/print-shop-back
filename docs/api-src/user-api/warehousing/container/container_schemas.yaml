@@ -1,45 +1,136 @@
 Warehousing.Containers.UserAPI.Request.Model.CreateContainer:
-  description: DTO добавления нового контейнера
+  description: DTO создания нового контейнера
   type: object
+  required:
+    - location_id
   properties:
+    code:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+    volume:
+      $ref: "#/components/schemas/App.Response.Model.Volume"
     tags:
       description: Хеш теги содержимого контейнера
-      type: string
-      maxLength: 512
-      example: "ОТВЁРТКА, ШУРУПЫ"
+      type: array
+      items:
+        type: string
+        maxLength: 32
+        example: "ШУРУПЫ"
+    images:
+      description: Изображения контейнера
+      type: array
+      items:
+        type: string
+        maxLength: 256
+        example: "https://local.host/path/image-name.jpg"
+    location_id:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
+    exemplar_quantity:
+      $ref: "#/components/schemas/App.Field.Uint"
 
 Warehousing.Containers.UserAPI.Response.Model.ContainerList:
   description: DTO - список контейнеров
   type: object
   required:
-    - items
+    - containers
     - total
   properties:
-    items:
-      description: Список записей ограниченный фильтром и pageSize
+    containers:
+      description: Список контейнеров ограниченный фильтром и limit
       type: array
       items:
         $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
-    total:
-      $ref: "#/components/schemas/App.Field.ListPager.Total"
+    cursor:
+      $ref: "#/components/schemas/App.Field.ListCursor.Cursor"
+    has_next:
+      $ref: "#/components/schemas/App.Field.ListCursor.HasNext"
+
+Warehousing.Containers.UserAPI.Request.Model.CreateContainerGroup:
+  description: DTO создания новой группы контейнеров
+  type: object
+  required:
+    - location_id
+  properties:
+    code:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+    volume:
+      $ref: "#/components/schemas/App.Response.Model.Volume"
+    location_id:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
 
 Warehousing.Containers.UserAPI.Response.Model.Container:
   description: DTO - контейнер
   type: object
   required:
+    - id
+    - tag_version
     - code
-    - tags
-    - createdAt
-    - updatedAt
+    - marker
+    - created_at
+    - updated_at
   properties:
+    id: # containerId
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
+    tag_version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
     code:
       $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+    marker:
+      $ref: "#/components/schemas/App.Field.Uint"
+    volume:
+      $ref: "#/components/schemas/App.Response.Model.Volume"
     tags:
       description: Хеш теги содержимого контейнера
-      type: string
-      maxLength: 512
-      example: "ОТВЁРТКА, ШУРУПЫ"
-    createdAt:
+      type: array
+      items:
+        type: string
+        maxLength: 32
+        example: "ШУРУПЫ"
+    images:
+      description: Изображения контейнераr
+      type: array
+      items:
+        type: string
+        maxLength: 256
+        example: "https://local.host/path/image-name.jpg"
+    created_at:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-    updatedAt:
+    updated_at:
       $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+
+Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer:
+  description: DTO результата создания контейнера
+  type: object
+  required:
+    - container_id
+    - code
+    - marker
+    - stock_id
+  properties:
+    container_id:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
+    code:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
+    marker:
+      $ref: "#/components/schemas/App.Field.Uint"
+    stock_id:
+      $ref: "#/components/schemas/Custom.Field.Warehousing.StockID"
+
+Warehousing.Containers.UserAPI.Request.Model.SaveContainerTags:
+  description: DTO обновления тегов контейнера
+  type: object
+  required:
+    - container_id
+    - tag_version
+    - tags
+  properties:
+    container_id: # containerId
+      $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
+    tag_version:
+      $ref: "#/components/schemas/App.Field.TagVersion"
+    tags:
+      description: Хеш теги содержимого контейнера
+      type: array
+      items:
+        type: string
+        maxLength: 32
+        example: "ШУРУПЫ"

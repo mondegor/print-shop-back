@@ -1,0 +1,6 @@
+App.Response.Model.SuccessSavedItem:
+  description: DTO результата сохранения записи
+  type: object
+  properties:
+    tag_version:
+      $ref: "#/components/schemas/App.Field.TagVersion"

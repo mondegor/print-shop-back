@@ -1,5 +1,5 @@
 Catalog.Papers.AdminAPI.Request.Model.CreatePaper:
-  description: DTO добавления новой бумаги
+  description: DTO создания новой бумаги
   type: object
   required:
     - article

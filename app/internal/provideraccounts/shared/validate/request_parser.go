@@ -5,7 +5,7 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
 	"github.com/mondegor/print-shop-back/pkg/provideraccounts/validate"
-	pkgvalidate "github.com/mondegor/print-shop-back/pkg/validate"
+	pkgvalidate "github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
 type (

@@ -58,13 +58,13 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.Sender,
 			opts.ResponseSenders.FileSender,
 			opts.NotifierAPI,
-			opts.Cfg.Debugging.Debug,
 			opts.Cfg.AccessControl.Realms,
 			opts.Cfg.AccessControl.OperationConfirm,
 			authcfg.JWT{
 				Method: opts.Cfg.AccessControl.JWTMethod,
 				Secret: []byte(opts.Cfg.AccessControl.JWTSecret),
 			},
+			opts.DebugFunc,
 		),
 	}
 }

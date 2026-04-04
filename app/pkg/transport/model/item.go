@@ -1,0 +1,33 @@
+package model
+
+import "github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+
+type (
+	// ChangeItemStatusRequest - comment struct.
+	ChangeItemStatusRequest struct {
+		TagVersion uint32          `json:"tagVersion" validate:"required,gte=1"`
+		Status     itemstatus.Enum `json:"status" validate:"required"`
+	}
+
+	// MoveItemRequest - comment struct.
+	MoveItemRequest struct {
+		AfterNodeID uint64 `json:"afterId"`
+	}
+
+	// SuccessCreatedItemResponse - comment struct.
+	SuccessCreatedItemResponse struct {
+		ItemID     string `json:"id"`
+		TagVersion uint32 `json:"tag_version,omitempty"`
+	}
+
+	// SuccessCreatedItemUintResponse - comment struct.
+	SuccessCreatedItemUintResponse struct {
+		ItemID     uint64 `json:"id"`
+		TagVersion uint32 `json:"tag_version,omitempty"`
+	}
+
+	// SuccessSavedItemResponse - comment struct.
+	SuccessSavedItemResponse struct {
+		TagVersion uint32 `json:"tag_version"`
+	}
+)

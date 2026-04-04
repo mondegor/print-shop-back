@@ -1,0 +1,4 @@
+App.Field.ListCursor.HasNext:
+  description: Признак наличия записей в следующей позиции
+  type: boolean
+  example: true

@@ -1,5 +1,5 @@
 App.Response.Model.SuccessCreatedItemUint:
-  description: DTO результата создания записи (int64 ID)
+  description: DTO результата создания записи (uint ID)
   type: object
   required:
     - id
@@ -9,3 +9,5 @@ App.Response.Model.SuccessCreatedItemUint:
       type: integer
       # format: uint64
       example: 9223372036854775807
+    tag_version:
+      $ref: "#/components/schemas/App.Field.TagVersion"

@@ -24,8 +24,9 @@ type (
 	UIDataType uint8
 )
 
+//nolint:gochecknoglobals
 var (
-	uiDataTypeName = map[UIDataType]string{ //nolint:gochecknoglobals
+	uiDataTypeName = map[UIDataType]string{
 		UIDataTypeBoolean: "BOOLEAN",
 		UIDataTypeGroup:   "GROUP",
 		UIDataTypeEnum:    "ENUM",
@@ -33,7 +34,7 @@ var (
 		UIDataTypeString:  "STRING",
 	}
 
-	uiDataTypeValue = map[string]UIDataType{ //nolint:gochecknoglobals
+	uiDataTypeValue = map[string]UIDataType{
 		"BOOLEAN": UIDataTypeBoolean,
 		"GROUP":   UIDataTypeGroup,
 		"ENUM":    UIDataTypeEnum,

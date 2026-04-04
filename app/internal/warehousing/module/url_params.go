@@ -5,9 +5,9 @@ const (
 	ParamNameFilterSearchContainerCode = "code"
 	ParamNameFilterSearchContainerTags = "tags"
 
-	ParamNameFilterSearchStoreCode   = "code"
-	ParamNameFilterSearchTerritories = "territory_ids"
+	ParamNameFilterSearchStoreCode    = "code"
+	ParamNameFilterSearchTerritoryIDs = "territory_ids"
 
-	ParamNameFilterSearchStockContainers = "container_ids"
-	ParamNameFilterSearchStockLocations  = "location_ids"
+	ParamNameFilterSearchStockContainerIDs = "container_ids"
+	ParamNameFilterSearchStockLocationIDs  = "location_ids"
 )
