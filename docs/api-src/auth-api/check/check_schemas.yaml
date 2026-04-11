@@ -14,7 +14,7 @@ Auth.Check.Request.Model.CheckLogin:
       type: string
       minLength: 7
       maxLength: 64
-      example: "user-email@local.host"
+      example: "user-email@example.com"
 
 Auth.Check.Request.Model.CalcPasswordStrength:
   type: object

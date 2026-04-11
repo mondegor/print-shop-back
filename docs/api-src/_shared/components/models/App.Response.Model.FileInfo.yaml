@@ -24,7 +24,7 @@ App.Response.Model.FileInfo:
       description: URL файла
       type: string
       maxLength: 128
-      example: "https://local.host/path/file-name.zip"
+      example: "https://example.com/path/file-name.zip"
     size:
       description: Размер файла в байтах
       type: integer

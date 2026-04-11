@@ -9,7 +9,7 @@ Auth.Security.Request.Model.ChangeEmail:
       format: email
       minLength: 7
       maxLength: 64
-      example: "new-user-email@local.host"
+      example: "new-user-email@example.com"
 
 Auth.Security.Request.Model.ChangePhone:
   type: object

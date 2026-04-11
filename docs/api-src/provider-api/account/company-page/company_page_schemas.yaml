@@ -19,7 +19,7 @@ CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage:
       description: URL страницы сайта компании
       type: string
       maxLength: 256
-      example: "https://site.local.host/"
+      example: "https://site.example.com/"
 
 CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus:
   description: DTO изменения статуса публикации страницы компании
@@ -52,12 +52,12 @@ CompanyPage.ProvidersAPI.Response.Model.CompanyPage:
       description: URL логотипа компании
       type: string
       maxLength: 128
-      example: "https://local.host/company-logo.png"
+      example: "https://example.com/company-logo.png"
     siteUrl:
       description: URL страницы сайта компании
       type: string
       maxLength: 512
-      example: "https://site.local.host/"
+      example: "https://site.example.com/"
     status:
       $ref: "#/components/schemas/Custom.Enum.CompanyPublicStatus"
     createdAt:

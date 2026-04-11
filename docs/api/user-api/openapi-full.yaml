@@ -594,7 +594,7 @@ components:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
           default: "about:blank"
-          example: "https://api.local.host/problem/type"
+          example: "https://api.example.com/problem/type"
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
@@ -803,7 +803,7 @@ components:
           items:
             type: string
             maxLength: 256
-            example: "https://local.host/path/image-name.jpg"
+            example: "https://example.com/path/image-name.jpg"
         location_id:
           $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
         exemplar_quantity:
@@ -873,7 +873,7 @@ components:
           items:
             type: string
             maxLength: 256
-            example: "https://local.host/path/image-name.jpg"
+            example: "https://example.com/path/image-name.jpg"
         created_at:
           $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
         updated_at:

@@ -32,6 +32,7 @@ func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 	statusMapper, err := mrserver.NewHttpErrorStatusMapper(
 		int(opts.Cfg.Debugging.UnexpectedHttpStatus),
 		mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
+		mrauth.ErrTokenInvalid.Code(), http.StatusForbidden,
 	)
 	if err != nil {
 		return nil, err

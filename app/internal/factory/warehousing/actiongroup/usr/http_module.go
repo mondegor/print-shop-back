@@ -20,7 +20,7 @@ func InitHttpModule(
 	responseSender mrserver.ResponseSender,
 ) initing.HttpModule {
 	return initing.HttpModule{
-		Name:       module.Name,
+		Caption:    module.Name,
 		Permission: module.Permission,
 		Controllers: []initing.HttpController{
 			{

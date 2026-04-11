@@ -51,7 +51,7 @@ func RegisterSystemHandlers(opts app.Options) error {
 	systemInfoFunc, err := mrresp.HandlerGetSystemInfoAsJSON(
 		opts.Logger,
 		mrresp.SystemInfoConfig{
-			Name:        opts.Cfg.App.Name,
+			Caption:     opts.Cfg.App.Name,
 			Version:     opts.Cfg.App.Version,
 			Environment: opts.Cfg.App.Environment,
 			IsDebug:     opts.Cfg.Debugging.Debug,

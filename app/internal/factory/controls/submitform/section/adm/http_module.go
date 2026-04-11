@@ -35,7 +35,7 @@ func InitHttpModule(
 	)
 
 	return initing.HttpModule{
-		Name:       module.Name,
+		Caption:    module.Name,
 		Permission: module.Permission,
 		InitSharedComponents: func() (err error) {
 			storageSubmitForm, entityMetaSubmitForm, err = initSubmitFormStorage(logger, dbConnManager, pageSizeMax)
@@ -63,7 +63,7 @@ func InitHttpModule(
 				},
 			},
 			{
-				Name:       module.UnitFormElementName,
+				Caption:    module.UnitFormElementName,
 				Permission: module.UnitFormElementPermission,
 				Create: func() (mrserver.HttpController, error) {
 					return initFormElementController(

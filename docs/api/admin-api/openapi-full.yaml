@@ -3203,7 +3203,7 @@ components:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
           default: "about:blank"
-          example: "https://api.local.host/problem/type"
+          example: "https://api.example.com/problem/type"
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
@@ -4431,7 +4431,7 @@ components:
           description: URL страницы сайта компании
           type: string
           maxLength: 256
-          example: "https://site.local.host/"
+          example: "https://site.example.com/"
         status:
           $ref: "#/components/schemas/ProviderAccounts.CompanyPages.AdminAPI.Field.Status"
 

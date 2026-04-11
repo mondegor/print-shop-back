@@ -279,7 +279,7 @@ components:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
           default: "about:blank"
-          example: "https://api.local.host/problem/type"
+          example: "https://api.example.com/problem/type"
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
@@ -387,7 +387,7 @@ components:
           description: URL страницы сайта компании
           type: string
           maxLength: 256
-          example: "https://site.local.host/"
+          example: "https://site.example.com/"
 
     CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus:
       description: DTO изменения статуса публикации страницы компании
@@ -420,12 +420,12 @@ components:
           description: URL логотипа компании
           type: string
           maxLength: 128
-          example: "https://local.host/company-logo.png"
+          example: "https://example.com/company-logo.png"
         siteUrl:
           description: URL страницы сайта компании
           type: string
           maxLength: 512
-          example: "https://site.local.host/"
+          example: "https://site.example.com/"
         status:
           $ref: "#/components/schemas/Custom.Enum.CompanyPublicStatus"
         createdAt:

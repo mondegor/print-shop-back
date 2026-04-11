@@ -24,7 +24,7 @@ App.Response.Model.ImageInfo:
       description: URL изображения
       type: string
       maxLength: 128
-      example: "https://local.host/path/image-name.jpg"
+      example: "https://example.com/path/image-name.jpg"
     width:
       description: Ширина изображения (px)
       type: integer

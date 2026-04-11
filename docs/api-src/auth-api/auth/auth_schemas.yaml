@@ -14,7 +14,7 @@ Auth.Request.Model.CreateUser:
       format: email
       minLength: 7
       maxLength: 64
-      example: "user-email@local.host"
+      example: "user-email@example.com"
 
 Auth.Request.Model.AuthorizeUser:
   type: object
@@ -31,7 +31,7 @@ Auth.Request.Model.AuthorizeUser:
       type: string
       minLength: 7
       maxLength: 64
-      example: "user-email@local.host"
+      example: "user-email@example.com"
 
 Auth.Request.Model.LoginByToken:
   type: object
@@ -162,7 +162,7 @@ Auth.Response.Model.UserInfo:
       type: string
       format: email
       maxLength: 64
-      example: "user-email@local.host"
+      example: "user-email@example.com"
     phone:
       type: string
       format: phone

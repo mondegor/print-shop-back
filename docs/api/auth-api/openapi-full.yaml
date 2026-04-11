@@ -941,7 +941,7 @@ components:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
           default: "about:blank"
-          example: "https://api.local.host/problem/type"
+          example: "https://api.example.com/problem/type"
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
@@ -1091,7 +1091,7 @@ components:
           format: email
           minLength: 7
           maxLength: 64
-          example: "user-email@local.host"
+          example: "user-email@example.com"
 
     Auth.Request.Model.AuthorizeUser:
       type: object
@@ -1108,7 +1108,7 @@ components:
           type: string
           minLength: 7
           maxLength: 64
-          example: "user-email@local.host"
+          example: "user-email@example.com"
 
     Auth.Request.Model.LoginByToken:
       type: object
@@ -1239,7 +1239,7 @@ components:
           type: string
           format: email
           maxLength: 64
-          example: "user-email@local.host"
+          example: "user-email@example.com"
         phone:
           type: string
           format: phone
@@ -1304,7 +1304,7 @@ components:
           type: string
           minLength: 7
           maxLength: 64
-          example: "user-email@local.host"
+          example: "user-email@example.com"
 
     Auth.Check.Request.Model.CalcPasswordStrength:
       type: object
@@ -1381,7 +1381,7 @@ components:
           format: email
           minLength: 7
           maxLength: 64
-          example: "new-user-email@local.host"
+          example: "new-user-email@example.com"
 
     Auth.Security.Request.Model.ChangePhone:
       type: object

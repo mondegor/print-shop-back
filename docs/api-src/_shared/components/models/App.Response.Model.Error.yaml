@@ -12,7 +12,7 @@ App.Response.Model.ErrorDetails: # RFC 9457 (Problem Details for HTTP APIs)
       description: Ссылки на ресурс с описанием проблемы данного типа
       type: string
       default: "about:blank"
-      example: "https://api.local.host/problem/type"
+      example: "https://api.example.com/problem/type"
     title:
       description: Краткое описание проблемы, понятное человеку
       type: string

@@ -17,11 +17,11 @@ func InitHttpModule(
 	fileAPIFunc func() (mrstorage.FileProviderAPI, mrpath.Builder, error),
 ) initing.HttpModule {
 	return initing.HttpModule{
-		Name:       module.Name,
+		Caption:    module.Name,
 		Permission: module.Permission,
 		Controllers: []initing.HttpController{
 			{
-				Name:       module.UnitImageProxyName,
+				Caption:    module.UnitImageProxyName,
 				Permission: module.UnitImageProxyPermission,
 				Create: func() (mrserver.HttpController, error) {
 					fileAPI, basePath, err := fileAPIFunc()

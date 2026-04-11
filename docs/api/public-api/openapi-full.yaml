@@ -1206,7 +1206,7 @@ components:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
           default: "about:blank"
-          example: "https://api.local.host/problem/type"
+          example: "https://api.example.com/problem/type"
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
@@ -1990,12 +1990,12 @@ components:
           description: URL логотипа компании
           type: string
           maxLength: 128
-          example: "https://local.host/company-logo.png"
+          example: "https://example.com/company-logo.png"
         siteUrl:
           description: URL страницы сайта компании
           type: string
           maxLength: 256
-          example: "https://site.local.host/"
+          example: "https://site.example.com/"
 
     Dictionaries.MaterialTypes.PublicAPI.Response.Model.MaterialTypeList:
       description: DTO - список типов материала

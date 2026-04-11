@@ -100,7 +100,7 @@ func Create(args Args) (cfg Config, err error) {
 
 	cfg.AccessControl.Realms = authcfg.DefaultValuesRealm(cfg.AccessControl.Realms, cfg.AccessControl.OperationConfirm)
 
-	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups, cfg.AccessControl.Privileges); err != nil {
+	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups, cfg.AccessControl.AllowedPrivileges); err != nil {
 		return Config{}, err
 	}
 

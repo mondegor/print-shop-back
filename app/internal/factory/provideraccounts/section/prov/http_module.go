@@ -25,7 +25,7 @@ func InitHttpModule(
 	logoURLBuilder mrpath.Builder,
 ) initing.HttpModule {
 	return initing.HttpModule{
-		Name:       module.Name,
+		Caption:    module.Name,
 		Permission: module.Permission,
 		Controllers: []initing.HttpController{
 			{

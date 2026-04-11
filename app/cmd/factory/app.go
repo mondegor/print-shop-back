@@ -12,8 +12,8 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-sysmess/wire"
-	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrrun"
+	wirecore "github.com/mondegor/go-webcore/wire"
 
 	dictionariesapi "github.com/mondegor/print-shop-back/cmd/factory/api/dictionaries"
 	"github.com/mondegor/print-shop-back/cmd/factory/service"
@@ -196,20 +196,25 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	if opts.PermsProvider, err = initing.InitPermsProvider(
+	if opts.PermsProvider, err = wirecore.InitPermsProvider(
 		opts.Logger,
 		opts.Cfg.AccessControl.RolesDirPath,
 		opts.Cfg.AccessControl.Roles,
-		opts.Cfg.AccessControl.Privileges,
-		opts.Cfg.AccessControl.Permissions,
+		opts.Cfg.AccessControl.AllowedPrivileges,
+		opts.Cfg.AccessControl.AllowedPermissions,
 	); err != nil {
+		return app.Options{}, err
+	}
+
+	rights, err := authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider)
+	if err != nil {
 		return app.Options{}, err
 	}
 
 	opts.RealmUserProviders = authiniting.InitUserProviders(
 		opts.Logger,
 		opts.PostgresConnManager,
-		authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider),
+		rights,
 		opts.Cfg.Realms,
 		opts.Cfg.Debugging.AuthorizedUser,
 		opts.Cfg.AccessControl.JWTSecret,

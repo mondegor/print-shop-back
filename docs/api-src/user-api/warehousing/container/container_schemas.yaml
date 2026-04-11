@@ -21,7 +21,7 @@ Warehousing.Containers.UserAPI.Request.Model.CreateContainer:
       items:
         type: string
         maxLength: 256
-        example: "https://local.host/path/image-name.jpg"
+        example: "https://example.com/path/image-name.jpg"
     location_id:
       $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
     exemplar_quantity:
@@ -91,7 +91,7 @@ Warehousing.Containers.UserAPI.Response.Model.Container:
       items:
         type: string
         maxLength: 256
-        example: "https://local.host/path/image-name.jpg"
+        example: "https://example.com/path/image-name.jpg"
     created_at:
       $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
     updated_at:

@@ -2,4 +2,4 @@ App.Field.ImageURL:
   description: URL к изображению записи
   type: string
   maxLength: 255
-  example: "https://local.host/path/item-name.png"
+  example: "https://example.com/path/item-name.png"
