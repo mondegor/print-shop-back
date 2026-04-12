@@ -82,7 +82,10 @@ func ApplyPostgresMigrations(opts app.Options) error {
 	}
 
 	db := stdlib.OpenDBFromPool(connCli)
-	defer db.Close()
+
+	defer func() {
+		_ = db.Close()
+	}()
 
 	// if opts.Cfg.Storage.MigrationsTable is empty then will be used postgres.DefaultMigrationsTable
 	driver, err := postgres.WithInstance(db, &postgres.Config{MigrationsTable: opts.Cfg.Storage.MigrationsTable})
@@ -94,7 +97,10 @@ func ApplyPostgresMigrations(opts app.Options) error {
 	if err != nil {
 		return err
 	}
-	defer dbMigrate.Close()
+
+	defer func() {
+		_, _ = dbMigrate.Close()
+	}()
 
 	dbMigrate.Log = gomigrate.NewLoggerAdapter(mrlog.WithAttrs(opts.Logger, "migrator", "go-migrate"))
 

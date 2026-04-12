@@ -49,7 +49,9 @@ func (ht *ImageProxy) Get(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	defer item.Body.Close()
+	defer func() {
+		_ = item.Body.Close()
+	}()
 
 	return ht.sender.SendFile(r.Context(), w, item)
 }

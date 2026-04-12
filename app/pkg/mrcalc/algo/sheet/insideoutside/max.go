@@ -55,6 +55,7 @@ func getMaxInsideOnOutside(in, out rect2d.Format) rect2d.Fragments {
 	}
 
 	const maxFragments = 2
+
 	fragments := make(rect2d.Fragments, 1, maxFragments)
 	fragments[0] = rect2d.Fragment{
 		Element:  in,

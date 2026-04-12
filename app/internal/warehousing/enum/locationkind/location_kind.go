@@ -41,7 +41,7 @@ func Is(id uint64, kind Enum) bool {
 
 // ByID - возвращает тип хранения в зависимости от ID.
 func ByID(id uint64) Enum {
-	kind := uint8(id >> 60) //nolint:gosec
+	kind := uint8(id >> 60)
 
 	if kind <= enumLast {
 		return Enum(kind)

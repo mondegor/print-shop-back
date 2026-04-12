@@ -108,6 +108,7 @@ func (ri *Algo) Calc(ctx context.Context, element, distance, out rect2d.Format, 
 	}
 
 	const maxFragments = 2
+
 	fragments := make(rect2d.Fragments, 1, maxFragments)
 	fragments[0] = topFragment
 

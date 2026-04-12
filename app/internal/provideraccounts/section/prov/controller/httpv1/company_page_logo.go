@@ -59,7 +59,9 @@ func (ht *CompanyPageLogo) UploadLogo(w http.ResponseWriter, r *http.Request) er
 		return ht.imageErrorWrapper.Wrap(err)
 	}
 
-	defer file.Body.Close()
+	defer func() {
+		_ = file.Body.Close()
+	}()
 
 	if err = ht.useCase.StoreFile(r.Context(), ht.parser.UserID(r), file); err != nil {
 		return ht.wrapError(err, r)

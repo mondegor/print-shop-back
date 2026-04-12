@@ -24,6 +24,8 @@ const (
 	elementTemplateItemURL             = "/v1/controls/element-templates/{id}"
 	elementTemplateItemChangeStatusURL = "/v1/controls/element-templates/{id}/status"
 	elementTemplateItemJsonURL         = "/v1/controls/element-templates/{id}/json"
+
+	maxElementTemplateSize = 512 * 1024 // 5120 Kb limit
 )
 
 type (
@@ -139,6 +141,7 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 // Create - comment method.
 func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
 	req := CreateElementTemplateRequest{}
+	r.Body = http.MaxBytesReader(w, r.Body, maxElementTemplateSize)
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
 	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
@@ -175,6 +178,7 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 // Save - comment method.
 func (ht *ElementTemplate) Save(w http.ResponseWriter, r *http.Request) error {
 	req := StoreElementTemplateRequest{}
+	r.Body = http.MaxBytesReader(w, r.Body, maxElementTemplateSize)
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
 	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
