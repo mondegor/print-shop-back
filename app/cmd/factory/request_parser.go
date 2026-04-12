@@ -1,7 +1,9 @@
 package factory
 
 import (
-	"github.com/mondegor/go-components/mrauth/model/contactaddress"
+	"fmt"
+
+	mrauthconf "github.com/mondegor/go-components/wire/mrauth/config"
 	"github.com/mondegor/go-components/wire/mrauth/mapping"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/mime"
@@ -120,65 +122,34 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 func NewValidator(logger mrlog.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
 	mrlog.Info(logger, "Create and init data validator")
 
+	customTags := []mrview.Tag{
+		mrview.TagArticle(),
+		mrauthconf.TagEmail(),
+		mrauthconf.TagPhone(),
+		mrauthconf.TagEmailPhone(),
+		mrview.TagVariable(),
+		mrview.TagName(),
+		mrview.TagRewriteName(),
+		mrview.TagPassword(),
+		mrauthconf.TagRealm(
+			mapping.OptionUserRealmsToStringRealms(cfg.AccessControl.Realms),
+		),
+		{
+			Name:         "tag_2d_size",
+			ValidateFunc: mrcalcvalidate.Size2d,
+		},
+		{
+			Name:         "tag_3d_size",
+			ValidateFunc: mrcalcvalidate.Size3d,
+		},
+	}
+
 	validator := mrplayvalidator.New(logger)
 
-	// registers custom tags for validation (see mrview.validator_tags.go)
-
-	if err := validator.Register("tag_article", mrview.ValidateAnyNotSpaceSymbol); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_email", contactaddress.ValidateEmail); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_phone", contactaddress.ValidatePhone); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register(
-		"tag_email_phone",
-		mrview.NewValidateOR(
-			contactaddress.ValidateEmail,
-			contactaddress.ValidatePhoneWorld,
-		)); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_variable", mrview.ValidateVariable); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_name", mrview.ValidateName); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_rewrite_name", mrview.ValidateRewriteName); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_password", mrview.ValidatePassword); err != nil { // TODO: переименовать в validate.Password
-		return nil, err
-	}
-
-	if err := validator.Register(
-		"tag_realm",
-		mrview.NewValidateAND(
-			mrview.ValidateName,
-			mrview.NewValidateInArray(
-				mapping.OptionUserRealmsToStringRealms(cfg.AccessControl.Realms),
-			),
-		),
-	); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_2d_size", mrcalcvalidate.Size2d); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_3d_size", mrcalcvalidate.Size3d); err != nil {
-		return nil, err
+	for _, tag := range customTags {
+		if err := validator.Register(tag.Name, tag.ValidateFunc); err != nil {
+			return nil, fmt.Errorf("tag %s: %w", tag.Name, err)
+		}
 	}
 
 	return validator, nil

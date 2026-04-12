@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -66,7 +67,7 @@ func Create(args Args) (cfg Config, err error) {
 	cfg.Os.Stdout = args.Stdout
 
 	if cfg.App.Version == detectVersion {
-		if ver := mrapp.Version(); ver != "" {
+		if ver := mrapp.Version(context.Background()); ver != "" {
 			cfg.App.Version = ver
 		}
 	}

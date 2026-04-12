@@ -23,7 +23,7 @@ lint:
 	mrcmd go fmt
 	mrcmd go fmti
 	mrcmd go fmti2
-	mrcmd golangci-lint check
+	mrcmd go lint
 
 test:
 	mrcmd go test
