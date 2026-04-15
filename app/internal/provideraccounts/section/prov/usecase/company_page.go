@@ -9,7 +9,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-sysmess/mrstatus"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
@@ -79,7 +78,7 @@ func (uc *CompanyPage) Save(ctx context.Context, item entity.CompanyPage) error 
 			return uc.errorWrapper.Wrap(err, "accountId", item.AccountID)
 		}
 
-		uc.eventEmitter.Emit(ctx, "Store", conv.Group{"accountId": item.AccountID})
+		uc.eventEmitter.Emit(ctx, "Store", "accountId", item.AccountID)
 
 		return nil
 	})
@@ -108,7 +107,7 @@ func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage
 		return uc.errorWrapper.Wrap(err, "accountId", item.AccountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", conv.Group{"accountId": item.AccountID, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", "accountId", item.AccountID, "status", item.Status)
 
 	return nil
 }

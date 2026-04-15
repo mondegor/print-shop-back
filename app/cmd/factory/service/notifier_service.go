@@ -9,6 +9,7 @@ import (
 	"github.com/mondegor/go-components/wire/mrnotifier/scheduler"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
@@ -67,7 +68,12 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 		processor.WithNoticeProcessorOpts(
 			consume.WithCaptionPrefix[entity.Note]("Notifier/"),
 			consume.WithReadyTimeout[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadyTimeout),
-			consume.WithReadPeriod[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadPeriod),
+			consume.WithReadPeriodStrategy[entity.Note](
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadPeriod,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			consume.WithConsumerTimeout[entity.Note](
 				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerReadTimeout,
 				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerWriteTimeout,
@@ -108,13 +114,23 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Notifier.ChangeFromToRetry.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Notifier.ChangeFromToRetry.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Notifier.ChangeFromToRetry.Timeout),
 		),
 		scheduler.WithTaskCleanNoticesOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Notifier.CleanQueue.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewQuadQuickStartStrategy(
+					opts.Cfg.TaskSchedule.Notifier.CleanQueue.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Notifier.CleanQueue.Timeout),
 		),
 	)

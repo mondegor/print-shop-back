@@ -5,7 +5,6 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
@@ -38,7 +37,7 @@ func (uc *SheetInsideOutside) CalcQuantity(ctx context.Context, data dto.ParsedD
 		return model.SheetInsideOutsideQuantityResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcQuantity", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcQuantity", "data", data)
 
 	return model.SheetInsideOutsideQuantityResponse{
 		Layout: result,
@@ -53,7 +52,7 @@ func (uc *SheetInsideOutside) CalcMax(ctx context.Context, data dto.ParsedData) 
 		return model.SheetInsideOutsideMaxResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcMax", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcMax", "data", data)
 
 	return model.SheetInsideOutsideMaxResponse{
 		Fragments: result,

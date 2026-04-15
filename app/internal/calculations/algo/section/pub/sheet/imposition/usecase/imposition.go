@@ -6,7 +6,6 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
@@ -45,7 +44,7 @@ func (uc *SheetImposition) Calc(ctx context.Context, data dto.ParsedData) (model
 		return model.SheetImpositionResponse{}, errors.ErrIncorrectInputData.New(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Calc", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", "data", data)
 
 	if result.Fragments.TotalQuantity() == 0 {
 		return model.SheetImpositionResponse{}, nil
@@ -62,7 +61,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 			return nil, errors.ErrIncorrectInputData.New(err)
 		}
 
-		uc.eventEmitter.Emit(ctx, "CalcVariants", conv.Group{"data": data})
+		uc.eventEmitter.Emit(ctx, "CalcVariants", "data", data)
 
 		return model.SheetImpositionVariantsResponse{
 			uc.createResult(result),
@@ -95,7 +94,7 @@ func (uc *SheetImposition) CalcVariants(ctx context.Context, data dto.ParsedData
 		results = append(results, uc.createResult(resultV2))
 	}
 
-	uc.eventEmitter.Emit(ctx, "CalcVariants", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "CalcVariants", "data", data)
 
 	return results, nil
 }

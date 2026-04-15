@@ -12,7 +12,7 @@ import (
 
 // InitRedis - создаёт объект mrredis.ConnAdapter.
 func InitRedis(opts app.Options) (*mrredis.ConnAdapter, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	cfg := opts.Cfg.Redis

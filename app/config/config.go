@@ -32,7 +32,8 @@ type (
 		Servers               `yaml:"servers"`
 		Storage               `yaml:"storage"`
 		Redis                 `yaml:"redis"`
-		FileSystem            `yaml:"file_system"`
+		FileSystem            `yaml:"file_system"` // disabled
+		S3                    `yaml:"s3"`
 		FileProviders         `yaml:"file_providers"`
 		Cors                  `yaml:"cors"`
 		Localization          `yaml:"localization"`
@@ -143,18 +144,29 @@ type (
 		WriteTimeout time.Duration `yaml:"write_timeout" env:"APPX_REDIS_WRITE_TIMEOUT"`
 	}
 
-	// FileSystem - comment struct.
+	// FileSystem - comment struct (disabled).
 	FileSystem struct {
 		DirMode    uint32 `yaml:"dir_mode" env:"APPX_FILESYSTEM_DIR_MODE"`
 		CreateDirs bool   `yaml:"create_dirs" env:"APPX_FILESYSTEM_CREATE_DIRS"`
+	}
+
+	// S3 - comment struct.
+	S3 struct {
+		Host          string `yaml:"host" env:"APPX_S3_HOST"`
+		Port          string `yaml:"port" env:"APPX_S3_PORT"`
+		UseSSL        bool   `yaml:"use_ssl" env:"APPX_S3_USESSL"`
+		Username      string `yaml:"username" env:"APPX_S3_USER"`
+		Password      string `yaml:"password" env:"APPX_S3_PASSWORD"`
+		CreateBuckets bool   `yaml:"create_buckets" env:"APPX_S3_CREATE_BUCKETS"`
 	}
 
 	// FileProviders - comment struct.
 	FileProviders struct {
 		// ImageStorage - comment struct.
 		ImageStorage struct {
-			Name    string `yaml:"name"`
-			RootDir string `yaml:"root_dir" env:"APPX_IMAGESTORAGE_ROOT_DIR"`
+			Name       string `yaml:"name"`
+			BucketName string `yaml:"bucket_name" env:"APPX_IMAGESTORAGE_BUCKET"` // S3
+			RootDir    string `yaml:"root_dir" env:"APPX_IMAGESTORAGE_ROOT_DIR"`  // FileSystem (disabled)
 		} `yaml:"image_storage"`
 	}
 
@@ -233,7 +245,8 @@ type (
 	TaskSchedule struct {
 		Settings struct {
 			// Caption        string        `yaml:"caption"`
-			ReloadSettings SchedulerTask `yaml:"reload_settings"`
+			ReloadSettings     SchedulerTask `yaml:"reload_settings"`
+			DefaultPeriodRatio float64       `yaml:"default_default_period_ratio"`
 		} `yaml:"settings"`
 		Auth struct {
 			// Caption           string        `yaml:"caption"`

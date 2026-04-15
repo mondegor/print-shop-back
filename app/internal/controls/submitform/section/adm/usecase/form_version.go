@@ -11,7 +11,6 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -140,7 +139,7 @@ func (uc *FormVersion) PrepareForTest(ctx context.Context, formID uuid.UUID) err
 		}
 	}
 
-	uc.eventEmitter.Emit(ctx, eventName, conv.Group{"formId": item.ID, "version": item.Version})
+	uc.eventEmitter.Emit(ctx, eventName, "formId", item.ID, "version", item.Version)
 
 	return nil
 }
@@ -173,7 +172,7 @@ func (uc *FormVersion) Publish(ctx context.Context, formID uuid.UUID) error {
 		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Publish", conv.Group{"formId": formID, "version": item.Version})
+	uc.eventEmitter.Emit(ctx, "Publish", "formId", formID, "version", item.Version)
 
 	return nil
 }

@@ -28,7 +28,7 @@ func InitEventEmitter(opts app.Options) mrevent.Emitter {
 						args,
 						"event", eventName,
 						"source", source,
-					),
+					)...,
 				)
 			},
 		),

@@ -61,7 +61,7 @@ storage:
   database: db_pg
   migrations_dir: "./migrations" # if empty automatic migration will be disabled
   migrations_table: print_shop_migrations
-  max_pool_size: 10
+  max_pool_size: 2
   max_conn_lifetime: 1h
   max_conn_idle_time: 15m
   timeout: 15s
@@ -77,10 +77,19 @@ file_system:
   dir_mode: 0775
   create_dirs: true # check and create if not exists
 
+s3:
+  host: s3-minio
+  port: 9000
+  use_ssl: false
+  username: admin # d4jrL7eXyKg7ZNdYdl2p
+  password: 12345678 # qZkNDK1Hewb4GVEvzvZGRCVb5uU4ZCX9bKztlhvR
+  create_buckets: true # check and create if not exists
+
 file_providers:
   image_storage:
     name: imageStorage
-    root_dir: "../img"
+    bucket_name: shared-img # S3
+    root_dir: "../img" # FileSystem (disabled)
 
 cors:
   allowed_origins:
@@ -320,16 +329,17 @@ validation:
 task_schedule:
   settings:
     reload_settings:
-      period: 10m
+      period: 7m
       timeout: 15s
       notification_channel: "event_settings_changed"
+    default_period_ratio: 0.1 # 10% of period
   auth:
     user_stat:
       request_collector:
         ready_timeout: 30s
         flush_period: 1m
         handler_timeout: 30s
-        batch_size: 5 # 50
+        batch_size: 100
         workers_count: 1
     clean_records:
       period: 5m
@@ -369,7 +379,7 @@ task_schedule:
       workers_count: 1
       notification_channel: "event_notifier_queue_inserted"
     change_from_to_retry:
-      period: 5m
+      period: 10m
       timeout: 2m
     clean_queue:
       period: 1h

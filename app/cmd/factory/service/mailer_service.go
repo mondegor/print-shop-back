@@ -15,6 +15,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrclient/mail"
 	"github.com/mondegor/go-webcore/mrclient/telegram"
+	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
@@ -104,7 +105,12 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 		processor.WithMessageProcessorOpts(
 			consume.WithCaptionPrefix[entity.Message]("Mailer/"),
 			consume.WithReadyTimeout[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadyTimeout),
-			consume.WithReadPeriod[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadPeriod),
+			consume.WithReadPeriodStrategy[entity.Message](
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadPeriod,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			consume.WithConsumerTimeout[entity.Message](
 				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerReadTimeout,
 				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerWriteTimeout,
@@ -150,13 +156,23 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Timeout),
 		),
 		scheduler.WithTaskCleanMessagesOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Mailer.CleanQueue.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewQuadQuickStartStrategy(
+					opts.Cfg.TaskSchedule.Mailer.CleanQueue.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Mailer.CleanQueue.Timeout),
 		),
 	)

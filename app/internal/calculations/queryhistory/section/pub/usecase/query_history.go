@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
 	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
@@ -62,7 +61,7 @@ func (uc *QueryHistory) Create(ctx context.Context, item entity.QueryHistoryItem
 		return uuid.Nil, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", conv.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	return itemID, nil
 }

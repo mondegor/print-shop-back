@@ -8,7 +8,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrstatus"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -89,7 +88,7 @@ func (uc *SubmitForm) Create(ctx context.Context, item entity.SubmitForm) (itemI
 		return uuid.Nil, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", conv.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	return itemID, nil
 }
@@ -119,7 +118,7 @@ func (uc *SubmitForm) Save(ctx context.Context, item entity.SubmitForm) error {
 		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", conv.Group{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", "itemId", item.ID, "tagVersion", tagVersion)
 
 	return nil
 }
@@ -152,7 +151,7 @@ func (uc *SubmitForm) ChangeStatus(ctx context.Context, item entity.SubmitForm) 
 		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", conv.Group{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", "itemId", item.ID, "tagVersion", tagVersion, "status", item.Status)
 
 	return nil
 }
@@ -167,7 +166,7 @@ func (uc *SubmitForm) Remove(ctx context.Context, itemID uuid.UUID) error {
 		return uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", conv.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", "itemId", itemID)
 
 	return nil
 }

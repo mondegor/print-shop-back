@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
@@ -112,7 +111,7 @@ func (uc *MoveStockContainer) Execute(ctx context.Context, item dto.MoveStockCon
 		}
 	}
 
-	uc.eventEmitter.Emit(ctx, "Move", conv.Group{"accountId": item.AccountID, "stockId": stock.ID, "newStockId": newStock.ID})
+	uc.eventEmitter.Emit(ctx, "Move", "accountId", item.AccountID, "stockId", stock.ID, "newStockId", newStock.ID)
 
 	// TODO: через событие сделать
 	if err = uc.useCaseRefreshLocations.Execute(ctx, []uint64{newStock.LocationID, stock.LocationID}); err != nil {

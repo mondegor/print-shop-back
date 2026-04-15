@@ -8,6 +8,7 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
+	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 
 	"github.com/mondegor/print-shop-back/internal/app"
@@ -37,7 +38,12 @@ func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Proce
 		cacheget.WithTaskReloadSettingsOpts(
 			task.WithCaptionPrefix("Settings/"),
 			task.WithStartup(true),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Settings.ReloadSettings.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Settings.ReloadSettings.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Settings.ReloadSettings.Timeout),
 			task.WithSignalDo(
 				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Settings.ReloadSettings.NotificationChannel),

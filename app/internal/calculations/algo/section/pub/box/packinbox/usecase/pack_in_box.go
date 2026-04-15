@@ -6,7 +6,6 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/util/conv"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
@@ -72,7 +71,7 @@ func (uc *BoxPackInBox) Calc(ctx context.Context, data dto.ParsedData) (model.Bo
 		}
 	}
 
-	uc.eventEmitter.Emit(ctx, "Calc", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", "data", data)
 
 	return model.BoxPackInBoxResponse{
 		FullBox:          fullBox,

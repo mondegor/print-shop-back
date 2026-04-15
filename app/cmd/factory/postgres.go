@@ -21,7 +21,7 @@ import (
 
 // InitPostgres - создаёт объект mrpostgres.ConnAdapter.
 func InitPostgres(opts app.Options) (*mrpostgres.ConnAdapter, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	cfg := opts.Cfg.Storage

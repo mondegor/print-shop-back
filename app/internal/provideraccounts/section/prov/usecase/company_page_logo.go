@@ -14,7 +14,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrmodel"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
 	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
@@ -96,7 +95,7 @@ func (uc *CompanyPageLogo) StoreFile(ctx context.Context, accountID uuid.UUID, i
 		return uc.errorWrapper.Wrap(err, "accountId", accountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "StoreFile", conv.Group{"accountId": accountID, "path": newLogoPath, "old-path": oldLogoMeta.Path})
+	uc.eventEmitter.Emit(ctx, "StoreFile", "accountId", accountID, "path", newLogoPath, "oldPath", oldLogoMeta.Path)
 	uc.removeLogoFile(ctx, oldLogoMeta.Path, newLogoPath)
 
 	return nil
@@ -123,7 +122,7 @@ func (uc *CompanyPageLogo) RemoveFile(ctx context.Context, accountID uuid.UUID) 
 		return uc.errorWrapper.Wrap(err, "accountId", accountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "RemoveFile", conv.Group{"accountId": accountID, "meta": logoMeta})
+	uc.eventEmitter.Emit(ctx, "RemoveFile", "accountId", accountID, "meta", logoMeta)
 	uc.removeLogoFile(ctx, logoMeta.Path, "")
 
 	return nil

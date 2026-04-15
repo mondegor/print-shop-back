@@ -9,7 +9,6 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
 	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
@@ -93,7 +92,7 @@ func (uc *FormElement) Create(ctx context.Context, item entity.FormElement) (ite
 		return 0, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", conv.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	if err = uc.orderingAPI.MoveToLast(ctx, itemID, uc.storage.NewCondition(item.FormID)); err != nil {
 		uc.logger.Error(ctx, "Create", "error", err)
@@ -127,7 +126,7 @@ func (uc *FormElement) Save(ctx context.Context, item entity.FormElement) error 
 		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", conv.Group{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", "itemId", item.ID, "tagVersion", tagVersion)
 
 	return nil
 }
@@ -151,7 +150,7 @@ func (uc *FormElement) Remove(ctx context.Context, itemID uint64) error {
 		return uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", conv.Group{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", "itemId", itemID)
 
 	return nil
 }
@@ -171,7 +170,7 @@ func (uc *FormElement) MoveAfterID(ctx context.Context, itemID, afterID uint64) 
 		return err
 	}
 
-	uc.eventEmitter.Emit(ctx, "Move", conv.Group{"id": itemID, "afterId": afterID})
+	uc.eventEmitter.Emit(ctx, "Move", "itemId", itemID, "afterId", afterID)
 
 	return nil
 }

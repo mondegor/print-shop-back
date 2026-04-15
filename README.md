@@ -88,6 +88,7 @@ Web сервис для расчёта стоимости и времени из
 
 ## Панели управления развёрнутой инфраструктуры
 - TRAEFIK: http://traefik.local/ (admin 12345678);
+- MINIO: http://minio.local/ (admin 12345678);
 - API: http://api.print-shop.local/;
 - HEALTH: http://print-shop.internal/health;
 - INFO: http://print-shop.internal/system-info;
@@ -96,6 +97,7 @@ Web сервис для расчёта стоимости и времени из
 ### Использование локальных доменов
 Необходимо в hosts добавить следующие записи:
 - `127.0.0.1 traefik.local`
+- `127.0.0.1 minio.local`
 - `127.0.0.1 print-shop.local`
 - `127.0.0.1 api.print-shop.local`
 - `127.0.0.1 print-shop.internal`

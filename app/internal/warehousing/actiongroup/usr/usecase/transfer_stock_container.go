@@ -6,7 +6,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
@@ -109,7 +108,7 @@ func (uc *TransferStockContainer) Execute(ctx context.Context, item dto.Transfer
 		return uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Transfer", conv.Group{"accountId": item.AccountID, "stocks": item.Stocks})
+	uc.eventEmitter.Emit(ctx, "Transfer", "accountId", item.AccountID, "stocks", item.Stocks)
 
 	return nil
 }

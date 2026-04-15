@@ -5,7 +5,6 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
 	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
@@ -63,7 +62,7 @@ func (uc *SheetPackInStack) Calc(ctx context.Context, data dto.ParsedData) (mode
 		}
 	}
 
-	uc.eventEmitter.Emit(ctx, "Calc", conv.Group{"data": data})
+	uc.eventEmitter.Emit(ctx, "Calc", "data", data)
 
 	return model.SheetPackInStackResponse{
 		FullProduct:   fullBox,

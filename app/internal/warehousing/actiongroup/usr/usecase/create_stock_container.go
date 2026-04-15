@@ -8,7 +8,6 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/conv"
 
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr"
 	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
@@ -155,13 +154,11 @@ func (uc *CreateStockContainer) Execute(ctx context.Context, item dto.CreateCont
 			uc.eventEmitter.Emit(
 				ctx,
 				"Create",
-				conv.Group{
-					"accountId":   item.AccountID,
-					"itemCode":    item.Code,
-					"containerId": s.ContainerID,
-					"stockID":     s.ID,
-					"locationID":  item.LocationID,
-				},
+				"accountId", item.AccountID,
+				"itemCode", item.Code,
+				"containerId", s.ContainerID,
+				"stockID", s.ID,
+				"locationID", item.LocationID,
 			)
 
 			// TODO: через событие сделать

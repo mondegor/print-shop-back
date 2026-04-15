@@ -9,10 +9,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.9.1
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20260412192423-83c5a1d5ac8a
-	github.com/mondegor/go-storage v0.17.2-0.20260412192135-88e18f0be87a
-	github.com/mondegor/go-sysmess v0.15.4-0.20260412191603-cd3e134516c5
-	github.com/mondegor/go-webcore v0.29.3-0.20260412191846-aaf21c36bb77
+	github.com/mondegor/go-components v0.8.3-0.20260415221902-f0dfac215673
+	github.com/mondegor/go-storage v0.17.2-0.20260415221540-8aa6e4d81b50
+	github.com/mondegor/go-sysmess v0.15.4-0.20260415203103-9d272eaf6424
+	github.com/mondegor/go-webcore v0.29.3-0.20260415203708-f4c1bc3b0945
 	github.com/oklog/run v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
@@ -38,13 +38,13 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/distribution/reference v0.6.0 // indirect
-	github.com/docker/go-connections v0.6.0 // indirect
+	github.com/docker/go-connections v0.7.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
-	github.com/getsentry/sentry-go v0.45.0 // indirect
+	github.com/getsentry/sentry-go v0.45.1 // indirect
 	github.com/go-chi/chi/v5 v5.2.5 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
@@ -101,7 +101,7 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/minio v0.42.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.42.0 // indirect
 	github.com/testcontainers/testcontainers-go/modules/redis v0.42.0 // indirect
-	github.com/tinylib/msgp v1.6.3 // indirect
+	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect

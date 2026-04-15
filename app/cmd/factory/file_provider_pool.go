@@ -13,16 +13,25 @@ import (
 
 // InitFileProviderPool - создаёт объект mrstorage.FileProviderPool.
 func InitFileProviderPool(logger mrlog.Logger, tracer mrtrace.Tracer, cfg config.Config) (*mrstorage.FileProviderPool, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	mrlog.Info(logger, "Create and init file provider pool")
 
 	pool := mrstorage.NewFileProviderPool()
 
-	fsAdapter := NewFileSystem(logger, cfg)
+	// fsAdapter := NewFileSystem(logger, cfg)
+	//
+	// if err := RegisterFileImageStorage(logger, tracer, cfg, pool, fsAdapter); err != nil {
+	// 	return nil, err
+	// }
 
-	if err := RegisterFileImageStorage(logger, tracer, cfg, pool, fsAdapter); err != nil {
+	minioAdapter, err := NewS3Minio(ctx, logger, tracer, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = RegisterS3ImageStorage(logger, cfg, pool, minioAdapter); err != nil {
 		return nil, err
 	}
 

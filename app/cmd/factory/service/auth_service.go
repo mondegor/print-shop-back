@@ -6,6 +6,7 @@ import (
 	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-sysmess/mrlog"
+	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/collect"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
@@ -44,7 +45,12 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 		collector.WithMessageCollectorOpts(
 			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
 			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.ReadyTimeout),
-			collect.WithFlushPeriod[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.FlushPeriod),
+			collect.WithFlushPeriodStrategy[dto.UserActivityLogMessage](
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.FlushPeriod,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			collect.WithHandlerTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.HandlerTimeout),
 			collect.WithBatchSize[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.BatchSize)),
 			collect.WithWorkersCount[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.WorkersCount)),
@@ -77,7 +83,12 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		scheduler.WithTaskCleanRecordsOpts(
 			task.WithCaptionPrefix("Auth/"),
 			task.WithStartup(false),
-			task.WithPeriod(opts.Cfg.TaskSchedule.Auth.CleanRecords.Period),
+			task.WithPeriodStrategy(
+				mrworker.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskSchedule.Auth.CleanRecords.Period,
+					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+				),
+			),
 			task.WithTimeout(opts.Cfg.TaskSchedule.Auth.CleanRecords.Timeout),
 		),
 	)
