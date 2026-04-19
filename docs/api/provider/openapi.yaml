@@ -1,13 +1,10 @@
----
 openapi: 3.0.3
 info:
-  version: v0.6.0
+  version: LATEST
   title: Protected Provider API print-shop
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
-  contact:
-    name: Andrey Nazarov
   description: |-
     Protected REST Provider API проекта print-shop
 
@@ -35,10 +32,11 @@ servers:
     description: Local Domain
   - url: http://localhost:8080/prov
     description: Local Host
+security:
+  - bearerAuth: []
 tags:
   - name: Account.CompanyPage
     description: Protected Providers API. Company page of account
-
 paths:
   /v1/account/company-page:
     get:
@@ -47,29 +45,19 @@ paths:
       operationId: getCompanyPage
       tags:
         - Account.CompanyPage
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
+        '200':
           description: Получена информация о странице компании текущего аккаунта
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Response.Model.CompanyPage"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/CompanyPage.Response.Model.CompanyPage'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     patch:
       summary: Метод сохранения страницы компании
       description: |-
@@ -79,38 +67,26 @@ paths:
         - rewriteName: required,unique,min=4,max=32,pattern=rewrite_name
         - pageTitle: required,max=128
         - siteURL: omitempty,max=512,pattern=http_url
-
       operationId: storeCompanyPage
       tags:
         - Account.CompanyPage
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage"
-
+              $ref: '#/components/schemas/CompanyPage.Request.Model.StoreCompanyPage'
       responses:
-        "204":
+        '204':
           description: Информация о страницы компании текущего аккаунта успешно сохранена
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/account/company-page/status:
     patch:
       summary: Метод изменения статуса публикации страницы компании
@@ -119,38 +95,26 @@ paths:
 
         **Ограничения и ошибки полей:**
         - status: required,enum | ErrSwitchStatusRejected
-
       operationId: changeCompanyPageStatus
       tags:
         - Account.CompanyPage
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus"
-
+              $ref: '#/components/schemas/CompanyPage.Request.Model.ChangePageStatus'
       responses:
-        "204":
+        '204':
           description: Статус публикации страницы компании текущего аккаунта успешно изменён
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/account/company-page/logo:
     patch:
       summary: Метод сохранения логотипа компании
@@ -160,19 +124,9 @@ paths:
 
         **Ограничения и ошибки полей:**
         - file: size=100Kb; ext=[.jpg, .png]
-
       operationId: uploadCompanyPageLogo
       tags:
         - Account.CompanyPage
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
@@ -182,91 +136,101 @@ paths:
               properties:
                 companyLogo:
                   description: Бинарный файл с расширением JPEG, PNG
-                  type:  string
+                  type: string
                   format: binary
-                  maxLength: 262144 # 256Kb
-
+                  maxLength: 262144
       responses:
-        "204":
+        '204':
           description: Логотип компании текущего аккаунта был сохранён
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     delete:
       summary: Метод удаления логотипа компании
       description: Метод предназначен для удаления логотипа компании текущего аккаунта из БД
       operationId: removeCompanyPageLogo
       tags:
         - Account.CompanyPage
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "204":
+        '204':
           description: Логотип компании текущего пользователя успешно удалён
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "404":
-          $ref: "#/components/responses/App.ResponseJson.Error404"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
 components:
-
-  parameters:
-    App.Request.Header.AcceptLanguage:
-      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
-      name: Accept-Language
-      in: header
-      required: false
-      schema:
-        type: string
-      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
-
-    App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор клиента
-      name: X-Correlation-Id
-      in: header
-      required: false
-      schema:
-        type: string
-        format: uuid
-      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
-
-    App.Request.Query.Language:
-      description: Явное указание языка запроса. Приоритетнее Accept-Language.
-      name: lang
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "ru-RU"
-
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    App.Field.DateTimeCreatedAt:
+    CompanyPage.Enum.PublicStatus:
+      description: |-
+        Текущий статус публикации данных компании:
+        - HIDDEN - скрыта;
+        - PUBLISHED - опубликована страница компании;
+        - PUBLISHED_SHARED - опубликована страница компании и ссылки на неё;
+      type: string
+      enum:
+        - HIDDEN
+        - PUBLISHED
+        - PUBLISHED_SHARED
+      example: PUBLISHED
+    Api.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Field.DateTimeUpdatedAt:
+      example: '2023-01-01T12:00:00.000+03:00'
+    Api.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Response.Model.ErrorDetails: # RFC 9457 (Problem Details for HTTP APIs)
-      description: DTO следующих ошибок - 401, 403, 404, 5XX
+      example: '2023-01-01T12:00:00.000+03:00'
+    CompanyPage.Response.Model.CompanyPage:
+      description: DTO - публичная страница компании
+      type: object
+      required:
+        - rewriteName
+        - pageTitle
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        rewriteName:
+          description: Уникальное название страницы
+          type: string
+          maxLength: 64
+          example: company-name
+        pageTitle:
+          description: Заголовок страницы компании
+          type: string
+          maxLength: 128
+          example: Компания 0001
+        logoPath:
+          description: URL логотипа компании
+          type: string
+          maxLength: 128
+          example: https://example.com/company-logo.png
+        siteUrl:
+          description: URL страницы сайта компании
+          type: string
+          maxLength: 512
+          example: https://site.example.com/
+        status:
+          $ref: '#/components/schemas/CompanyPage.Enum.PublicStatus'
+        createdAt:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        updatedAt:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
       type: object
       required:
         - title
@@ -278,12 +242,12 @@ components:
         type:
           description: Ссылки на ресурс с описанием проблемы данного типа
           type: string
-          default: "about:blank"
-          example: "https://api.example.com/problem/type"
+          default: about:blank
+          example: https://api.example.com/problem/type
         title:
           description: Краткое описание проблемы, понятное человеку
           type: string
-          example: "Resource not found"
+          example: Resource not found
         status:
           description: Код HTTP статуса (дублируется из заголовка)
           type: integer
@@ -291,22 +255,63 @@ components:
         detail:
           description: Описание конкретно возникшей ошибки, понятное человеку
           type: string
-          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
         instance:
           description: Метод и URL запроса
           type: string
-          example: "PUSH /users/123456"
+          example: POST /users/123456
         time:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
+          example: '2023-01-01T12:00:00.000+03:00'
         error_trace_id:
           description: Идентификатор экземпляра конкретной ошибки
           type: string
-          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
-
-    App.Response.Model.Error400:
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    CompanyPage.Request.Model.StoreCompanyPage:
+      description: DTO сохранения публичной страницы компании
+      type: object
+      required:
+        - rewriteName
+        - pageTitle
+      properties:
+        rewriteName:
+          description: Уникальное название страницы
+          type: string
+          maxLength: 64
+          example: company-name
+        pageTitle:
+          description: Заголовок страницы компании
+          type: string
+          maxLength: 128
+          example: Компания 0001
+        siteUrl:
+          description: URL страницы сайта компании
+          type: string
+          maxLength: 256
+          example: https://site.example.com/
+    Api.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: attributeName
+        detail:
+          description: Описание ошибки
+          type: string
+          example: Атрибут не может быть пустым | Указано недопустимое значение атрибута
+    Api.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Response.Model.ErrorAttribute'
+    Api.Response.Model.Error400:
       description: DTO ошибки 400
       type: object
       required:
@@ -322,156 +327,48 @@ components:
         instance:
           description: Метод и URL запроса
           type: string
-          example: "PUSH /users/123456"
+          example: POST /users/123456
         errors:
-          $ref: "#/components/schemas/App.Response.Model.ErrorList"
+          $ref: '#/components/schemas/Api.Response.Model.ErrorList'
         time:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Response.Model.ErrorList:
-      description: DTO списка пользовательских ошибок 400
-      type: array
-      items:
-        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
-
-    App.Response.Model.ErrorAttribute:
-      description: DTO пользовательской ошибки 400
-      type: object
-      required:
-        - code
-        - detail
-      properties:
-        code:
-          description: Название атрибута, где произошла ошибка
-          type: string
-          example: "attributeName"
-        detail:
-          description: Описание ошибки
-          type: string
-          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
-
-    Custom.Enum.CompanyPublicStatus:
-      description: |-
-        Текущий статус публикации данных компании:
-        - HIDDEN - скрыта;
-        - PUBLISHED - опубликована страница компании;
-        - PUBLISHED_SHARED - опубликована страница компании и ссылки на неё;
-      type: string
-      enum:
-        - HIDDEN
-        - PUBLISHED
-        - PUBLISHED_SHARED
-      example: "PUBLISHED"
-
-    CompanyPage.ProvidersAPI.Request.Model.StoreCompanyPage:
-      description: DTO сохранения публичной страницы компании
-      type: object
-      required:
-        - rewriteName
-        - pageTitle
-      properties:
-        rewriteName:
-          description: Уникальное название страницы
-          type: string
-          maxLength: 64
-          example: "company-name"
-        pageTitle:
-          description: Заголовок страницы компании
-          type: string
-          maxLength: 128
-          example: "Компания 0001"
-        siteUrl:
-          description: URL страницы сайта компании
-          type: string
-          maxLength: 256
-          example: "https://site.example.com/"
-
-    CompanyPage.ProvidersAPI.Request.Model.ChangePageStatus:
+          example: '2023-01-01T12:00:00.000+03:00'
+    CompanyPage.Request.Model.ChangePageStatus:
       description: DTO изменения статуса публикации страницы компании
       type: object
       properties:
         status:
-          $ref: "#/components/schemas/Custom.Enum.CompanyPublicStatus"
-
-    CompanyPage.ProvidersAPI.Response.Model.CompanyPage:
-      description: DTO - публичная страница компании
-      type: object
-      required:
-        - rewriteName
-        - pageTitle
-        - status
-        - createdAt
-        - updatedAt
-      properties:
-        rewriteName:
-          description: Уникальное название страницы
-          type: string
-          maxLength: 64
-          example: "company-name"
-        pageTitle:
-          description: Заголовок страницы компании
-          type: string
-          maxLength: 128
-          example: "Компания 0001"
-        logoPath:
-          description: URL логотипа компании
-          type: string
-          maxLength: 128
-          example: "https://example.com/company-logo.png"
-        siteUrl:
-          description: URL страницы сайта компании
-          type: string
-          maxLength: 512
-          example: "https://site.example.com/"
-        status:
-          $ref: "#/components/schemas/Custom.Enum.CompanyPublicStatus"
-        createdAt:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updatedAt:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-
+          $ref: '#/components/schemas/CompanyPage.Enum.PublicStatus'
   responses:
-    App.ResponseJson.Error400:
-      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
-      content:
-        application/json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.Error400"
-
-    App.ResponseJson.Error404:
-      description: Запрашиваемый ресурс не был найден
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error5XX:
-      description: Внутренняя ошибка сервера
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error401:
+    Api.ResponseJson.Error401:
       description: Пользователь не был аутентифицирован
       content:
         application/problem+json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error403:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error403:
       description: Пользователю с текущими правами доступ отклонён
       content:
         application/problem+json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-  securitySchemes:
-    bearerAuth:
-      description: https://www.rfc-editor.org/rfc/rfc6750
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.Error400'
+    Api.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'

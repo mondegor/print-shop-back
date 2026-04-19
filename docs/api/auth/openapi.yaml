@@ -1,13 +1,10 @@
----
 openapi: 3.0.3
 info:
-  version: v0.2.0
+  version: LATEST
   title: Auth API print-shop
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
-  contact:
-    name: Andrey Nazarov
   description: |-
     Auth REST API проекта print-shop
     - При создании нового аккаунта, пользователь, в качестве логина должен указать свой емаил, на который будет отправлен код, для подтверждения емаила и активации аккаунта;
@@ -43,23 +40,19 @@ servers:
     description: Local Domain
   - url: http://localhost:8080/auth
     description: Local Host
-
+security:
+  - bearerAuth: []
 tags:
   - name: Auth
     description: Auth API
-
   - name: Auth.Check
     description: Auth API Helps to check user data
-
   - name: Auth.Operation
     description: Auth API Confirmation operations
-
   - name: Auth.Security
     description: Auth API User security methods change protected user properties
-
   - name: Auth.Sessions
     description: Auth API User Sessions
-
 paths:
   /v1/signup:
     post:
@@ -76,32 +69,22 @@ paths:
       operationId: createUser
       tags:
         - Auth
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
+      security: []
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Request.Model.CreateUser"
-
+              $ref: '#/components/schemas/Auth.Request.Model.CreateUser'
       responses:
-        "200":
-          # На емаил было отправлено сообщение с кодом подтверждения создания пользователя
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Eмаил должен быть указан
-          # Eмаил некорректен или уже привязан к другому пользователю
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/signin:
     post:
       summary: Auth/R2. Метод авторизации пользователя в системе
@@ -124,34 +107,22 @@ paths:
       operationId: authorizeUser
       tags:
         - Auth
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
+      security: []
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Request.Model.AuthorizeUser"
-
+              $ref: '#/components/schemas/Auth.Request.Model.AuthorizeUser'
       responses:
-        "200":
-          # На емаил/телефон было отправлено сообщение с кодом подтверждения авторизации пользователя
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Емаил/телефон должен быть указан
-          # Емаил/телефон некорректен или не существует такого пользователя
-          # Пользователь под емаилом/телефоном заблокирован в системе
-          # Пользователь отправил слишком много SMS за короткое время с указанного телефона (remainingResends <= 0);
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/session:
     post:
       summary: Auth/R3. Метод открытия новой сессии пользователя
@@ -166,41 +137,26 @@ paths:
       operationId: openUserSession
       tags:
         - Auth
-
+      security: []
       parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-        - $ref: "#/components/parameters/Auth.Request.Header.Web.UseCookie"
-
+        - $ref: '#/components/parameters/Auth.Request.Header.Web.UseCookie'
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Request.Model.LoginByToken"
-
+              $ref: '#/components/schemas/Auth.Request.Model.LoginByToken'
       responses:
-        "200":
-          # На емаил/телефон было отправлено сообщение с кодом подтверждения авторизации пользователя
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "201":
-          # Открыта новая сессия пользователя и сгенерированы Refresh и Access токены
-          # Регенерированы Refresh и Access токены для текущей сессии пользователя
-          $ref: "#/components/responses/Auth.ResponseJson.SuccessAccess"
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          # Код подтверждения операции должен быть указан
-          # Код подтверждения операции некорректен
-          # Исчерпано кол-во попыток подтверждения операции
-          $ref: "#/components/responses/Auth.ResponseJson.Error400"
-        "403":
-          # Токен операции / refresh токен некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '201':
+          $ref: '#/components/responses/Auth.ResponseJson.SuccessAccess'
+        '400':
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     patch:
       summary: Auth/R4. Метод продления текущей сессии пользователя
       description: |-
@@ -217,57 +173,37 @@ paths:
       operationId: continueUserSession
       tags:
         - Auth
-
+      security: []
       parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-        - $ref: "#/components/parameters/Auth.Request.Cookie.Web.RefreshToken"
-
+        - $ref: '#/components/parameters/Auth.Request.Cookie.Web.RefreshToken'
       requestBody:
         required: false
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Request.Model.ContinueSession"
-
+              $ref: '#/components/schemas/Auth.Request.Model.ContinueSession'
       responses:
-        "201":
-          # Открыта новая сессия пользователя и сгенерированы Refresh и Access токены
-          # Регенерированы Refresh и Access токены для текущей сессии пользователя
-          $ref: "#/components/responses/Auth.ResponseJson.SuccessAccess"
-        "400":
-          # Refresh токен должен быть указан
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "403":
-          # Токен операции / refresh токен некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '201':
+          $ref: '#/components/responses/Auth.ResponseJson.SuccessAccess'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     delete:
       summary: Auth/R5. Метод закрытия текущей сессий пользователя
       description: Метод предназначен для закрытия текущей сессии пользователя
       operationId: closeUserSession
       tags:
         - Auth
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "204":
+        '204':
           description: Текущая сессия пользователя была закрыта
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/user:
     get:
       summary: Auth/R6. Метод получения информации о пользователе
@@ -275,27 +211,17 @@ paths:
       operationId: getUserInfo
       tags:
         - Auth
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
+        '200':
           description: Сформирован ответ с информацией о текущем пользователе
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Auth.Response.Model.UserInfo"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Auth.Response.Model.UserInfo'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/check/check-login:
     post:
       summary: Auth/CK/R1. Метод проверяет свободен ли указанный емаил/телефон
@@ -303,28 +229,20 @@ paths:
       operationId: checkLogin
       tags:
         - Auth.Check
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
+      security: []
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Check.Request.Model.CheckLogin"
-
+              $ref: '#/components/schemas/Auth.Check.Request.Model.CheckLogin'
       responses:
-        "204":
+        '204':
           description: Указанный емаил/телефон свободен для регистрации пользователя
-        "400": # Емаил/телефон должен быть указан
-          # Емаил/телефон некорректен или уже используется другим пользователем
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/check/calc-password-strength:
     post:
       summary: Auth/CK/R2. Метод рассчитывает надёжность указанного пароля
@@ -332,32 +250,24 @@ paths:
       operationId: calcPasswordStrength
       tags:
         - Auth.Check
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
+      security: []
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Check.Request.Model.CalcPasswordStrength"
-
+              $ref: '#/components/schemas/Auth.Check.Request.Model.CalcPasswordStrength'
       responses:
-        "200":
+        '200':
           description: Сформирован ответ с информацией о надёжности пароля
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Auth.Check.Response.Model.CalcPasswordStrength"
-        "400":
-          # Пароль должен быть указан
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Auth.Check.Response.Model.CalcPasswordStrength'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/check/generate-password:
     post:
       summary: Auth/CK/R3. Метод генерации пароля
@@ -365,27 +275,17 @@ paths:
       operationId: generatePassword
       tags:
         - Auth.Check
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
+        '200':
           description: Сгенерирован новый пароль
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Auth.Check.Response.GeneratedPassword"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Auth.Check.Response.GeneratedPassword'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/operation/confirm:
     patch:
       summary: Auth/OP/R1. Метод подтверждения операции
@@ -393,40 +293,23 @@ paths:
       operationId: confirmUserOperation
       tags:
         - Auth.Operation
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Operation.Request.Model.ConfirmOperation"
-
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.ConfirmOperation'
       responses:
-        "200":
-          # Подтверждение операции очередным методом прошло успешно, необходимо подтвердить операцию следующим методом
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "204":
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '204':
           description: Указанная операция была подтверждена
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          # Код подтверждения операции должен быть указан
-          # Код подтверждения операции некорректен
-          # Исчерпано кол-во попыток подтверждения операции
-          $ref: "#/components/responses/Auth.ResponseJson.Error400"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/operation/resend:
     patch:
       summary: Auth/OP/R2. Метод повторной отправки кода подтверждения
@@ -434,35 +317,21 @@ paths:
       operationId: resendUserOperationConfirmCode
       tags:
         - Auth.Operation
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Operation.Request.Model.OperationToken"
-
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.OperationToken'
       responses:
-        "200":
-          # На емаил/телефон было отправлено сообщение с кодом подтверждения операции
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/operation/revoke:
     patch:
       summary: Auth/OP/R3. Метод отзыва/отмены операции
@@ -470,34 +339,21 @@ paths:
       operationId: revokeUserOperation
       tags:
         - Auth.Operation
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Operation.Request.Model.OperationToken"
-
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.OperationToken'
       responses:
-        "204":
+        '204':
           description: Указанная операция была отозвана
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/email:
     post:
       summary: Auth/SC/R1. Метод создания операции на изменение емаила пользователя
@@ -517,34 +373,21 @@ paths:
       operationId: changeUserEmail
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Security.Request.Model.ChangeEmail"
-
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangeEmail'
       responses:
-        "200":
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Новый емаил должен быть указан
-          # Новый емаил некорректен или уже используется другим пользователем
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/phone:
     post:
       summary: Auth/SC/R2. Метод создания операции на установку/изменение телефона пользователя
@@ -564,35 +407,21 @@ paths:
       operationId: changeUserPhone
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Security.Request.Model.ChangePhone"
-
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangePhone'
       responses:
-        "200":
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Новый телефон должен быть указан
-          # Новый телефон некорректен или уже используется другим пользователем
-          # Пользователь отправил слишком много SMS за короткое время с указанного телефона (countSmsSend <= 0);
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/password:
     post:
       summary: Auth/SC/R3. Метод создания операции на установку/изменение пароля пользователя (2FA)
@@ -612,35 +441,21 @@ paths:
       operationId: changeUser2faPassword
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Security.Request.Model.ChangePassword"
-
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangePassword'
       responses:
-        "200":
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Новый пароль должен быть указан
-          # Новый пароль не соответствует требованием безопасности системы
-          # Текущий пароль указан неверно
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/totp:
     post:
       summary: Auth/SC/R4. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
@@ -660,66 +475,42 @@ paths:
       operationId: changeUser2faTotpGenerator
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Текущий одноразовый пароль (TOTP) указан неверно
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     patch:
       summary: Auth/SC/R5. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
       description: Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя
       operationId: applyUserOperationTotpGenerator
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Security.Request.Model.ApplyOperation"
-
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyOperation'
       responses:
-        "200":
+        '200':
           description: Операция пользователя на установку TOTP генератора была применена
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Auth.Security.Response.TotpGenerator"
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Auth.Security.Response.TotpGenerator'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/disable2fa:
     post:
       summary: Auth/SC/R6. Метод создания операции отключения 2FA аутентификацию пользователя
@@ -739,27 +530,15 @@ paths:
       operationId: disableUser2fa
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
-          $ref: "#/components/responses/Auth.ResponseJson.WaitingConfirmOperation"
-        "400":
-          # Текущий пароль или одноразовый пароль (TOTP) или аварийный пароль указан неверно
-          # 2FA аутентификация уже отключена
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/apply-operation:
     patch:
       summary: Auth/SC/R7. Метод применяет подтверждённую пользователем операцию
@@ -767,36 +546,23 @@ paths:
       operationId: applyUserOperation
       tags:
         - Auth.Security
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Auth.Security.Request.Model.ApplyOperation"
-
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyOperation'
       responses:
-        "204":
+        '204':
           description: Указанная пользователем операция была применена
-        "400":
-          # Токен операции должен быть указан
-          # Токен операции некорректен или недействителен
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/sessions:
     get:
       summary: Auth/SES/R1. Метод получения списка открытых сессий пользователя
@@ -804,245 +570,65 @@ paths:
       operationId: getUserSessions
       tags:
         - Auth.Sessions
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       responses:
-        "200":
+        '200':
           description: Сформирован ответ со списком открытых сессий пользователя
           content:
             application/json;charset=UTF-8:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Auth.Sessions.Response.Model.UserSession"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                  $ref: '#/components/schemas/Auth.Sessions.Response.Model.UserSession'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/sessions/close:
-    post:
-      summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
-      description: Метод предназначен для закрытия указанных открытых сессий пользователя
-      operationId: closeUserSessions
-      tags:
-        - Auth.Sessions
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
-      requestBody:
-        required: true
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: "#/components/schemas/Auth.Sessions.Request.Model.CloseSessions"
-
-      responses:
-        "204":
-          description: Указанные сессии пользователя были закрыты
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+    /v1/sessions/close:
+      post:
+        summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
+        description: Метод предназначен для закрытия указанных открытых сессий пользователя
+        operationId: closeUserSessions
+        tags:
+          - Auth.Sessions
+        requestBody:
+          required: true
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: ../components/models/Auth.Sessions.Request.Model.CloseSessions.yaml
+        responses:
+          '204':
+            description: Указанные сессии пользователя были закрыты
+          '401':
+            $ref: ../_shared/components/responses/Api.ResponseJson.Error401.yaml
+          '500':
+            $ref: ../_shared/components/responses/Api.ResponseJson.Error5xx.yaml
 components:
-
-  headers:
-    Auth.Response.Cookie.Web.RefreshToken:
-      schema:
-        description: Используется платформой WEB
-        type: string
-        example: RTID=02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704; Path=/; HttpOnly
-  parameters:
-    App.Request.Header.AcceptLanguage:
-      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
-      name: Accept-Language
-      in: header
-      required: false
-      schema:
-        type: string
-      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
-
-    App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор клиента
-      name: X-Correlation-Id
-      in: header
-      required: false
-      schema:
-        type: string
-        format: uuid
-      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
-
-    App.Request.Query.Language:
-      description: Явное указание языка запроса. Приоритетнее Accept-Language.
-      name: lang
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "ru-RU"
-
-    Auth.Request.Cookie.Web.RefreshToken:
-      name: RTID
-      in: cookie
-      schema:
-        description: Используется платформой WEB
-        type: string
-        minLength: 64
-        maxLength: 128
-      example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
-
-    Auth.Request.Header.Web.UseCookie:
-      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
-      name: X-Use-Cookie
-      in: header
-      required: false
-      schema:
-        type: boolean
-      example: true
-
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    App.Field.DateTimeCreatedAt:
-      description: Дата и время создания записи (UTC)
-      type: string
-      format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Field.DateTimeUpdatedAt:
-      description: Дата и время обновления записи (UTC)
-      type: string
-      format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Response.Model.ErrorDetails: # RFC 9457 (Problem Details for HTTP APIs)
-      description: DTO следующих ошибок - 401, 403, 404, 5XX
+    Auth.Request.Model.CreateUser:
       type: object
       required:
-        - title
-        - status
-        - detail
-        - instance
-        - time
+        - user_email
       properties:
-        type:
-          description: Ссылки на ресурс с описанием проблемы данного типа
+        realm:
+          description: Область, пространство, где должен быть зарегистрирован пользователь
           type: string
-          default: "about:blank"
-          example: "https://api.example.com/problem/type"
-        title:
-          description: Краткое описание проблемы, понятное человеку
+          maxLength: 32
+          example: domain_name/user_group
+        user_email:
+          description: Eмаил, который будет использован в качестве логина при создании пользователя
           type: string
-          example: "Resource not found"
-        status:
-          description: Код HTTP статуса (дублируется из заголовка)
-          type: integer
-          example: 404
-        detail:
-          description: Описание конкретно возникшей ошибки, понятное человеку
-          type: string
-          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
-        instance:
-          description: Метод и URL запроса
-          type: string
-          example: "PUSH /users/123456"
-        time:
-          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
-          type: string
-          format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
-        error_trace_id:
-          description: Идентификатор экземпляра конкретной ошибки
-          type: string
-          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
-
-    App.Response.Model.Error400:
-      description: DTO ошибки 400
-      type: object
-      required:
-        - status
-        - instance
-        - errors
-        - time
-      properties:
-        status:
-          description: Код HTTP статуса (дублируется из заголовка)
-          type: integer
-          example: 400
-        instance:
-          description: Метод и URL запроса
-          type: string
-          example: "PUSH /users/123456"
-        errors:
-          $ref: "#/components/schemas/App.Response.Model.ErrorList"
-        time:
-          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
-          type: string
-          format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Response.Model.ErrorList:
-      description: DTO списка пользовательских ошибок 400
-      type: array
-      items:
-        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
-
-    App.Response.Model.ErrorAttribute:
-      description: DTO пользовательской ошибки 400
-      type: object
-      required:
-        - code
-        - detail
-      properties:
-        code:
-          description: Название атрибута, где произошла ошибка
-          type: string
-          example: "attributeName"
-        detail:
-          description: Описание ошибки
-          type: string
-          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
-
-    Custom.Enum.UserAuth2fa:
-      description: |-
-        Тип двухфакторной аутентификации пользователя:
-        - PASSWORD - дополнительная авторизация по паролю;
-        - TOTP - дополнительная авторизация по TOTP;
-        - DISABLED - отключена;
-      type: string
-      enum:
-        - PASSWORD
-        - TOTP
-        - DISABLED
-      example: "PASSWORD"
-
-    Custom.Enum.UserStatus:
-      description: |-
-        Текущий статус пользователя:
-        - DRAFT - черновик;
-        - ENABLED - используется;
-        - DISABLED - отключён (админом);
-        - BLOCKED - заблокирован (системой);
-      type: string
-      enum:
-        - DRAFT
-        - ENABLED
-        - DISABLED
-        - BLOCKED
-      example: "ENABLED"
-
+          format: email
+          minLength: 7
+          maxLength: 64
+          example: user-email@example.com
     Auth.Enum.ConfirmMethod:
       description: |-
         Метод подтверждения подлинности пользователя:
@@ -1056,90 +642,7 @@ components:
         - PHONE
         - PASSWORD
         - TOTP
-      example: "EMAIL"
-
-    Auth.Enum.PasswordStrength:
-      description: |-
-        Виды надёжности пароля:
-        - NOT_RATED - пароль без оценки;
-        - WEAK - слабый пароль;
-        - MIDDLE - средний пароль;
-        - STRONG - надёжный пароль;
-        - THE_BEST - максимально надёжный пароль;
-      type: string
-      enum:
-        - NOT_RATED
-        - WEAK
-        - MIDDLE
-        - STRONG
-        - THE_BEST
-      example: "STRONG"
-
-    Auth.Request.Model.CreateUser:
-      type: object
-      required:
-        - user_email
-      properties:
-        realm:
-          description: Область, пространство, где должен быть зарегистрирован пользователь
-          type: string
-          maxLength: 32
-          example: "domain_name/user_group"
-        user_email:
-          description: Eмаил, который будет использован в качестве логина при создании пользователя
-          type: string
-          format: email
-          minLength: 7
-          maxLength: 64
-          example: "user-email@example.com"
-
-    Auth.Request.Model.AuthorizeUser:
-      type: object
-      required:
-        - user_login
-      properties:
-        realm:
-          description: Область, пространство, где должен быть авторизован пользователь
-          type: string
-          maxLength: 32
-          example: "domain_name/user_group"
-        user_login:
-          description: Eмаил/телефон пользователя зарегистрированного в системе
-          type: string
-          minLength: 7
-          maxLength: 64
-          example: "user-email@example.com"
-
-    Auth.Request.Model.LoginByToken:
-      type: object
-      required:
-        - token
-      properties:
-        token:
-          description: Токен подтверждённой операции пользователем или apiToken
-          type: string
-          minLength: 64
-          maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-        secret:
-          description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
-          type: string
-          minLength: 4
-          maxLength: 32
-          example: "183947"
-
-    Auth.Request.Model.ContinueSession:
-      type: object
-      required:
-        - refresh_token
-      properties:
-        refresh_token:
-          description: Ранее выданный при авторизации/продолжении сессии refreshToken
-          type: string
-          minLength: 64
-          maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-
+      example: EMAIL
     Auth.Response.Model.WaitingConfirmOperation:
       type: object
       required:
@@ -1153,9 +656,9 @@ components:
           type: string
           minLength: 64
           maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
         confirm_method:
-          $ref: "#/components/schemas/Auth.Enum.ConfirmMethod"
+          $ref: '#/components/schemas/Auth.Enum.ConfirmMethod'
         remaining_attempts:
           description: Оставшееся количество попыток ввода кода подтверждения
           type: integer
@@ -1174,11 +677,143 @@ components:
           example: 1
         message:
           type: string
-          example: "Вы были успешно зарегистрированы, на ваш емаил/телефон отправлен код, с помощью которого необходимо подтвердить регистрацию |
-                    Для входа в систему необходимо ввести код подтверждения, отправленный на ваш емаил/телефон |
-                    На новый емаил был выслан код для подтверждения его владением |
-                    На текущий емаил был выслан код для подтверждения изменения емаила/телефона/пароля"
-
+          example: Вы были успешно зарегистрированы, на ваш емаил/телефон отправлен код, с помощью которого необходимо подтвердить регистрацию | Для входа в систему необходимо ввести код подтверждения, отправленный на ваш емаил/телефон | На новый емаил был выслан код для подтверждения его владением | На текущий емаил был выслан код для подтверждения изменения емаила/телефона/пароля
+    Api.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: attributeName
+        detail:
+          description: Описание ошибки
+          type: string
+          example: Атрибут не может быть пустым | Указано недопустимое значение атрибута
+    Api.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Response.Model.ErrorAttribute'
+    Api.Response.Model.Error400:
+      description: DTO ошибки 400
+      type: object
+      required:
+        - status
+        - instance
+        - errors
+        - time
+      properties:
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 400
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        errors:
+          $ref: '#/components/schemas/Api.Response.Model.ErrorList'
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - status
+        - detail
+        - instance
+        - time
+      properties:
+        type:
+          description: Ссылки на ресурс с описанием проблемы данного типа
+          type: string
+          default: about:blank
+          example: https://api.example.com/problem/type
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: Resource not found
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 404
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        error_trace_id:
+          description: Идентификатор экземпляра конкретной ошибки
+          type: string
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    Auth.Request.Model.AuthorizeUser:
+      type: object
+      required:
+        - user_login
+      properties:
+        realm:
+          description: Область, пространство, где должен быть авторизован пользователь
+          type: string
+          maxLength: 32
+          example: domain_name/user_group
+        user_login:
+          description: Eмаил/телефон пользователя зарегистрированного в системе
+          type: string
+          minLength: 7
+          maxLength: 64
+          example: user-email@example.com
+    Auth.Request.Model.LoginByToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен подтверждённой операции пользователем или apiToken
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        secret:
+          description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
+          type: string
+          minLength: 4
+          maxLength: 32
+          example: '183947'
+    Auth.Response.Model.SuccessAccess:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          type: string
+          example: 425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8
+        expires_in:
+          description: Оставшееся время жизни access токена в секундах
+          type: integer
+          example: 1800
+        refresh_token:
+          description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
+          type: string
+          example: 02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704
+        message:
+          type: string
+          example: Ваш аккаунт был успешно зарегистрирован | Доступ к вашему аккаунту разрешён
     Auth.Response.Model.ConfirmOperationStatus:
       type: object
       required:
@@ -1201,27 +836,73 @@ components:
           description: Количество оставшихся секунд до истечения срока действия подтверждения операции
           type: integer
           example: 1
-
-    Auth.Response.Model.SuccessAccess:
+    Auth.Request.Model.ContinueSession:
       type: object
       required:
-        - access_token
+        - refresh_token
       properties:
-        access_token:
-          type: string
-          example: "425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8"
-        expires_in:
-          description: Оставшееся время жизни access токена в секундах
-          type: integer
-          example: 1800
         refresh_token:
-          description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
+          description: Ранее выданный при авторизации/продолжении сессии refreshToken
           type: string
-          example: "02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704"
-        message:
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Api.Field.DateTimeUpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Auth.Enum.UserAuth2fa:
+      description: |-
+        Тип двухфакторной аутентификации пользователя:
+        - PASSWORD - дополнительная авторизация по паролю;
+        - TOTP - дополнительная авторизация по TOTP;
+        - DISABLED - отключена;
+      type: string
+      enum:
+        - PASSWORD
+        - TOTP
+        - DISABLED
+      example: PASSWORD
+    Api.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Auth.Response.Model.UserRealm:
+      type: object
+      required:
+        - name
+        - user_kind
+        - created_at
+        - updated_at
+      properties:
+        name:
           type: string
-          example: "Ваш аккаунт был успешно зарегистрирован | Доступ к вашему аккаунту разрешён"
-
+          maxLength: 32
+          example: domain_name/user_group
+        user_kind:
+          type: string
+          maxLength: 16
+          example: standard
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Auth.Enum.UserStatus:
+      description: |-
+        Текущий статус пользователя:
+        - DRAFT - черновик;
+        - ENABLED - используется;
+        - DISABLED - отключён (админом);
+        - BLOCKED - заблокирован (системой);
+      type: string
+      enum:
+        - DRAFT
+        - ENABLED
+        - DISABLED
+        - BLOCKED
+      example: ENABLED
     Auth.Response.Model.UserInfo:
       type: object
       required:
@@ -1239,55 +920,33 @@ components:
           type: string
           format: email
           maxLength: 64
-          example: "user-email@example.com"
+          example: user-email@example.com
         phone:
           type: string
           format: phone
           maxLength: 32
-          example: "+7 999 888 77 66"
+          example: +7 999 888 77 66
         lang:
           type: string
           maxLength: 5
-          example: "ru-RU"
+          example: ru-RU
         last_login_ip:
           type: string
-          example: "95.165.01.01"
+          example: 95.165.01.01
         last_logged_at:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
         auth_2fa_type:
-          $ref: "#/components/schemas/Custom.Enum.UserAuth2fa"
+          $ref: '#/components/schemas/Auth.Enum.UserAuth2fa'
         realms:
           type: array
           items:
-            $ref: "#/components/schemas/Auth.Response.Model.UserRealm"
+            $ref: '#/components/schemas/Auth.Response.Model.UserRealm'
         status:
-          $ref: "#/components/schemas/Custom.Enum.UserStatus"
+          $ref: '#/components/schemas/Auth.Enum.UserStatus'
         created_at:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
         updated_at:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-
-    Auth.Response.Model.UserRealm:
-      type: object
-      required:
-        - name
-        - user_kind
-        - created_at
-        - updated_at
-      properties:
-        name:
-          type: string
-          maxLength: 32
-          example: "domain_name/user_group"
-        user_kind:
-          type: string
-          maxLength: 16
-          example: "standard"
-        created_at:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updated_at:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
     Auth.Check.Request.Model.CheckLogin:
       type: object
       required:
@@ -1298,14 +957,13 @@ components:
           description: Область, пространство, где планируется регистрация
           type: string
           maxLength: 32
-          example: "domain_name/user_group"
+          example: domain_name/user_group
         user_login:
           description: Eмаил/телефон пользователя под которым планируется регистрация
           type: string
           minLength: 7
           maxLength: 64
-          example: "user-email@example.com"
-
+          example: user-email@example.com
     Auth.Check.Request.Model.CalcPasswordStrength:
       type: object
       required:
@@ -1316,16 +974,30 @@ components:
           type: string
           minLength: 8
           maxLength: 32
-          example: "L$QI.qA6eu7zG%7w"
-
+          example: L$QI.qA6eu7zG%7w
+    Auth.Enum.PasswordStrength:
+      description: |-
+        Виды надёжности пароля:
+        - NOT_RATED - пароль без оценки;
+        - WEAK - слабый пароль;
+        - MIDDLE - средний пароль;
+        - STRONG - надёжный пароль;
+        - THE_BEST - максимально надёжный пароль;
+      type: string
+      enum:
+        - NOT_RATED
+        - WEAK
+        - MIDDLE
+        - STRONG
+        - THE_BEST
+      example: STRONG
     Auth.Check.Response.Model.CalcPasswordStrength:
       type: object
       required:
         - strength
       properties:
         strength:
-          $ref: "#/components/schemas/Auth.Enum.PasswordStrength"
-
+          $ref: '#/components/schemas/Auth.Enum.PasswordStrength'
     Auth.Check.Response.GeneratedPassword:
       type: object
       required:
@@ -1336,20 +1008,7 @@ components:
           type: string
           minLength: 8
           maxLength: 32
-          example: "L$QI.qA6eu7zG%7w"
-
-    Auth.Operation.Request.Model.OperationToken:
-      type: object
-      required:
-        - token
-      properties:
-        token:
-          description: Токен операции, которая инициирована пользователем
-          type: string
-          minLength: 64
-          maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-
+          example: L$QI.qA6eu7zG%7w
     Auth.Operation.Request.Model.ConfirmOperation:
       description: DTO подтверждения операции, которая инициирована пользователем
       type: object
@@ -1362,14 +1021,24 @@ components:
           type: string
           minLength: 64
           maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
         secret:
           description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
           type: string
           minLength: 4
           maxLength: 32
-          example: "183947"
-
+          example: '183947'
+    Auth.Operation.Request.Model.OperationToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен операции, которая инициирована пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
     Auth.Security.Request.Model.ChangeEmail:
       type: object
       required:
@@ -1381,8 +1050,7 @@ components:
           format: email
           minLength: 7
           maxLength: 64
-          example: "new-user-email@example.com"
-
+          example: new-user-email@example.com
     Auth.Security.Request.Model.ChangePhone:
       type: object
       required:
@@ -1394,8 +1062,7 @@ components:
           format: phone
           minLength: 10
           maxLength: 32
-          example: "+7 999 888 77 66"
-
+          example: +7 999 888 77 66
     Auth.Security.Request.Model.ChangePassword:
       type: object
       required:
@@ -1406,8 +1073,7 @@ components:
           type: string
           minLength: 8
           maxLength: 32
-          example: "L$QI.qA6eu7zG%7w"
-
+          example: L$QI.qA6eu7zG%7w
     Auth.Security.Request.Model.ApplyOperation:
       type: object
       required:
@@ -1418,8 +1084,7 @@ components:
           type: string
           minLength: 64
           maxLength: 128
-          example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
-
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
     Auth.Security.Response.TotpGenerator:
       type: object
       required:
@@ -1430,26 +1095,7 @@ components:
           type: string
           minLength: 64
           maxLength: 256
-          example: "otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7"
-
-    Auth.Sessions.Request.Model.CloseSessions:
-      description: DTO закрытия указанных сессий текущего пользователя
-      type: object
-      required:
-        - hashes
-      properties:
-        hashes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Auth.Sessions.Request.Model.SessionHash"
-
-    Auth.Sessions.Request.Model.SessionHash:
-      description: Идентификатор сессии текущего пользователя
-      type: string
-      minLength: 16
-      maxLength: 16
-      example: "1f3bc817fb1d50cb"
-
+          example: otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
@@ -1463,64 +1109,28 @@ components:
         session_hash:
           description: Идентификатор открытой сессии
           type: string
-          example: "1f3bc817fb1d50cb"
+          example: 1f3bc817fb1d50cb
         app_name:
           description: Приложение, в котором открыта сессия
           type: string
-          example: "Web, Firefox"
+          example: Web, Firefox
         device_name:
           description: Название устройства, на котором открыта сессия
           type: string
-          example: "Device 1"
+          example: Device 1
         last_ip:
           description: IP адрес последнего посещения
           type: string
-          example: "95.165.01.01"
+          example: 95.165.01.01
         location:
           description: Местоположение на основе IP
           type: string
-          example: "Moscow, Russia"
+          example: Moscow, Russia
         is_current:
           description: Признак, что сессия является текущей
           type: boolean
           example: false
-
   responses:
-    App.ResponseJson.Error400:
-      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
-      content:
-        application/json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.Error400"
-
-    App.ResponseJson.Error404:
-      description: Запрашиваемый ресурс не был найден
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error5XX:
-      description: Внутренняя ошибка сервера
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error401:
-      description: Пользователь не был аутентифицирован
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error403:
-      description: Пользователю с текущими правами доступ отклонён
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
     Auth.ResponseJson.WaitingConfirmOperation:
       description: |
         - Ожидается подтверждение регистрации пользователя
@@ -1530,8 +1140,25 @@ components:
       content:
         application/json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/Auth.Response.Model.WaitingConfirmOperation"
-
+            $ref: '#/components/schemas/Auth.Response.Model.WaitingConfirmOperation'
+    Api.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.Error400'
+    Api.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
     Auth.ResponseJson.SuccessAccess:
       description: |
         - Пользователь успешно зарегистрирован в системе
@@ -1540,12 +1167,11 @@ components:
         - Refresh и Access токены перегенерированы
       headers:
         Set-Cookie:
-          $ref: "#/components/headers/Auth.Response.Cookie.Web.RefreshToken"
+          $ref: '#/components/headers/Auth.Response.Cookie.Web.RefreshToken'
       content:
         application/json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/Auth.Response.Model.SuccessAccess"
-
+            $ref: '#/components/schemas/Auth.Response.Model.SuccessAccess'
     Auth.ResponseJson.Error400:
       description: Некорректный токен операции или код подтверждения
       content:
@@ -1562,20 +1188,43 @@ components:
               instance:
                 description: Метод и URL запроса
                 type: string
-                example: "PUSH /users/123456"
+                example: POST /users/123456
               operation_status:
-                $ref: "#/components/schemas/Auth.Response.Model.ConfirmOperationStatus"
+                $ref: '#/components/schemas/Auth.Response.Model.ConfirmOperationStatus'
               errors:
-                $ref: "#/components/schemas/App.Response.Model.ErrorList"
+                $ref: '#/components/schemas/Api.Response.Model.ErrorList'
               time:
                 description: Время возникновения ошибки с точностью до миллисекунд (UTC)
                 type: string
                 format: date-time
-                example: "2023-01-01T12:00:00.000+03:00"
-
-  securitySchemes:
-    bearerAuth:
-      description: https://www.rfc-editor.org/rfc/rfc6750
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+                example: '2023-01-01T12:00:00.000+03:00'
+    Api.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+  parameters:
+    Auth.Request.Header.Web.UseCookie:
+      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
+      name: X-Use-Cookie
+      in: header
+      required: false
+      schema:
+        type: boolean
+      example: true
+    Auth.Request.Cookie.Web.RefreshToken:
+      name: RTID
+      in: cookie
+      schema:
+        description: Используется платформой WEB
+        type: string
+        minLength: 64
+        maxLength: 128
+      example: 02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704
+  headers:
+    Auth.Response.Cookie.Web.RefreshToken:
+      schema:
+        description: Используется платформой WEB
+        type: string
+        example: RTID=02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704; Path=/; HttpOnly

@@ -1,13 +1,10 @@
----
 openapi: 3.0.3
 info:
-  version: v0.6.0
+  version: LATEST
   title: Protected User API print-shop
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
-  contact:
-    name: Andrey Nazarov
   description: |-
     Protected REST User API проекта print-shop
 
@@ -35,456 +32,261 @@ servers:
     description: Local Domain
   - url: http://localhost:8080/user
     description: Local Host
+security:
+  - bearerAuth: []
 tags:
   - name: Warehousing.Container
     description: Protected API Warehousing containers
-
   - name: Warehousing.Stock
     description: Protected API Warehousing stocks
-
   - name: Warehousing.Store
     description: Protected API Warehousing stores
-
 paths:
   /v1/warehousing/containers:
     get:
       summary: Метод получения списка контейнеров
-      description: |-
-        Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
-
+      description: Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
       operationId: getContainerList
       tags:
         - Warehousing.Container
-
-      security:
-        - bearerAuth: []
-
       parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-        - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Query.Filter.SearchCode"
-        - $ref: "#/components/parameters/Warehousing.Containers.UserAPI.Request.Query.Filter.SearchTags"
-
+        - $ref: '#/components/parameters/Warehousing.Containers.Request.Query.Filter.SearchCode'
+        - $ref: '#/components/parameters/Warehousing.Containers.Request.Query.Filter.SearchTags'
       responses:
-        "200":
+        '200':
           description: Получен список контейнеров
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.ContainerList"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Warehousing.Containers.Response.Model.ContainerList'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     post:
       summary: Метод создания нового контейнера
-      description: |-
-        Метод предназначен для создания информации о новом контейнере в БД
-
+      description: Метод предназначен для создания информации о новом контейнере в БД
       operationId: createContainer
       tags:
         - Warehousing.Container
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.CreateContainer"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.CreateContainer'
       responses:
-        "201":
+        '201':
           description: Информация о контейнере успешно добавлена
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer"
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Warehousing.Containers.Response.Model.SuccessCreatedContainer'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/containers/groups:
     post:
       summary: Метод создания новой группы контейнеров
-      description: |-
-        Метод предназначен для создания информации о новой группе контейнеров в БД
-
+      description: Метод предназначен для создания информации о новой группе контейнеров в БД
       operationId: createContainerGroup
       tags:
         - Warehousing.Container
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.CreateContainerGroup"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.CreateContainerGroup'
       responses:
-        "201":
+        '201':
           description: Информация о группе контейнеров успешно добавлена
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer"
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Warehousing.Containers.Response.Model.SuccessCreatedContainer'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/containers/tags:
     patch:
       summary: Метод обновления тегов контейнера
-      description: |-
-        Метод предназначен для обновления тегов указанного контейнера в БД
-
+      description: Метод предназначен для обновления тегов указанного контейнера в БД
       operationId: saveContainerTags
       tags:
         - Warehousing.Container
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.SaveContainerTags"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.SaveContainerTags'
       responses:
-        "201":
+        '201':
           description: Теги контейнера успешно обновлены
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessSavedItem"
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Api.Response.Model.SuccessSavedItem'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/stocks:
     get:
       summary: Метод получения списка остатков контейнеров
-      description: |-
-        Метод предназначен для получения списка всех остатков контейнеров на местах хранения текущего аккаунта, сохраненных в БД
-
+      description: Метод предназначен для получения списка всех остатков контейнеров на местах хранения текущего аккаунта, сохраненных в БД
       operationId: getStockList
       tags:
         - Warehousing.Stock
-
-      security:
-        - bearerAuth: []
-
       parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.ContainerIDs"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.LocationIDs"
-        - $ref: "#/components/parameters/App.Request.Query.ListCursor.Cursor"
-        - $ref: "#/components/parameters/App.Request.Query.ListCursor.Limit"
-
+        - $ref: '#/components/parameters/Warehousing.Request.Query.Filter.ContainerIDs'
+        - $ref: '#/components/parameters/Warehousing.Request.Query.Filter.LocationIDs'
+        - $ref: '#/components/parameters/Api.Request.Query.ListCursor.Cursor'
+        - $ref: '#/components/parameters/Api.Request.Query.ListCursor.Limit'
       responses:
-        "200":
+        '200':
           description: Получен список остатков контейнеров
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Warehousing.Stocks.UserAPI.Response.Model.StockList"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Warehousing.Stocks.Response.Model.StockList'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/stocks/add-more:
     post:
       summary: Метод прибавления остатков контейнеру
-      description: |-
-        Метод предназначен для прибавления остатков указанному контейнеру и сохранения их в БД
-
+      description: Метод предназначен для прибавления остатков указанному контейнеру и сохранения их в БД
       operationId: addMoreStock
       tags:
         - Warehousing.Stock
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.AddMoreStock"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.AddMoreStock'
       responses:
-        "201":
+        '201':
           description: Остатки для контейнера успешно прибавлены
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemUint'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/stocks/move:
     post:
       summary: Метод перемещения остатков контейнера
-      description: |-
-        Метод предназначен для перемещения указанных остатков контейнера и сохранения их в БД
-
+      description: Метод предназначен для перемещения указанных остатков контейнера и сохранения их в БД
       operationId: moveStock
       tags:
         - Warehousing.Stock
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.MoveStock"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.MoveStock'
       responses:
-        "201":
+        '201':
           description: Остатки контейнера успешно перенесены
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/App.Response.Model.SuccessCreatedItemUint"
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemUint'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/stocks/transfer:
     post:
       summary: Метод списания остатков
-      description: |-
-        Метод предназначен для списания указанных остатков контейнера и сохранения их в БД
-
+      description: Метод предназначен для списания указанных остатков контейнера и сохранения их в БД
       operationId: transferStock
       tags:
         - Warehousing.Stock
-
-      security:
-        - bearerAuth: []
-
-      parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-
       requestBody:
         required: true
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Request.Model.TransferStock"
-
+              $ref: '#/components/schemas/Warehousing.Containers.Request.Model.TransferStock'
       responses:
-        "204":
+        '204':
           description: Остатки контейнера успешно списаны
-        "400":
-          $ref: "#/components/responses/App.ResponseJson.Error400"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/warehousing/stores:
     get:
       summary: Метод получения списка мест хранения
-      description: |-
-        Метод предназначен для получения списка всех мест хранения текущего аккаунта, сохраненных в БД
-
+      description: Метод предназначен для получения списка всех мест хранения текущего аккаунта, сохраненных в БД
       operationId: getStoreList
       tags:
         - Warehousing.Store
-
-      security:
-        - bearerAuth: []
-
       parameters:
-        - $ref: "#/components/parameters/App.Request.Header.AcceptLanguage"
-        - $ref: "#/components/parameters/App.Request.Header.CorrelationID"
-        - $ref: "#/components/parameters/App.Request.Query.Language"
-        - $ref: "#/components/parameters/Warehousing.Stores.UserAPI.Request.Query.Filter.SearchCode"
-        - $ref: "#/components/parameters/Custom.Request.Query.Filter.TerritoryIDs"
-        - $ref: "#/components/parameters/App.Request.Query.ListCursor.Cursor"
-        - $ref: "#/components/parameters/App.Request.Query.ListCursor.Limit"
-
+        - $ref: '#/components/parameters/Warehousing.Stores.Request.Query.Filter.SearchCode'
+        - $ref: '#/components/parameters/Warehousing.Request.Query.Filter.TerritoryIDs'
+        - $ref: '#/components/parameters/Api.Request.Query.ListCursor.Cursor'
+        - $ref: '#/components/parameters/Api.Request.Query.ListCursor.Limit'
       responses:
-        "200":
+        '200':
           description: Получен список мест хранения
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: "#/components/schemas/Warehousing.Stores.UserAPI.Response.Model.StoreList"
-        "401":
-          $ref: "#/components/responses/App.ResponseJson.Error401"
-        "403":
-          $ref: "#/components/responses/App.ResponseJson.Error403"
-        "500":
-          $ref: "#/components/responses/App.ResponseJson.Error5XX"
-
+                $ref: '#/components/schemas/Warehousing.Stores.Response.Model.StoreList'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
 components:
-
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
-    App.Request.Header.AcceptLanguage:
-      description: https://developer.mozilla.org/ru/docs/Web/HTTP/Headers/Accept-Language
-      name: Accept-Language
-      in: header
-      required: false
-      schema:
-        type: string
-      example: "ru;q=0.9, fr-CH, fr;q=0.8, en;q=0.7, *;q=0.5"
-
-    App.Request.Header.CorrelationID:
-      description: Уникальный идентификатор клиента
-      name: X-Correlation-Id
-      in: header
-      required: false
-      schema:
-        type: string
-        format: uuid
-      example: "1f0b7925-cee6-4e44-8ea3-4e585d12212d"
-
-    App.Request.Query.Language:
-      description: Явное указание языка запроса. Приоритетнее Accept-Language.
-      name: lang
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "ru-RU"
-
-    App.Request.Query.Filter.SearchText:
-      description: Поисковая строка
-      name: query
-      in: query
-      required: false
-      schema:
-        type: string
-        maxLength: 128
-      example: "перфокарта"
-
-    App.Request.Query.ListCursor.Cursor:
-      description: Текущая позиция в списке записей
-      name: cursor
-      in: query
-      required: false
-      schema:
-        type: string
-        maxLength: 256
-      example: "Y3Vyc29yLTQwMjc5"
-
-    App.Request.Query.ListCursor.Limit:
-      description: Количество записей от текущей позиции в списке
-      name: limit
-      in: query
-      required: false
-      schema:
-        type: integer
-        # format: uint64
-        minimum: 1
-        maximum: 1000
-        default: 50
-      example: 70
-
-    Custom.Request.Query.Filter.ContainerIDs:
-      description: Список идентификаторов контейнеров через ","
-      name: container_ids
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "1,2,3"
-
-    Custom.Request.Query.Filter.LocationIDs:
-      description: Список мест хранения / групповых контейнеров через ","
-      name: location_ids
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "1,2,3"
-
-    Custom.Request.Query.Filter.TerritoryIDs:
-      description: Список идентификаторов территорий через ","
-      name: territory_ids
-      in: query
-      required: false
-      schema:
-        type: string
-      example: "1,2,3"
-
-    Warehousing.Containers.UserAPI.Request.Query.Filter.SearchCode:
+    Warehousing.Containers.Request.Query.Filter.SearchCode:
       description: Код контейнера
       name: query
       in: query
@@ -492,9 +294,8 @@ components:
       schema:
         type: string
         maxLength: 32
-      example: "E-48"
-
-    Warehousing.Containers.UserAPI.Request.Query.Filter.SearchTags:
+      example: E-48
+    Warehousing.Containers.Request.Query.Filter.SearchTags:
       description: Список тегов через ","
       name: tags
       in: query
@@ -502,9 +303,44 @@ components:
       schema:
         type: string
         maxLength: 256
-      example: "КУРТКИ,ОТВЁРТКИ"
-
-    Warehousing.Stores.UserAPI.Request.Query.Filter.SearchCode:
+      example: КУРТКИ,ОТВЁРТКИ
+    Warehousing.Request.Query.Filter.ContainerIDs:
+      description: Список идентификаторов контейнеров через ","
+      name: container_ids
+      in: query
+      required: false
+      schema:
+        type: string
+      example: 1,2,3
+    Warehousing.Request.Query.Filter.LocationIDs:
+      description: Список мест хранения / групповых контейнеров через ","
+      name: location_ids
+      in: query
+      required: false
+      schema:
+        type: string
+      example: 1,2,3
+    Api.Request.Query.ListCursor.Cursor:
+      description: Текущая позиция в списке записей
+      name: cursor
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 256
+      example: Y3Vyc29yLTQwMjc5
+    Api.Request.Query.ListCursor.Limit:
+      description: Количество записей от текущей позиции в списке
+      name: limit
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 50
+      example: 70
+    Warehousing.Stores.Request.Query.Filter.SearchCode:
       description: Код или первая часть кода места хранения
       name: query
       in: query
@@ -512,184 +348,37 @@ components:
       schema:
         type: string
         maxLength: 128
-      example: "E-48"
-
+      example: E-48
+    Warehousing.Request.Query.Filter.TerritoryIDs:
+      description: Список идентификаторов территорий через ","
+      name: territory_ids
+      in: query
+      required: false
+      schema:
+        type: string
+      example: 1,2,3
   schemas:
-    App.Field.Caption:
-      description: Название записи
-      type: string
-      maxLength: 128
-      example: "Название"
-
-    App.Field.DateTimeCreatedAt:
-      description: Дата и время создания записи (UTC)
-      type: string
-      format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Field.DateTimeUpdatedAt:
-      description: Дата и время обновления записи (UTC)
-      type: string
-      format: date-time
-      example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Field.Int64:
-      description: Целое 64-ти разрядное число
+    Warehousing.Field.ContainerID:
+      description: Идентификатор контейнера (модуль - Warehousing)
       type: integer
-      format: int64
-      minimum: -9223372036854775808
-      example: 9223372036854775807
-
-    App.Field.ListCursor.Cursor:
-      description: Следующая позиция в списке записей
-      type: string
-      maxLength: 256
-      example: "Y3Vyc29yLTQwMjc5"
-
-    App.Field.ListCursor.HasNext:
-      description: Признак наличия записей в следующей позиции
-      type: boolean
-      example: true
-
-    App.Field.Percent:
-      description: Процент (%)
-      type: number
-      format: double
-      maxLength: 8
-      example: 93.17
-
-    App.Field.TagVersion:
+      minimum: 1
+      example: 2
+    Api.Field.TagVersion:
       description: Текущая версия записи
       type: integer
-      # format: uint32
       minimum: 1
       example: 5
-
-    App.Field.Uint:
+    Warehousing.Field.ContainerCode:
+      description: Группирующий код контейнера (модуль - Warehousing)
+      type: string
+      maxLength: 8
+      example: JKLOSH
+    Api.Field.Uint:
       description: Целое положительное число
       type: integer
-      # format: uint64
       minimum: 0
-      example: 9223372036854775807
-
-    App.Field.Measure.Meter3:
-      description: Метр кубический (m3)
-      type: number
-      format: double
-      maxLength: 16
-      minimum: 0
-      example: 178.2
-
-    App.Response.Model.ErrorDetails: # RFC 9457 (Problem Details for HTTP APIs)
-      description: DTO следующих ошибок - 401, 403, 404, 5XX
-      type: object
-      required:
-        - title
-        - status
-        - detail
-        - instance
-        - time
-      properties:
-        type:
-          description: Ссылки на ресурс с описанием проблемы данного типа
-          type: string
-          default: "about:blank"
-          example: "https://api.example.com/problem/type"
-        title:
-          description: Краткое описание проблемы, понятное человеку
-          type: string
-          example: "Resource not found"
-        status:
-          description: Код HTTP статуса (дублируется из заголовка)
-          type: integer
-          example: 404
-        detail:
-          description: Описание конкретно возникшей ошибки, понятное человеку
-          type: string
-          example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
-        instance:
-          description: Метод и URL запроса
-          type: string
-          example: "PUSH /users/123456"
-        time:
-          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
-          type: string
-          format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
-        error_trace_id:
-          description: Идентификатор экземпляра конкретной ошибки
-          type: string
-          example: "5add1be1-90ab5d42-02fa8b1f-672503f2"
-
-    App.Response.Model.Error400:
-      description: DTO ошибки 400
-      type: object
-      required:
-        - status
-        - instance
-        - errors
-        - time
-      properties:
-        status:
-          description: Код HTTP статуса (дублируется из заголовка)
-          type: integer
-          example: 400
-        instance:
-          description: Метод и URL запроса
-          type: string
-          example: "PUSH /users/123456"
-        errors:
-          $ref: "#/components/schemas/App.Response.Model.ErrorList"
-        time:
-          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
-          type: string
-          format: date-time
-          example: "2023-01-01T12:00:00.000+03:00"
-
-    App.Response.Model.ErrorList:
-      description: DTO списка пользовательских ошибок 400
-      type: array
-      items:
-        $ref: "#/components/schemas/App.Response.Model.ErrorAttribute"
-
-    App.Response.Model.ErrorAttribute:
-      description: DTO пользовательской ошибки 400
-      type: object
-      required:
-        - code
-        - detail
-      properties:
-        code:
-          description: Название атрибута, где произошла ошибка
-          type: string
-          example: "attributeName"
-        detail:
-          description: Описание ошибки
-          type: string
-          example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"
-
-    App.Response.Model.SuccessCreatedItemUint:
-      description: DTO результата создания записи (uint ID)
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          description: Идентификатор созданной записи
-          type: integer
-          # format: uint64
-          example: 9223372036854775807
-        tag_version:
-          $ref: "#/components/schemas/App.Field.TagVersion"
-
-    App.Response.Model.SuccessSavedItem:
-      description: DTO результата сохранения записи
-      type: object
-      properties:
-        tag_version:
-          $ref: "#/components/schemas/App.Field.TagVersion"
-
-    App.Response.Model.Volume:
+      example: 9223372036854776000
+    Api.Response.Model.Volume:
       description: DTO - объём объекта
       type: object
       required:
@@ -712,8 +401,345 @@ components:
           type: number
           format: double
           example: 500
-
-    Custom.Enum.Warehousing.StoreKind:
+    Api.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Api.Field.DateTimeUpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Warehousing.Containers.Response.Model.Container:
+      description: DTO - контейнер
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerID'
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+        code:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
+        marker:
+          $ref: '#/components/schemas/Api.Field.Uint'
+        volume:
+          $ref: '#/components/schemas/Api.Response.Model.Volume'
+        tags:
+          description: Хеш теги содержимого контейнера
+          type: array
+          items:
+            type: string
+            maxLength: 32
+            example: ШУРУПЫ
+        images:
+          description: Изображения контейнераr
+          type: array
+          items:
+            type: string
+            maxLength: 256
+            example: https://example.com/path/image-name.jpg
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Api.Field.ListCursor.Cursor:
+      description: Следующая позиция в списке записей
+      type: string
+      maxLength: 256
+      example: Y3Vyc29yLTQwMjc5
+    Api.Field.ListCursor.HasNext:
+      description: Признак наличия записей в следующей позиции
+      type: boolean
+      example: true
+    Warehousing.Containers.Response.Model.ContainerList:
+      description: DTO - список контейнеров
+      type: object
+      properties:
+        containers:
+          description: Список контейнеров ограниченный фильтром и limit
+          type: array
+          items:
+            $ref: '#/components/schemas/Warehousing.Containers.Response.Model.Container'
+        cursor:
+          $ref: '#/components/schemas/Api.Field.ListCursor.Cursor'
+        has_next:
+          $ref: '#/components/schemas/Api.Field.ListCursor.HasNext'
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - status
+        - detail
+        - instance
+        - time
+      properties:
+        type:
+          description: Ссылки на ресурс с описанием проблемы данного типа
+          type: string
+          default: about:blank
+          example: https://api.example.com/problem/type
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: Resource not found
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 404
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        error_trace_id:
+          description: Идентификатор экземпляра конкретной ошибки
+          type: string
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    Warehousing.Field.LocationID:
+      description: Идентификатор места хранения / группового контейнера (модуль - Warehousing)
+      type: integer
+      minimum: 1
+      example: 2
+    Warehousing.Containers.Request.Model.CreateContainer:
+      description: DTO создания нового контейнера
+      type: object
+      required:
+        - location_id
+      properties:
+        code:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
+        volume:
+          $ref: '#/components/schemas/Api.Response.Model.Volume'
+        tags:
+          description: Хеш теги содержимого контейнера
+          type: array
+          items:
+            type: string
+            maxLength: 32
+            example: ШУРУПЫ
+        images:
+          description: Изображения контейнера
+          type: array
+          items:
+            type: string
+            maxLength: 256
+            example: https://example.com/path/image-name.jpg
+        location_id:
+          $ref: '#/components/schemas/Warehousing.Field.LocationID'
+        exemplar_quantity:
+          $ref: '#/components/schemas/Api.Field.Uint'
+    Warehousing.Field.StockID:
+      description: Идентификатор остатков контейнера (модуль - Warehousing)
+      type: integer
+      minimum: 1
+      example: 2
+    Warehousing.Containers.Response.Model.SuccessCreatedContainer:
+      description: DTO результата создания контейнера
+      type: object
+      properties:
+        container_id:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerID'
+        code:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
+        marker:
+          $ref: '#/components/schemas/Api.Field.Uint'
+        stock_id:
+          $ref: '#/components/schemas/Warehousing.Field.StockID'
+    Api.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: attributeName
+        detail:
+          description: Описание ошибки
+          type: string
+          example: Атрибут не может быть пустым | Указано недопустимое значение атрибута
+    Api.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Response.Model.ErrorAttribute'
+    Api.Response.Model.Error400:
+      description: DTO ошибки 400
+      type: object
+      required:
+        - status
+        - instance
+        - errors
+        - time
+      properties:
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 400
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        errors:
+          $ref: '#/components/schemas/Api.Response.Model.ErrorList'
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+    Warehousing.Containers.Request.Model.CreateContainerGroup:
+      description: DTO создания новой группы контейнеров
+      type: object
+      required:
+        - location_id
+      properties:
+        code:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
+        volume:
+          $ref: '#/components/schemas/Api.Response.Model.Volume'
+        location_id:
+          $ref: '#/components/schemas/Warehousing.Field.LocationID'
+    Warehousing.Containers.Request.Model.SaveContainerTags:
+      description: DTO обновления тегов контейнера
+      type: object
+      required:
+        - container_id
+        - tag_version
+        - tags
+      properties:
+        container_id:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerID'
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+        tags:
+          description: Хеш теги содержимого контейнера
+          type: array
+          items:
+            type: string
+            maxLength: 32
+            example: ШУРУПЫ
+    Api.Response.Model.SuccessSavedItem:
+      description: DTO результата сохранения записи
+      type: object
+      properties:
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+    Api.Field.Int64:
+      description: Целое 64-ти разрядное число
+      type: integer
+      format: int64
+      minimum: -9223372036854776000
+      example: 9223372036854776000
+    Api.Field.Measure.Meter3:
+      description: Метр кубический (m3)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 178.2
+    Warehousing.Stocks.Response.Model.Stock:
+      description: DTO - остатки контейнера
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Warehousing.Field.StockID'
+        container_id:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerID'
+        location_id:
+          $ref: '#/components/schemas/Warehousing.Field.LocationID'
+        quantity:
+          $ref: '#/components/schemas/Api.Field.Int64'
+        volume:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+    Warehousing.Stocks.Response.Model.StockList:
+      description: DTO - список остатков контейнеров
+      type: object
+      properties:
+        stocks:
+          description: Список остатков контейнеров ограниченный фильтром и limit
+          type: array
+          items:
+            $ref: '#/components/schemas/Warehousing.Stocks.Response.Model.Stock'
+        cursor:
+          $ref: '#/components/schemas/Api.Field.ListCursor.Cursor'
+        has_next:
+          $ref: '#/components/schemas/Api.Field.ListCursor.HasNext'
+    Warehousing.Containers.Request.Model.AddMoreStock:
+      description: DTO - прибавления остатков контейнеру
+      type: object
+      required:
+        - container_id
+        - location_id
+        - quantity
+      properties:
+        container_id:
+          $ref: '#/components/schemas/Warehousing.Field.ContainerID'
+        location_id:
+          $ref: '#/components/schemas/Warehousing.Field.LocationID'
+        quantity:
+          $ref: '#/components/schemas/Api.Field.Int64'
+    Api.Response.Model.SuccessCreatedItemUint:
+      description: DTO результата создания записи (uint ID)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: integer
+          example: 9223372036854776000
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+    Warehousing.Containers.Request.Model.MoveStock:
+      description: DTO - перемещение остатков контейнера
+      type: object
+      required:
+        - stock_id
+        - location_id
+        - quantity
+      properties:
+        stock_id:
+          $ref: '#/components/schemas/Warehousing.Field.StockID'
+        location_id:
+          $ref: '#/components/schemas/Warehousing.Field.LocationID'
+        quantity:
+          $ref: '#/components/schemas/Api.Field.Int64'
+    Warehousing.Containers.Request.Model.TransferStock:
+      description: DTO - списание остатков контейнера
+      type: object
+      required:
+        - stock_id
+        - quantity
+      properties:
+        stock_id:
+          $ref: '#/components/schemas/Warehousing.Field.StockID'
+        quantity:
+          $ref: '#/components/schemas/Api.Field.Int64'
+    Warehousing.Field.StoreID:
+      description: Идентификатор коробки (модуль - Warehousing)
+      type: integer
+      minimum: 1
+      example: 2
+    Warehousing.Field.TerritoryID:
+      description: Идентификатор территории (модуль - Warehousing)
+      type: integer
+      minimum: 1
+      example: 2
+    Warehousing.Enum.StoreKind:
       description: |-
         Тип места хранения:
         - NORMAL - обычный склад;
@@ -724,9 +750,13 @@ components:
         - NORMAL
         - ENTRY_POINT
         - EXIT_POINT
-      example: "ENTRY_POINT"
-
-    Custom.Enum.Warehousing.StoreStatus:
+      example: ENTRY_POINT
+    Api.Field.Caption:
+      description: Название записи
+      type: string
+      maxLength: 128
+      example: Название
+    Warehousing.Enum.StoreStatus:
       description: |-
         Текущий статус места хранения:
         - ENABLED - черновик;
@@ -737,368 +767,77 @@ components:
         - ENABLED
         - CLEANING_UP
         - ARCHIVED
-      example: "CLEANING_UP"
-
-    Custom.Field.Warehousing.ContainerID:
-      description: Идентификатор контейнера (модуль - Warehousing)
-      type: integer
-      # format: uint64
-      minimum: 1
-      example: 2
-
-    Custom.Field.Warehousing.ContainerCode:
-      description: Группирующий код контейнера (модуль - Warehousing)
-      type: string
+      example: CLEANING_UP
+    Api.Field.Percent:
+      description: Процент (%)
+      type: number
+      format: double
       maxLength: 8
-      example: "JKLOSH"
-
-    Custom.Field.Warehousing.LocationID:
-      description: Идентификатор места хранения / группового контейнера (модуль - Warehousing)
-      type: integer
-      # format: uint64
-      minimum: 1
-      example: 2
-
-    Custom.Field.Warehousing.StockID:
-      description: Идентификатор остатков контейнера (модуль - Warehousing)
-      type: integer
-      # format: uint64
-      minimum: 1
-      example: 2
-
-    Custom.Field.Warehousing.StoreID:
-      description: Идентификатор коробки (модуль - Warehousing)
-      type: integer
-      # format: uint64
-      minimum: 1
-      example: 2
-
-    Custom.Field.Warehousing.TerritoryID:
-      description: Идентификатор территории (модуль - Warehousing)
-      type: integer
-      # format: uint64
-      minimum: 1
-      example: 2
-
-    Warehousing.Containers.UserAPI.Request.Model.CreateContainer:
-      description: DTO создания нового контейнера
+      example: 93.17
+    Warehousing.Stores.Response.Model.Store:
+      description: DTO - место хранения
       type: object
-      required:
-        - location_id
       properties:
-        code:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
-        volume:
-          $ref: "#/components/schemas/App.Response.Model.Volume"
-        tags:
-          description: Хеш теги содержимого контейнера
-          type: array
-          items:
-            type: string
-            maxLength: 32
-            example: "ШУРУПЫ"
-        images:
-          description: Изображения контейнера
-          type: array
-          items:
-            type: string
-            maxLength: 256
-            example: "https://example.com/path/image-name.jpg"
-        location_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
-        exemplar_quantity:
-          $ref: "#/components/schemas/App.Field.Uint"
-
-    Warehousing.Containers.UserAPI.Response.Model.ContainerList:
-      description: DTO - список контейнеров
-      type: object
-      required:
-        - containers
-        - total
-      properties:
-        containers:
-          description: Список контейнеров ограниченный фильтром и limit
-          type: array
-          items:
-            $ref: "#/components/schemas/Warehousing.Containers.UserAPI.Response.Model.Container"
-        cursor:
-          $ref: "#/components/schemas/App.Field.ListCursor.Cursor"
-        has_next:
-          $ref: "#/components/schemas/App.Field.ListCursor.HasNext"
-
-    Warehousing.Containers.UserAPI.Request.Model.CreateContainerGroup:
-      description: DTO создания новой группы контейнеров
-      type: object
-      required:
-        - location_id
-      properties:
-        code:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
-        volume:
-          $ref: "#/components/schemas/App.Response.Model.Volume"
-        location_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
-
-    Warehousing.Containers.UserAPI.Response.Model.Container:
-      description: DTO - контейнер
-      type: object
-      required:
-        - id
-        - tag_version
-        - code
-        - marker
-        - created_at
-        - updated_at
-      properties:
-        id: # containerId
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
+        id:
+          $ref: '#/components/schemas/Warehousing.Field.StoreID'
         tag_version:
-          $ref: "#/components/schemas/App.Field.TagVersion"
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+        territory_id:
+          $ref: '#/components/schemas/Warehousing.Field.TerritoryID'
+        kind:
+          $ref: '#/components/schemas/Warehousing.Enum.StoreKind'
         code:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
-        marker:
-          $ref: "#/components/schemas/App.Field.Uint"
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 16
+            - example: E-48-23/121
         volume:
-          $ref: "#/components/schemas/App.Response.Model.Volume"
-        tags:
-          description: Хеш теги содержимого контейнера
-          type: array
-          items:
-            type: string
-            maxLength: 32
-            example: "ШУРУПЫ"
-        images:
-          description: Изображения контейнераr
-          type: array
-          items:
-            type: string
-            maxLength: 256
-            example: "https://example.com/path/image-name.jpg"
+          $ref: '#/components/schemas/Api.Response.Model.Volume'
+        status:
+          $ref: '#/components/schemas/Warehousing.Enum.StoreStatus'
+        containers_volume:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+        fullness:
+          $ref: '#/components/schemas/Api.Field.Percent'
         created_at:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
         updated_at:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-
-    Warehousing.Containers.UserAPI.Response.Model.SuccessCreatedContainer:
-      description: DTO результата создания контейнера
-      type: object
-      required:
-        - container_id
-        - code
-        - marker
-        - stock_id
-      properties:
-        container_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
-        code:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerCode"
-        marker:
-          $ref: "#/components/schemas/App.Field.Uint"
-        stock_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.StockID"
-
-    Warehousing.Containers.UserAPI.Request.Model.SaveContainerTags:
-      description: DTO обновления тегов контейнера
-      type: object
-      required:
-        - container_id
-        - tag_version
-        - tags
-      properties:
-        container_id: # containerId
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
-        tag_version:
-          $ref: "#/components/schemas/App.Field.TagVersion"
-        tags:
-          description: Хеш теги содержимого контейнера
-          type: array
-          items:
-            type: string
-            maxLength: 32
-            example: "ШУРУПЫ"
-
-    Warehousing.Stocks.UserAPI.Response.Model.StockList:
-      description: DTO - список остатков контейнеров
-      type: object
-      required:
-        - stocks
-        - cursor
-        - has_next
-      properties:
-        stocks:
-          description: Список остатков контейнеров ограниченный фильтром и limit
-          type: array
-          items:
-            $ref: "#/components/schemas/Warehousing.Stocks.UserAPI.Response.Model.Stock"
-        cursor:
-          $ref: "#/components/schemas/App.Field.ListCursor.Cursor"
-        has_next:
-          $ref: "#/components/schemas/App.Field.ListCursor.HasNext"
-
-    Warehousing.Stocks.UserAPI.Response.Model.Stock:
-      description: DTO - остатки контейнера
-      type: object
-      required:
-        - id
-        - container_id
-        - location_id
-        - quantity
-        - volume
-        - created_at
-      properties:
-        id: # stockId
-          $ref: "#/components/schemas/Custom.Field.Warehousing.StockID"
-        container_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
-        location_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
-        quantity:
-          $ref: "#/components/schemas/App.Field.Int64"
-        volume:
-          $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        created_at:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-
-    Warehousing.Containers.UserAPI.Request.Model.AddMoreStock:
-      description: DTO - прибавления остатков контейнеру
-      type: object
-      required:
-        - container_id
-        - location_id
-        - quantity
-      properties:
-        container_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.ContainerID"
-        location_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
-        quantity:
-          $ref: "#/components/schemas/App.Field.Int64"
-
-    Warehousing.Containers.UserAPI.Request.Model.MoveStock:
-      description: DTO - перемещение остатков контейнера
-      type: object
-      required:
-        - stock_id
-        - location_id
-        - quantity
-      properties:
-        stock_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.StockID"
-        location_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.LocationID"
-        quantity:
-          $ref: "#/components/schemas/App.Field.Int64"
-
-    Warehousing.Containers.UserAPI.Request.Model.TransferStock:
-      description: DTO - списание остатков контейнера
-      type: object
-      required:
-        - stock_id
-        - quantity
-      properties:
-        stock_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.StockID"
-        quantity:
-          $ref: "#/components/schemas/App.Field.Int64"
-
-    Warehousing.Stores.UserAPI.Response.Model.StoreList:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Warehousing.Stores.Response.Model.StoreList:
       description: DTO - список мест хранения
       type: object
-      required:
-        - stores
-        - cursor
-        - has_next
       properties:
         stores:
           description: Список мест хранения ограниченный фильтром и limit
           type: array
           items:
-            $ref: "#/components/schemas/Warehousing.Stores.UserAPI.Response.Model.Store"
+            $ref: '#/components/schemas/Warehousing.Stores.Response.Model.Store'
         cursor:
-          $ref: "#/components/schemas/App.Field.ListCursor.Cursor"
+          $ref: '#/components/schemas/Api.Field.ListCursor.Cursor'
         has_next:
-          $ref: "#/components/schemas/App.Field.ListCursor.HasNext"
-
-    Warehousing.Stores.UserAPI.Response.Model.Store:
-      description: DTO - место хранения
-      type: object
-      required:
-        - id
-        - tag_version
-        - territory_id
-        - kind
-        - code
-        - status
-        - containers_volume
-        - fullness
-        - created_at
-        - updated_at
-      properties:
-        id: # storeId
-          $ref: "#/components/schemas/Custom.Field.Warehousing.StoreID"
-        tag_version:
-          $ref: "#/components/schemas/App.Field.TagVersion"
-        territory_id:
-          $ref: "#/components/schemas/Custom.Field.Warehousing.TerritoryID"
-        kind:
-          $ref: "#/components/schemas/Custom.Enum.Warehousing.StoreKind"
-        code:
-          allOf:
-            - $ref: "#/components/schemas/App.Field.Caption"
-            - maxLength: 16
-            - example: "E-48-23/121"
-        volume:
-          $ref: "#/components/schemas/App.Response.Model.Volume"
-        status:
-          $ref: "#/components/schemas/Custom.Enum.Warehousing.StoreStatus"
-        containers_volume:
-          $ref: "#/components/schemas/App.Field.Measure.Meter3"
-        fullness:
-          $ref: "#/components/schemas/App.Field.Percent"
-        created_at:
-          $ref: "#/components/schemas/App.Field.DateTimeCreatedAt"
-        updated_at:
-          $ref: "#/components/schemas/App.Field.DateTimeUpdatedAt"
-
+          $ref: '#/components/schemas/Api.Field.ListCursor.HasNext'
   responses:
-    App.ResponseJson.Error400:
-      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
-      content:
-        application/json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.Error400"
-
-    App.ResponseJson.Error404:
-      description: Запрашиваемый ресурс не был найден
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error5XX:
-      description: Внутренняя ошибка сервера
-      content:
-        application/problem+json;charset=UTF-8:
-          schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error401:
+    Api.ResponseJson.Error401:
       description: Пользователь не был аутентифицирован
       content:
         application/problem+json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-    App.ResponseJson.Error403:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error403:
       description: Пользователю с текущими правами доступ отклонён
       content:
         application/problem+json;charset=UTF-8:
           schema:
-            $ref: "#/components/schemas/App.Response.Model.ErrorDetails"
-
-  securitySchemes:
-    bearerAuth:
-      description: https://www.rfc-editor.org/rfc/rfc6750
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.Error400'
