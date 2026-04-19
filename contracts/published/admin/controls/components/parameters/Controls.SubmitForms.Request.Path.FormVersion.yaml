@@ -1,0 +1,9 @@
+description: Версия формы
+name: version
+in: path
+required: true
+schema:
+  type: integer
+  # format: uint32
+  minimum: 0
+example: 1000

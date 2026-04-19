@@ -1,0 +1,13 @@
+description: DTO - список шаблонов элементов
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    description: Список записей ограниченный фильтром и pageSize
+    type: array
+    items:
+      $ref: "./Controls.ElementTemplates.Response.Model.ElementTemplate.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.ListPager.Total.yaml"

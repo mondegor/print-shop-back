@@ -1,0 +1,19 @@
+description: DTO создания мета данных json шаблона элемента
+type: object
+required:
+  - paramName
+  - caption
+  - elementType
+  - detailing
+properties:
+  paramName:
+    $ref: "../../../_shared/components/fields/Api.Field.VariableCamelCase.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Шаблон процесса печати"
+  elementType:
+    $ref: "../enums/Controls.Enum.FormElementType.yaml"
+  detailing:
+    $ref: "../enums/Controls.Enum.FormElementDetailing.yaml"

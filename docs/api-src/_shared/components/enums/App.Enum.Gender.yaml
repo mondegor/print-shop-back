@@ -1,6 +1,0 @@
-App.Enum.Gender:
-  type: string
-  enum:
-    - MALE
-    - FEMALE
-  example: "MALE"

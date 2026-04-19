@@ -1,0 +1,31 @@
+description: DTO - результат алгоритма "Количество пачек"
+type: object
+required:
+  - fullProduct
+  - totalQuantity
+  - totalWeight
+  - totalVolume
+properties:
+  fullProduct:
+    allOf:
+      - $ref: "./Calculations.Algo.Sheet.PackInStack.Response.Model.Product.yaml"
+      - description: Полностью заполненная пачка с изделиями
+  restProduct:
+    allOf:
+      - $ref: "./Calculations.Algo.Sheet.PackInStack.Response.Model.Product.yaml"
+      - description: Пачка с остатком изделий
+  totalQuantity:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+      - description: Количество пачек
+      - example: 17
+  totalWeight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Kilogram.yaml"
+      - description: Общий вес пачек с изделиями
+      - example: 371.25
+  totalVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Общий объём пачек
+      - example: 17.25

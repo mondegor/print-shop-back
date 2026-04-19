@@ -1,0 +1,31 @@
+get:
+  summary: Метод получения списка остатков контейнеров
+  description: |-
+    Метод предназначен для получения списка всех остатков контейнеров на местах хранения текущего аккаунта, сохраненных в БД
+
+  operationId: getStockList
+  tags:
+    - Warehousing.Stock
+
+  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Warehousing.Request.Query.Filter.ContainerIDs.yaml"
+    - $ref: "../components/parameters/Warehousing.Request.Query.Filter.LocationIDs.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListCursor.Cursor.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListCursor.Limit.yaml"
+
+  responses:
+    "200":
+      description: Получен список остатков контейнеров
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Warehousing.Stocks.Response.Model.StockList.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

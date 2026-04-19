@@ -1,0 +1,15 @@
+description: Направление сортировки
+name: sortDirection
+in: query
+required: false
+schema:
+  description: |-
+    Направление сортировки:
+    - ASC - по возрастанию;
+    - DESC - по убыванию;
+  type: string
+  enum:
+    - ASC
+    - DESC
+  default: "ASC"
+example: "DESC"

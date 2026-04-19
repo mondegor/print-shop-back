@@ -1,0 +1,12 @@
+description: DTO параметров алгоритма "Количество коробок"
+type: object
+required:
+  - product
+  - box
+properties:
+  product:
+    $ref: "./Calculations.Algo.Box.PackInBox.Request.Model.Product.yaml"
+  box:
+    allOf:
+      - $ref: "./Calculations.Algo.Box.PackInBox.Request.Model.Box.yaml"
+      - description: Параметры коробки, в которую помещаются изделия

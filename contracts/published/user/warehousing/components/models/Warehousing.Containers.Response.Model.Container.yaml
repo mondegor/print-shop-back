@@ -1,0 +1,31 @@
+description: DTO - контейнер
+type: object
+properties:
+  id: # containerId
+    $ref: "../fields/Warehousing.Field.ContainerID.yaml"
+  tag_version:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  code:
+    $ref: "../fields/Warehousing.Field.ContainerCode.yaml"
+  marker:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+  volume:
+    $ref: "../../../_shared/components/models/Api.Response.Model.Volume.yaml"
+  tags:
+    description: Хеш теги содержимого контейнера
+    type: array
+    items:
+      type: string
+      maxLength: 32
+      example: "ШУРУПЫ"
+  images:
+    description: Изображения контейнераr
+    type: array
+    items:
+      type: string
+      maxLength: 256
+      example: "https://example.com/path/image-name.jpg"
+  created_at:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updated_at:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

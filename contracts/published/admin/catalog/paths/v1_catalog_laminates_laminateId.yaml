@@ -1,0 +1,92 @@
+get:
+  summary: Метод получения ламината
+  description: Метод предназначен для получения информации о ламинате из БД
+  operationId: getLaminate
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Laminates.Request.Path.LaminateID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о ламинате
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Laminates.Response.Model.Laminate.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+put:
+  summary: Метод сохранения ламината
+  description: |-
+    Метод предназначен для сохранения информации о ламинате в БД
+
+    **Ограничения и ошибки полей:**
+    - caption: required,max=64
+
+  operationId: storeLaminate
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Laminates.Request.Path.LaminateID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Catalog.Laminates.Request.Model.StoreLaminate.yaml"
+
+  responses:
+    "204":
+      description: Информация о ламинате успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления ламината
+  description: Метод предназначен для удаления информации о ламинате из БД
+  operationId: removeLaminate
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Laminates.Request.Path.LaminateID.yaml"
+
+  responses:
+    "204":
+      description: Информация о ламинате успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

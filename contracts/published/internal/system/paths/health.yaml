@@ -1,0 +1,12 @@
+get:
+  summary: Метод для ответа о работоспособности приложения и готовности к работе
+  description: Метод предназначен для проверки, что все сервисы приложения исправно работают и готовы к приёму запросов
+  operationId: getHealthResponse
+  tags:
+    - System
+
+  responses:
+    "200":
+      description: Возвращён ответ приложения 200 OK
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

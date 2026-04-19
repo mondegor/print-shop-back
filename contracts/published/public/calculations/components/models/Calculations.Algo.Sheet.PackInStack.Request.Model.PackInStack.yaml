@@ -1,0 +1,13 @@
+description: DTO параметров алгоритма "Количество пачек пачек"
+type: object
+required:
+  - sheet
+  - quantityInStack
+properties:
+  sheet:
+    $ref: "./Calculations.Algo.Sheet.PackInStack.Request.Model.Sheet.yaml"
+  quantityInStack:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+      - description: Количество изделий в пачке
+      - example: 200

@@ -1,0 +1,11 @@
+description: |-
+  Текущий статус места хранения:
+  - ENABLED - черновик;
+  - CLEANING_UP - на освобождении от остатков;
+  - ARCHIVED - в архиве;
+type: string
+enum:
+  - ENABLED
+  - CLEANING_UP
+  - ARCHIVED
+example: "CLEANING_UP"

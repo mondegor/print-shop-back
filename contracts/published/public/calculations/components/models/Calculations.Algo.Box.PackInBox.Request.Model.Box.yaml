@@ -1,0 +1,22 @@
+description: DTO коробки
+type: object
+required:
+  - format
+  - thickness
+  - margins
+  - weight
+properties:
+  format:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter3.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  margins:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter3.yaml"
+  weight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Gram.yaml"
+      - description: Вес коробки
+  maxWeight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Gram.yaml"
+      - description: Максимальная грузоподъёмность коробки

@@ -1,0 +1,32 @@
+patch:
+  summary: Auth/SC/R7. Метод применяет подтверждённую пользователем операцию
+  description: Метод предназначен для применения подтверждённой пользователем операции (изменение защищённого свойства пользователя, отмены 2FA и т.д.)
+  operationId: applyUserOperation
+  tags:
+    - Auth.Security
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Security.Request.Model.ApplyOperation.yaml"
+
+  responses:
+    "204":
+      description: Указанная пользователем операция была применена
+    "400":
+      # Токен операции должен быть указан
+      # Токен операции некорректен или недействителен
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

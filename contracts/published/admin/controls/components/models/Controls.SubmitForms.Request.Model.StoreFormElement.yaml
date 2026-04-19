@@ -1,0 +1,16 @@
+description: DTO сохранения элемента формы
+type: object
+required:
+  - tagVersion
+properties:
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  paramName:
+    $ref: "../../../_shared/components/fields/Api.Field.VariableCamelCase.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Процесс печати"
+  elementRequired:
+    $ref: "../fields/Controls.SubmitForms.Field.ElementRequired.yaml"

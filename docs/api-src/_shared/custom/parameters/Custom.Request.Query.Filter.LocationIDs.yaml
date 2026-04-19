@@ -1,8 +1,0 @@
-Custom.Request.Query.Filter.LocationIDs:
-  description: Список мест хранения / групповых контейнеров через ","
-  name: location_ids
-  in: query
-  required: false
-  schema:
-    type: string
-  example: "1,2,3"

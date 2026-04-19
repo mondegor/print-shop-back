@@ -1,6 +1,0 @@
-Custom.Field.Controls.FormElementID:
-  description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
-  type: integer
-  # format: uint64
-  minimum: 1
-  example: 2

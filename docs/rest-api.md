@@ -1,14 +1,12 @@
 [Назад к оглавлению](./README.md)
 
 # REST API документация для Print Shop Back v0.6.0
-- [API документация в формате OpenAPI/Swagger](./api)
-    - [AuthAPI](./api/auth-api)
-    - [AdminAPI](./api/admin-api)
-    - [ProviderAPI](./api/provider-api)
-    - [PublicAPI](./api/public-api)
-    - [UserAPI](./api/user-api)
-- [Исходники, из которых собирается API документация](./api-src)
-- [Скрипты, которые собирают API документацию](../scripts/openapi)
+- [API документация в формате OpenAPI/Swagger](../contracts)
+    - [PublicAPI](../contracts/published/public)
+    - [AuthAPI](../contracts/published/auth)
+    - [UserAPI](../contracts/published/user)
+    - [ProviderAPI](../contracts/published/provider)
+    - [AdminAPI](../contracts/published/admin)    
 - [Статья о спорных моментах REST API](https://habr.com/ru/articles/770226/)
 
 ## Что такое OpenAPI?

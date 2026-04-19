@@ -1,0 +1,13 @@
+description: DTO - тип материала
+type: object
+required:
+  - id
+  - caption
+properties:
+  id: # typeId
+    $ref: "../fields/Dictionaries.Field.MaterialTypeID.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Глянцевый"

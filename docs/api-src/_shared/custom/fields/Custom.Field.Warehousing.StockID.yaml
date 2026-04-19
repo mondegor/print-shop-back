@@ -1,6 +1,0 @@
-Custom.Field.Warehousing.StockID:
-  description: Идентификатор остатков контейнера (модуль - Warehousing)
-  type: integer
-  # format: uint64
-  minimum: 1
-  example: 2

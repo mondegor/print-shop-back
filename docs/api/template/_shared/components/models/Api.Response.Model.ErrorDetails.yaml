@@ -1,0 +1,39 @@
+description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+type: object
+required:
+  - title
+  - status
+  - detail
+  - instance
+  - time
+properties:
+  type:
+    description: Ссылки на ресурс с описанием проблемы данного типа
+    type: string
+    default: "about:blank"
+    example: "https://api.example.com/problem/type"
+  title:
+    description: Краткое описание проблемы, понятное человеку
+    type: string
+    example: "Resource not found"
+  status:
+    description: Код HTTP статуса (дублируется из заголовка)
+    type: integer
+    example: 404
+  detail:
+    description: Описание конкретно возникшей ошибки, понятное человеку
+    type: string
+    example: "Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET"
+  instance:
+    description: Метод и URL запроса
+    type: string
+    example: "POST /users/123456"
+  time:
+    description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+    type: string
+    format: date-time
+    example: "2023-01-01T12:00:00.000+03:00"
+  error_trace_id:
+    description: Идентификатор экземпляра конкретной ошибки
+    type: string
+    example: "5add1be1-90ab5d42-02fa8b1f-672503f2"

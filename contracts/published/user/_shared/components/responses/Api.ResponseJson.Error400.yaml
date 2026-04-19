@@ -1,0 +1,5 @@
+description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+content:
+  application/json;charset=UTF-8:
+    schema:
+      $ref: "../models/Api.Response.Model.Error400.yaml"

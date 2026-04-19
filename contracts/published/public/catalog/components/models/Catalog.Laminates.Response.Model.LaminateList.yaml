@@ -1,0 +1,4 @@
+description: DTO - список ламината
+type: array
+items:
+  $ref: "./Catalog.Laminates.Response.Model.Laminate.yaml"

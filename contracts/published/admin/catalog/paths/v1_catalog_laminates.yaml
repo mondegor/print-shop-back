@@ -1,0 +1,91 @@
+get:
+  summary: Метод получения списка ламината
+  description: |-
+    Метод предназначен для получения списка всего ламината, сохраненного в БД
+
+    Фильтр `Api.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+    - article;
+    - caption;
+
+    Возможные значения `Api.Request.Query.ListPager.PageSize`:
+    - от 1 до 1000 (default: 50)
+
+    Возможные значения `Api.Request.Query.ListSorter.SortColumn`:
+    - caption,default,asc;
+    - createdAt;
+    - updatedAt;
+
+  operationId: getLaminateList
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.SearchText.yaml"
+    - $ref: "../../dictionaries/components/parameters/Dictionaries.Request.Query.Filter.MaterialTypeIDs.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.LengthRangeMin.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.LengthRangeMax.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.WidthRangeMin.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.WidthRangeMax.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.Statuses.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortColumn.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortDirection.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageIndex.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageSize.yaml"
+
+  responses:
+    "200":
+      description: Получен список ламината
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Laminates.Response.Model.LaminateList.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+post:
+  summary: Метод создания нового ламината
+  description: |-
+    Метод предназначен для создания информации о новом ламинате в БД
+
+    **Ограничения и ошибки полей:**
+    - article: required,unique,min=3,max=32,pattern=article
+    - caption: required,max=64
+
+  operationId: createLaminate
+  tags:
+    - Catalog
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Catalog.Laminates.Request.Model.CreateLaminate.yaml"
+
+  responses:
+    "201":
+      description: Информация о ламинате успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItemUint.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

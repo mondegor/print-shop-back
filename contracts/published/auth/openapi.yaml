@@ -1,0 +1,104 @@
+---
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Auth API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Auth REST API проекта print-shop
+    - При создании нового аккаунта, пользователь, в качестве логина должен указать свой емаил, на который будет отправлен код, для подтверждения емаила и активации аккаунта;
+    - Для последующего входа пользователем в систему, ему нужно указать свой емаил/телефон и далее ввести код подтверждения отправленный на его емаил. При включенной 2FA ему дополнительно нужно будет ввести пароль/TOTP код от своей учётной записи;
+    - Авторизованный пользователь может:
+      - включить 2FA аутентификацию, выбрав один из способов дополнительной проверки: по паролю или по TOTP коду;
+      - отключить 2FA аутентификацию введя пароль/TOTP код (или одноразовый аварийный код выданный при включении 2FA-TOTP аутентификации);
+      - изменять свои емаил/телефон с их обязательным подтверждением;
+      - следить за всеми своими открытыми сессиями и закрыть любую из них при необходимости;
+      - осуществлять особые операции требующие дополнительного подтверждения по емаилу/телефону или 2FA методами;
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local/auth
+    description: Local Domain
+  - url: http://localhost:8080/auth
+    description: Local Host
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+    description: Auth API
+  - name: Auth.Check
+    description: Auth API Helps to check user data
+  - name: Auth.Operation
+    description: Auth API Confirmation operations
+  - name: Auth.Security
+    description: Auth API User security methods change protected user properties
+  - name: Auth.Sessions
+    description: Auth API User Sessions
+paths:
+  /v1/signup:
+    $ref: "./paths/v1_signup.yaml"
+  /v1/signin:
+    $ref: "./paths/v1_signin.yaml"
+  /v1/session:
+    $ref: "./paths/v1_session.yaml"
+  /v1/user:
+    $ref: "./paths/v1_user.yaml"
+
+  /v1/check/check-login:
+    $ref: "./paths/v1_check_check-login.yaml"
+  /v1/check/calc-password-strength:
+    $ref: "./paths/v1_check_calc-password-strength.yaml"
+  /v1/check/generate-password:
+    $ref: "./paths/v1_check_generate-password.yaml"
+
+  /v1/operation/confirm:
+    $ref: "./paths/v1_operation_confirm.yaml"
+  /v1/operation/resend:
+    $ref: "./paths/v1_operation_resend.yaml"
+  /v1/operation/revoke:
+    $ref: "./paths/v1_operation_revoke.yaml"
+
+  /v1/security/email:
+    $ref: "./paths/v1_security_email.yaml"
+  /v1/security/phone:
+    $ref: "./paths/v1_security_phone.yaml"
+  /v1/security/password:
+    $ref: "./paths/v1_security_password.yaml"
+  /v1/security/totp:
+    $ref: "./paths/v1_security_totp.yaml"
+  /v1/security/disable2fa:
+    $ref: "./paths/v1_security_disable2fa.yaml"
+  /v1/security/apply-operation:
+    $ref: "./paths/v1_security_apply-operation.yaml"
+
+  /v1/sessions:
+    $ref: "./paths/v1_sessions.yaml"
+  /v1/sessions/close:
+    $ref: "./paths/v1_sessions_close.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

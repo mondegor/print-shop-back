@@ -1,0 +1,11 @@
+type: object
+required:
+  - new_email
+properties:
+  new_email:
+    description: Новый емаил пользователя
+    type: string
+    format: email
+    minLength: 7
+    maxLength: 64
+    example: "new-user-email@example.com"

@@ -1,0 +1,25 @@
+get:
+  summary: Auth/SES/R1. Метод получения списка открытых сессий пользователя
+  description: Метод предназначен для получения из БД списка открытых сессий пользователя
+  operationId: getUserSessions
+  tags:
+    - Auth.Sessions
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Сформирован ответ со списком открытых сессий пользователя
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: array
+            items:
+              $ref: "../components/models/Auth.Sessions.Response.Model.UserSession.yaml"
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

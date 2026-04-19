@@ -1,0 +1,7 @@
+description: Список идентификаторов типов материала через ","
+name: material_type_ids
+in: query
+required: false
+schema:
+  type: string
+example: "1,2,3"

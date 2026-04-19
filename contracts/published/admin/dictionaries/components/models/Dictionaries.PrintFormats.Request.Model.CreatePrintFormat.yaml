@@ -1,0 +1,16 @@
+description: DTO создания нового печатного формата
+type: object
+required:
+  - caption
+  - width
+  - height
+properties:
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "A4 (210 x 297 mm)"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  height:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"

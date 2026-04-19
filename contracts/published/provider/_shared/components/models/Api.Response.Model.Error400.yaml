@@ -1,0 +1,23 @@
+description: DTO ошибки 400
+type: object
+required:
+  - status
+  - instance
+  - errors
+  - time
+properties:
+  status:
+    description: Код HTTP статуса (дублируется из заголовка)
+    type: integer
+    example: 400
+  instance:
+    description: Метод и URL запроса
+    type: string
+    example: "POST /users/123456"
+  errors:
+    $ref: "./Api.Response.Model.ErrorList.yaml"
+  time:
+    description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+    type: string
+    format: date-time
+    example: "2023-01-01T12:00:00.000+03:00"

@@ -1,0 +1,5 @@
+description: Целое 16-ти разрядное число
+type: integer
+format: int32
+minimum: -32768
+example: 32767

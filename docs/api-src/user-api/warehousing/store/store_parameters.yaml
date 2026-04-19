@@ -1,9 +1,0 @@
-Warehousing.Stores.UserAPI.Request.Query.Filter.SearchCode:
-  description: Код или первая часть кода места хранения
-  name: query
-  in: query
-  required: false
-  schema:
-    type: string
-    maxLength: 128
-  example: "E-48"

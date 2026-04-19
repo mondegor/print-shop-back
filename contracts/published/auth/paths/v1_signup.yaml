@@ -1,0 +1,41 @@
+post:
+  summary: Auth/R1. Метод создания нового пользователя в системе
+  description: |-
+    Метод предназначен для подготовки создания в БД системы новой учётной записи пользователя.
+
+    ### Алгоритм создания нового пользователя:
+    1. Пользователь указывает свой емаил в качестве логина;
+    2. Отправляется код подтверждения на указанный емаил;
+    3. Пользователь указывает полученный код и подтверждает регистрацию своего аккаунта;
+    4. Создаётся аккаунт пользователя;
+    5. Пользователь получает доступ к своему аккаунту;
+  operationId: createUser
+  tags:
+    - Auth
+
+  security: []
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Request.Model.CreateUser.yaml"
+
+  responses:
+    "200":
+      # На емаил было отправлено сообщение с кодом подтверждения создания пользователя
+      $ref: "../components/responses/Auth.ResponseJson.WaitingConfirmOperation.yaml"
+    "400":
+      # Eмаил должен быть указан
+      # Eмаил некорректен или уже привязан к другому пользователю
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "403":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

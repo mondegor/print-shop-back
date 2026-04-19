@@ -1,0 +1,4 @@
+description: DTO - список упаковочных коробок
+type: array
+items:
+  $ref: "./Catalog.Boxes.Response.Model.Box.yaml"

@@ -1,0 +1,12 @@
+description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+type: object
+required:
+  - fragments
+  - total
+properties:
+  fragments:
+    type: array
+    items:
+      $ref: "../fields/Calculations.Field.Fragment.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"

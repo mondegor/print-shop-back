@@ -1,0 +1,4 @@
+description: Группирующий код контейнера (модуль - Warehousing)
+type: string
+maxLength: 8
+example: "JKLOSH"

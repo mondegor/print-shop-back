@@ -1,0 +1,30 @@
+get:
+  summary: Метод получения списка упаковочных коробок
+  description: |-
+    Метод предназначен для получения списка упаковочных коробок, сохраненных в БД,
+    со следующими условиями:
+    - isEnabled = true;
+
+    Записи выводятся на языке пользователя или на языке по умолчанию;
+
+    Порядок следования списка:
+    - caption ASC
+
+  operationId: getBoxList
+  tags:
+    - Catalog
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Получен список упаковочных коробок
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Boxes.Response.Model.BoxList.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

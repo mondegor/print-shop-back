@@ -1,0 +1,92 @@
+get:
+  summary: Метод получения печатного формата
+  description: Метод предназначен для получения информации о печатном формате из БД
+  operationId: getPrintFormat
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.PrintFormats.Request.Path.FormatID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о печатном формате
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Dictionaries.PrintFormats.Response.Model.PrintFormat.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+put:
+  summary: Метод сохранения печатного формата
+  description: |-
+    Метод предназначен для сохранения информации о печатном формате в БД
+
+    **Ограничения и ошибки полей:**
+    - caption: required,max=64
+
+  operationId: storePrintFormat
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.PrintFormats.Request.Path.FormatID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Dictionaries.PrintFormats.Request.Model.StorePrintFormat.yaml"
+
+  responses:
+    "204":
+      description: Информация о печатном формате успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления печатного формата
+  description: Метод предназначен для удаления информации о печатном формате из БД
+  operationId: removePrintFormat
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.PrintFormats.Request.Path.FormatID.yaml"
+
+  responses:
+    "204":
+      description: Информация о печатном формате успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

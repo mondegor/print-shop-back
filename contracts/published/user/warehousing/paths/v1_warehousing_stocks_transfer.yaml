@@ -1,0 +1,32 @@
+post:
+  summary: Метод списания остатков
+  description: |-
+    Метод предназначен для списания указанных остатков контейнера и сохранения их в БД
+
+  operationId: transferStock
+  tags:
+    - Warehousing.Stock
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Warehousing.Containers.Request.Model.TransferStock.yaml"
+
+  responses:
+    "204":
+      description: Остатки контейнера успешно списаны
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

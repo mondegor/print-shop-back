@@ -1,0 +1,28 @@
+get:
+  summary: Метод получения расчёта по указанному ID запроса
+  description: |-
+    Метод предназначен для получения расчёта по указанному ID запроса сохранённого ранее в БД,
+    со следующими условиями:
+    - query.isDeleted = false;
+
+  operationId: getCalcQueryId
+  tags:
+    - Calculations
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Calculations.QueryHistory.Request.Path.QueryID.yaml"
+
+  responses:
+    "200":
+      description: Получен расчёт об указанном запросе
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Calculations.QueryHistory.Response.Model.Query.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

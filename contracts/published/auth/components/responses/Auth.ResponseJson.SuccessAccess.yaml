@@ -1,0 +1,12 @@
+description: |
+  - Пользователь успешно зарегистрирован в системе
+  - Доступ к аккаунту пользователя разрешён
+  - Refresh и Access токены сгенерированы на основе токена операции
+  - Refresh и Access токены перегенерированы
+headers:
+  Set-Cookie:
+    $ref: "../headers/Auth.Response.Cookie.Web.RefreshToken.yaml"
+content:
+  application/json;charset=UTF-8:
+    schema:
+      $ref: "../models/Auth.Response.Model.SuccessAccess.yaml"

@@ -1,5 +1,0 @@
-App.Field.ListCursor.Cursor:
-  description: Следующая позиция в списке записей
-  type: string
-  maxLength: 256
-  example: "Y3Vyc29yLTQwMjc5"

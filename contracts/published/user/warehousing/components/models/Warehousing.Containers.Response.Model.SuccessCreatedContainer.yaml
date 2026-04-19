@@ -1,0 +1,11 @@
+description: DTO результата создания контейнера
+type: object
+properties:
+  container_id:
+    $ref: "../fields/Warehousing.Field.ContainerID.yaml"
+  code:
+    $ref: "../fields/Warehousing.Field.ContainerCode.yaml"
+  marker:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+  stock_id:
+    $ref: "../fields/Warehousing.Field.StockID.yaml"

@@ -1,0 +1,7 @@
+description: Список идентификаторов цветов бумаги через ","
+name: color_ids
+in: query
+required: false
+schema:
+  type: string
+example: "1,2,3"

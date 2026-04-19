@@ -1,0 +1,9 @@
+description: |-
+  Детализация данных формы/элемента формы:
+  - NORMAL - пользовательская;
+  - EXTENDED - расширенная (для менеджера, технолога);
+type: string
+enum:
+  - NORMAL
+  - EXTENDED
+example: "NORMAL"

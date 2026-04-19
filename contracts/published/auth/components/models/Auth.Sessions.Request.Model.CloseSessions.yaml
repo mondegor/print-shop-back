@@ -1,0 +1,9 @@
+description: DTO закрытия указанных сессий текущего пользователя
+type: object
+required:
+  - hashes
+properties:
+  hashes:
+    type: array
+    items:
+      $ref: "./Auth.Sessions.Request.Model.SessionHash.yaml"

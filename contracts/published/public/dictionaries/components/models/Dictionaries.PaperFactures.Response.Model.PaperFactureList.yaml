@@ -1,0 +1,4 @@
+description: DTO - список фактуры бумаги
+type: array
+items:
+  $ref: "./Dictionaries.PaperFactures.Response.Model.PaperFacture.yaml"

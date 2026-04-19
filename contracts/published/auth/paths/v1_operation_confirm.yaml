@@ -1,0 +1,36 @@
+patch:
+  summary: Auth/OP/R1. Метод подтверждения операции
+  description: Метод предназначен для подтверждения указанной операции инициированной пользователем
+  operationId: confirmUserOperation
+  tags:
+    - Auth.Operation
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Operation.Request.Model.ConfirmOperation.yaml"
+
+  responses:
+    "200":
+      # Подтверждение операции очередным методом прошло успешно, необходимо подтвердить операцию следующим методом
+      $ref: "../components/responses/Auth.ResponseJson.WaitingConfirmOperation.yaml"
+    "204":
+      description: Указанная операция была подтверждена
+    "400":
+      # Токен операции должен быть указан
+      # Токен операции некорректен или недействителен
+      # Код подтверждения операции должен быть указан
+      # Код подтверждения операции некорректен
+      # Исчерпано кол-во попыток подтверждения операции
+      $ref: "../components/responses/Auth.ResponseJson.Error400.yaml"
+    "403":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

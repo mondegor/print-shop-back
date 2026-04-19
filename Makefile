@@ -3,9 +3,6 @@
 build:
 	mrcmd install
 
-build-api:
-	mrcmd openapi build-all
-
 deps:
 	mrcmd go deps
 
@@ -50,4 +47,4 @@ app-logs:
 app-stop:
 	mrcmd stop
 
-.PHONY: build build-api deps deps-upgrade migrate generate lint test test-report plantuml app-conf app-start app-state app-logs app-stop
+.PHONY: build deps deps-upgrade migrate generate lint test test-report plantuml app-conf app-start app-state app-logs app-stop

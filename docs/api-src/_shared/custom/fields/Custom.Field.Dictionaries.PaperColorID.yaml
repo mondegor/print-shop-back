@@ -1,6 +1,0 @@
-Custom.Field.Dictionaries.PaperColorID:
-  description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
-  type: integer
-  # format: uint64
-  minimum: 1
-  example: 2

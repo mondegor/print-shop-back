@@ -1,4 +1,0 @@
-- url: http://api.print-shop.local/auth
-  description: Local Domain
-- url: http://localhost:8080/auth
-  description: Local Host

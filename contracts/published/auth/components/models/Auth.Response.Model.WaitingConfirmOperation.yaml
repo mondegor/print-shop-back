@@ -1,0 +1,37 @@
+type: object
+required:
+  - token
+  - confirm_method
+  - remaining_attempts
+  - expires_in
+properties:
+  token:
+    description: Токен операции, с помощью которой проводится процедура подтверждения подлинности пользователя
+    type: string
+    minLength: 64
+    maxLength: 128
+    example: "b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974"
+  confirm_method:
+    $ref: "../enums/Auth.Enum.ConfirmMethod.yaml"
+  remaining_attempts:
+    description: Оставшееся количество попыток ввода кода подтверждения
+    type: integer
+    example: 2
+  remaining_resends:
+    description: Оставшееся количество повторных отправок кода подтверждения
+    type: integer
+    example: 1
+  resends_in:
+    description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
+    type: integer
+    example: 1
+  expires_in:
+    description: Количество оставшихся секунд до истечения срока действия подтверждения операции
+    type: integer
+    example: 1
+  message:
+    type: string
+    example: "Вы были успешно зарегистрированы, на ваш емаил/телефон отправлен код, с помощью которого необходимо подтвердить регистрацию |
+              Для входа в систему необходимо ввести код подтверждения, отправленный на ваш емаил/телефон |
+              На новый емаил был выслан код для подтверждения его владением |
+              На текущий емаил был выслан код для подтверждения изменения емаила/телефона/пароля"

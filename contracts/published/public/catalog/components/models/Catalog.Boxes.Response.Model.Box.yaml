@@ -1,0 +1,31 @@
+description: DTO - упаковочная коробка
+type: object
+required:
+  - id
+  - article
+  - caption
+  - length
+  - width
+  - height
+  - thickness
+  - weight
+properties:
+  id: # boxId
+    $ref: "../fields/Catalog.Field.BoxID.yaml"
+  article:
+    $ref: "../../../_shared/components/fields/Api.Field.Article.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "СДЭК"
+  length:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  height:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  weight:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Gram.yaml"

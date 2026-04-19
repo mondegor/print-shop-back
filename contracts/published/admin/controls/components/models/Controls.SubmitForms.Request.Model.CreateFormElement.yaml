@@ -1,0 +1,20 @@
+description: DTO создания элемента формы
+type: object
+required:
+  - formId
+  - templateId
+  - elementRequired
+properties:
+  formId:
+    $ref: "../fields/Controls.Field.SubmitFormID.yaml"
+  paramName:
+    $ref: "../../../_shared/components/fields/Api.Field.VariableCamelCase.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Процесс печати"
+  templateId:
+    $ref: "../fields/Controls.Field.ElementTemplateID.yaml"
+  elementRequired:
+    $ref: "../fields/Controls.SubmitForms.Field.ElementRequired.yaml"

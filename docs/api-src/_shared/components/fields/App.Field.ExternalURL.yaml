@@ -1,5 +1,0 @@
-App.Field.ExternalURL:
-  description: Ссылка на внешний ресурс (https, ftp, ...)
-  type: string
-  maxLength: 1024
-  example: "https://example.com/resource.html"

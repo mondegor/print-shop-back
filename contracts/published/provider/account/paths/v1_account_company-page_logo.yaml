@@ -1,0 +1,62 @@
+patch:
+  summary: Метод сохранения логотипа компании
+  description: |-
+    Метод предназначен для загрузки и сохранения нового логотипа компании на её страницу
+    для текущего аккаунта в файловое хранилище.
+
+    **Ограничения и ошибки полей:**
+    - file: size=100Kb; ext=[.jpg, .png]
+
+  operationId: uploadCompanyPageLogo
+  tags:
+    - Account.CompanyPage
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            companyLogo:
+              description: Бинарный файл с расширением JPEG, PNG
+              type:  string
+              format: binary
+              maxLength: 262144 # 256Kb
+
+  responses:
+    "204":
+      description: Логотип компании текущего аккаунта был сохранён
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления логотипа компании
+  description: Метод предназначен для удаления логотипа компании текущего аккаунта из БД
+  operationId: removeCompanyPageLogo
+  tags:
+    - Account.CompanyPage
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "204":
+      description: Логотип компании текущего пользователя успешно удалён
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

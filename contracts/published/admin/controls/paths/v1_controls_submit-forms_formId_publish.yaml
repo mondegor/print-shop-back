@@ -1,0 +1,30 @@
+patch:
+  summary: Метод публикации версии формы, которая находится на тестировании
+  description: |-
+    Метод предназначен для публикации версии формы, которая находится на этапе тестирования.
+
+    **Ограничения и ошибки полей:**
+    - только пользователи с разрешением `modControlsSubmitFormToPublish` могут вызывать данный метод;
+    - версия формы должна находится в статусе `TESTING`, тогда она будет переключена в `PUBLISHED`;
+
+  operationId: publishSubmitForm
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormID.yaml"
+
+  responses:
+    "204":
+      description: Тестовая версия формы успешно переведена в статус публикации
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

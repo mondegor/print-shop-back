@@ -79,7 +79,7 @@ func RegisterSystemHandlers(opts app.Options) error {
 		return err
 	}
 
-	opts.InternalRouter.Handle("/system-info", systemInfoFunc)
+	opts.InternalRouter.Handle("/v1/system-info", systemInfoFunc)
 
 	return nil
 }

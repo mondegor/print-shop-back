@@ -1,0 +1,3 @@
+description: Обязательность заполнения элемента в форме
+type: boolean
+example: true

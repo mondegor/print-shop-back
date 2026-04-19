@@ -1,6 +1,0 @@
-App.Field.Uint:
-  description: Целое положительное число
-  type: integer
-  # format: uint64
-  minimum: 0
-  example: 9223372036854775807

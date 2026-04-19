@@ -1,0 +1,4 @@
+description: DTO - список ID типов ламината
+type: array
+items:
+  $ref: "../../../dictionaries/components/fields/Dictionaries.Field.MaterialTypeID.yaml"

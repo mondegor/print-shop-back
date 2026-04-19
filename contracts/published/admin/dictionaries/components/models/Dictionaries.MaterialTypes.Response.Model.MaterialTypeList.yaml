@@ -1,0 +1,13 @@
+description: DTO - список типов материала
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    description: Список записей ограниченный фильтром и pageSize
+    type: array
+    items:
+      $ref: "./Dictionaries.MaterialTypes.Response.Model.MaterialType.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.ListPager.Total.yaml"

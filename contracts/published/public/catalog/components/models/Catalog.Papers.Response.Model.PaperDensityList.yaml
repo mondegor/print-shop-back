@@ -1,0 +1,4 @@
+description: DTO - список плотностей бумаги
+type: array
+items:
+  $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.GramPerMeter2.yaml"

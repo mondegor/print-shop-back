@@ -1,0 +1,71 @@
+post:
+  summary: Auth/SC/R4. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
+  description: |-
+    Метод предназначен для создания операции установки/изменения TOTP генератора для 2FA аутентификации текущего пользователя (при этом включается 2FA).
+
+    ### Алгоритм установки/изменения TOTP генератора:
+    1. Отправляется код подтверждения на текущий емаил;
+    2. Пользователь указывает полученный код и подтверждает установку нового TOTP генератора;
+    3. Если 2FA включена:\
+      3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+      3.2. Пользователь указывает 2FA пароль и его устанавливаемый TOTP генератор изменяется на новый;\
+      3.3. На текущий емаил отправляется уведомление, что TOTP генератор был установлен/изменён;
+    4. Если 2FA выключена:\
+      4.1. Включается 2FA и TOTP генератор пользователя устанавливается;\
+      4.2. На текущий емаил отправляется уведомление, что включена 2FA и TOTP генератор установлен;
+  operationId: changeUser2faTotpGenerator
+  tags:
+    - Auth.Security
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      $ref: "../components/responses/Auth.ResponseJson.WaitingConfirmOperation.yaml"
+    "400":
+      # Текущий одноразовый пароль (TOTP) указан неверно
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+patch:
+  summary: Auth/SC/R5. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
+  description: Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя
+  operationId: applyUserOperationTotpGenerator
+  tags:
+    - Auth.Security
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Security.Request.Model.ApplyOperation.yaml"
+
+  responses:
+    "200":
+      description: Операция пользователя на установку TOTP генератора была применена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Auth.Security.Response.TotpGenerator.yaml"
+    "400":
+      # Токен операции должен быть указан
+      # Токен операции некорректен или недействителен
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

@@ -1,0 +1,10 @@
+description: DTO создания нового json шаблона элемента (multipart)
+type: object
+required:
+  - elementTemplate
+  - attachment
+properties:
+  elementTemplate:
+    $ref: "./Controls.ElementTemplates.Request.Model.CreateElementTemplate.yaml"
+  attachment:
+    $ref: "../../../_shared/components/models/Api.Response.Model.JsonFile.yaml"

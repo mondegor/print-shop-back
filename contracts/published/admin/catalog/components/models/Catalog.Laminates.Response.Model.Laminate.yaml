@@ -1,0 +1,43 @@
+description: DTO - ламинат
+type: object
+required:
+  - id
+  - tagVersion
+  - article
+  - caption
+  - typeId
+  - length
+  - width
+  - thickness
+  - weightM2
+  - status
+  - createdAt
+  - updatedAt
+properties:
+  id: # laminateId
+    $ref: "../fields/Catalog.Field.LaminateID.yaml"
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  article:
+    $ref: "../../../_shared/components/fields/Api.Field.Article.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Глянцевый 450"
+  typeId:
+    $ref: "../../../dictionaries/components/fields/Dictionaries.Field.MaterialTypeID.yaml"
+  length:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter.yaml"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  weightM2:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.GramPerMeter2.yaml"
+  status:
+    $ref: "../../../_shared/components/enums/Api.Enum.Status.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

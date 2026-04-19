@@ -1,0 +1,133 @@
+---
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Private API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Private REST API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local/baxkend
+    description: Local Domain
+  - url: http://localhost:8080/baxkend
+    description: Local Host
+security:
+  - bearerAuth: []
+tags:
+  - name: Catalog
+    description: Private API Catalog
+  - name: Dictionaries
+    description: Private API Dictionaries
+  - name: Controls
+    description: Private API Controls
+  - name: CompanyPage
+    description: Private API Companies' pages
+paths:
+  /v1/catalog/boxes:
+    $ref: "./catalog/paths/v1_catalog_boxes.yaml"
+  /v1/catalog/boxes/{boxId}:
+    $ref: "./catalog/paths/v1_catalog_boxes_boxId.yaml"
+  /v1/catalog/boxes/{boxId}/status:
+    $ref: "./catalog/paths/v1_catalog_boxes_boxId_status.yaml"
+
+  /v1/catalog/laminates:
+    $ref: "./catalog/paths/v1_catalog_laminates.yaml"
+  /v1/catalog/laminates/{laminateId}:
+    $ref: "./catalog/paths/v1_catalog_laminates_laminateId.yaml"
+  /v1/catalog/laminates/{laminateId}/status:
+    $ref: "./catalog/paths/v1_catalog_laminates_laminateId_status.yaml"
+
+  /v1/catalog/papers:
+    $ref: "./catalog/paths/v1_catalog_papers.yaml"
+  /v1/catalog/papers/{paperId}:
+    $ref: "./catalog/paths/v1_catalog_papers_paperId.yaml"
+  /v1/catalog/papers/{paperId}/status:
+    $ref: "./catalog/paths/v1_catalog_papers_paperId_status.yaml"
+
+  /v1/dictionaries/material-types:
+    $ref: "./dictionaries/paths/v1_dictionaries_material-types.yaml"
+  /v1/dictionaries/material-types/{typeId}:
+    $ref: "./dictionaries/paths/v1_dictionaries_material-types_typeId.yaml"
+  /v1/dictionaries/material-types/{typeId}/status:
+    $ref: "./dictionaries/paths/v1_dictionaries_material-types_typeId_status.yaml"
+
+  /v1/dictionaries/paper-colors:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-colors.yaml"
+  /v1/dictionaries/paper-colors/{colorId}:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-colors_colorId.yaml"
+  /v1/dictionaries/paper-colors/{colorId}/status:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-colors_colorId_status.yaml"
+  /v1/dictionaries/paper-factures:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-factures.yaml"
+  /v1/dictionaries/paper-factures/{factureId}:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-factures_factureId.yaml"
+  /v1/dictionaries/paper-factures/{factureId}/status:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-factures_factureId_status.yaml"
+
+  /v1/dictionaries/print-formats:
+    $ref: "./dictionaries/paths/v1_dictionaries_print-formats.yaml"
+  /v1/dictionaries/print-formats/{formatId}:
+    $ref: "./dictionaries/paths/v1_dictionaries_print-formats_formatId.yaml"
+  /v1/dictionaries/print-formats/{formatId}/status:
+    $ref: "./dictionaries/paths/v1_dictionaries_print-formats_formatId_status.yaml"
+
+  /v1/controls/element-templates:
+    $ref: "./controls/paths/v1_controls_element-templates.yaml"
+  /v1/controls/element-templates/{templateId}:
+    $ref: "./controls/paths/v1_controls_element-templates_templateId.yaml"
+  /v1/controls/element-templates/{templateId}/status:
+    $ref: "./controls/paths/v1_controls_element-templates_templateId_status.yaml"
+  /v1/controls/element-templates/{templateId}/json:
+    $ref: "./controls/paths/v1_controls_element-templates_templateId_json.yaml"
+
+  /v1/controls/submit-forms:
+    $ref: "./controls/paths/v1_controls_submit-forms.yaml"
+  /v1/controls/submit-forms/{formId}:
+    $ref: "./controls/paths/v1_controls_submit-forms_formId.yaml"
+  /v1/controls/submit-forms/{formId}/status:
+    $ref: "./controls/paths/v1_controls_submit-forms_formId_status.yaml"
+  /v1/controls/submit-forms/{formId}/prepare-for-test:
+    $ref: "./controls/paths/v1_controls_submit-forms_formId_prepare-for-test.yaml"
+  /v1/controls/submit-forms/{formId}/publish:
+    $ref: "./controls/paths/v1_controls_submit-forms_formId_publish.yaml"
+  /v1/controls/submit-forms/{formId}/versions/{version}/json:
+    $ref: "./controls/paths/v1_controls_submit-forms_formId_versions_version_json.yaml"
+
+  /v1/controls/submit-form-elements:
+    $ref: "./controls/paths/v1_controls_submit-form-elements.yaml"
+  /v1/controls/submit-form-elements/{elementId}:
+    $ref: "./controls/paths/v1_controls_submit-form-elements_elementId.yaml"
+  /v1/controls/submit-form-elements/{elementId}/move:
+    $ref: "./controls/paths/v1_controls_submit-form-elements_elementId_move.yaml"
+
+  /v1/prov/companies-pages:
+    $ref: "./provider-accounts/paths/v1_prov_companies-pages.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

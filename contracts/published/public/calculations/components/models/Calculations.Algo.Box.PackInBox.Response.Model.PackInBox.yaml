@@ -1,0 +1,43 @@
+description: DTO - результат алгоритма "Количество коробок с изделиями"
+type: object
+required:
+  - fullBox
+  - boxesQuantity
+  - boxesWeight
+  - productsVolume
+  - boxesInnerVolume
+  - boxesVolume
+properties:
+  fullBox:
+    allOf:
+      - $ref: "./Calculations.Algo.Box.PackInBox.Response.Model.Box.yaml"
+      - description: Полностью заполненная коробка
+  restBox:
+    allOf:
+      - $ref: "./Calculations.Algo.Box.PackInBox.Response.Model.Box.yaml"
+      - description: Коробка с остатком изделий
+  boxesQuantity:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+      - description: Количество коробок
+      - example: 17
+  boxesWeight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Kilogram.yaml"
+      - description: Общий вес коробок с изделиями
+      - example: 371.25
+  productsVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Общий объём изделий
+      - example: 17.25
+  boxesVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Общий внешний объём коробок
+      - example: 19.6
+  boxesInnerVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Общий внутренний объём коробок
+      - example: 18.1

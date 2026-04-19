@@ -1,0 +1,13 @@
+description: |-
+  DTO - собранная форма пользовательского интерфейса
+type: object
+required:
+  - rewriteName
+  - caption
+properties:
+  rewriteName:
+    $ref: "../../_shared/components/fields/Api.Field.RewriteName.yaml"
+  caption:
+    allOf:
+      - $ref: "../../_shared/components/fields/Api.Field.Caption.yaml"
+      - example: "Листовая продукция"

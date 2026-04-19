@@ -1,0 +1,4 @@
+description: URL к изображению записи
+type: string
+maxLength: 255
+example: "https://example.com/path/item-name.png"

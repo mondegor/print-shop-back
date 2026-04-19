@@ -1,0 +1,10 @@
+description: Индекс страницы с записями
+name: pageIndex
+in: query
+required: false
+schema:
+  type: integer
+  # format: uint64
+  minimum: 0
+  default: 0
+example: 2

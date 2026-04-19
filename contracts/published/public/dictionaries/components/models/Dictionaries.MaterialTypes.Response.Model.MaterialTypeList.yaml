@@ -1,0 +1,4 @@
+description: DTO - список типов материала
+type: array
+items:
+  $ref: "./Dictionaries.MaterialTypes.Response.Model.MaterialType.yaml"

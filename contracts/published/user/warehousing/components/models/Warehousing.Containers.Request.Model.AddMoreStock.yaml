@@ -1,0 +1,13 @@
+description: DTO - прибавления остатков контейнеру
+type: object
+required:
+  - container_id
+  - location_id
+  - quantity
+properties:
+  container_id:
+    $ref: "../fields/Warehousing.Field.ContainerID.yaml"
+  location_id:
+    $ref: "../fields/Warehousing.Field.LocationID.yaml"
+  quantity:
+    $ref: "../../../_shared/components/fields/Api.Field.Int64.yaml"

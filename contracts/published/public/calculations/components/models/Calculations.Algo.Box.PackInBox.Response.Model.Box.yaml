@@ -1,0 +1,40 @@
+description: DTO коробки
+type: object
+required:
+  - weight
+  - volume
+  - innerVolume
+  - productQuantity
+  - productVolume
+  - unusedVolumePercent
+properties:
+  weight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Kilogram.yaml"
+      - description: Вес коробки с изделиями
+      - example: 24.75
+  volume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Внешний объём коробки
+      - example: 0.4
+  innerVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Внутренний объём коробки
+      - example: 0.375
+  productQuantity:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+      - description: Количество изделий в коробке
+      - example: 15
+  productVolume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Объём изделий в коробке
+      - example: 4.21
+  unusedVolumePercent:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Percent.yaml"
+      - description: Незаполненный объём коробки в %
+      - example: 23.71

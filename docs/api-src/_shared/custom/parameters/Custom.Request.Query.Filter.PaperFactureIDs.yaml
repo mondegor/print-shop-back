@@ -1,8 +1,0 @@
-Custom.Request.Query.Filter.PaperFactureIDs:
-  description: Список идентификаторов фактур бумаги через ","
-  name: facture_ids
-  in: query
-  required: false
-  schema:
-    type: string
-  example: "1,2,3"

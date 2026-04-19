@@ -1,0 +1,28 @@
+description: DTO создания нового ламината
+type: object
+required:
+  - article
+  - caption
+  - typeId
+  - length
+  - width
+  - thickness
+  - weightM2
+properties:
+  article:
+    $ref: "../../../_shared/components/fields/Api.Field.Article.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Глянцевый 450"
+  typeId:
+    $ref: "../../../dictionaries/components/fields/Dictionaries.Field.MaterialTypeID.yaml"
+  length:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter.yaml"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  weightM2:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.GramPerMeter2.yaml"

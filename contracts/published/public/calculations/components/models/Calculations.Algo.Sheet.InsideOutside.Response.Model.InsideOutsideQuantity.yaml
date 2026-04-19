@@ -1,0 +1,10 @@
+description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+type: object
+required:
+  - layout
+  - total
+properties:
+  layout:
+    $ref: "../fields/Calculations.Field.Layout.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"

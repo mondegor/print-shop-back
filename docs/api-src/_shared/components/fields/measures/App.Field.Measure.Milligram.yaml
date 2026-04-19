@@ -1,7 +1,0 @@
-App.Field.Measure.Milligram:
-  description: Милиграмм (mg)
-  type: integer
-  format: int64
-  maxLength: 8
-  minimum: 0
-  example: 1000000 # 1kg

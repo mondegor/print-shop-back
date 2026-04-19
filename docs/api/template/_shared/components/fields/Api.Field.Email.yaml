@@ -1,0 +1,5 @@
+description: Электронный адрес
+type: string
+format: email
+maxLength: 128
+example: "email@example.com"

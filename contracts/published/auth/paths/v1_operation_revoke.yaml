@@ -1,0 +1,30 @@
+patch:
+  summary: Auth/OP/R3. Метод отзыва/отмены операции
+  description: Метод предназначен для отзыва/отмены пользователем указанной операции, если это возможно
+  operationId: revokeUserOperation
+  tags:
+    - Auth.Operation
+
+#  parameters:
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Operation.Request.Model.OperationToken.yaml"
+
+  responses:
+    "204":
+      description: Указанная операция была отозвана
+    "400":
+      # Токен операции должен быть указан
+      # Токен операции некорректен или недействителен
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "403":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

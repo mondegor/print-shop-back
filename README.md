@@ -12,14 +12,6 @@ Web сервис для расчёта стоимости и времени из
 > Перед запуском консольных скриптов сервиса необходимо скачать и установить утилиту Mrcmd.\
 > Инструкция по её установке находится [здесь](https://github.com/mondegor/mrcmd#readme)
 
-### Команды для сборки API документации v0.5.0
-- `mrcmd openapi help` - помощь по командам плагина openapi;
-- `mrcmd openapi build-all` - сборка документации всех API;
-
-### Примеры запуска сборки документации из консоли Windows:
-- GitBash (cmd): `"C:\Program Files\Git\git-bash.exe" --cd=d:\mrwork\print-shop-back mrcmd openapi build-all`;
-- WSL (PowerShell): `cd D:\workdir\print-shop-back; wsl -d Ubuntu-20.04 -e mrcmd openapi build-all`;
-
 ## Разворачивание, установка и запуск сервиса
 
 ### Разворачивание сервиса
@@ -69,7 +61,6 @@ Web сервис для расчёта стоимости и времени из
 
 #### Короткий вариант выше приведённых команд (Makefile)
 - `make build` // аналог `mrcmd install`
-- `make build-api` // аналог `mrcmd openapi build-all`
 - `make deps` // аналог `mrcmd go deps`
 - `make migrate` // аналог `mrcmd go-migrate up`
 - `make generate` // аналог `mrcmd go generate`
@@ -91,7 +82,7 @@ Web сервис для расчёта стоимости и времени из
 - MINIO: http://minio.local/ (admin 12345678);
 - API: http://api.print-shop.local/;
 - HEALTH: http://print-shop.internal/health;
-- INFO: http://print-shop.internal/system-info;
+- INFO: http://print-shop.internal/v1/system-info;
 - METRICS: http://print-shop.internal/metrics;
 
 ### Использование локальных доменов

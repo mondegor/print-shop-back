@@ -1,0 +1,25 @@
+get:
+  summary: Метод получения списка ID фактур бумаги
+  description: |-
+    Метод предназначен для получения списка ID фактур бумаги, сохраненных в БД,
+    со следующими условиями:
+    - paper.isEnabled = true;
+
+  operationId: getPaperFactureIDList
+  tags:
+    - Catalog
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Получен список ID фактур бумаги
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Papers.Response.Model.PaperFactureIDList.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

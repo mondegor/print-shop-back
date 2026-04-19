@@ -1,0 +1,5 @@
+description: DTO изменения статуса публикации страницы компании
+type: object
+properties:
+  status:
+    $ref: "../enums/CompanyPage.Enum.PublicStatus.yaml"

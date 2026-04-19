@@ -1,0 +1,9 @@
+description: Название страницы используемое в URL
+name: pageName
+in: path
+required: true
+schema:
+  type: string
+  minLength: 5
+  maxLength: 64
+example: "printrobot"

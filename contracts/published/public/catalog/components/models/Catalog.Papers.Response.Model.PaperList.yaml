@@ -1,0 +1,4 @@
+description: DTO - список бумаги
+type: array
+items:
+  $ref: "./Catalog.Papers.Response.Model.Paper.yaml"

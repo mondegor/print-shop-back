@@ -1,0 +1,13 @@
+description: DTO параметров сохранения расчётов запроса
+type: object
+required:
+  - caption
+  - params
+  - result
+properties:
+  caption:
+    $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+  params:
+    $ref: "../../../_shared/components/fields/Api.Field.JsonData.yaml"
+  result:
+    $ref: "../../../_shared/components/fields/Api.Field.JsonData.yaml"

@@ -1,0 +1,13 @@
+description: DTO - список бумаги
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    description: Список записей ограниченный фильтром и pageSize
+    type: array
+    items:
+      $ref: "./Catalog.Papers.Response.Model.Paper.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.ListPager.Total.yaml"

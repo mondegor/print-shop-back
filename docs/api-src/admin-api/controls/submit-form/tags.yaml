@@ -1,4 +1,0 @@
-- name: Controls.SubmitForm
-  description: Private API Controls submit forms
-- name: Controls.SubmitForm.Element
-  description: Private API Controls elements of submit forms

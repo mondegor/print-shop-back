@@ -1,0 +1,23 @@
+description: DTO параметров алгоритма "Спуск полос"
+type: object
+required:
+  - itemFormat
+  - itemDistance
+  - outFormat
+properties:
+  itemFormat:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+  itemDistance:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+      - description: Расстояние между элементами ({по горизонтали}x{по вертикали})
+  outFormat:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+  disableRotation:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Boolean.yaml"
+      - description: Запретить поворот остатка на 90 градусов
+  useMirror:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Boolean.yaml"
+      - description: Использовать зеркальное размещение элементов

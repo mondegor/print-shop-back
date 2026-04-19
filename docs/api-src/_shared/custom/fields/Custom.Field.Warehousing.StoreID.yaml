@@ -1,6 +1,0 @@
-Custom.Field.Warehousing.StoreID:
-  description: Идентификатор коробки (модуль - Warehousing)
-  type: integer
-  # format: uint64
-  minimum: 1
-  example: 2

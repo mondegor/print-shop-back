@@ -1,0 +1,13 @@
+description: DTO - список печатных форматов
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    description: Список записей ограниченный фильтром и pageSize
+    type: array
+    items:
+      $ref: "./Dictionaries.PrintFormats.Response.Model.PrintFormat.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.ListPager.Total.yaml"

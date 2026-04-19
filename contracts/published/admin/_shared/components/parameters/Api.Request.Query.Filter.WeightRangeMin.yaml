@@ -1,0 +1,9 @@
+description: Минимальный вес (g)
+name: weight-min
+in: query
+required: false
+schema:
+  type: integer
+  # format: uint64
+  maxLength: 10
+example: 118

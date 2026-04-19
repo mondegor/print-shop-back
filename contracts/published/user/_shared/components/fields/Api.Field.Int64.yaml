@@ -1,0 +1,5 @@
+description: Целое 64-ти разрядное число
+type: integer
+format: int64
+minimum: -9223372036854775808
+example: 9223372036854775807

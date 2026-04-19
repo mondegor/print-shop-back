@@ -1,0 +1,25 @@
+description: |-
+  DTO - версия формы пользовательского интерфейса
+type: object
+required:
+  - version
+  - rewriteName
+  - caption
+  - activityStatus
+  - createdAt
+  - updatedAt
+properties:
+  version:
+    $ref: "../../../_shared/components/fields/Api.Field.Int32.yaml"
+  rewriteName:
+    $ref: "../../../_shared/components/fields/Api.Field.RewriteName.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - example: "Листовая продукция"
+  activityStatus:
+    $ref: "../enums/Controls.Enum.SubmitFormActivityStatus.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

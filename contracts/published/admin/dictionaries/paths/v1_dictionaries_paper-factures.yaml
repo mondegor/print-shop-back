@@ -1,0 +1,84 @@
+get:
+  summary: Метод получения списка фактуры бумаги
+  description: |-
+    Метод предназначен для получения списка всех фактуры бумаги, сохраненных в БД
+
+    Фильтр `Api.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+    - caption;
+
+    Возможные значения `Api.Request.Query.ListPager.PageSize`:
+    - от 1 до 1000 (default: 50)
+
+    Возможные значения `Api.Request.Query.ListSorter.SortColumn`:
+    - caption,default,asc;
+    - createdAt;
+    - updatedAt;
+
+  operationId: getPaperFactureList
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.SearchText.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.Statuses.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortColumn.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortDirection.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageIndex.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageSize.yaml"
+
+  responses:
+    "200":
+      description: Получен список фактуры бумаги
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Dictionaries.PaperFactures.Response.Model.PaperFactureList.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+post:
+  summary: Метод добавления новой фактуры бумаги
+  description: |-
+    Метод предназначен для создания информации о новой фактуре бумаги в БД
+
+    **Ограничения и ошибки полей:**
+    - caption: required,max=64
+
+  operationId: createPaperFacture
+  tags:
+    - Dictionaries
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Dictionaries.PaperFactures.Request.Model.CreatePaperFacture.yaml"
+
+  responses:
+    "201":
+      description: Информация о фактуре бумаги успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItemUint.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

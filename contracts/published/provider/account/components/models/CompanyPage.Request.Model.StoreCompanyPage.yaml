@@ -1,0 +1,21 @@
+description: DTO сохранения публичной страницы компании
+type: object
+required:
+  - rewriteName
+  - pageTitle
+properties:
+  rewriteName:
+    description: Уникальное название страницы
+    type: string
+    maxLength: 64
+    example: "company-name"
+  pageTitle:
+    description: Заголовок страницы компании
+    type: string
+    maxLength: 128
+    example: "Компания 0001"
+  siteUrl:
+    description: URL страницы сайта компании
+    type: string
+    maxLength: 256
+    example: "https://site.example.com/"

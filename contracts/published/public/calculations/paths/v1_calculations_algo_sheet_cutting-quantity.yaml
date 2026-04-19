@@ -1,0 +1,37 @@
+post:
+  summary: Метод расчёта количества резов на печатном формате
+  description: |-
+    Возвращает общее количество резов необходимых совершить резательным оборудованием
+    на печатном формате, чтобы получить заданное кол-во элементов нужного формата.
+
+  operationId: calcAlgoRectCuttingQuantity
+  tags:
+    - Calculations
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Calculations.Algo.Sheet.Cutting.Request.Model.CuttingQuantity.yaml"
+
+  responses:
+    "200":
+      description: Получен расчет алгоритма
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Calculations.Algo.Sheet.Cutting.Response.Model.CuttingQuantity.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

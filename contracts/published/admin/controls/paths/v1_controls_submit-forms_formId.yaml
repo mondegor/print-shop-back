@@ -1,0 +1,95 @@
+get:
+  summary: Метод получения формы
+  description: Метод предназначен для получения формы из БД
+  operationId: getSubmitForm
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о форме
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Controls.SubmitForms.Response.Model.FormWithItems.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+patch:
+  summary: Метод сохранения формы
+  description: |-
+    Метод предназначен для сохранения информации о форме в БД
+
+    **Ограничения и ошибки полей:**
+    - tagVersion: required,gte=1 | ErrVersionInvalid
+    - rewriteName: omitempty,unique,min=4,max=32,pattern=rewrite_name
+    - paramName: omitempty,unique,min=4,max=32,pattern=variable
+    - caption: omitempty,max=128
+
+  operationId: storeSubmitForm
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Controls.SubmitForms.Request.Model.StoreForm.yaml"
+
+  responses:
+    "204":
+      description: Информация о форме успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления формы
+  description: Метод предназначен для удаления информации о форме из БД
+  operationId: removeSubmitForm
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormID.yaml"
+
+  responses:
+    "204":
+      description: Информация о форме успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

@@ -1,0 +1,4 @@
+description: DTO - список печатных форматов
+type: array
+items:
+  $ref: "./Dictionaries.PrintFormats.Response.Model.PrintFormat.yaml"

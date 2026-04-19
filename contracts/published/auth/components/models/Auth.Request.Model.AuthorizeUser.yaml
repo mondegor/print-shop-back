@@ -1,0 +1,15 @@
+type: object
+required:
+  - user_login
+properties:
+  realm:
+    description: Область, пространство, где должен быть авторизован пользователь
+    type: string
+    maxLength: 32
+    example: "domain_name/user_group"
+  user_login:
+    description: Eмаил/телефон пользователя зарегистрированного в системе
+    type: string
+    minLength: 7
+    maxLength: 64
+    example: "user-email@example.com"

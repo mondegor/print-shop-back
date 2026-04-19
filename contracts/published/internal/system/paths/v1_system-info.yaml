@@ -1,0 +1,16 @@
+get:
+  summary: Метод получения системной информации приложения
+  description: Метод предназначен для получения системной информации о работающим приложении
+  operationId: getSystemInfo
+  tags:
+    - System
+
+  responses:
+    "200":
+      description: Получена системная информация о приложении
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/System.Response.Model.SystemInfo.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

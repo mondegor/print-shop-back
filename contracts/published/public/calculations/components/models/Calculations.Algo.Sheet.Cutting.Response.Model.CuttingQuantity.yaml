@@ -1,0 +1,7 @@
+description: DTO - результат алгоритма "Количество резов"
+type: object
+required:
+  - quantity
+properties:
+  quantity:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"

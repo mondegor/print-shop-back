@@ -1,0 +1,9 @@
+description: Идентификатор поля формы
+name: elementId
+in: path
+required: true
+schema:
+  type: integer
+  # format: uint64
+  minimum: 1
+example: 1000
