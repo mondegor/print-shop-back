@@ -59,7 +59,7 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.FileSender,
 			opts.NotifierAPI,
 			opts.Cfg.AccessControl.Realms,
-			opts.Cfg.AccessControl.OperationConfirm,
+			opts.Cfg.AccessControl.DefaultOperationConfirm,
 			authcfg.JWT{
 				Method: opts.Cfg.AccessControl.JWTMethod,
 				Secret: []byte(opts.Cfg.AccessControl.JWTSecret),

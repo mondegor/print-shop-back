@@ -31,7 +31,7 @@ func LocalePool(logger mrlog.Logger, cfg config.Config) (*mrlocale.Pool, error) 
 	)
 
 	bundle, err := mrlocale.NewBundle(
-		cfg.Localization.Languages,
+		cfg.AppLanguages,
 		mrlocale.WithFormatMessage(gotext.MessageConverter("{", "}")),
 		mrlocale.WithFormatError(helper.ExtractMessageForLocalization),
 		mrlocale.WithMessageProvider(

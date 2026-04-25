@@ -26,11 +26,6 @@ func AppMigrationsDir() string {
 	return AppWorkDir() + "/migrations"
 }
 
-// AppDotEnvPathForTests - возвращает директорию с миграциями приложения.
-func AppDotEnvPathForTests() string {
-	return AppWorkDir() + "/tests/.env"
-}
-
 // DBSchemas - возвращает массив схем БД, с которыми работает приложение.
 func DBSchemas() []string {
 	return []string{

@@ -54,7 +54,7 @@ func getProviderAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.Sender,
 			func() (mrstorage.FileProviderAPI, error) {
 				return opts.FileProviderPool.ProviderAPI(
-					opts.Cfg.ModulesSettings.ProviderAccount.CompanyPageLogo.FileProvider,
+					opts.Cfg.ModuleSettings.ProviderAccount.CompanyPageLogoProvider,
 				)
 			},
 			opts.ImageURLBuilder,

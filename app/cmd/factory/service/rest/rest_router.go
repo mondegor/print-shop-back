@@ -17,12 +17,12 @@ import (
 
 // InitRestRouterWithHandlers - создаёт объект mrchi.RouterAdapter и регистрирует в нём http обработчики.
 func InitRestRouterWithHandlers(opts app.Options) (*mrchi.RouterAdapter, error) {
-	name2group := initing.InitActionGroups(opts.Logger, opts.Cfg.AccessControl.ActionGroups)
-
 	router, err := initRestRouter(opts)
 	if err != nil {
 		return nil, err
 	}
+
+	name2group := initing.InitActionGroups(opts.Logger, opts.Cfg.AccessControl.ActionGroups)
 
 	err = RegisterRestRouterAuthHandlers(router, opts, name2group["auth-api"], opts.RealmUserProviders["*"])
 	if err != nil {
@@ -54,11 +54,11 @@ func InitRestRouterWithHandlers(opts app.Options) (*mrchi.RouterAdapter, error) 
 
 func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 	corsOptions := mrrscors.Options{
-		AllowedOrigins:   opts.Cfg.Cors.AllowedOrigins,
-		AllowedMethods:   opts.Cfg.Cors.AllowedMethods,
-		AllowedHeaders:   opts.Cfg.Cors.AllowedHeaders,
-		ExposedHeaders:   opts.Cfg.Cors.ExposedHeaders,
-		AllowCredentials: opts.Cfg.Cors.AllowCredentials,
+		AllowedOrigins:   opts.Cfg.CorsAllowedOrigins,
+		AllowedMethods:   opts.Cfg.CorsAllowedMethods,
+		AllowedHeaders:   opts.Cfg.CorsAllowedHeaders,
+		ExposedHeaders:   opts.Cfg.CorsExposedHeaders,
+		AllowCredentials: opts.Cfg.CorsAllowCredentials,
 		Logger:           mrlog.WithAttrs(opts.Logger, "middleware", "cors"),
 	}
 
@@ -67,11 +67,8 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 		return nil, err
 	}
 
-	requestMetrics := mrprometheus.NewObserveRequest("rest_api", "go")
-	opts.Prometheus.Add(requestMetrics.Collectors()...)
-
 	requestStat := mrserver.NewRequestContainer(
-		stat.NewRequestMetrics(requestMetrics),
+		stat.NewRequestMetrics(initPrometheusRequestObserve(opts)),
 		stat.NewRequestTracer(opts.Tracer),
 		stat.NewRequestLogger(opts.Logger),
 		produce.NewUserRequest(
@@ -92,7 +89,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 	router.RegisterMiddleware(
 		middleware.RecoverHandler(
 			opts.Logger,
-			opts.Cfg.Debugging.Debug,
+			opts.Cfg.DebugIsEnabled,
 			mrresp.HandlerGetFatalErrorAsJSON(opts.Logger),
 		),
 		middleware.RequestIDHandler(opts.Logger, opts.TraceManager),
@@ -101,4 +98,17 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 	)
 
 	return router, nil
+}
+
+func initPrometheusRequestObserve(opts app.Options) mrserver.RequestObserve {
+	if opts.Prometheus == nil {
+		mrlog.Warn(opts.Logger, "Collector Rest Stat is disabled")
+
+		return mrserver.NopRequestObserve()
+	}
+
+	requestMetrics := mrprometheus.NewObserveRequest("rest_api", "go")
+	opts.Prometheus.Add(requestMetrics.Collectors()...)
+
+	return requestMetrics
 }

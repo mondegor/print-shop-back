@@ -1,6 +1,9 @@
 package factory
 
 import (
+	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-storage/mrstorage/mrprometheus"
+	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -19,7 +22,7 @@ func InitPrometheus(opts app.Options) *mrinit.Prometheus {
 		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
 	)
 
-	opts.InternalRouter.Handle(
+	opts.MonitoringRouter.Handle(
 		"/metrics",
 		promhttp.HandlerFor(
 			prom.Registry(),
@@ -30,4 +33,32 @@ func InitPrometheus(opts app.Options) *mrinit.Prometheus {
 	)
 
 	return prom
+}
+
+// InitPrometheusStatPostgres - инициализирует сбор информации о Postgres.
+func InitPrometheusStatPostgres(opts app.Options) error {
+	if opts.Prometheus == nil || opts.PostgresConnManager == nil {
+		mrlog.Warn(opts.Logger, "Collector DB Stat is disabled")
+
+		return nil
+	}
+
+	connCli, err := opts.PostgresConnManager.ConnAdapter().Cli()
+	if err != nil {
+		return err
+	}
+
+	opts.Prometheus.Add(
+		mrprometheus.NewDBCollector(
+			"pgx",
+			func() mrstorage.DBStatProvider {
+				return connCli.Stat()
+			},
+			map[string]string{
+				"db_name": opts.Cfg.DBDatabase,
+			},
+		),
+	)
+
+	return nil
 }

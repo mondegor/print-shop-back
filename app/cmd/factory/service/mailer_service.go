@@ -44,8 +44,8 @@ func InitMailerAPI(opts app.Options) *produce.MessageProducer {
 			Name:       serviceMailerQueueTableName,
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
-		produce.WithRetryAttempts(int16(opts.Cfg.TaskSchedule.Mailer.SendRetryAttempts)),
-		produce.WithDelayCorrection(opts.Cfg.TaskSchedule.Mailer.SendDelayCorrection),
+		produce.WithRetryAttempts(int16(opts.Cfg.TaskScheduleMailer.SendRetryAttempts)),
+		produce.WithDelayCorrection(opts.Cfg.TaskScheduleMailer.SendDelayCorrection),
 	)
 }
 
@@ -56,20 +56,20 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 	mailSender := sendmessage.NewNopSender()
 	messengerSender := sendmessage.NewNopSender()
 
-	mrlog.Info(opts.Logger, "opts.Cfg.Senders.Mail.DefaultFrom", opts.Cfg.Senders.Mail.DefaultFrom)
+	mrlog.Info(opts.Logger, "opts.Cfg.MailDefaultFrom", opts.Cfg.MailDefaultFrom)
 
-	if opts.Cfg.Senders.Mail.SmtpHost != "" {
-		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.Senders.Mail.SmtpHost, "port", opts.Cfg.Senders.Mail.SmtpPort)
+	if opts.Cfg.MailSmtpHost != "" {
+		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.MailSmtpHost, "port", opts.Cfg.MailSmtpPort)
 
 		sender, err := adapter.NewMailSender(
 			mail.NewSMTPClient(
-				opts.Cfg.Senders.Mail.SmtpHost,
-				opts.Cfg.Senders.Mail.SmtpPort,
-				opts.Cfg.Senders.Mail.SmtpUserName,
-				opts.Cfg.Senders.Mail.SmtpPassword,
+				opts.Cfg.MailSmtpHost,
+				opts.Cfg.MailSmtpPort,
+				opts.Cfg.MailSmtpUserName,
+				opts.Cfg.MailSmtpPassword,
 				opts.Tracer,
 			),
-			opts.Cfg.Senders.Mail.DefaultFrom,
+			opts.Cfg.MailDefaultFrom,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("mail.New(): %w", err)
@@ -78,10 +78,10 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 		mailSender = sender
 	}
 
-	if opts.Cfg.Senders.TelegramBot.Token != "" {
-		mrlog.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.Senders.TelegramBot.Name)
+	if opts.Cfg.TelegramChannelName != "" {
+		mrlog.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.TelegramChannelName)
 
-		sender, err := telegram.NewBotClient(opts.Cfg.Senders.TelegramBot.Token, opts.Tracer)
+		sender, err := telegram.NewBotClient(opts.Cfg.TelegramChannelToken, opts.Tracer)
 		if err != nil {
 			return nil, fmt.Errorf("telegrambot.NewMessageClient(): %w", err)
 		}
@@ -104,22 +104,22 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 		},
 		processor.WithMessageProcessorOpts(
 			consume.WithCaptionPrefix[entity.Message]("Mailer/"),
-			consume.WithReadyTimeout[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadyTimeout),
+			consume.WithReadyTimeout[entity.Message](opts.Cfg.TaskScheduleMailer.MessageProcessor.ReadyTimeout),
 			consume.WithReadPeriodStrategy[entity.Message](
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ReadPeriod,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleMailer.MessageProcessor.ReadPeriod,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
 			consume.WithConsumerTimeout[entity.Message](
-				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerReadTimeout,
-				opts.Cfg.TaskSchedule.Mailer.MessageProcessor.ConsumerWriteTimeout,
+				opts.Cfg.TaskScheduleMailer.MessageProcessor.ConsumerReadTimeout,
+				opts.Cfg.TaskScheduleMailer.MessageProcessor.ConsumerWriteTimeout,
 			),
-			consume.WithHandlerTimeout[entity.Message](opts.Cfg.TaskSchedule.Mailer.MessageProcessor.HandlerTimeout),
-			consume.WithQueueSize[entity.Message](int(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.QueueSize)),
-			consume.WithWorkersCount[entity.Message](int(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.WorkersCount)),
+			consume.WithHandlerTimeout[entity.Message](opts.Cfg.TaskScheduleMailer.MessageProcessor.HandlerTimeout),
+			consume.WithQueueSize[entity.Message](int(opts.Cfg.TaskScheduleMailer.MessageProcessor.QueueSize)),
+			consume.WithWorkersCount[entity.Message](int(opts.Cfg.TaskScheduleMailer.MessageProcessor.WorkersCount)),
 			consume.WithSignalExecuteHandler[entity.Message](
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Mailer.MessageProcessor.NotificationChannel),
+				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel),
 			),
 		),
 		processor.WithSenderProviderOpts(
@@ -149,31 +149,31 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceMailerPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Mailer/"),
-		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskSchedule.Mailer.ChangeQueueBatchSize)),
-		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Mailer.ChangeRetryTimeout),
-		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Mailer.ChangeRetryDelayed),
-		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskSchedule.Mailer.CleanQueueBatchSize)),
+		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskScheduleMailer.ChangeQueueBatchSize)),
+		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskScheduleMailer.ChangeRetryTimeout),
+		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskScheduleMailer.ChangeRetryDelayed),
+		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskScheduleMailer.CleanQueueBatchSize)),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleMailer.ChangeFromToRetry.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Mailer.ChangeFromToRetry.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleMailer.ChangeFromToRetry.Timeout),
 		),
 		scheduler.WithTaskCleanMessagesOpts(
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
 				mrworker.NewQuadQuickStartStrategy(
-					opts.Cfg.TaskSchedule.Mailer.CleanQueue.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleMailer.CleanQueue.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Mailer.CleanQueue.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleMailer.CleanQueue.Timeout),
 		),
 	)
 }

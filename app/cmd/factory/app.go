@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	authiniting "github.com/mondegor/go-components/wire/mrauth/initing"
 	"github.com/mondegor/go-storage/mrlock/redislocker"
 	"github.com/mondegor/go-storage/mrpostgres"
@@ -24,21 +26,12 @@ import (
 
 // InitApp - Настраивает конфигурацию, внешнее окружение приложения, после этого создаёт её модули и компоненты.
 func InitApp(args []string, stdout io.Writer) (app.Options, error) {
-	parsedArgs, err := ParseAppArgs(args)
+	parsedArgs, err := config.ParseCmdArgs(args)
 	if err != nil {
 		return app.Options{}, err
 	}
 
-	cfg, err := config.Create(
-		config.Args{
-			WorkDir:     parsedArgs.WorkDir,
-			ConfigPath:  parsedArgs.ConfigPath,
-			DotEnvPath:  parsedArgs.DotEnvPath,
-			Environment: parsedArgs.Environment,
-			LogLevel:    parsedArgs.LogLevel,
-			Stdout:      stdout,
-		},
-	)
+	cfg, err := config.Create(parsedArgs, stdout)
 	if err != nil {
 		return app.Options{}, fmt.Errorf("factory.InitApp(): %w", err)
 	}
@@ -60,7 +53,7 @@ func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 			Tracer:          tracer,
 			TraceManager:    traceManager,
 			OpenedResources: xio.NewCloseManager(logger),
-			DebugFunc:       InitDebugInfo(cfg.Debugging.Debug),
+			DebugFunc:       InitDebugInfo(cfg.DebugIsEnabled),
 		},
 	)
 }
@@ -73,23 +66,23 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 	logger := opts.Logger
 
 	// show head info about started app
-	mrlog.Info(logger, opts.Cfg.App.Name, "environment", opts.Cfg.App.Environment, "version", opts.Cfg.App.Version)
+	mrlog.Info(logger, opts.Cfg.AppName, "environment", opts.Cfg.Environment, "version", opts.Cfg.AppVersion)
 
-	if opts.Cfg.Debugging.Debug {
+	if opts.Cfg.WorkDir != "" {
+		mrlog.Debug(logger, "WORK DIR: "+opts.Cfg.WorkDir)
+	}
+
+	mrlog.Debug(logger, "CONFIG PATHs: "+strings.Join(opts.Cfg.ConfigPaths, ", "))
+
+	if opts.Cfg.DotEnvPath != "" {
+		mrlog.Debug(logger, ".ENV PATH: "+opts.Cfg.DotEnvPath)
+	}
+
+	if opts.Cfg.DebugIsEnabled {
 		mrlog.Info(logger, "DEBUG MODE: ON")
 	}
 
-	mrlog.Info(logger, "LOG LEVEL: "+opts.Cfg.Log.Level)
-
-	if opts.Cfg.App.WorkDir != "" {
-		mrlog.Debug(logger, "WORK DIR: "+opts.Cfg.App.WorkDir)
-	}
-
-	mrlog.Debug(logger, "CONFIG PATH: "+opts.Cfg.ConfigPath)
-
-	if opts.Cfg.App.DotEnvPath != "" {
-		mrlog.Debug(logger, ".ENV PATH: "+opts.Cfg.App.DotEnvPath)
-	}
+	mrlog.Info(logger, "LOG LEVEL: "+opts.Cfg.LogLevel)
 
 	opts, err := createAppEnvironment(opts)
 	if err != nil {
@@ -118,7 +111,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		opts.Sentry = sentry
 	}
 
-	opts.InternalRouter = http.NewServeMux()
+	opts.MonitoringRouter = http.NewServeMux()
 
 	if opts.Prometheus == nil {
 		opts.Prometheus = InitPrometheus(opts)
@@ -127,10 +120,10 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	// !!! only after init Sentry and Prometheus
 	wire.InitErrors(
 		wire.ErrorConfig{
-			HasCaller:         opts.Cfg.Debugging.ErrorCaller.IsEnabled,
-			CallerDepth:       opts.Cfg.Debugging.ErrorCaller.Depth,
-			CallerShowFunc:    opts.Cfg.Debugging.ErrorCaller.ShowFunc,
-			CallerUpperBounds: opts.Cfg.Debugging.ErrorCaller.UpperBounds,
+			HasCaller:         opts.Cfg.StackTraceIsEnabled,
+			CallerDepth:       opts.Cfg.StackTraceDepth,
+			CallerShowFunc:    opts.Cfg.StackTraceShowFunc,
+			CallerUpperBounds: opts.Cfg.StackTraceUpperBounds,
 		},
 	)
 
@@ -139,7 +132,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	opts.AppHealth = mrrun.NewAppHealth()
 
 	if opts.PostgresConnManager == nil {
-		postgresAdapter, err := InitPostgres(opts)
+		postgresAdapter, err := InitPostgres(opts.Logger, opts.Tracer, opts.Cfg)
 		if err != nil {
 			return app.Options{}, err
 		}
@@ -147,15 +140,17 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		opts.OpenedResources.Register(postgresAdapter)
 		opts.PostgresConnManager = InitPostgresConnManager(postgresAdapter, opts.Logger)
 
-		if opts.Cfg.Storage.MigrationsDir != "" {
-			if err = ApplyPostgresMigrations(opts); err != nil {
-				return app.Options{}, err
-			}
+		if err = InitPrometheusStatPostgres(opts); err != nil {
+			return app.Options{}, err
+		}
+
+		if err = ApplyPostgresMigrations(opts.Logger, opts.PostgresConnManager, opts.Cfg); err != nil {
+			return app.Options{}, err
 		}
 	}
 
 	if opts.RedisAdapter == nil {
-		redisAdapter, err := InitRedis(opts)
+		redisAdapter, err := InitRedis(opts.Logger, opts.Tracer, opts.Cfg)
 		if err != nil {
 			return app.Options{}, err
 		}
@@ -206,7 +201,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	rights, err := authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.Realms, opts.PermsProvider)
+	rights, err := authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
 	if err != nil {
 		return app.Options{}, err
 	}
@@ -215,8 +210,13 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		opts.Logger,
 		opts.PostgresConnManager,
 		rights,
-		opts.Cfg.Realms,
-		opts.Cfg.Debugging.AuthorizedUser,
+		opts.Cfg.AccessControl.Realms,
+		authcfg.TestUser{
+			ID:       opts.Cfg.TestUserID,
+			Realm:    opts.Cfg.TestUserRealm,
+			Kind:     opts.Cfg.TestUserKind,
+			LangCode: opts.Cfg.TestUserLangCode,
+		},
 		opts.Cfg.AccessControl.JWTSecret,
 	)
 
@@ -228,8 +228,10 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	if err = opts.Prometheus.Register(); err != nil {
-		return app.Options{}, err
+	if opts.Prometheus != nil {
+		if err = opts.Prometheus.Register(); err != nil {
+			return app.Options{}, err
+		}
 	}
 
 	return opts, nil
@@ -240,9 +242,9 @@ func createSharedAPI(opts app.Options) app.Options {
 		opts.PostgresConnManager.ConnAdapter(),
 		opts.Logger,
 		[]string{
-			opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.NotificationChannel,
-			opts.Cfg.TaskSchedule.Mailer.MessageProcessor.NotificationChannel,
-			opts.Cfg.TaskSchedule.Settings.ReloadSettings.NotificationChannel,
+			opts.Cfg.TaskScheduleNotifier.NoticeProcessor.NotificationChannel,
+			opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel,
+			opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel,
 		},
 	)
 
@@ -280,7 +282,7 @@ func createSharedServices(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, fmt.Errorf("factory.InitRestServer(): %w", err)
 	}
 
-	opts.HttpInternalServer = InitInternalServer(opts)
+	opts.HttpMonitoringServer = InitMonitoringServer(opts)
 
 	opts.TaskSchedulerServices = append(
 		opts.TaskSchedulerServices,

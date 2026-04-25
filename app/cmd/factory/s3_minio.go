@@ -17,16 +17,16 @@ func NewS3Minio(ctx context.Context, logger mrlog.Logger, tracer mrtrace.Tracer,
 	mrlog.Info(logger, "Create and init file provider pool")
 
 	opts := mrminio.Options{
-		Host:     cfg.S3.Host,
-		Port:     cfg.S3.Port,
-		UseSSL:   cfg.S3.UseSSL,
-		User:     cfg.S3.Username,
-		Password: cfg.S3.Password,
+		Host:     cfg.S3Host,
+		Port:     cfg.S3Port,
+		UseSSL:   cfg.S3UseSSL,
+		User:     cfg.S3Username,
+		Password: cfg.S3Password,
 	}
 
 	conn := mrminio.New(
-		cfg.S3.CreateBuckets,
-		mime.NewTypeList(cfg.MimeTypes), // TODO: можно вынести в общую переменную
+		cfg.S3CreateBuckets,
+		mime.NewTypeList(cfg.AllowedMimeTypes), // TODO: можно вынести в общую переменную
 		tracer,
 	)
 
@@ -47,13 +47,13 @@ func RegisterS3ImageStorage(
 	storage, err := newS3MinioFileProvider(
 		logger,
 		conn,
-		cfg.FileProviders.ImageStorage.BucketName,
+		cfg.FileProviders.ImageStorageBucketName,
 	)
 	if err != nil {
 		return err
 	}
 
-	return pool.Register(cfg.FileProviders.ImageStorage.Name, storage)
+	return pool.Register(cfg.FileProviders.ImageStorageName, storage)
 }
 
 func newS3MinioFileProvider(

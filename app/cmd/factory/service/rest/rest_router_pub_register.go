@@ -114,14 +114,14 @@ func getPublicAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.FileSender,
 			func() (mrstorage.FileProviderAPI, mrpath.Builder, error) {
 				fileAPI, err := opts.FileProviderPool.ProviderAPI(
-					opts.Cfg.ModulesSettings.FileStation.ImageProxy.FileProvider,
+					opts.Cfg.ModuleSettings.FileStation.ImageProxyProvider,
 				)
 				if err != nil {
 					return nil, nil, err
 				}
 
 				basePath, err := mrpath.NewPlaceholder(
-					opts.Cfg.ModulesSettings.FileStation.ImageProxy.BasePath,
+					opts.Cfg.ModuleSettings.FileStation.ImageProxyBasePath,
 					mrpath.Placeholder,
 				)
 				if err != nil {

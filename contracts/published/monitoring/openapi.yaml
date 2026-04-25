@@ -2,12 +2,12 @@
 openapi: 3.0.3
 info:
   version: LATEST
-  title: Internal API print-shop
+  title: Monitoring API print-shop
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   description: |-
-    Internal REST API проекта print-shop
+    Monitoring REST API проекта print-shop
 servers:
   - url: http://print-shop.internal
     description: Local Domain

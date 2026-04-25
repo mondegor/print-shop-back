@@ -44,16 +44,16 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 		serviceUserLogTableName,
 		collector.WithMessageCollectorOpts(
 			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
-			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.ReadyTimeout),
+			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.ReadyTimeout),
 			collect.WithFlushPeriodStrategy[dto.UserActivityLogMessage](
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.FlushPeriod,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.FlushPeriod,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			collect.WithHandlerTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.HandlerTimeout),
-			collect.WithBatchSize[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.BatchSize)),
-			collect.WithWorkersCount[dto.UserActivityLogMessage](int(opts.Cfg.TaskSchedule.Auth.UserStat.RequestCollector.WorkersCount)),
+			collect.WithHandlerTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.HandlerTimeout),
+			collect.WithBatchSize[dto.UserActivityLogMessage](int(opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.BatchSize)),
+			collect.WithWorkersCount[dto.UserActivityLogMessage](int(opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.WorkersCount)),
 		),
 	)
 }
@@ -78,18 +78,18 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		serviceOperationLogTableName,
 		serviceUserLogTableName,
 		scheduler.WithCaptionPrefix("Auth/"),
-		scheduler.WithCleanLimit(int(opts.Cfg.TaskSchedule.Auth.CleanRecordsLimit)),
-		scheduler.WithLogLifeTime(opts.Cfg.TaskSchedule.Auth.LogsLifeTime),
+		scheduler.WithCleanLimit(int(opts.Cfg.TaskScheduleAuth.CleanRecordsLimit)),
+		scheduler.WithLogLifeTime(opts.Cfg.TaskScheduleAuth.LogsLifeTime),
 		scheduler.WithTaskCleanRecordsOpts(
 			task.WithCaptionPrefix("Auth/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Auth.CleanRecords.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleAuth.CleanRecords.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Auth.CleanRecords.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleAuth.CleanRecords.Timeout),
 		),
 	)
 }

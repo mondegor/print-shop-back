@@ -14,19 +14,19 @@ var errSentryDisabled = errors.New("sentry disabled")
 
 // InitSentry - создаёт объект sentry.Adapter.
 func InitSentry(logger mrlog.Logger, cfg config.Config) (*sentry.Adapter, error) {
-	if cfg.Sentry.DSN == "" {
+	if cfg.SentryDSN == "" {
 		return nil, errSentryDisabled
 	}
 
 	mrlog.Info(logger, "Create and init sentry")
 
 	client, err := sentry.New(
-		cfg.Sentry.DSN,
-		sentry.WithEnvironment(cfg.App.Environment),
-		sentry.WithRelease(cfg.App.Version),
-		sentry.WithDebugMode(cfg.Debugging.Debug),
-		sentry.WithTracesSampleRate(cfg.Sentry.TracesSampleRate),
-		sentry.WithFlushTimeout(cfg.Sentry.FlushTimeout),
+		cfg.SentryDSN,
+		sentry.WithEnvironment(cfg.Environment),
+		sentry.WithRelease(cfg.AppVersion),
+		sentry.WithDebugMode(cfg.DebugIsEnabled),
+		sentry.WithTracesSampleRate(cfg.SentryTracesSampleRate),
+		sentry.WithFlushTimeout(cfg.SentryFlushTimeout),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("sentry.Init: %w", err)

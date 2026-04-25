@@ -45,12 +45,12 @@ type (
 		OpenedResources *xio.CloseManager
 		DebugFunc       func(value any) string
 
-		InternalRouter *http.ServeMux
-		Sentry         *sentry.Adapter
-		Prometheus     *mrinit.Prometheus
-		EventEmitter   mrevent.Emitter
-		ErrorHandler   errors.Handler
-		AppHealth      *mrrun.AppHealth
+		MonitoringRouter *http.ServeMux
+		Sentry           *sentry.Adapter
+		Prometheus       *mrinit.Prometheus
+		EventEmitter     mrevent.Emitter
+		ErrorHandler     errors.Handler
+		AppHealth        *mrrun.AppHealth
 
 		PostgresConnManager          *mrpostgres.ConnManager
 		PostgresNotificationService  *mrpostgres.ProcessWaitForNotification
@@ -80,7 +80,7 @@ type (
 		MailProcessorService            *consume.MessageProcessor[mailerentity.Message]
 		NoticeProcessorService          *consume.MessageProcessor[notifierentity.Note]
 		HttpServer                      *httpserver.Adapter
-		HttpInternalServer              *httpserver.Adapter
+		HttpMonitoringServer            *httpserver.Adapter
 		TaskSchedulerServices           []mrrun.Process // можно добавлять начиная с формирования API
 	}
 

@@ -30,7 +30,7 @@ func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 	mrlog.Info(opts.Logger, "Create and init error response sender")
 
 	statusMapper, err := mrserver.NewHttpErrorStatusMapper(
-		int(opts.Cfg.Debugging.UnexpectedHttpStatus),
+		int(opts.Cfg.UnexpectedErrorHttpStatus),
 		mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
 		mrauth.ErrTokenInvalid.Code(), http.StatusForbidden,
 	)

@@ -58,7 +58,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		cataloglaminate.InitHttpModule(
 			opts.Logger,
@@ -67,7 +67,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
 			opts.DictionariesMaterialTypeAPI,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		catalogpaper.InitHttpModule(
 			opts.Logger,
@@ -78,7 +78,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.DictionariesMaterialTypeAPI,
 			opts.DictionariesPaperColorAPI,
 			opts.DictionariesPaperFactureAPI,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		controlselementtemplate.InitHttpModule(
 			opts.Logger,
@@ -90,7 +90,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 				pkgcontrolsvalidate.NewDetailingParser(opts.Logger),
 			),
 			opts.ResponseSenders.FileSender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		controlssubmitform.InitHttpModule(
 			opts.Logger,
@@ -108,7 +108,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 				opts.PostgresConnManager,
 				opts.Tracer,
 			),
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		dictionariesmaterialtype.InitHttpModule(
 			opts.Logger,
@@ -116,7 +116,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		dictionariespapercolor.InitHttpModule(
 			opts.Logger,
@@ -124,7 +124,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		dictionariespaperfacture.InitHttpModule(
 			opts.Logger,
@@ -132,7 +132,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		dictionariesprintformat.InitHttpModule(
 			opts.Logger,
@@ -140,7 +140,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.PostgresConnManager,
 			opts.RequestParsers.ExtendParser,
 			opts.ResponseSenders.Sender,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 		provideraccounts.InitHttpModule(
 			opts.Logger,
@@ -153,7 +153,7 @@ func getAdminAPIControllers(opts app.Options) []initing.HttpModule {
 			),
 			opts.ResponseSenders.Sender,
 			opts.ImageURLBuilder,
-			int(opts.Cfg.General.PageSizeMax),
+			int(opts.Cfg.ModuleSettings.General.PageSizeMax),
 		),
 	}
 }

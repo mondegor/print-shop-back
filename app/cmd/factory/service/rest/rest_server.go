@@ -10,14 +10,12 @@ import (
 )
 
 const (
-	restServerCaption = "RestServer"
+	restServerCaption = "HttpServer"
 )
 
 // InitRestServer - создаёт объект mrserver.ServerAdapter.
 func InitRestServer(opts app.Options) (*httpserver.Adapter, error) {
-	srvOpts := opts.Cfg.Servers.RestServer
-
-	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", restServerCaption), "port", srvOpts.Listen.Port)
+	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", restServerCaption), "port", opts.Cfg.HttpServerPort)
 
 	router, err := InitRestRouterWithHandlers(opts)
 	if err != nil {
@@ -28,9 +26,9 @@ func InitRestServer(opts app.Options) (*httpserver.Adapter, error) {
 		router,
 		httpserver.WithLogger(opts.Logger),
 		httpserver.WithCaption(restServerCaption),
-		httpserver.WithHostPort(srvOpts.Listen.BindIP, srvOpts.Listen.Port),
-		httpserver.WithReadTimeout(srvOpts.ReadTimeout),
-		httpserver.WithWriteTimeout(srvOpts.WriteTimeout),
-		httpserver.WithShutdownTimeout(srvOpts.ShutdownTimeout),
+		httpserver.WithHostPort(opts.Cfg.HttpServerBindIP, opts.Cfg.HttpServerPort),
+		httpserver.WithReadTimeout(opts.Cfg.HttpServerReadTimeout),
+		httpserver.WithWriteTimeout(opts.Cfg.HttpServerWriteTimeout),
+		httpserver.WithShutdownTimeout(opts.Cfg.HttpServerShutdownTimeout),
 	), nil
 }

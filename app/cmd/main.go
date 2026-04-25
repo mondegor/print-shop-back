@@ -15,13 +15,14 @@ import (
 	"github.com/oklog/run"
 
 	"github.com/mondegor/print-shop-back/cmd/factory"
+	"github.com/mondegor/print-shop-back/config"
 )
 
 // go get -u github.com/oklog/run
 
 func main() {
 	if err := runApp(os.Args, os.Stdout); err != nil {
-		if errors.Is(err, factory.ErrParseArgsHelp) {
+		if errors.Is(err, config.ErrParseArgsHelp) {
 			os.Exit(0)
 		}
 
@@ -61,7 +62,7 @@ func runApp(args []string, stdout io.Writer) error {
 
 	// init app servers
 	{
-		lastStarting = appRunner.AddNextProcess(ctx, opts.HttpInternalServer, lastStarting)
+		lastStarting = appRunner.AddNextProcess(ctx, opts.HttpMonitoringServer, lastStarting)
 		lastStarting = appRunner.AddNextProcess(ctx, opts.HttpServer, lastStarting)
 	}
 

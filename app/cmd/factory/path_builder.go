@@ -11,9 +11,9 @@ import (
 // InitImageURLBuilder - создаёт объект placeholderpath.Builder.
 func InitImageURLBuilder(cfg config.Config) (mrpath.Builder, error) {
 	return mrpath.NewPlaceholder(
-		strings.TrimRight(cfg.ModulesSettings.FileStation.ImageProxy.Host, "/")+
+		strings.TrimRight(cfg.ModuleSettings.FileStation.ImageProxyHost, "/")+
 			"/"+
-			strings.TrimLeft(cfg.ModulesSettings.FileStation.ImageProxy.BasePath, "/"),
+			strings.TrimLeft(cfg.ModuleSettings.FileStation.ImageProxyBasePath, "/"),
 		mrpath.Placeholder,
 	)
 }

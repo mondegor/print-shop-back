@@ -1,0 +1,27 @@
+---
+log_level: debug # debug, info, warn, error
+log_time_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly, Kitchen
+log_json_format: false
+log_color_mode: true # true, false; true only if json_format=false
+log_trace_is_enabled: true
+debug_is_enabled: true
+
+stack_trace_is_enabled: true
+stack_trace_depth: 4
+stack_trace_show_func: true
+
+unexpected_error_http_status: 599 # 418, 599
+
+s3_use_ssl: false
+
+cors_allowed_origins: # env:APPX_CORS_ALLOWED_ORIGINS
+  - http://print-shop.local
+  - http://localhost:3000
+  - http://127.0.0.1:3000
+
+access_control:
+  override_auth_token:
+    access_type: jwt
+    access_expiry: 720h # 30 days
+    refresh_expiry: 1440h # 60 days
+    length: 64

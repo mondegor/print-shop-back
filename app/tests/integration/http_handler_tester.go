@@ -41,11 +41,11 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 
 	ctx := context.Background()
 	cfg, err := config.Create(
-		config.Args{
-			WorkDir:    tests.AppWorkDir(),
-			DotEnvPath: tests.AppDotEnvPathForTests(),
-			Stdout:     os.Stdout,
+		config.CmdArgs{
+			WorkDir:     tests.AppWorkDir(),
+			Environment: "tests",
 		},
+		os.Stdout,
 	)
 	require.NoError(t, err)
 

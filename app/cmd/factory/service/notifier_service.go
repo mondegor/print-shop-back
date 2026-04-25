@@ -40,7 +40,7 @@ func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
 			Name:       serviceNotifierQueueTableName,
 			PrimaryKey: serviceNotifierPrimaryKey,
 		},
-		produce.WithRetryAttempts(int16(opts.Cfg.TaskSchedule.Notifier.SendRetryAttempts)),
+		produce.WithRetryAttempts(int16(opts.Cfg.TaskScheduleNotifier.SendRetryAttempts)),
 	)
 }
 
@@ -64,25 +64,25 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 		},
 		serviceNotifierTemplatesTableName,
 		serviceNotifierTemplateVarsTableName,
-		processor.WithDefaultLang(opts.Cfg.Localization.Languages[0]),
+		processor.WithDefaultLang(opts.Cfg.AppLanguages[0]),
 		processor.WithNoticeProcessorOpts(
 			consume.WithCaptionPrefix[entity.Note]("Notifier/"),
-			consume.WithReadyTimeout[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadyTimeout),
+			consume.WithReadyTimeout[entity.Note](opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ReadyTimeout),
 			consume.WithReadPeriodStrategy[entity.Note](
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ReadPeriod,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ReadPeriod,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
 			consume.WithConsumerTimeout[entity.Note](
-				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerReadTimeout,
-				opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.ConsumerWriteTimeout,
+				opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ConsumerReadTimeout,
+				opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ConsumerWriteTimeout,
 			),
-			consume.WithHandlerTimeout[entity.Note](opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.HandlerTimeout),
-			consume.WithQueueSize[entity.Note](int(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.QueueSize)),
-			consume.WithWorkersCount[entity.Note](int(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.WorkersCount)),
+			consume.WithHandlerTimeout[entity.Note](opts.Cfg.TaskScheduleNotifier.NoticeProcessor.HandlerTimeout),
+			consume.WithQueueSize[entity.Note](int(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.QueueSize)),
+			consume.WithWorkersCount[entity.Note](int(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.WorkersCount)),
 			consume.WithSignalExecuteHandler[entity.Note](
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Notifier.NoticeProcessor.NotificationChannel),
+				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.NotificationChannel),
 			),
 		),
 	)
@@ -107,31 +107,31 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			PrimaryKey: serviceNotifierPrimaryKey,
 		},
 		scheduler.WithCaptionPrefix("Notifier/"),
-		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskSchedule.Notifier.ChangeQueueBatchSize)),
-		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskSchedule.Notifier.ChangeRetryTimeout),
-		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskSchedule.Notifier.ChangeRetryDelayed),
-		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskSchedule.Notifier.CleanQueueBatchSize)),
+		scheduler.WithChangeBatchSize(int(opts.Cfg.TaskScheduleNotifier.ChangeQueueBatchSize)),
+		scheduler.WithChangeRetryTimeout(opts.Cfg.TaskScheduleNotifier.ChangeRetryTimeout),
+		scheduler.WithChangeRetryDelayed(opts.Cfg.TaskScheduleNotifier.ChangeRetryDelayed),
+		scheduler.WithCleanBatchSize(int(opts.Cfg.TaskScheduleNotifier.CleanQueueBatchSize)),
 		scheduler.WithTaskChangeFromToRetryOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Notifier.ChangeFromToRetry.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleNotifier.ChangeFromToRetry.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Notifier.ChangeFromToRetry.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleNotifier.ChangeFromToRetry.Timeout),
 		),
 		scheduler.WithTaskCleanNoticesOpts(
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
 				mrworker.NewQuadQuickStartStrategy(
-					opts.Cfg.TaskSchedule.Notifier.CleanQueue.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleNotifier.CleanQueue.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Notifier.CleanQueue.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleNotifier.CleanQueue.Timeout),
 		),
 	)
 }

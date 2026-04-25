@@ -19,6 +19,10 @@ import (
 	validate2 "github.com/mondegor/print-shop-back/pkg/transport/validate"
 )
 
+const (
+	langURLParam = "lang"
+)
+
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
 func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 	mrlog.Info(opts.Logger, "Create and init base request parsers")
@@ -28,20 +32,18 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		return app.RequestParsers{}, err
 	}
 
-	cfgValidation := opts.Cfg.Validation
-
 	// WARNING: функция использует контекст роутера chi,
 	// поэтому её можно менять только при смене самого роутера
 	pathFunc := mrchi.URLPathParam
 
-	registeredMimeTypes := mime.NewTypeList(cfgValidation.MimeTypes)
+	registeredMimeTypes := mime.NewTypeList(opts.Cfg.AllowedMimeTypes)
 
-	jsonMimeTypes, err := registeredMimeTypes.TypesByExts(cfgValidation.Files.Json.Extensions)
+	jsonMimeTypes, err := registeredMimeTypes.TypesByExts(opts.Cfg.ValidationFilesJson.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
-	logoMimeTypes, err := registeredMimeTypes.TypesByExts(cfgValidation.Images.Logo.File.Extensions)
+	logoMimeTypes, err := registeredMimeTypes.TypesByExts(opts.Cfg.ValidationImagesLogo.File.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -55,15 +57,15 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		ListCursor: parser.NewListCursor(
 			opts.Logger,
 			parser.ListCursorOptions{
-				LimitMax:     int(opts.Cfg.General.PageSizeMax),
-				LimitDefault: int(opts.Cfg.General.PageSizeDefault),
+				LimitMax:     int(opts.Cfg.ModuleSettings.General.PageSizeMax),
+				LimitDefault: int(opts.Cfg.ModuleSettings.General.PageSizeDefault),
 			},
 		),
 		ListPager: parser.NewListPager(
 			opts.Logger,
 			parser.ListPagerOptions{
-				PageSizeMax:     int(opts.Cfg.General.PageSizeMax),
-				PageSizeDefault: int(opts.Cfg.General.PageSizeDefault),
+				PageSizeMax:     int(opts.Cfg.ModuleSettings.General.PageSizeMax),
+				PageSizeDefault: int(opts.Cfg.ModuleSettings.General.PageSizeDefault),
 			},
 		),
 		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
@@ -72,25 +74,25 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		Validator:  parser.NewValidator(mrjson.NewDecoder(), validator),
 		ClientIP:   parser.NewClientIP(opts.Logger),
 		User:       parser.NewUser(opts.Logger),
-		Locale:     parser.NewLocale(opts.LocalePool, opts.Logger, opts.Cfg.Localization.LangURLParam),
+		Locale:     parser.NewLocale(opts.LocalePool, opts.Logger, langURLParam),
 		FileJson: parser.NewFile(
 			opts.Logger,
-			parser.WithFileMinSize(int64(cfgValidation.Files.Json.MinSize)),
-			parser.WithFileMaxSize(int64(cfgValidation.Files.Json.MaxSize)),
-			parser.WithFileMaxFiles(int(cfgValidation.Files.Json.MaxFiles)),
-			parser.WithFileCheckRequestContentType(cfgValidation.Files.Json.CheckRequestContentType),
+			parser.WithFileMinSize(int64(opts.Cfg.ValidationFilesJson.MinSize)),
+			parser.WithFileMaxSize(int64(opts.Cfg.ValidationFilesJson.MaxSize)),
+			parser.WithFileMaxFiles(int(opts.Cfg.ValidationFilesJson.MaxFiles)),
+			parser.WithFileCheckRequestContentType(opts.Cfg.ValidationFilesJson.CheckRequestContentType),
 			parser.WithFileAllowedMimeTypes(jsonMimeTypes),
 		),
 		ImageLogo: parser.NewImage(
 			opts.Logger,
-			parser.WithImageMaxWidth(int32(cfgValidation.Images.Logo.MaxWidth)),
-			parser.WithImageMaxHeight(int32(cfgValidation.Images.Logo.MaxHeight)),
-			parser.WithImageCheckBody(cfgValidation.Images.Logo.CheckBody),
+			parser.WithImageMaxWidth(int32(opts.Cfg.ValidationImagesLogo.MaxWidth)),
+			parser.WithImageMaxHeight(int32(opts.Cfg.ValidationImagesLogo.MaxHeight)),
+			parser.WithImageCheckBody(opts.Cfg.ValidationImagesLogo.CheckBody),
 			parser.WithImageFileOpts(
-				parser.WithFileMinSize(int64(cfgValidation.Images.Logo.File.MinSize)),
-				parser.WithFileMaxSize(int64(cfgValidation.Images.Logo.File.MaxSize)),
-				parser.WithFileMaxFiles(int(cfgValidation.Images.Logo.File.MaxFiles)),
-				parser.WithFileCheckRequestContentType(cfgValidation.Images.Logo.File.CheckRequestContentType),
+				parser.WithFileMinSize(int64(opts.Cfg.ValidationImagesLogo.File.MinSize)),
+				parser.WithFileMaxSize(int64(opts.Cfg.ValidationImagesLogo.File.MaxSize)),
+				parser.WithFileMaxFiles(int(opts.Cfg.ValidationImagesLogo.File.MaxFiles)),
+				parser.WithFileCheckRequestContentType(opts.Cfg.ValidationImagesLogo.File.CheckRequestContentType),
 				parser.WithFileAllowedMimeTypes(logoMimeTypes),
 			),
 		),

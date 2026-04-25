@@ -40,13 +40,13 @@ func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Proce
 			task.WithStartup(true),
 			task.WithPeriodStrategy(
 				mrworker.NewDoubleDelayedStartStrategy(
-					opts.Cfg.TaskSchedule.Settings.ReloadSettings.Period,
-					opts.Cfg.TaskSchedule.Settings.DefaultPeriodRatio,
+					opts.Cfg.TaskScheduleSettings.ReloadSettings.Period,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
 			),
-			task.WithTimeout(opts.Cfg.TaskSchedule.Settings.ReloadSettings.Timeout),
+			task.WithTimeout(opts.Cfg.TaskScheduleSettings.ReloadSettings.Timeout),
 			task.WithSignalDo(
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskSchedule.Settings.ReloadSettings.NotificationChannel),
+				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel),
 			),
 		),
 	)

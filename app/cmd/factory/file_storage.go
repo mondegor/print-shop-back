@@ -18,9 +18,9 @@ func NewFileSystem(logger mrlog.Logger, cfg config.Config) *mrfilestorage.FileSy
 	mrlog.Info(logger, "Create and init file system")
 
 	return mrfilestorage.New(
-		os.FileMode(cfg.FileSystem.DirMode),
-		cfg.FileSystem.CreateDirs,
-		mime.NewTypeList(cfg.MimeTypes), // TODO: можно вынести в общую переменную
+		os.FileMode(cfg.FSDirMode),
+		cfg.FSCreateDirs,
+		mime.NewTypeList(cfg.AllowedMimeTypes), // TODO: можно вынести в общую переменную
 	)
 }
 
@@ -36,13 +36,13 @@ func RegisterFileImageStorage(
 		logger,
 		tracer,
 		fs,
-		cfg.FileProviders.ImageStorage.RootDir,
+		cfg.FileProviders.ImageStorage2RootDir,
 	)
 	if err != nil {
 		return err
 	}
 
-	return pool.Register(cfg.FileProviders.ImageStorage.Name, storage)
+	return pool.Register(cfg.FileProviders.ImageStorageName, storage)
 }
 
 func newFileStorageProvider(
