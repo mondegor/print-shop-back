@@ -82,7 +82,7 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 			consume.WithQueueSize[entity.Note](int(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.QueueSize)),
 			consume.WithWorkersCount[entity.Note](int(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.WorkersCount)),
 			consume.WithSignalExecuteHandler[entity.Note](
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.NotificationChannel),
+				opts.PostgresNotificationService.MustFind(opts.Cfg.TaskScheduleNotifier.NoticeProcessor.NotificationChannel),
 			),
 		),
 	)

@@ -46,7 +46,7 @@ func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Proce
 			),
 			task.WithTimeout(opts.Cfg.TaskScheduleSettings.ReloadSettings.Timeout),
 			task.WithSignalDo(
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel),
+				opts.PostgresNotificationService.MustFind(opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel),
 			),
 		),
 	)

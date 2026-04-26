@@ -11,6 +11,7 @@ import (
 	"github.com/mondegor/go-components/mrsettings"
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/listennotify"
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
@@ -52,18 +53,17 @@ type (
 		ErrorHandler     errors.Handler
 		AppHealth        *mrrun.AppHealth
 
-		PostgresConnManager          *mrpostgres.ConnManager
-		PostgresNotificationService  *mrpostgres.ProcessWaitForNotification
-		PostgresNotificationChannels mrpostgres.ReceiverChannels
-		RedisAdapter                 *mrredis.ConnAdapter
-		FileProviderPool             *mrstorage.FileProviderPool
-		Locker                       mrlock.Locker
-		LocalePool                   *mrlocale.Pool
-		RequestParsers               RequestParsers
-		ResponseSenders              ResponseSenders
-		PermsProvider                mraccess.RightsSource
-		RealmUserProviders           map[string]mraccess.UserProvider
-		ImageURLBuilder              mrpath.Builder
+		PostgresConnManager         *mrpostgres.ConnManager
+		PostgresNotificationService *listennotify.ProcessWaitForNotification
+		RedisAdapter                *mrredis.ConnAdapter
+		FileProviderPool            *mrstorage.FileProviderPool
+		Locker                      mrlock.Locker
+		LocalePool                  *mrlocale.Pool
+		RequestParsers              RequestParsers
+		ResponseSenders             ResponseSenders
+		PermsProvider               mraccess.RightsSource
+		RealmUserProviders          map[string]mraccess.UserProvider
+		ImageURLBuilder             mrpath.Builder
 
 		// API section
 		DictionariesMaterialTypeAPI api.MaterialTypeAvailability

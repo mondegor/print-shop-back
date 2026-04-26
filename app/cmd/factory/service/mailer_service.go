@@ -119,7 +119,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 			consume.WithQueueSize[entity.Message](int(opts.Cfg.TaskScheduleMailer.MessageProcessor.QueueSize)),
 			consume.WithWorkersCount[entity.Message](int(opts.Cfg.TaskScheduleMailer.MessageProcessor.WorkersCount)),
 			consume.WithSignalExecuteHandler[entity.Message](
-				opts.PostgresNotificationService.ReceiverChannels.MustFind(opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel),
+				opts.PostgresNotificationService.MustFind(opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel),
 			),
 		),
 		processor.WithSenderProviderOpts(

@@ -38,3 +38,6 @@ module_settings:
 access_control:
   override_auth_token:
     access_type: session
+
+task_schedule_settings:
+  notification_check_conn_period: 1h

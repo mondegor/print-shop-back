@@ -158,8 +158,9 @@ type (
 		// TaskSchedule - настройки задач, запускаемых по расписанию
 		TaskScheduleSettings struct {
 			// Caption        string        `yaml:"caption"`
-			ReloadSettings     workercfg.SchedulerTask `yaml:"reload_settings"`
-			DefaultPeriodRatio float64                 `yaml:"default_period_ratio"`
+			ReloadSettings              workercfg.SchedulerTask `yaml:"reload_settings"`
+			NotificationCheckConnPeriod time.Duration           `yaml:"notification_check_conn_period"`
+			DefaultPeriodRatio          float64                 `yaml:"default_period_ratio"`
 		} `yaml:"task_schedule_settings"`
 
 		// TaskSchedule Auth - настройки задач модуля Auth, запускаемых по расписанию

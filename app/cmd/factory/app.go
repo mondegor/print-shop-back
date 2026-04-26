@@ -9,7 +9,7 @@ import (
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	authiniting "github.com/mondegor/go-components/wire/mrauth/initing"
 	"github.com/mondegor/go-storage/mrlock/redislocker"
-	"github.com/mondegor/go-storage/mrpostgres"
+	"github.com/mondegor/go-storage/mrpostgres/listennotify"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/xio"
@@ -238,7 +238,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 }
 
 func createSharedAPI(opts app.Options) app.Options {
-	opts.PostgresNotificationService = mrpostgres.NewProcessWaitForNotification(
+	opts.PostgresNotificationService = listennotify.NewProcessWaitForNotification(
 		opts.PostgresConnManager.ConnAdapter(),
 		opts.Logger,
 		[]string{
@@ -246,6 +246,7 @@ func createSharedAPI(opts app.Options) app.Options {
 			opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel,
 			opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel,
 		},
+		opts.Cfg.TaskScheduleSettings.NotificationCheckConnPeriod,
 	)
 
 	// create settings module

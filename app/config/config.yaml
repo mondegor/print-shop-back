@@ -321,6 +321,7 @@ task_schedule_settings:
     period: 7m
     timeout: 15s
     notification_channel: "event_settings_changed"
+  notification_check_conn_period: 5m
   default_period_ratio: 0.1 # 10% of period
 
 task_schedule_auth:
