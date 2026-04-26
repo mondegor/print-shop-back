@@ -332,7 +332,7 @@ linters:
           disabled: false
 
     staticcheck:
-      checks: [ "all", "-ST1000", "-ST1003", "-QF1008" ]
+      checks: [ "all", "-ST1000", "-ST1003" ]
 
 issues:
   include:

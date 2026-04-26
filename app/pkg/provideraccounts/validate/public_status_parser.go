@@ -45,5 +45,5 @@ func NewPublicStatusParserWithDefault(logger mrlog.Logger, items []publicstatus.
 // FilterPublicStatusList - возвращает массив publicstatus.Enum поступивший из внешнего запроса.
 // Если ключ key не найден или возникнет ошибка, то возвращается nil значение.
 func (p *PublicStatusParser) FilterPublicStatusList(r *http.Request, key string) []publicstatus.Enum {
-	return p.EnumList.FilterEnumList(r, key)
+	return p.FilterEnumList(r, key)
 }

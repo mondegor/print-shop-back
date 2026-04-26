@@ -45,5 +45,5 @@ func NewDetailingParserWithDefault(logger mrlog.Logger, items []elementdetailing
 // FilterElementDetailingList - возвращает массив elementdetailing.Enum поступивший из внешнего запроса.
 // Если ключ key не найден или возникнет ошибка, то возвращается nil значение.
 func (p *DetailingParser) FilterElementDetailingList(r *http.Request, key string) []elementdetailing.Enum {
-	return p.EnumList.FilterEnumList(r, key)
+	return p.FilterEnumList(r, key)
 }

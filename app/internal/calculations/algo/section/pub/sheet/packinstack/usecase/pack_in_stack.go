@@ -49,8 +49,8 @@ func (uc *SheetPackInStack) Calc(ctx context.Context, data dto.ParsedData) (mode
 	if !result.FullProduct.Empty() {
 		fullBox = model.ProductResponse{
 			Format: result.FullProduct.Format.Round(),
-			Weight: measure.Kilogram(xmath.RoundFloat4(result.FullProduct.Product.Weight)),
-			Volume: measure.Meter3(xmath.RoundFloat8(result.FullProduct.Product.Format.Volume())),
+			Weight: measure.Kilogram(xmath.RoundFloat4(result.FullProduct.Weight)),
+			Volume: measure.Meter3(xmath.RoundFloat8(result.FullProduct.Format.Volume())),
 		}
 	}
 
