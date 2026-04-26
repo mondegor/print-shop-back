@@ -92,7 +92,7 @@ components:
         name:
           description: Название процесса
           type: string
-          example: PostgresSQL
+          example: PostgreSQL
         status:
           description: Статус работоспособности процесса
           type: string
