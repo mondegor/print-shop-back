@@ -1,9 +1,0 @@
-description: Максимальная плотность (g/m2)
-name: density-max
-in: query
-required: false
-schema:
-  type: integer
-  # format: uint64
-  maxLength: 10
-example: 100000 # 100 g/m2

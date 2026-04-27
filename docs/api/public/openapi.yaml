@@ -66,7 +66,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemUint'
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItem'
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
         '500':
@@ -349,7 +349,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItem'
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemWithStringID'
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
@@ -782,10 +782,11 @@ components:
     Api.Field.TagVersion:
       description: Текущая версия записи
       type: integer
+      format: int32
       minimum: 1
       example: 5
-    Api.Response.Model.SuccessCreatedItemUint:
-      description: DTO результата создания записи (uint ID)
+    Api.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи (uint64 ID)
       type: object
       required:
         - id
@@ -793,7 +794,10 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
-          example: 9223372036854776000
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 800700600500
         tag_version:
           $ref: '#/components/schemas/Api.Field.TagVersion'
     Api.Response.Model.ErrorAttribute:
@@ -892,11 +896,13 @@ components:
       maxLength: 8
       minimum: 0
       example: 1000
-    Api.Field.Uint:
+    Api.Field.Uint63:
       description: Целое положительное число
       type: integer
+      format: int64
       minimum: 0
-      example: 9223372036854776000
+      maximum: 9223372036854776000
+      example: 250000000000001
     Calculations.Algo.Box.PackInBox.Request.Model.Product:
       description: DTO изделия
       type: object
@@ -911,7 +917,7 @@ components:
           $ref: '#/components/schemas/Api.Field.Measure.Gram'
         quantity:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество изделий
             - example: 315
     Api.Field.Measure.Micrometer:
@@ -1005,7 +1011,7 @@ components:
             - example: 0.375
         productQuantity:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество изделий в коробке
             - example: 15
         productVolume:
@@ -1039,7 +1045,7 @@ components:
             - description: Коробка с остатком изделий
         boxesQuantity:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество коробок
             - example: 17
         boxesWeight:
@@ -1093,7 +1099,7 @@ components:
         - quantity
       properties:
         quantity:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Api.Field.Boolean:
       description: Значение флага записи
       type: boolean
@@ -1156,10 +1162,12 @@ components:
         byWidth:
           description: Кол-во элементов по ширине
           type: integer
+          format: int64
           example: 27
         byHeight:
           description: Кол-во элементов по высоте
           type: integer
+          format: int64
           example: 43
     Calculations.Enum.FragmentPosition:
       description: |-
@@ -1218,7 +1226,7 @@ components:
           items:
             $ref: '#/components/schemas/Calculations.Field.Fragment'
         totalElements:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
         garbage:
           $ref: '#/components/schemas/Api.Field.Measure.Meter2'
         allowRotation:
@@ -1246,7 +1254,7 @@ components:
         layout:
           $ref: '#/components/schemas/Calculations.Field.Layout'
         total:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Calculations.Algo.Sheet.InsideOutside.Request.Model.InsideOutsideMax:
       description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
       type: object
@@ -1270,7 +1278,7 @@ components:
           items:
             $ref: '#/components/schemas/Calculations.Field.Fragment'
         total:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Api.Field.Measure.GramPerMeter2:
       description: Поверхностная плотность (g/m2)
       type: integer
@@ -1295,7 +1303,7 @@ components:
           $ref: '#/components/schemas/Api.Field.Measure.GramPerMeter2'
         quantity:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество изделий
             - example: 2600
     Calculations.Algo.Sheet.PackInStack.Request.Model.PackInStack:
@@ -1309,7 +1317,7 @@ components:
           $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Request.Model.Sheet'
         quantityInStack:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество изделий в пачке
             - example: 200
     Calculations.Algo.Sheet.PackInStack.Response.Model.Product:
@@ -1352,7 +1360,7 @@ components:
             - description: Пачка с остатком изделий
         totalQuantity:
           allOf:
-            - $ref: '#/components/schemas/Api.Field.Uint'
+            - $ref: '#/components/schemas/Api.Field.Uint63'
             - description: Количество пачек
             - example: 17
         totalWeight:
@@ -1384,7 +1392,7 @@ components:
           $ref: '#/components/schemas/Api.Field.JsonData'
         result:
           $ref: '#/components/schemas/Api.Field.JsonData'
-    Api.Response.Model.SuccessCreatedItem:
+    Api.Response.Model.SuccessCreatedItemWithStringID:
       description: DTO результата создания записи (string ID)
       type: object
       required:
@@ -1422,6 +1430,7 @@ components:
     Catalog.Field.BoxID:
       description: Идентификатор коробки (модуль - Catalog.Box)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Api.Field.Article:
@@ -1479,11 +1488,13 @@ components:
     Catalog.Field.LaminateID:
       description: Идентификатор ламината (модуль - Catalog.Laminate)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Dictionaries.Field.MaterialTypeID:
       description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Catalog.Laminates.Response.Model.Laminate:
@@ -1536,16 +1547,19 @@ components:
     Catalog.Field.PaperID:
       description: Идентификатор бумаги (модуль - Catalog.Paper)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Dictionaries.Field.PaperColorID:
       description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Dictionaries.Field.PaperFactureID:
       description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Catalog.Enum.PaperSides:
@@ -1729,6 +1743,7 @@ components:
     Dictionaries.Field.PrintFormatID:
       description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Dictionaries.PrintFormats.Response.Model.PrintFormat:

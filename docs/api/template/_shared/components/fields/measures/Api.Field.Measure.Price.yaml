@@ -1,6 +1,0 @@
-description: Цена (10^2)
-type: integer # Money
-format: int64
-maxLength: 12
-minimum: 0
-example: 8234500 # 82345 coins

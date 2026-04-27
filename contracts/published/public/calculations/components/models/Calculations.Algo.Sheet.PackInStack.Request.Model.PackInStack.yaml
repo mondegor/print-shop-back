@@ -8,6 +8,6 @@ properties:
     $ref: "./Calculations.Algo.Sheet.PackInStack.Request.Model.Sheet.yaml"
   quantityInStack:
     allOf:
-      - $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
       - description: Количество изделий в пачке
       - example: 200

@@ -9,4 +9,4 @@ properties:
     items:
       $ref: "../fields/Calculations.Field.Fragment.yaml"
   total:
-    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"

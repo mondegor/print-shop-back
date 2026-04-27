@@ -1,3 +1,0 @@
-description: Файл одного из типов - JSON, XML, CSV, TXT
-type: string
-maxLength: 1048576 # 1Mb

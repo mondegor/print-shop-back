@@ -18,7 +18,7 @@ properties:
     items:
       $ref: "../fields/Calculations.Field.Fragment.yaml"
   totalElements:
-    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
   garbage:
     $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter2.yaml"
   allowRotation:

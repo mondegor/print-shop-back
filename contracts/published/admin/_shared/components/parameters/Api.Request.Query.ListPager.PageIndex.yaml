@@ -4,7 +4,7 @@ in: query
 required: false
 schema:
   type: integer
-  # format: uint64
+  format: int64
   minimum: 0
   default: 0
 example: 2

@@ -1,5 +1,0 @@
-description: Порядок следования записи
-type: integer
-# format: uint64
-minimum: 0
-example: 50

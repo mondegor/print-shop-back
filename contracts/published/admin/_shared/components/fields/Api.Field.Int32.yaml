@@ -2,4 +2,5 @@ description: Целое 32-ти разрядное число
 type: integer
 format: int32
 minimum: -2147483648
-example: 2147483647
+maximum: 2147483647
+example: -150001

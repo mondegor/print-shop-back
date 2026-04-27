@@ -1,5 +1,5 @@
 description: Идентификатор коробки (модуль - Warehousing)
 type: integer
-# format: uint64
+format: int64
 minimum: 1
 example: 2

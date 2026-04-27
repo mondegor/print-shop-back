@@ -1,4 +1,0 @@
-description: Бинарный файл одного из типов - JPEG, PNG
-type: string
-format: binary
-maxLength: 1048576 # 1Mb

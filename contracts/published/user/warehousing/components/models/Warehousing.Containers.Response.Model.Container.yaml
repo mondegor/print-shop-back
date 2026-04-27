@@ -8,7 +8,7 @@ properties:
   code:
     $ref: "../fields/Warehousing.Field.ContainerCode.yaml"
   marker:
-    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
   volume:
     $ref: "../../../_shared/components/models/Api.Response.Model.Volume.yaml"
   tags:

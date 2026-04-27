@@ -7,4 +7,4 @@ properties:
   stock_id:
     $ref: "../fields/Warehousing.Field.StockID.yaml"
   quantity:
-    $ref: "../../../_shared/components/fields/Api.Field.Int64.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"

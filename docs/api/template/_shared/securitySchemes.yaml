@@ -1,5 +1,0 @@
-bearerAuth:
-  description: https://www.rfc-editor.org/rfc/rfc6750
-  type: http
-  scheme: bearer
-  bearerFormat: JWT

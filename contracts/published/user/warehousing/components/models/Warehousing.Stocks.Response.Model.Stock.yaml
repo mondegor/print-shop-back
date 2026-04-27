@@ -8,7 +8,7 @@ properties:
   location_id:
     $ref: "../fields/Warehousing.Field.LocationID.yaml"
   quantity:
-    $ref: "../../../_shared/components/fields/Api.Field.Int64.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
   volume:
     $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
   created_at:

@@ -1,9 +1,0 @@
-description: Максимальная высота (µm)
-name: height-max
-in: query
-required: false
-schema:
-  type: integer
-  # format: uint64
-  maxLength: 10
-example: 200000 # 100 mm

@@ -1,4 +1,0 @@
-description: DTO списка пользовательских ошибок 400
-type: array
-items:
-  $ref: "./Api.Response.Model.ErrorAttribute.yaml"

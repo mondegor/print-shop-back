@@ -1,6 +1,0 @@
-type: object
-required:
-  - value
-properties:
-  value:
-    $ref: "../fields/Api.Field.Boolean.yaml"

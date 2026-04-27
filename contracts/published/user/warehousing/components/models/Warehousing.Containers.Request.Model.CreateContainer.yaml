@@ -24,4 +24,4 @@ properties:
   location_id:
     $ref: "../fields/Warehousing.Field.LocationID.yaml"
   exemplar_quantity:
-    $ref: "../../../_shared/components/fields/Api.Field.Uint.yaml"
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"

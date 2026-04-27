@@ -192,7 +192,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemUint'
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItem'
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
@@ -220,7 +220,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemUint'
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItem'
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
@@ -336,6 +336,7 @@ components:
       required: false
       schema:
         type: integer
+        format: int64
         minimum: 1
         maximum: 1000
         default: 50
@@ -361,11 +362,13 @@ components:
     Warehousing.Field.ContainerID:
       description: Идентификатор контейнера (модуль - Warehousing)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Api.Field.TagVersion:
       description: Текущая версия записи
       type: integer
+      format: int32
       minimum: 1
       example: 5
     Warehousing.Field.ContainerCode:
@@ -373,11 +376,13 @@ components:
       type: string
       maxLength: 8
       example: JKLOSH
-    Api.Field.Uint:
+    Api.Field.Uint63:
       description: Целое положительное число
       type: integer
+      format: int64
       minimum: 0
-      example: 9223372036854776000
+      maximum: 9223372036854776000
+      example: 250000000000001
     Api.Response.Model.Volume:
       description: DTO - объём объекта
       type: object
@@ -422,7 +427,7 @@ components:
         code:
           $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
         marker:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
         volume:
           $ref: '#/components/schemas/Api.Response.Model.Volume'
         tags:
@@ -508,6 +513,7 @@ components:
     Warehousing.Field.LocationID:
       description: Идентификатор места хранения / группового контейнера (модуль - Warehousing)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Warehousing.Containers.Request.Model.CreateContainer:
@@ -537,10 +543,11 @@ components:
         location_id:
           $ref: '#/components/schemas/Warehousing.Field.LocationID'
         exemplar_quantity:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Warehousing.Field.StockID:
       description: Идентификатор остатков контейнера (модуль - Warehousing)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Warehousing.Containers.Response.Model.SuccessCreatedContainer:
@@ -552,7 +559,7 @@ components:
         code:
           $ref: '#/components/schemas/Warehousing.Field.ContainerCode'
         marker:
-          $ref: '#/components/schemas/Api.Field.Uint'
+          $ref: '#/components/schemas/Api.Field.Uint63'
         stock_id:
           $ref: '#/components/schemas/Warehousing.Field.StockID'
     Api.Response.Model.ErrorAttribute:
@@ -636,12 +643,6 @@ components:
       properties:
         tag_version:
           $ref: '#/components/schemas/Api.Field.TagVersion'
-    Api.Field.Int64:
-      description: Целое 64-ти разрядное число
-      type: integer
-      format: int64
-      minimum: -9223372036854776000
-      example: 9223372036854776000
     Api.Field.Measure.Meter3:
       description: Метр кубический (m3)
       type: number
@@ -660,7 +661,7 @@ components:
         location_id:
           $ref: '#/components/schemas/Warehousing.Field.LocationID'
         quantity:
-          $ref: '#/components/schemas/Api.Field.Int64'
+          $ref: '#/components/schemas/Api.Field.Uint63'
         volume:
           $ref: '#/components/schemas/Api.Field.Measure.Meter3'
         created_at:
@@ -691,9 +692,9 @@ components:
         location_id:
           $ref: '#/components/schemas/Warehousing.Field.LocationID'
         quantity:
-          $ref: '#/components/schemas/Api.Field.Int64'
-    Api.Response.Model.SuccessCreatedItemUint:
-      description: DTO результата создания записи (uint ID)
+          $ref: '#/components/schemas/Api.Field.Uint63'
+    Api.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи (uint64 ID)
       type: object
       required:
         - id
@@ -701,7 +702,10 @@ components:
         id:
           description: Идентификатор созданной записи
           type: integer
-          example: 9223372036854776000
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 800700600500
         tag_version:
           $ref: '#/components/schemas/Api.Field.TagVersion'
     Warehousing.Containers.Request.Model.MoveStock:
@@ -717,7 +721,7 @@ components:
         location_id:
           $ref: '#/components/schemas/Warehousing.Field.LocationID'
         quantity:
-          $ref: '#/components/schemas/Api.Field.Int64'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Warehousing.Containers.Request.Model.TransferStock:
       description: DTO - списание остатков контейнера
       type: object
@@ -728,15 +732,17 @@ components:
         stock_id:
           $ref: '#/components/schemas/Warehousing.Field.StockID'
         quantity:
-          $ref: '#/components/schemas/Api.Field.Int64'
+          $ref: '#/components/schemas/Api.Field.Uint63'
     Warehousing.Field.StoreID:
       description: Идентификатор коробки (модуль - Warehousing)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Warehousing.Field.TerritoryID:
       description: Идентификатор территории (модуль - Warehousing)
       type: integer
+      format: int64
       minimum: 1
       example: 2
     Warehousing.Enum.StoreKind:

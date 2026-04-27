@@ -1,5 +1,0 @@
-description: Внутренняя ошибка сервера
-content:
-  application/problem+json;charset=UTF-8:
-    schema:
-      $ref: "../models/Api.Response.Model.ErrorDetails.yaml"

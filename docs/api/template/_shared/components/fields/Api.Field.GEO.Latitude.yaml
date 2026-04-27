@@ -1,4 +1,0 @@
-description: Широта
-type: string
-maxLength: 16
-example: "55.7539351000"

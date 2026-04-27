@@ -1,4 +1,0 @@
-description: URL к файлу записи
-type: string
-maxLength: 255
-example: "https://example.com/path/item-name.zip"

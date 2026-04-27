@@ -1,4 +1,0 @@
-description: Долгота
-type: string
-maxLength: 16
-example: "37.6204404000"

@@ -25,7 +25,7 @@ post:
       content:
         application/json;charset=UTF-8:
           schema:
-            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItemUint.yaml"
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItem.yaml"
     "400":
       $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
     "500":

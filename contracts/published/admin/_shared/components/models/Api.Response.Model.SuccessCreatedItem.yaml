@@ -1,4 +1,4 @@
-description: DTO результата создания записи (uint ID)
+description: DTO результата создания записи (uint64 ID)
 type: object
 required:
   - id
@@ -6,7 +6,9 @@ properties:
   id:
     description: Идентификатор созданной записи
     type: integer
-    # format: uint64
-    example: 9223372036854775807
+    format: int64
+    minimum: 0
+    maximum: 9223372036854775807
+    example: 800700600500
   tag_version:
     $ref: "../fields/Api.Field.TagVersion.yaml"

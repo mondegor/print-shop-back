@@ -1,7 +1,0 @@
-description: Название колонки, по которой происходит сортировка
-name: sortColumn
-in: query
-required: false
-schema:
-  type: string
-example: "caption"

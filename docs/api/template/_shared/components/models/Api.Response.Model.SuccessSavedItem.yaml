@@ -1,5 +1,0 @@
-description: DTO результата сохранения записи
-type: object
-properties:
-  tag_version:
-    $ref: "../fields/Api.Field.TagVersion.yaml"

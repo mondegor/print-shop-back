@@ -1,9 +1,0 @@
-description: Максимальный вес (g)
-name: weight-max
-in: query
-required: false
-schema:
-  type: integer
-  # format: uint64
-  maxLength: 10
-example: 314

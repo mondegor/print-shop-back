@@ -1,4 +1,0 @@
-description: Временная зона
-type: string
-maxLength: 64
-example: "Europe/Moscow | Russian Standard Time (for Windows)"
