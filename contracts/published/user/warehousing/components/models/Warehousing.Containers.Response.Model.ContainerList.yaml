@@ -1,5 +1,9 @@
 description: DTO - список контейнеров
 type: object
+required:
+  - containers
+  - cursor
+  - has_next
 properties:
   containers:
     description: Список контейнеров ограниченный фильтром и limit

@@ -1,5 +1,9 @@
 description: DTO - список остатков контейнеров
 type: object
+required:
+  - stocks
+  - cursor
+  - has_next
 properties:
   stocks:
     description: Список остатков контейнеров ограниченный фильтром и limit

@@ -1,5 +1,17 @@
 description: DTO - место хранения
 type: object
+required:
+  - id
+  - tag_version
+  - territory_id
+  - kind
+  - code
+  - volume
+  - status
+  - containers_volume
+  - fullness
+  - created_at
+  - updated_at
 properties:
   id: # storeId
     $ref: "../fields/Warehousing.Field.StoreID.yaml"

@@ -1,5 +1,12 @@
 description: DTO - остатки контейнера
 type: object
+required:
+  - id
+  - container_id
+  - location_id
+  - quantity
+  - volume
+  - created_at
 properties:
   id: # stockId
     $ref: "../fields/Warehousing.Field.StockID.yaml"

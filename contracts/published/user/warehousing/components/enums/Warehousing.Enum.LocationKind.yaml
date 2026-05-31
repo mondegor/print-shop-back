@@ -1,0 +1,11 @@
+description: |-
+  Возможные типы хранения элементов:
+  - STORE - склад;
+  - GROUP - группа;
+  - CONTAINER - контейнер;
+type: string
+enum:
+  - STORE
+  - GROUP
+  - CONTAINER
+example: "CONTAINER"

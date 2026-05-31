@@ -1,5 +1,9 @@
 description: DTO - список мест хранения
 type: object
+required:
+  - stores
+  - cursor
+  - has_next
 properties:
   stores:
     description: Список мест хранения ограниченный фильтром и limit
