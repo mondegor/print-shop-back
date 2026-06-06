@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 	"github.com/mondegor/go-sysmess/util/conv"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/dictionaries/printformat/api/availability"
+	"print-shop-back/pkg/dictionaries/api"
 )
 
 type (
@@ -17,19 +17,19 @@ type (
 	PrintFormat struct {
 		storage      availability.PrintFormatStorage
 		errorWrapper errors.Wrapper
-		trace        mrtrace.Tracer
+		tracer       trace.Tracer
 	}
 )
 
 // NewPrintFormat - создаёт объект PrintFormat.
 func NewPrintFormat(
 	storage availability.PrintFormatStorage,
-	trace mrtrace.Tracer,
+	tracer trace.Tracer,
 ) *PrintFormat {
 	return &PrintFormat{
 		storage:      storage,
 		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
-		trace:        trace,
+		tracer:       tracer,
 	}
 }
 
@@ -55,7 +55,7 @@ func (uc *PrintFormat) CheckAvailability(ctx context.Context, itemID uint64) err
 }
 
 func (uc *PrintFormat) traceCmd(ctx context.Context, command string, data conv.Group) {
-	uc.trace.Trace(
+	uc.tracer.Trace(
 		ctx,
 		"storage", api.PrintFormatAvailabilityName,
 		"cmd", command,

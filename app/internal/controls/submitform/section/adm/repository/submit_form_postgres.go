@@ -8,11 +8,11 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 		sqlBuilder          mrstorage.SQLBuilder
 		repoIDByRewriteName db.FieldFetcher[string, uuid.UUID]
 		repoIDByParamName   db.FieldFetcher[string, uuid.UUID]
-		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, itemstatus.Enum]
+		repoStatus          db.FieldWithVersionUpdater[uuid.UUID, uint32, workflow.ItemStatus]
 		repoSoftDeleter     db.RowSoftDeleter[uuid.UUID]
 		repoTotalRows       db.TotalRowsFetcher[int]
 	}
@@ -47,7 +47,7 @@ func NewSubmitFormPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.
 			"form_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uuid.UUID, uint32, itemstatus.Enum](
+		repoStatus: db.NewFieldWithVersionUpdater[uuid.UUID, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNameSubmitForms,
 			"form_id",
@@ -223,8 +223,8 @@ func (re *SubmitFormPostgres) FetchIDByParamName(ctx context.Context, paramName 
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *SubmitFormPostgres) FetchStatus(ctx context.Context, rowID uuid.UUID) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 

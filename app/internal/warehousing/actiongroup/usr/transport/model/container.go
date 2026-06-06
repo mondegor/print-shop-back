@@ -1,8 +1,8 @@
 package model
 
 import (
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/entity"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/warehousing/actiongroup/usr/entity"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (

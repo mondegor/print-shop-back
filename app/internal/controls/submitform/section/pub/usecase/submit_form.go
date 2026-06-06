@@ -5,8 +5,8 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
+	"print-shop-back/internal/controls/submitform/section/pub"
+	"print-shop-back/internal/controls/submitform/section/pub/entity"
 )
 
 type (

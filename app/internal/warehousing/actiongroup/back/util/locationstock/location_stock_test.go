@@ -5,8 +5,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/util/locationstock"
+	"print-shop-back/internal/warehousing/actiongroup/back/dto"
+	"print-shop-back/internal/warehousing/actiongroup/back/util/locationstock"
 )
 
 func Test_ChunkByLocationID(t *testing.T) {

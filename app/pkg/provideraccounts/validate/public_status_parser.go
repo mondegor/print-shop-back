@@ -3,10 +3,10 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 )
 
 // NewPublicStatusParser - создаёт объект PublicStatusParser.
-func NewPublicStatusParser(logger mrlog.Logger) *PublicStatusParser {
+func NewPublicStatusParser(logger log.Logger) *PublicStatusParser {
 	return &PublicStatusParser{
 		EnumList: parser.NewEnumList(
 			logger,
@@ -32,7 +32,7 @@ func NewPublicStatusParser(logger mrlog.Logger) *PublicStatusParser {
 }
 
 // NewPublicStatusParserWithDefault - создаёт объект PublicStatusParser со статусами по умолчанию.
-func NewPublicStatusParserWithDefault(logger mrlog.Logger, items []publicstatus.Enum) *PublicStatusParser {
+func NewPublicStatusParserWithDefault(logger log.Logger, items []publicstatus.Enum) *PublicStatusParser {
 	return &PublicStatusParser{
 		EnumList: parser.NewEnumListWithDefault(
 			logger,

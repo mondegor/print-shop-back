@@ -4,22 +4,21 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/mrlog"
-
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 type (
 	// AlgoRemaining - вспомогательный алгоритм расчёта остатка.
 	AlgoRemaining struct {
-		logger mrlog.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
+		logger log.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
 	}
 )
 
 // New - создаёт объект AlgoRemaining.
-func New(logger mrlog.Logger) *AlgoRemaining {
+func New(logger log.Logger) *AlgoRemaining {
 	return &AlgoRemaining{
 		logger: logger,
 	}

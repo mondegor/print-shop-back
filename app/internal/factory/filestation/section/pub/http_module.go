@@ -7,7 +7,7 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/internal/filestation/module"
+	"print-shop-back/internal/filestation/module"
 )
 
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.

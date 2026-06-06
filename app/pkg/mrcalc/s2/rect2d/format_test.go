@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func TestFormat_Cast(t *testing.T) {

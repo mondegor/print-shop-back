@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-webcore/mrcore"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
 )
 
 type (

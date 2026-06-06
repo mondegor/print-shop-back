@@ -1,7 +1,7 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (

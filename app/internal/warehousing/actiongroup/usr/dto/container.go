@@ -3,8 +3,8 @@ package dto
 import (
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/locationkind"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/warehousing/enum/locationkind"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (

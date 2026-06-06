@@ -6,8 +6,8 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/actiongroup/back/dto"
+	"print-shop-back/internal/warehousing/module"
 )
 
 type (

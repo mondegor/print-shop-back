@@ -1,6 +1,6 @@
 package cutting
 
-import "github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+import "print-shop-back/pkg/mrcalc/s2/rect2d"
 
 // AlgoQuantity - возвращает общее количество резов необходимых совершить резательным оборудованием
 // на поверхности, чтобы получить заданное кол-во элементов нужного формата.

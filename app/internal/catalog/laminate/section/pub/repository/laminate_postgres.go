@@ -5,19 +5,20 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/laminate/module"
+	"print-shop-back/internal/catalog/laminate/section/pub/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
 	// LaminatePostgres - comment struct.
 	LaminatePostgres struct {
 		client          mrstorage.DBConnManager
-		repoTypeIDs     db.ColumnFetcher[itemstatus.Enum, uint64]
-		repoThicknesses db.ColumnFetcher[itemstatus.Enum, measure.Meter]
+		repoTypeIDs     db.ColumnFetcher[workflow.ItemStatus, uint64]
+		repoThicknesses db.ColumnFetcher[workflow.ItemStatus, measure.Meter]
 	}
 )
 
@@ -25,14 +26,14 @@ type (
 func NewLaminatePostgres(client mrstorage.DBConnManager) *LaminatePostgres {
 	return &LaminatePostgres{
 		client: client,
-		repoTypeIDs: db.NewColumnFetcher[itemstatus.Enum, uint64](
+		repoTypeIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNameLaminates,
 			"laminate_status",
 			"type_id",
 			module.DBFieldDeletedAt,
 		),
-		repoThicknesses: db.NewColumnFetcher[itemstatus.Enum, measure.Meter](
+		repoThicknesses: db.NewColumnFetcher[workflow.ItemStatus, measure.Meter](
 			client,
 			module.DBTableNameLaminates,
 			"laminate_status",

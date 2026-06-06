@@ -6,9 +6,9 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
+	"print-shop-back/internal/catalog/box/module"
+	"print-shop-back/internal/catalog/box/section/pub"
+	"print-shop-back/internal/catalog/box/section/pub/entity"
 )
 
 type (

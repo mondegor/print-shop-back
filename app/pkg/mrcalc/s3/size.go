@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc"
+	"print-shop-back/pkg/mrcalc"
 )
 
 type (

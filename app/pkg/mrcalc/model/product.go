@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s3/rect3d"
+	"print-shop-back/pkg/mrcalc/s3/rect3d"
 )
 
 type (

@@ -4,8 +4,8 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/request"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/validate"
-	pkgvalidate "github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/pkg/provideraccounts/validate"
+	pkgvalidate "print-shop-back/pkg/transport/validate"
 )
 
 type (

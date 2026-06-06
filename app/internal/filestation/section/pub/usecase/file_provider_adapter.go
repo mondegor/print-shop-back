@@ -6,7 +6,7 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrmodel"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 )
 
 type (

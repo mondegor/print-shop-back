@@ -6,8 +6,8 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrpath"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (

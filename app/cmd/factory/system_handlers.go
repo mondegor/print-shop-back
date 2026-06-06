@@ -6,16 +6,16 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 // RegisterSystemHandlers - регистрация системных обработчиков.
 func RegisterSystemHandlers(opts app.Options) error {
-	mrlog.Info(opts.Logger, "Init system handlers")
+	log.Info(opts.Logger, "Init system handlers")
 
 	probes := []mrrun.ProbeChecker{
 		mrrun.NewHealthProbe(

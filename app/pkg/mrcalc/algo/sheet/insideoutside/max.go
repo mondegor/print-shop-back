@@ -3,8 +3,8 @@ package insideoutside
 import (
 	"fmt"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 // AlgoMax - возвращает схему с максимальным количеством единиц указанного

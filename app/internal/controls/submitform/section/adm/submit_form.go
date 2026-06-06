@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/activitystatus"
-	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/pkg/controls/enum/activitystatus"
+	"print-shop-back/pkg/libs/components/uiform"
 )
 
 type (
@@ -31,7 +31,7 @@ type (
 
 	// SubmitFormComponent - comment interface.
 	SubmitFormComponent interface {
-		GetFormStatus(ctx context.Context, formID uuid.UUID) (itemstatus.Enum, error)
+		GetFormStatus(ctx context.Context, formID uuid.UUID) (workflow.ItemStatus, error)
 		GetFormWithElements(ctx context.Context, formID uuid.UUID) (entity.SubmitForm, error)
 	}
 
@@ -47,7 +47,7 @@ type (
 		FetchOne(ctx context.Context, rowID uuid.UUID) (entity.SubmitForm, error)
 		FetchIDByRewriteName(ctx context.Context, rewriteName string) (rowID uuid.UUID, err error)
 		FetchIDByParamName(ctx context.Context, paramName string) (rowID uuid.UUID, err error)
-		FetchStatus(ctx context.Context, rowID uuid.UUID) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uuid.UUID) (workflow.ItemStatus, error)
 		Insert(ctx context.Context, row entity.SubmitForm) (rowID uuid.UUID, err error)
 		Update(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.SubmitForm) (tagVersion uint32, err error)

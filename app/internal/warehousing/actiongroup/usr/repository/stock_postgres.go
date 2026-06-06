@@ -8,9 +8,9 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder/part"
 	"github.com/mondegor/go-storage/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/entity"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/actiongroup/usr/dto"
+	"print-shop-back/internal/warehousing/actiongroup/usr/entity"
+	"print-shop-back/internal/warehousing/module"
 )
 
 type (

@@ -12,18 +12,18 @@ import (
 	"github.com/mondegor/go-storage/mrmigrate/gomigrate"
 	"github.com/mondegor/go-storage/mrpostgres"
 	"github.com/mondegor/go-storage/mrpostgres/monitoring"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtrace"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
 // InitPostgres - создаёт объект mrpostgres.ConnAdapter.
-func InitPostgres(logger mrlog.Logger, tracer mrtrace.Tracer, cfg config.Config) (*mrpostgres.ConnAdapter, error) {
+func InitPostgres(logger log.Logger, tracer trace.Tracer, cfg config.Config) (*mrpostgres.ConnAdapter, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	mrlog.Info(logger, "Create and init postgres pool connection", "host", cfg.DBHost, "hort", cfg.DBPort)
+	log.Info(logger, "Create and init postgres pool connection", "host", cfg.DBHost, "hort", cfg.DBPort)
 
 	postgresOpts := mrpostgres.Options{
 		Host:            cfg.DBHost,
@@ -48,17 +48,17 @@ func InitPostgres(logger mrlog.Logger, tracer mrtrace.Tracer, cfg config.Config)
 }
 
 // InitPostgresConnManager - создаёт объект mrpostgres.ConnManager.
-func InitPostgresConnManager(conn *mrpostgres.ConnAdapter, logger mrlog.Logger) *mrpostgres.ConnManager {
+func InitPostgresConnManager(conn *mrpostgres.ConnAdapter, logger log.Logger) *mrpostgres.ConnManager {
 	return mrpostgres.NewConnManager(conn, logger)
 }
 
 // ApplyPostgresMigrations - накатывает миграции БД opts.Cfg.DBMigrationsDir.
-func ApplyPostgresMigrations(logger mrlog.Logger, connManager *mrpostgres.ConnManager, cfg config.Config) error {
+func ApplyPostgresMigrations(logger log.Logger, connManager *mrpostgres.ConnManager, cfg config.Config) error {
 	if cfg.DBMigrationsDir == "" {
 		return nil
 	}
 
-	mrlog.Info(logger, "Apply postgres migrations", "dir", cfg.DBMigrationsDir)
+	log.Info(logger, "Apply postgres migrations", "dir", cfg.DBMigrationsDir)
 
 	connCli, err := connManager.ConnAdapter().Cli()
 	if err != nil {
@@ -86,7 +86,7 @@ func ApplyPostgresMigrations(logger mrlog.Logger, connManager *mrpostgres.ConnMa
 		_, _ = dbMigrate.Close()
 	}()
 
-	dbMigrate.Log = gomigrate.NewLoggerAdapter(mrlog.WithAttrs(logger, "migrator", "go-migrate"))
+	dbMigrate.Log = gomigrate.NewLoggerAdapter(log.WithAttrs(logger, "migrator", "go-migrate"))
 
 	if err = dbMigrate.Up(); err != nil {
 		if !errors.Is(err, migrate.ErrNoChange) {

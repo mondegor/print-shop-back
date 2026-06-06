@@ -3,13 +3,13 @@ package rest
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
-	warehousing "github.com/mondegor/print-shop-back/internal/factory/warehousing/actiongroup/usr"
+	"print-shop-back/internal/app"
+	warehousing "print-shop-back/internal/factory/warehousing/actiongroup/usr"
 )
 
 // RegisterRestRouterUsrHandlers - регистрирует в указанном роутере обработчики секции UserAPI.

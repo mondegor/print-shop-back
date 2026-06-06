@@ -1,9 +1,9 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/catalog/type/paperside"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/catalog/paper/section/adm/entity"
+	"print-shop-back/pkg/catalog/type/paperside"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (

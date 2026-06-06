@@ -9,15 +9,15 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrmodel"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/transport/model"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/pkg/transport/model"
 )
 
 const (

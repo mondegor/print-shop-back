@@ -3,7 +3,7 @@ package locationstock
 import (
 	"iter"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/dto"
+	"print-shop-back/internal/warehousing/actiongroup/back/dto"
 )
 
 // ChunkByLocationID - возвращает чанки указанного массива, разбитых по LocationID.

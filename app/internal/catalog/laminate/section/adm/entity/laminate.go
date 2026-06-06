@@ -3,10 +3,10 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
@@ -26,7 +26,7 @@ type (
 		Width      measure.Meter             `json:"width" sort:"width" upd:"laminate_width"`
 		Thickness  measure.Meter             `json:"thickness" upd:"laminate_thickness"`
 		WeightM2   measure.KilogramPerMeter2 `json:"weightM2" sort:"weightM2" upd:"laminate_weight_m2"`
-		Status     itemstatus.Enum           `json:"status"`
+		Status     workflow.ItemStatus       `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  time.Time                 `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -44,6 +44,6 @@ type (
 		TypeIDs    []uint64
 		Length     measure.RangeMeter
 		Width      measure.RangeMeter
-		Statuses   []itemstatus.Enum
+		Statuses   []workflow.ItemStatus
 	}
 )

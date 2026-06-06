@@ -6,9 +6,9 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
+	"print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
 )
 
 const (

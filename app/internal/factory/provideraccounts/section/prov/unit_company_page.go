@@ -6,10 +6,10 @@ import (
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/repository"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/usecase"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/provideraccounts/section/prov/controller/httpv1"
+	"print-shop-back/internal/provideraccounts/section/prov/repository"
+	"print-shop-back/internal/provideraccounts/section/prov/usecase"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 func initCompanyPageController(

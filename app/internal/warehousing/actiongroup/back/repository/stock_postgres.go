@@ -6,9 +6,9 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/warehousing/actiongroup/back/dto"
+	"print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (

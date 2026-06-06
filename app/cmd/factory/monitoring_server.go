@@ -3,10 +3,10 @@ package factory
 import (
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/httpserver"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 const (
@@ -15,7 +15,7 @@ const (
 
 // InitMonitoringServer - создаёт объект mrserver.ServerAdapter.
 func InitMonitoringServer(opts app.Options) *httpserver.Adapter {
-	mrlog.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", monitoringServerCaption), "port", opts.Cfg.MonitoringServerPort)
+	log.Info(opts.Logger, fmt.Sprintf("Create and init '%s'", monitoringServerCaption), "port", opts.Cfg.MonitoringServerPort)
 
 	return httpserver.New(
 		opts.MonitoringRouter,

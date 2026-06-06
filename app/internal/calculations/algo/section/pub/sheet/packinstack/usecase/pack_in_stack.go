@@ -7,10 +7,10 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/packinstack"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
+	"print-shop-back/pkg/mrcalc/algo/sheet/packinstack"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (

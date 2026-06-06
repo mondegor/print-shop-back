@@ -5,18 +5,18 @@ import (
 	"time"
 
 	"github.com/mondegor/go-storage/mrredis"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtrace"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
 // InitRedis - создаёт объект mrredis.ConnAdapter.
-func InitRedis(logger mrlog.Logger, tracer mrtrace.Tracer, cfg config.Config) (*mrredis.ConnAdapter, error) {
+func InitRedis(logger log.Logger, tracer trace.Tracer, cfg config.Config) (*mrredis.ConnAdapter, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	mrlog.Info(logger, "Create and init redis connection", "host", cfg.RedisHost, "port", cfg.RedisPort)
+	log.Info(logger, "Create and init redis connection", "host", cfg.RedisHost, "port", cfg.RedisPort)
 
 	redisOpts := mrredis.Options{
 		Host:         cfg.RedisHost,

@@ -1,6 +1,6 @@
 package model
 
-import "github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+import "print-shop-back/pkg/mrcalc/s2/rect2d"
 
 type (
 	// Sheet - изделие, которое необходимо разместить в коробке.

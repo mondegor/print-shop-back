@@ -3,9 +3,8 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 )
 
 type (
@@ -23,7 +22,7 @@ type (
 	PaperFactureStorage interface {
 		FetchWithTotal(ctx context.Context, params entity.PaperFactureParams) (rows []entity.PaperFacture, countRows int, err error)
 		FetchOne(ctx context.Context, rowID uint64) (entity.PaperFacture, error)
-		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 		Insert(ctx context.Context, row entity.PaperFacture) (rowID uint64, err error)
 		Update(ctx context.Context, row entity.PaperFacture) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.PaperFacture) (tagVersion uint32, err error)

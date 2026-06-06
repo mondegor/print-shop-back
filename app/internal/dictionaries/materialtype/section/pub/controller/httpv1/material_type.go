@@ -5,9 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/pkg/api"
+	"print-shop-back/pkg/api"
 )
 
 const (

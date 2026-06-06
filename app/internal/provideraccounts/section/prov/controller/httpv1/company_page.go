@@ -6,10 +6,10 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

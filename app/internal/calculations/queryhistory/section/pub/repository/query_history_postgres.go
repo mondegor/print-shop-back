@@ -8,8 +8,8 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/internal/calculations/queryhistory/module"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (

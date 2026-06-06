@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
+	"print-shop-back/internal/dictionaries/paperfacture/module"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
 )
 
 type (

@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrpath"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
 )
 
 // InitImageURLBuilder - создаёт объект placeholderpath.Builder.

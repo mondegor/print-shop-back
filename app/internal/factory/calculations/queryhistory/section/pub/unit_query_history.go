@@ -5,10 +5,10 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/controller/httpv1"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/repository"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initQueryHistoryController(

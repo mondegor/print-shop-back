@@ -8,10 +8,10 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
@@ -23,7 +23,7 @@ type (
 	// SheetImposition - comment struct.
 	SheetImposition struct {
 		algo *imposition.Algo
-		// logger       mrlog.Logger
+		// logger       log.Logger
 		eventEmitter mrevent.Emitter
 	}
 )

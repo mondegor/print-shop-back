@@ -584,26 +584,25 @@ paths:
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/sessions/close:
-    /v1/sessions/close:
-      post:
-        summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
-        description: Метод предназначен для закрытия указанных открытых сессий пользователя
-        operationId: closeUserSessions
-        tags:
-          - Auth.Sessions
-        requestBody:
-          required: true
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: ../components/models/Auth.Sessions.Request.Model.CloseSessions.yaml
-        responses:
-          '204':
-            description: Указанные сессии пользователя были закрыты
-          '401':
-            $ref: ../_shared/components/responses/Api.ResponseJson.Error401.yaml
-          '500':
-            $ref: ../_shared/components/responses/Api.ResponseJson.Error5xx.yaml
+    post:
+      summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
+      description: Метод предназначен для закрытия указанных открытых сессий пользователя
+      operationId: closeUserSessions
+      tags:
+        - Auth.Sessions
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Sessions.Request.Model.CloseSessions'
+      responses:
+        '204':
+          description: Указанные сессии пользователя были закрыты
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
 components:
   securitySchemes:
     bearerAuth:
@@ -1096,6 +1095,22 @@ components:
           minLength: 64
           maxLength: 256
           example: otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7
+    Auth.Sessions.Request.Model.CloseSessions:
+      description: DTO закрытия указанных сессий текущего пользователя
+      type: object
+      required:
+        - hashes
+      properties:
+        hashes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionHash'
+    Auth.Sessions.Request.Model.SessionHash:
+      description: Идентификатор сессии текущего пользователя
+      type: string
+      minLength: 16
+      maxLength: 16
+      example: "1f3bc817fb1d50cb"
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:

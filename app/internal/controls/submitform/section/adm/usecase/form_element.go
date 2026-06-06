@@ -7,14 +7,14 @@ import (
 	"github.com/mondegor/go-components/mrordering"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (
@@ -25,7 +25,7 @@ type (
 		elementTemplateAPI          api.ElementTemplateHeader
 		orderingAPI                 mrordering.Mover
 		eventEmitter                mrevent.Emitter
-		logger                      mrlog.Logger
+		logger                      log.Logger
 		errorWrapper                errors.Wrapper
 		errorNotFoundWrapper        errors.Wrapper
 		errorVersionConflictWrapper errors.Wrapper
@@ -44,7 +44,7 @@ func NewFormElement(
 	elementTemplateAPI api.ElementTemplateHeader,
 	orderingAPI mrordering.Mover,
 	eventEmitter mrevent.Emitter,
-	logger mrlog.Logger,
+	logger log.Logger,
 ) *FormElement {
 	return &FormElement{
 		storage:                     storage,

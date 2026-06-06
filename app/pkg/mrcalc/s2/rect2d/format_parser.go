@@ -1,7 +1,7 @@
 package rect2d
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2"
+	"print-shop-back/pkg/mrcalc/s2"
 )
 
 // ParseFormat - возвращает результат парсинга строки вида '{width}x{height}' в прямоугольный 2d Format.

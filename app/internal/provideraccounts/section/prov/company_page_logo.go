@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrentity"
-	"github.com/mondegor/go-sysmess/mrmodel"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 )
 
 type (

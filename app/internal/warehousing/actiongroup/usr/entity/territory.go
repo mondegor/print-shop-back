@@ -3,8 +3,8 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/activitystatus"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/warehousing/enum/activitystatus"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (

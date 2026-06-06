@@ -5,13 +5,13 @@ import (
 	"github.com/mondegor/go-components/wire/mrauth/scheduler"
 	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/collect"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 const (
@@ -30,7 +30,7 @@ const (
 
 // InitUserStatRequestCollectorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
 func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageCollector[dto.UserActivityLogMessage] {
-	mrlog.Info(opts.Logger, "Create and init user request collector service")
+	log.Info(opts.Logger, "Create and init user request collector service")
 
 	return collector.NewService(
 		opts.PostgresConnManager,
@@ -60,7 +60,7 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 
 // InitAuthSchedulerService - создаёт сервис для обработки сообщений и связанных с ним задачи.
 func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
-	mrlog.Info(opts.Logger, "Create and init auth scheduler service")
+	log.Info(opts.Logger, "Create and init auth scheduler service")
 
 	return scheduler.NewService(
 		opts.PostgresConnManager,

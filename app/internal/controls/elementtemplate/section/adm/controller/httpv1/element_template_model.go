@@ -1,9 +1,9 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementtype"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/pkg/controls/enum/elementtype"
 )
 
 type (

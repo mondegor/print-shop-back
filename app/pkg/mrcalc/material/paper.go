@@ -1,7 +1,7 @@
 package material
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (

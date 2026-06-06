@@ -7,8 +7,8 @@ import (
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/tests/integration"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
+	"print-shop-back/tests/integration"
 )
 
 type AlgoRectCuttingTestSuite struct {

@@ -6,9 +6,9 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
+	"print-shop-back/internal/dictionaries/materialtype/module"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
 )
 
 type (

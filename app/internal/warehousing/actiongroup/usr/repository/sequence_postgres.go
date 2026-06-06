@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-storage/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/module"
 )
 
 type (

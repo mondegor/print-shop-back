@@ -5,18 +5,18 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/controller/httpv1"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/repository"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initPaperFactureController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	eventEmitter mrevent.Emitter,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,

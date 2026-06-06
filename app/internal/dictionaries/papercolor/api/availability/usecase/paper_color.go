@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 	"github.com/mondegor/go-sysmess/util/conv"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/dictionaries/papercolor/api/availability"
+	"print-shop-back/pkg/dictionaries/api"
 )
 
 type (
@@ -17,19 +17,19 @@ type (
 	PaperColor struct {
 		storage      availability.PaperColorStorage
 		errorWrapper errors.Wrapper
-		trace        mrtrace.Tracer
+		tracer       trace.Tracer
 	}
 )
 
 // NewPaperColor - создаёт объект PaperColor.
 func NewPaperColor(
 	storage availability.PaperColorStorage,
-	trace mrtrace.Tracer,
+	tracer trace.Tracer,
 ) *PaperColor {
 	return &PaperColor{
 		storage:      storage,
 		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
-		trace:        trace,
+		tracer:       tracer,
 	}
 }
 
@@ -55,7 +55,7 @@ func (uc *PaperColor) CheckAvailability(ctx context.Context, itemID uint64) erro
 }
 
 func (uc *PaperColor) traceCmd(ctx context.Context, command string, data conv.Group) {
-	uc.trace.Trace(
+	uc.tracer.Trace(
 		ctx,
 		"storage", api.PaperColorAvailabilityName,
 		"cmd", command,

@@ -5,21 +5,22 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/pub/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
 	// PaperPostgres - comment struct.
 	PaperPostgres struct {
 		client         mrstorage.DBConnManager
-		repoTypeIDs    db.ColumnFetcher[itemstatus.Enum, uint64]
-		repoColorIDs   db.ColumnFetcher[itemstatus.Enum, uint64]
-		repoDensities  db.ColumnFetcher[itemstatus.Enum, measure.KilogramPerMeter2]
-		repoFactureIDs db.ColumnFetcher[itemstatus.Enum, uint64]
+		repoTypeIDs    db.ColumnFetcher[workflow.ItemStatus, uint64]
+		repoColorIDs   db.ColumnFetcher[workflow.ItemStatus, uint64]
+		repoDensities  db.ColumnFetcher[workflow.ItemStatus, measure.KilogramPerMeter2]
+		repoFactureIDs db.ColumnFetcher[workflow.ItemStatus, uint64]
 	}
 )
 
@@ -27,28 +28,28 @@ type (
 func NewPaperPostgres(client mrstorage.DBConnManager) *PaperPostgres {
 	return &PaperPostgres{
 		client: client,
-		repoTypeIDs: db.NewColumnFetcher[itemstatus.Enum, uint64](
+		repoTypeIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"type_id",
 			module.DBFieldDeletedAt,
 		),
-		repoColorIDs: db.NewColumnFetcher[itemstatus.Enum, uint64](
+		repoColorIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"color_id",
 			module.DBFieldDeletedAt,
 		),
-		repoDensities: db.NewColumnFetcher[itemstatus.Enum, measure.KilogramPerMeter2](
+		repoDensities: db.NewColumnFetcher[workflow.ItemStatus, measure.KilogramPerMeter2](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"paper_density",
 			module.DBFieldDeletedAt,
 		),
-		repoFactureIDs: db.NewColumnFetcher[itemstatus.Enum, uint64](
+		repoFactureIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",

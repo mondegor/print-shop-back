@@ -7,9 +7,9 @@ import (
 
 	"github.com/mondegor/go-sysmess/util/casttype"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementtype"
-	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/pkg/controls/enum/elementtype"
+	"print-shop-back/pkg/libs/components/uiform"
 )
 
 type (

@@ -6,8 +6,8 @@ import (
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 // InitHttpModule - создаются все компоненты модуля и возвращаются к нему контролеры.

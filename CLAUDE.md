@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Print Shop Back — a Go web service for calculating the cost and production time of print products. It is a **modular monolith** structured along DDD / clean-architecture lines. All Go code lives under `app/` (module path `github.com/mondegor/print-shop-back`, Go 1.25).
+Print Shop Back — a Go web service for calculating the cost and production time of print products. It is a **modular monolith** structured along DDD / clean-architecture lines. All Go code lives under `app/` (module path `print-shop-back`, Go 1.25).
 
 The repository is operated through the external **Mrcmd** CLI (https://github.com/mondegor/mrcmd), which wraps Docker Compose, migrations, codegen, linting and tests. The root `Makefile` provides short aliases over the most common `mrcmd` calls.
 
@@ -26,7 +26,7 @@ Run from the repository root. Each `make` target is a thin wrapper over `mrcmd`:
 
 `Makefile.mk` adds `make full` (deps + generate + fmt + lint + test + plantuml) used as the pre-commit check.
 
-**Lint** is governed by `app/.golangci.yaml` — a strict config (`default: none` with a large explicit enable list, including `gochecknoglobals`, `gochecknoinits`, `wsl`, `gosec`, `lll`). New code must pass it; `make lint` auto-fixes formatting and imports first (`goimports` local prefix is `github.com/mondegor/print-shop-back`).
+**Lint** is governed by `app/.golangci.yaml` — a strict config (`default: none` with a large explicit enable list, including `gochecknoglobals`, `gochecknoinits`, `wsl`, `gosec`, `lll`). New code must pass it; `make lint` auto-fixes formatting and imports first (`goimports` local prefix is `print-shop-back`).
 
 **Running a single test**: tests live under `app/tests/integration/` and spin up Postgres + Redis via **testcontainers** (see `app/config/config_tests.yaml`, `db_host: testcontainer`), so Docker must be running. From `app/`:
 ```
@@ -77,6 +77,6 @@ Built heavily on the **mondegor** library family: `go-webcore` (HTTP server, rou
 OpenAPI contracts live in `contracts/published/<realm>/` (admin, auth, provider, public, user, monitoring) and are bundled via the `bundle.sh`/`build.sh` scripts there. Project documentation, PlantUML diagrams and sequence diagrams are in `docs/`.
 
 ## Conventions
-- Code comments and documentation are written in **Russian**; follow the surrounding style.
+- Code comments and documentation are written in **English** or **Russian**; follow the surrounding style.
 - Constructors are `New*` (returning concrete types) for components and `Init*` for factory wiring functions.
 - No global variables and no `init()` functions (enforced by lint) — everything is wired explicitly through the factory.

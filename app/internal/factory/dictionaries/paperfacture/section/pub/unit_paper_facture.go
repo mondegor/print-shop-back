@@ -4,10 +4,10 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/repository"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initPaperFactureController(

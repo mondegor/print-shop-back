@@ -8,7 +8,7 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/module"
 )
 
 type (

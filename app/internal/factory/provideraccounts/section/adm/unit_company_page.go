@@ -4,19 +4,19 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/builder"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm/repository"
+	"print-shop-back/internal/provideraccounts/section/adm/usecase"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 func initCompanyPageController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	dbConnManager mrstorage.DBConnManager,
 	requestModuleParser *validate.Parser,
 	responseSender mrserver.ResponseSender,

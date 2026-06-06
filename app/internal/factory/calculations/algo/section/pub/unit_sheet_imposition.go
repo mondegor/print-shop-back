@@ -2,17 +2,17 @@ package pub
 
 import (
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/usecase"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/usecase"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initSheetImpositionController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	eventEmitter mrevent.Emitter,
 	requestParser *validate.Parser,
 	responseSender mrserver.ResponseSender,

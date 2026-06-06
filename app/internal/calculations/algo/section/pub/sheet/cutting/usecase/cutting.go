@@ -5,9 +5,9 @@ import (
 
 	"github.com/mondegor/go-sysmess/mrevent"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/cutting"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"
+	"print-shop-back/pkg/mrcalc/algo/sheet/cutting"
 )
 
 const (

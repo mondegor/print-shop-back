@@ -5,13 +5,13 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/box/packinbox"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
+	"print-shop-back/pkg/mrcalc/algo/box/packinbox"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
@@ -23,13 +23,13 @@ type (
 	// BoxPackInBox - comment struct.
 	BoxPackInBox struct {
 		algo         *packinbox.Algo
-		logger       mrlog.Logger
+		logger       log.Logger
 		eventEmitter mrevent.Emitter
 	}
 )
 
 // NewBoxPackInBox - создаёт объект BoxPackInBox.
-func NewBoxPackInBox(algo *packinbox.Algo, logger mrlog.Logger, eventEmitter mrevent.Emitter) *BoxPackInBox {
+func NewBoxPackInBox(algo *packinbox.Algo, logger log.Logger, eventEmitter mrevent.Emitter) *BoxPackInBox {
 	return &BoxPackInBox{
 		algo:         algo,
 		logger:       logger,

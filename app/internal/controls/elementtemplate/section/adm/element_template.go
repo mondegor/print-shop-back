@@ -3,9 +3,8 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (
@@ -24,7 +23,7 @@ type (
 	ElementTemplateStorage interface {
 		FetchWithTotal(ctx context.Context, params entity.ElementTemplateParams) (rows []entity.ElementTemplate, countRows int, err error)
 		FetchOne(ctx context.Context, rowID uint64) (entity.ElementTemplate, error)
-		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 		Insert(ctx context.Context, row entity.ElementTemplate) (rowID uint64, err error)
 		Update(ctx context.Context, row entity.ElementTemplate) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.ElementTemplate) (tagVersion uint32, err error)

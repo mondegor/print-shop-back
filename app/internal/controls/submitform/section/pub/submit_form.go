@@ -3,7 +3,7 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
+	"print-shop-back/internal/controls/submitform/section/pub/entity"
 )
 
 type (

@@ -7,16 +7,16 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrmodel"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/transport/model"
+	"print-shop-back/internal/controls/elementtemplate/module"
+	"print-shop-back/internal/controls/elementtemplate/section/adm"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/controls/elementtemplate/shared/validate"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/transport/model"
 )
 
 const (

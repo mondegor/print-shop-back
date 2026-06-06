@@ -4,9 +4,9 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initBoxSheetCuttingController(

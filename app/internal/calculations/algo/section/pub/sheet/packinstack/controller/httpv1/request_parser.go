@@ -1,11 +1,11 @@
 package httpv1
 
 import (
-	httpmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/model"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	httpmodel "print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/mrcalc/model"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func (ht *PackInStack) parseRequest(data httpmodel.SheetPackInStackRequest) (dto.ParsedData, error) {

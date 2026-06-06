@@ -4,14 +4,14 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/repository"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/service"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/transport/httpv1"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/warehousing/actiongroup/usr/repository"
+	"print-shop-back/internal/warehousing/actiongroup/usr/service"
+	"print-shop-back/internal/warehousing/actiongroup/usr/transport/httpv1"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initStoreController(
-	// logger mrlog.Logger,
+	// logger log.Logger,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,
 	responseSender mrserver.ResponseSender,

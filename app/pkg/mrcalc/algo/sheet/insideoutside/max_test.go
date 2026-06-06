@@ -6,9 +6,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func TestMax(t *testing.T) {

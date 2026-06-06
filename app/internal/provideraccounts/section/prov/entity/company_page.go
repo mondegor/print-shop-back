@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 const (

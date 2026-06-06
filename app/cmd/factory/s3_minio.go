@@ -5,16 +5,16 @@ import (
 
 	"github.com/mondegor/go-storage/mrminio"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-sysmess/util/mime"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
 // NewS3Minio - создаёт объект mrminio.ConnAdapter.
-func NewS3Minio(ctx context.Context, logger mrlog.Logger, tracer mrtrace.Tracer, cfg config.Config) (*mrminio.ConnAdapter, error) {
-	mrlog.Info(logger, "Create and init file provider pool")
+func NewS3Minio(ctx context.Context, logger log.Logger, tracer trace.Tracer, cfg config.Config) (*mrminio.ConnAdapter, error) {
+	log.Info(logger, "Create and init file provider pool")
 
 	opts := mrminio.Options{
 		Host:     cfg.S3Host,
@@ -39,7 +39,7 @@ func NewS3Minio(ctx context.Context, logger mrlog.Logger, tracer mrtrace.Tracer,
 
 // RegisterS3ImageStorage - comment func.
 func RegisterS3ImageStorage(
-	logger mrlog.Logger,
+	logger log.Logger,
 	cfg config.Config,
 	pool *mrstorage.FileProviderPool,
 	conn *mrminio.ConnAdapter,
@@ -57,11 +57,11 @@ func RegisterS3ImageStorage(
 }
 
 func newS3MinioFileProvider(
-	logger mrlog.Logger,
+	logger log.Logger,
 	conn *mrminio.ConnAdapter,
 	bucketName string,
 ) (*mrminio.FileProvider, error) {
-	mrlog.Info(logger, "Create and init file provider with bucket '"+bucketName+"'")
+	log.Info(logger, "Create and init file provider with bucket '"+bucketName+"'")
 
 	created, err := conn.InitBucket(context.Background(), bucketName)
 	if err != nil {
@@ -69,9 +69,9 @@ func newS3MinioFileProvider(
 	}
 
 	if created {
-		mrlog.Debug(logger, "Bucket '%s' created", bucketName)
+		log.Debug(logger, "Bucket '%s' created", bucketName)
 	} else {
-		mrlog.Debug(logger, "Bucket '%s' exists, OK", bucketName)
+		log.Debug(logger, "Bucket '%s' exists, OK", bucketName)
 	}
 
 	return mrminio.NewFileProvider(conn, bucketName), nil

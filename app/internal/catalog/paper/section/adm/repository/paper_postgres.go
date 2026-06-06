@@ -7,13 +7,13 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/adm/entity"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
 		repoIDByArticle db.FieldFetcher[string, uint64]
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[int]
 	}
@@ -40,7 +40,7 @@ func NewPaperPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBu
 			"paper_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNamePapers,
 			"paper_id",
@@ -240,8 +240,8 @@ func (re *PaperPostgres) FetchIDByArticle(ctx context.Context, article string) (
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 

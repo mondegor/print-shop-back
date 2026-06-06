@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/util"
+	"print-shop-back/internal/warehousing/util"
 )
 
 func TestPrepareTags(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func TestLayouts_Count(t *testing.T) {

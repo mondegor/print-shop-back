@@ -5,13 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/mrlog"
-
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition/remaining"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition/total"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition/remaining"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition/total"
+	"print-shop-back/pkg/mrcalc/algo/sheet/insideoutside"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 type (
@@ -21,7 +20,7 @@ type (
 	Algo struct {
 		remaining *remaining.AlgoRemaining
 		total     *total.AlgoTotal
-		logger    mrlog.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
+		logger    log.Logger // TODO: вместо логгера сделать объект, который будет эту инфу передавать кому нужно
 	}
 
 	// Options - опции алгоритма Algo.
@@ -41,7 +40,7 @@ type (
 )
 
 // New - создаёт объект Algo.
-func New(logger mrlog.Logger) *Algo {
+func New(logger log.Logger) *Algo {
 	return &Algo{
 		remaining: remaining.New(logger),
 		total:     total.New(),

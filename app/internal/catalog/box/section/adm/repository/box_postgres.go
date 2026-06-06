@@ -7,13 +7,13 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/box/module"
+	"print-shop-back/internal/catalog/box/section/adm/entity"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
 		repoIDByArticle db.FieldFetcher[string, uint64]
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[int]
 	}
@@ -40,7 +40,7 @@ func NewBoxPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuil
 			"box_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNameBoxes,
 			"box_id",
@@ -226,8 +226,8 @@ func (re *BoxPostgres) FetchIDByArticle(ctx context.Context, article string) (ro
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *BoxPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *BoxPostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 

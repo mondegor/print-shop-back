@@ -3,22 +3,22 @@ package factory
 import (
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrclient/sentry"
 	"github.com/pkg/errors"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
 )
 
 var errSentryDisabled = errors.New("sentry disabled")
 
 // InitSentry - создаёт объект sentry.Adapter.
-func InitSentry(logger mrlog.Logger, cfg config.Config) (*sentry.Adapter, error) {
+func InitSentry(logger log.Logger, cfg config.Config) (*sentry.Adapter, error) {
 	if cfg.SentryDSN == "" {
 		return nil, errSentryDisabled
 	}
 
-	mrlog.Info(logger, "Create and init sentry")
+	log.Info(logger, "Create and init sentry")
 
 	client, err := sentry.New(
 		cfg.SentryDSN,

@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+import "print-shop-back/pkg/mrcalc/s2/rect2d"
 
 type (
 	// ParsedData - разобранные валидные данные.

@@ -6,7 +6,7 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver/mrprometheus"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/app"
 )
 
 // InitEventEmitter - создаёт объект mrevent.Emitter.

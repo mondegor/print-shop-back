@@ -7,15 +7,15 @@ import (
 	"io"
 	"os"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/process/onstartup"
 	"github.com/mondegor/go-webcore/mrworker/process/signal"
 	"github.com/oklog/run"
 
-	"github.com/mondegor/print-shop-back/cmd/factory"
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/cmd/factory"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
 )
 
 // go get -u github.com/oklog/run
@@ -26,7 +26,7 @@ func main() {
 			os.Exit(0)
 		}
 
-		mrlog.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 }
 
@@ -39,7 +39,7 @@ func runApp(args []string, stdout io.Writer) error {
 	defer func() {
 		// close opened shared resources when app shutdown (db, redis, etc...)
 		opts.OpenedResources.Close()
-		mrlog.Info(opts.Logger, "The application has been stopped")
+		log.Info(opts.Logger, "The application has been stopped")
 	}()
 
 	ctx := context.Background()
@@ -72,7 +72,7 @@ func runApp(args []string, stdout io.Writer) error {
 			mrworker.JobFunc(
 				func(_ context.Context) error {
 					opts.AppHealth.StartupCompleted()
-					mrlog.Info(opts.Logger, "The application started, waiting for requests. To exit press CTRL+C")
+					log.Info(opts.Logger, "The application started, waiting for requests. To exit press CTRL+C")
 
 					return nil
 				},

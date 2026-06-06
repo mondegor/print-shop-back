@@ -1,4 +1,4 @@
-module github.com/mondegor/print-shop-back
+module print-shop-back
 
 go 1.25.0
 
@@ -9,10 +9,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20260531224500-f067f49faccb
-	github.com/mondegor/go-storage v0.17.2-0.20260531223607-f575ba0b521d
-	github.com/mondegor/go-sysmess v0.15.4-0.20260531222435-e553863f6cf9
-	github.com/mondegor/go-webcore v0.29.3-0.20260531223941-7ddf967758b2
+	github.com/mondegor/go-components v0.8.3-0.20260606074203-d9f63aad3208
+	github.com/mondegor/go-storage v0.17.2-0.20260606073606-96fae10a2cad
+	github.com/mondegor/go-sysmess v0.15.4-0.20260606071946-4910a082c316
+	github.com/mondegor/go-webcore v0.29.3-0.20260606072852-09ec1dc8683f
 	github.com/oklog/run v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2

@@ -6,12 +6,12 @@ import (
 	authvalidate "github.com/mondegor/go-components/mrauth/validate"
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	auth "github.com/mondegor/go-components/wire/mrauth/infra/pub"
-	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/app"
 )
 
 // RegisterRestRouterAuthHandlers - регистрирует в указанном роутере обработчики секции AuthAPI.

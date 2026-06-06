@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrstatus"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 		errorWrapper                errors.Wrapper
 		errorNotFoundWrapper        errors.Wrapper
 		errorVersionConflictWrapper errors.Wrapper
-		statusFlowMap               mrstatus.FlowMap[itemstatus.Enum]
+		statusFlowMap               workflow.FlowMap[workflow.ItemStatus]
 	}
 )
 
@@ -172,7 +172,7 @@ func (uc *SubmitForm) Remove(ctx context.Context, itemID uuid.UUID) error {
 }
 
 // GetFormStatus - comment method.
-func (uc *SubmitForm) GetFormStatus(ctx context.Context, formID uuid.UUID) (itemstatus.Enum, error) {
+func (uc *SubmitForm) GetFormStatus(ctx context.Context, formID uuid.UUID) (workflow.ItemStatus, error) {
 	if formID == uuid.Nil {
 		return 0, module.ErrSubmitFormRequired
 	}

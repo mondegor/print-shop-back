@@ -5,12 +5,12 @@ import (
 
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrstatus"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/box/module"
+	"print-shop-back/internal/catalog/box/section/adm"
+	"print-shop-back/internal/catalog/box/section/adm/entity"
 )
 
 type (
@@ -21,7 +21,7 @@ type (
 		errorWrapper                errors.Wrapper
 		errorNotFoundWrapper        errors.Wrapper
 		errorVersionConflictWrapper errors.Wrapper
-		statusFlowMap               mrstatus.FlowMap[itemstatus.Enum]
+		statusFlowMap               workflow.FlowMap[workflow.ItemStatus]
 	}
 )
 

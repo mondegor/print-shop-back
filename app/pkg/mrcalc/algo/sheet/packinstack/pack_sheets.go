@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/model"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s3/rect3d"
+	"print-shop-back/pkg/mrcalc/model"
+	"print-shop-back/pkg/mrcalc/s3/rect3d"
 )
 
 type (

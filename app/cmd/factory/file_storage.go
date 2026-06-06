@@ -6,16 +6,16 @@ import (
 
 	"github.com/mondegor/go-storage/mrfilestorage"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-sysmess/util/mime"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
 // NewFileSystem - создаёт объект mrfilestorage.FileSystem.
-func NewFileSystem(logger mrlog.Logger, cfg config.Config) *mrfilestorage.FileSystem {
-	mrlog.Info(logger, "Create and init file system")
+func NewFileSystem(logger log.Logger, cfg config.Config) *mrfilestorage.FileSystem {
+	log.Info(logger, "Create and init file system")
 
 	return mrfilestorage.New(
 		os.FileMode(cfg.FSDirMode),
@@ -26,8 +26,8 @@ func NewFileSystem(logger mrlog.Logger, cfg config.Config) *mrfilestorage.FileSy
 
 // RegisterFileImageStorage - comment func.
 func RegisterFileImageStorage(
-	logger mrlog.Logger,
-	tracer mrtrace.Tracer,
+	logger log.Logger,
+	tracer trace.Tracer,
 	cfg config.Config,
 	pool *mrstorage.FileProviderPool,
 	fs *mrfilestorage.FileSystem,
@@ -46,12 +46,12 @@ func RegisterFileImageStorage(
 }
 
 func newFileStorageProvider(
-	logger mrlog.Logger,
-	tracer mrtrace.Tracer,
+	logger log.Logger,
+	tracer trace.Tracer,
 	fs *mrfilestorage.FileSystem,
 	rootDir string,
 ) (*mrfilestorage.FileProvider, error) {
-	mrlog.Info(logger, fmt.Sprintf("Create and init file provider with root dir '%s'", rootDir))
+	log.Info(logger, fmt.Sprintf("Create and init file provider with root dir '%s'", rootDir))
 
 	created, err := fs.InitRootDir(rootDir)
 	if err != nil {
@@ -59,9 +59,9 @@ func newFileStorageProvider(
 	}
 
 	if created {
-		mrlog.Debug(logger, fmt.Sprintf("Root dir '%s' created", rootDir))
+		log.Debug(logger, fmt.Sprintf("Root dir '%s' created", rootDir))
 	} else {
-		mrlog.Debug(logger, fmt.Sprintf("Root dir '%s' exists, OK", rootDir))
+		log.Debug(logger, fmt.Sprintf("Root dir '%s' exists, OK", rootDir))
 	}
 
 	return mrfilestorage.NewFileProvider(fs, tracer, rootDir), nil

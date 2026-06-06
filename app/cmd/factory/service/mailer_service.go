@@ -12,7 +12,6 @@ import (
 	"github.com/mondegor/go-components/wire/mrmailer/producer"
 	"github.com/mondegor/go-components/wire/mrmailer/scheduler"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrclient/mail"
 	"github.com/mondegor/go-webcore/mrclient/telegram"
 	"github.com/mondegor/go-webcore/mrworker"
@@ -20,7 +19,8 @@ import (
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 const (
@@ -31,7 +31,7 @@ const (
 
 // InitMailerAPI - создаёт отправителя персонализированных уведомлений получателям.
 func InitMailerAPI(opts app.Options) *produce.MessageProducer {
-	mrlog.Info(opts.Logger, "Create and init mailer sender API")
+	log.Info(opts.Logger, "Create and init mailer sender API")
 
 	return producer.InitService(
 		opts.PostgresConnManager,
@@ -51,15 +51,15 @@ func InitMailerAPI(opts app.Options) *produce.MessageProducer {
 
 // InitMailerProcessorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
 func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[entity.Message], error) {
-	mrlog.Info(opts.Logger, "Create and init mail processor service")
+	log.Info(opts.Logger, "Create and init mail processor service")
 
 	mailSender := sendmessage.NewNopSender()
 	messengerSender := sendmessage.NewNopSender()
 
-	mrlog.Info(opts.Logger, "opts.Cfg.MailDefaultFrom", opts.Cfg.MailDefaultFrom)
+	log.Info(opts.Logger, "opts.Cfg.MailDefaultFrom", opts.Cfg.MailDefaultFrom)
 
 	if opts.Cfg.MailSmtpHost != "" {
-		mrlog.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.MailSmtpHost, "port", opts.Cfg.MailSmtpPort)
+		log.Info(opts.Logger, "Create and init mail client", "host", opts.Cfg.MailSmtpHost, "port", opts.Cfg.MailSmtpPort)
 
 		sender, err := adapter.NewMailSender(
 			mail.NewSMTPClient(
@@ -79,7 +79,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 	}
 
 	if opts.Cfg.TelegramChannelName != "" {
-		mrlog.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.TelegramChannelName)
+		log.Info(opts.Logger, "Create and init telegram bot", "name", opts.Cfg.TelegramChannelName)
 
 		sender, err := telegram.NewBotClient(opts.Cfg.TelegramChannelToken, opts.Tracer)
 		if err != nil {
@@ -132,7 +132,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 
 // InitMailerSchedulerService - создаёт сервис для обработки сообщений и связанных с ним задачи.
 func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
-	mrlog.Info(opts.Logger, "Create and init mail scheduler service")
+	log.Info(opts.Logger, "Create and init mail scheduler service")
 
 	return scheduler.InitService(
 		opts.PostgresConnManager,

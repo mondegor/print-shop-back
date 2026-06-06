@@ -5,8 +5,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (

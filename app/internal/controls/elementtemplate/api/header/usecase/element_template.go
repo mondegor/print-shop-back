@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-	"github.com/mondegor/go-sysmess/mrtrace"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 	"github.com/mondegor/go-sysmess/util/conv"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/controls/elementtemplate/api/header"
+	"print-shop-back/pkg/controls/api"
 )
 
 type (
@@ -17,19 +17,19 @@ type (
 	ElementTemplate struct {
 		storage      header.ElementTemplateStorage
 		errorWrapper errors.Wrapper
-		trace        mrtrace.Tracer
+		tracer       trace.Tracer
 	}
 )
 
 // NewElementTemplate - создаёт объект ElementTemplate.
 func NewElementTemplate(
 	storage header.ElementTemplateStorage,
-	trace mrtrace.Tracer,
+	tracer trace.Tracer,
 ) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,
 		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
-		trace:        trace,
+		tracer:       tracer,
 	}
 }
 
@@ -58,7 +58,7 @@ func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (ap
 }
 
 func (uc *ElementTemplate) traceCmd(ctx context.Context, command string, data conv.Group) {
-	uc.trace.Trace(
+	uc.tracer.Trace(
 		ctx,
 		"storage", api.ElementTemplateHeaderName,
 		"cmd", command,

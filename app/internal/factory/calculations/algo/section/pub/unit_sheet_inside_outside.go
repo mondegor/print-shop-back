@@ -4,9 +4,9 @@ import (
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initSheetInsideOutsideController(

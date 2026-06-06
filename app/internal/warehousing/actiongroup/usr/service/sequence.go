@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/locationkind"
+	"print-shop-back/internal/warehousing/enum/locationkind"
 )
 
 const (

@@ -5,14 +5,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/transport/model"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/calculations/queryhistory/module"
+	"print-shop-back/internal/calculations/queryhistory/section/pub"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

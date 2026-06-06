@@ -6,9 +6,9 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
+	"print-shop-back/internal/dictionaries/paperfacture/module"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
 )
 
 type (

@@ -6,24 +6,24 @@ import (
 	"github.com/mondegor/go-sysmess/errors/helper"
 	"github.com/mondegor/go-sysmess/mrlocale"
 	"github.com/mondegor/go-sysmess/mrlocale/provider/gotext"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"golang.org/x/text/language"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/catalog/boxescat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/catalog/laminatescat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/catalog/paperscat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/dictionaries/materialtypescat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/dictionaries/papercolorscat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/dictionaries/paperfacturescat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/dictionaries/printformatscat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/errcat"
-	"github.com/mondegor/print-shop-back/internal/localization/dict/msgcat"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/localization/dict/catalog/boxescat"
+	"print-shop-back/internal/localization/dict/catalog/laminatescat"
+	"print-shop-back/internal/localization/dict/catalog/paperscat"
+	"print-shop-back/internal/localization/dict/dictionaries/materialtypescat"
+	"print-shop-back/internal/localization/dict/dictionaries/papercolorscat"
+	"print-shop-back/internal/localization/dict/dictionaries/paperfacturescat"
+	"print-shop-back/internal/localization/dict/dictionaries/printformatscat"
+	"print-shop-back/internal/localization/dict/errcat"
+	"print-shop-back/internal/localization/dict/msgcat"
 )
 
 // LocalePool - создаёт объект mrlang.LocalePool.
-func LocalePool(logger mrlog.Logger, cfg config.Config) (*mrlocale.Pool, error) {
-	mrlog.Info(logger, "Create and init language translator")
+func LocalePool(logger log.Logger, cfg config.Config) (*mrlocale.Pool, error) {
+	log.Info(logger, "Create and init language translator")
 
 	var (
 		localeProvider mrlocale.MessageProvider
@@ -57,7 +57,7 @@ func LocalePool(logger mrlog.Logger, cfg config.Config) (*mrlocale.Pool, error) 
 		return nil, err
 	}
 
-	mrlog.DebugFunc(
+	log.DebugFunc(
 		logger,
 		func() string {
 			var buf []byte

@@ -3,12 +3,12 @@ package factory
 import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrstorage/mrprometheus"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 // go get -u github.com/prometheus/client_golang
@@ -38,7 +38,7 @@ func InitPrometheus(opts app.Options) *mrinit.Prometheus {
 // InitPrometheusStatPostgres - инициализирует сбор информации о Postgres.
 func InitPrometheusStatPostgres(opts app.Options) error {
 	if opts.Prometheus == nil || opts.PostgresConnManager == nil {
-		mrlog.Warn(opts.Logger, "Collector DB Stat is disabled")
+		log.Warn(opts.Logger, "Collector DB Stat is disabled")
 
 		return nil
 	}

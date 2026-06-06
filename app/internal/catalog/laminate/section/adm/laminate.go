@@ -3,9 +3,8 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
 )
 
 type (
@@ -24,7 +23,7 @@ type (
 		FetchWithTotal(ctx context.Context, params entity.LaminateParams) (rows []entity.Laminate, countRows int, err error)
 		FetchOne(ctx context.Context, rowID uint64) (entity.Laminate, error)
 		FetchIDByArticle(ctx context.Context, article string) (rowID uint64, err error)
-		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 		Insert(ctx context.Context, row entity.Laminate) (rowID uint64, err error)
 		Update(ctx context.Context, row entity.Laminate) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.Laminate) (tagVersion uint32, err error)

@@ -1,12 +1,14 @@
 package model
 
-import "github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+import (
+	"print-shop-back/internal/adapter/workflow"
+)
 
 type (
 	// ChangeItemStatusRequest - comment struct.
 	ChangeItemStatusRequest struct {
-		TagVersion uint32          `json:"tagVersion" validate:"required,gte=1"`
-		Status     itemstatus.Enum `json:"status" validate:"required"`
+		TagVersion uint32              `json:"tagVersion" validate:"required,gte=1"`
+		Status     workflow.ItemStatus `json:"status" validate:"required"`
 	}
 
 	// MoveItemRequest - comment struct.

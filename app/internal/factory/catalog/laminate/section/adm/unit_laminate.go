@@ -5,19 +5,19 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/catalog/laminate/section/adm/controller/httpv1"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/internal/catalog/laminate/section/adm/repository"
+	"print-shop-back/internal/catalog/laminate/section/adm/usecase"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initLaminateController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	eventEmitter mrevent.Emitter,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,

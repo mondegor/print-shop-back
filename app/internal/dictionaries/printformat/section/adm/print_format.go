@@ -3,9 +3,8 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
-
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 )
 
 type (
@@ -23,7 +22,7 @@ type (
 	PrintFormatStorage interface {
 		FetchWithTotal(ctx context.Context, params entity.PrintFormatParams) (rows []entity.PrintFormat, countRows int, err error)
 		FetchOne(ctx context.Context, rowID uint64) (entity.PrintFormat, error)
-		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 		Insert(ctx context.Context, row entity.PrintFormat) (rowID uint64, err error)
 		Update(ctx context.Context, row entity.PrintFormat) (tagVersion uint32, err error)
 		UpdateStatus(ctx context.Context, row entity.PrintFormat) (tagVersion uint32, err error)

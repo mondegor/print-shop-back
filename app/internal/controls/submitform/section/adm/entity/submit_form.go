@@ -4,10 +4,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (
@@ -24,7 +24,7 @@ type (
 		ParamName   string                `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption     string                `json:"caption" sort:"caption,default" upd:"form_caption"`
 		Detailing   elementdetailing.Enum `json:"detailing"`
-		Status      itemstatus.Enum       `json:"status"`
+		Status      workflow.ItemStatus   `json:"status"`
 		CreatedAt   time.Time             `json:"createdAt" sort:"createdAt"`
 		UpdatedAt   time.Time             `json:"updatedAt" sort:"updatedAt"`
 
@@ -43,6 +43,6 @@ type (
 	SubmitFormListFilter struct {
 		SearchText string
 		Detailing  []elementdetailing.Enum
-		Statuses   []itemstatus.Enum
+		Statuses   []workflow.ItemStatus
 	}
 )

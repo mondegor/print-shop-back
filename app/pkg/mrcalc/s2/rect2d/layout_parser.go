@@ -1,7 +1,7 @@
 package rect2d
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2"
+	"print-shop-back/pkg/mrcalc/s2"
 )
 
 // ParseLayout - возвращает результат парсинга строки вида '{byWidth}x{byHeight}' в Layout.

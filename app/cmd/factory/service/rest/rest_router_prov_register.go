@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
-	provideraccounts "github.com/mondegor/print-shop-back/internal/factory/provideraccounts/section/prov"
-	provideraccountsvalidate "github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
-	pkgprovideraccountsvalidate "github.com/mondegor/print-shop-back/pkg/provideraccounts/validate"
+	"print-shop-back/internal/app"
+	provideraccounts "print-shop-back/internal/factory/provideraccounts/section/prov"
+	provideraccountsvalidate "print-shop-back/internal/provideraccounts/shared/validate"
+	pkgprovideraccountsvalidate "print-shop-back/pkg/provideraccounts/validate"
 )
 
 // RegisterRestRouterProvHandlers - регистрирует в указанном роутере обработчики секции ProvidersAPI.

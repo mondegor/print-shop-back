@@ -5,7 +5,7 @@ import (
 
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 // AlgoQuantity - возвращает схему с количеством единиц указанного

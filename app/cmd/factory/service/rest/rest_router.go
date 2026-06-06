@@ -2,7 +2,6 @@ package rest
 
 import (
 	"github.com/mondegor/go-components/mrauth/component/produce"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/middleware"
@@ -12,7 +11,8 @@ import (
 	"github.com/mondegor/go-webcore/mrserver/mrrscors"
 	"github.com/mondegor/go-webcore/mrserver/stat"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 // InitRestRouterWithHandlers - создаёт объект mrchi.RouterAdapter и регистрирует в нём http обработчики.
@@ -59,7 +59,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 		AllowedHeaders:   opts.Cfg.CorsAllowedHeaders,
 		ExposedHeaders:   opts.Cfg.CorsExposedHeaders,
 		AllowCredentials: opts.Cfg.CorsAllowCredentials,
-		Logger:           mrlog.WithAttrs(opts.Logger, "middleware", "cors"),
+		Logger:           log.WithAttrs(opts.Logger, "middleware", "cors"),
 	}
 
 	errorSender, err := NewErrorResponseSender(opts)
@@ -80,7 +80,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 	)
 
 	router := mrchi.New(
-		mrlog.WithAttrs(opts.Logger, "router", "chi"),
+		log.WithAttrs(opts.Logger, "router", "chi"),
 		middleware.HandlerAdapter(errorSender),
 		mrresp.HandlerGetNotFoundAsJSON(opts.Logger),
 		mrresp.HandlerGetMethodNotAllowedAsJSON(opts.Logger),
@@ -102,7 +102,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 
 func initPrometheusRequestObserve(opts app.Options) mrserver.RequestObserve {
 	if opts.Prometheus == nil {
-		mrlog.Warn(opts.Logger, "Collector Rest Stat is disabled")
+		log.Warn(opts.Logger, "Collector Rest Stat is disabled")
 
 		return mrserver.NopRequestObserve()
 	}

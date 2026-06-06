@@ -3,7 +3,7 @@ package adm
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (

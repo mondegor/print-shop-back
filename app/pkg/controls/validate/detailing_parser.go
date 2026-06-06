@@ -3,10 +3,10 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (
@@ -22,7 +22,7 @@ type (
 )
 
 // NewDetailingParser - создаёт объект DetailingParser.
-func NewDetailingParser(logger mrlog.Logger) *DetailingParser {
+func NewDetailingParser(logger log.Logger) *DetailingParser {
 	return &DetailingParser{
 		EnumList: parser.NewEnumList(
 			logger,
@@ -32,7 +32,7 @@ func NewDetailingParser(logger mrlog.Logger) *DetailingParser {
 }
 
 // NewDetailingParserWithDefault - создаёт объект DetailingParser со статусами по умолчанию.
-func NewDetailingParserWithDefault(logger mrlog.Logger, items []elementdetailing.Enum) *DetailingParser {
+func NewDetailingParserWithDefault(logger log.Logger, items []elementdetailing.Enum) *DetailingParser {
 	return &DetailingParser{
 		EnumList: parser.NewEnumListWithDefault(
 			logger,

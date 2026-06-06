@@ -1,13 +1,13 @@
 package publicstatus
 
 import (
-	"github.com/mondegor/go-sysmess/mrstatus"
+	"print-shop-back/internal/adapter/workflow"
 )
 
 // NewFlowMap - возвращает карту возможных переходов PublicStatus.
-func NewFlowMap() mrstatus.FlowMap[Enum] {
-	return mrstatus.NewFlowMap(
-		[]mrstatus.FlowNode[Enum]{
+func NewFlowMap() workflow.FlowMap[Enum] {
+	return workflow.NewFlowMap(
+		[]workflow.FlowNode[Enum]{
 			{
 				From: Draft,
 				To: []Enum{

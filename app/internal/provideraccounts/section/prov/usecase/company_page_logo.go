@@ -12,12 +12,12 @@ import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrmodel"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
 )
 
 type (
@@ -28,7 +28,7 @@ type (
 		locker       mrlock.Locker
 		eventEmitter mrevent.Emitter
 		errorWrapper errors.Wrapper
-		logger       mrlog.Logger
+		logger       log.Logger
 	}
 )
 
@@ -38,7 +38,7 @@ func NewCompanyPageLogo(
 	fileAPI mrstorage.FileProviderAPI,
 	locker mrlock.Locker,
 	eventEmitter mrevent.Emitter,
-	logger mrlog.Logger,
+	logger log.Logger,
 ) *CompanyPageLogo {
 	return &CompanyPageLogo{
 		storage:      storage,

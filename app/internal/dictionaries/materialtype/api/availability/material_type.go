@@ -3,12 +3,12 @@ package availability
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"print-shop-back/internal/adapter/workflow"
 )
 
 type (
 	// MaterialTypeStorage - comment interface.
 	MaterialTypeStorage interface {
-		FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 	}
 )

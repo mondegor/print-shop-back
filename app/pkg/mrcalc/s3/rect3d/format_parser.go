@@ -1,7 +1,7 @@
 package rect3d
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s3"
+	"print-shop-back/pkg/mrcalc/s3"
 )
 
 // ParseFormat - возвращает результат парсинга строки вида '{length}x{width}x{height}' в Format коробки.

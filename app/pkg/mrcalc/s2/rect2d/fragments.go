@@ -1,6 +1,6 @@
 package rect2d
 
-import "github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
+import "print-shop-back/pkg/mrcalc/enum"
 
 type (
 	// Fragments - comment struct.

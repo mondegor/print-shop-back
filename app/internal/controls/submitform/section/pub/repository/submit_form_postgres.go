@@ -5,10 +5,10 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/activitystatus"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/pub/entity"
+	"print-shop-back/pkg/controls/enum/activitystatus"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (

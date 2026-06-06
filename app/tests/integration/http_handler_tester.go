@@ -8,18 +8,18 @@ import (
 
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-sysmess/mrlog"
-	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-sysmess/wire"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mondegor/print-shop-back/cmd/factory"
-	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/tests"
+	"print-shop-back/cmd/factory"
+	"print-shop-back/cmd/factory/service/rest"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/app"
+	"print-shop-back/tests"
 )
 
 type (
@@ -49,8 +49,8 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	)
 	require.NoError(t, err)
 
-	logger := mrlog.NopLogger()
-	tracer := mrtrace.NopTracer()
+	logger := log.NopLogger()
+	tracer := trace.NopTracer()
 	traceManager, err := wire.InitTraceContextManager(wire.DefaultProcessIDs(), logger)
 	require.NoError(t, err)
 

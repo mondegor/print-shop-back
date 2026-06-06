@@ -6,20 +6,20 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/section/adm/repository"
+	"print-shop-back/internal/controls/submitform/section/adm/usecase"
+	"print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/pkg/controls/api"
 )
 
 func initFormElementController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	eventEmitter mrevent.Emitter,
 	dbConnManager mrstorage.DBConnManager,
 	storageSubmitForm *repository.SubmitFormPostgres,
@@ -54,7 +54,7 @@ func initFormElementController(
 }
 
 func initFormElementStorage(
-	logger mrlog.Logger,
+	logger log.Logger,
 	dbConnManager mrstorage.DBConnManager,
 ) (*repository.FormElementPostgres, error) {
 	entityMeta, err := mrsql.ParseEntity(logger, entity.FormElement{})

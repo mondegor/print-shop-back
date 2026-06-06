@@ -5,12 +5,12 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/algo/sheet/imposition"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 // TODO: ДОБАВИТЬ ТЕСТ MIRROR
@@ -312,7 +312,7 @@ func TestImposition_CalcWithAllowRotation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			im := imposition.New(mrlog.NopLogger())
+			im := imposition.New(log.NopLogger())
 
 			got, err := im.Calc(context.Background(), tt.element, tt.distance, tt.out, imposition.Options{AllowRotation: true})
 			assert.Equal(t, tt.want, got)

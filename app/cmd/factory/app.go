@@ -11,17 +11,17 @@ import (
 	"github.com/mondegor/go-storage/mrlock/redislocker"
 	"github.com/mondegor/go-storage/mrpostgres/listennotify"
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/xio"
 	"github.com/mondegor/go-sysmess/wire"
 	"github.com/mondegor/go-webcore/mrrun"
 	wirecore "github.com/mondegor/go-webcore/wire"
 
-	dictionariesapi "github.com/mondegor/print-shop-back/cmd/factory/api/dictionaries"
-	"github.com/mondegor/print-shop-back/cmd/factory/service"
-	"github.com/mondegor/print-shop-back/cmd/factory/service/rest"
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
+	dictionariesapi "print-shop-back/cmd/factory/api/dictionaries"
+	"print-shop-back/cmd/factory/service"
+	"print-shop-back/cmd/factory/service/rest"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 // InitApp - Настраивает конфигурацию, внешнее окружение приложения, после этого создаёт её модули и компоненты.
@@ -66,23 +66,23 @@ func InitAppEnvironment(opts app.Options) (app.Options, error) {
 	logger := opts.Logger
 
 	// show head info about started app
-	mrlog.Info(logger, opts.Cfg.AppName, "environment", opts.Cfg.Environment, "version", opts.Cfg.AppVersion)
+	log.Info(logger, opts.Cfg.AppName, "environment", opts.Cfg.Environment, "version", opts.Cfg.AppVersion)
 
 	if opts.Cfg.WorkDir != "" {
-		mrlog.Debug(logger, "WORK DIR: "+opts.Cfg.WorkDir)
+		log.Debug(logger, "WORK DIR: "+opts.Cfg.WorkDir)
 	}
 
-	mrlog.Debug(logger, "CONFIG PATHs: "+strings.Join(opts.Cfg.ConfigPaths, ", "))
+	log.Debug(logger, "CONFIG PATHs: "+strings.Join(opts.Cfg.ConfigPaths, ", "))
 
 	if opts.Cfg.DotEnvPath != "" {
-		mrlog.Debug(logger, ".ENV PATH: "+opts.Cfg.DotEnvPath)
+		log.Debug(logger, ".ENV PATH: "+opts.Cfg.DotEnvPath)
 	}
 
 	if opts.Cfg.DebugIsEnabled {
-		mrlog.Info(logger, "DEBUG MODE: ON")
+		log.Info(logger, "DEBUG MODE: ON")
 	}
 
-	mrlog.Info(logger, "LOG LEVEL: "+opts.Cfg.LogLevel)
+	log.Info(logger, "LOG LEVEL: "+opts.Cfg.LogLevel)
 
 	opts, err := createAppEnvironment(opts)
 	if err != nil {

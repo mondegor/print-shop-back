@@ -7,8 +7,8 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/internal/calculations/queryhistory/section/pub"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (
@@ -47,7 +47,7 @@ func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Q
 	// TODO: send to queue
 	go func() {
 		// if err := uc.storage.UpdateQuantity(ctx, itemID); err != nil {
-		//	 mrlog.Ctx(ctx).Error().Err(err).Send()
+		//	 log.Ctx(ctx).Error().Err(err).Send()
 		// }
 	}()
 

@@ -5,22 +5,22 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/papercolor/module"
 )
 
 type (
 	// PaperColorPostgres - comment struct.
 	PaperColorPostgres struct {
-		repoStatus db.FieldFetcher[uint64, itemstatus.Enum]
+		repoStatus db.FieldFetcher[uint64, workflow.ItemStatus]
 	}
 )
 
 // NewPaperColorPostgres - создаёт объект PaperColorPostgres.
 func NewPaperColorPostgres(client mrstorage.DBConnManager) *PaperColorPostgres {
 	return &PaperColorPostgres{
-		repoStatus: db.NewFieldFetcher[uint64, itemstatus.Enum](
+		repoStatus: db.NewFieldFetcher[uint64, workflow.ItemStatus](
 			client,
 			module.DBTableNamePaperColors,
 			"color_id",
@@ -31,7 +31,7 @@ func NewPaperColorPostgres(client mrstorage.DBConnManager) *PaperColorPostgres {
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PaperColorPostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }

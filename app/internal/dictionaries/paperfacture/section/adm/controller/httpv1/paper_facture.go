@@ -7,12 +7,12 @@ import (
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/transport/model"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/dictionaries/paperfacture/module"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

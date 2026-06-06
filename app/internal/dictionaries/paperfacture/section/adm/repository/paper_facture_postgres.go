@@ -6,11 +6,11 @@ import (
 
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/paperfacture/module"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 	PaperFacturePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[int]
 	}
@@ -29,7 +29,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 	return &PaperFacturePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNamePaperFactures,
 			"facture_id",
@@ -185,8 +185,8 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 

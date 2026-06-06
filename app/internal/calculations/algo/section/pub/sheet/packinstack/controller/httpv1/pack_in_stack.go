@@ -3,12 +3,12 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/request"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
 )
 
 const (

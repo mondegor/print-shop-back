@@ -3,14 +3,14 @@ package pub
 import (
 	"context"
 
-	cuttingmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
-	cuttingdto "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"
-	impositionmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
-	impositiondto "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
-	insideoutsidemodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
-	insideoutsidedto "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
-	packinstackmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
-	packinstackdto "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
+	cuttingmodel "print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
+	cuttingdto "print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"
+	impositionmodel "print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
+	impositiondto "print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"
+	insideoutsidemodel "print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
+	insideoutsidedto "print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
+	packinstackmodel "print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/controller/httpv1/model"
+	packinstackdto "print-shop-back/internal/calculations/algo/section/pub/sheet/packinstack/dto"
 )
 
 type (

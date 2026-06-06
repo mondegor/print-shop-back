@@ -8,13 +8,13 @@ import (
 	"github.com/mondegor/go-components/wire/mrnotifier/producer"
 	"github.com/mondegor/go-components/wire/mrnotifier/scheduler"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 	"github.com/mondegor/go-webcore/mrworker/process/schedule"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 const (
@@ -27,7 +27,7 @@ const (
 
 // InitNotifierAPI - создаёт отправителя сообщений получателям.
 func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
-	mrlog.Info(opts.Logger, "Create and init notifier sender API")
+	log.Info(opts.Logger, "Create and init notifier sender API")
 
 	return producer.InitService(
 		opts.PostgresConnManager,
@@ -46,7 +46,7 @@ func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
 
 // InitNotifierProcessorService - создаёт сервис для обработки уведомлений и связанных с ним задачи.
 func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[entity.Note] {
-	mrlog.Info(opts.Logger, "Create and init notice processor service")
+	log.Info(opts.Logger, "Create and init notice processor service")
 
 	return processor.InitService(
 		opts.PostgresConnManager,
@@ -90,7 +90,7 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 
 // InitNotifierSchedulerService - создаёт сервис для обработки уведомлений и связанных с ним задачи.
 func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
-	mrlog.Info(opts.Logger, "Create and init notice scheduler service")
+	log.Info(opts.Logger, "Create and init notice scheduler service")
 
 	return scheduler.InitService(
 		opts.PostgresConnManager,

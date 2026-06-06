@@ -3,8 +3,8 @@ package pub
 import (
 	"context"
 
-	boxpackinboxmodel "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
-	boxpackinboxdto "github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
+	boxpackinboxmodel "print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"
+	boxpackinboxdto "print-shop-back/internal/calculations/algo/section/pub/box/packinbox/dto"
 )
 
 type (

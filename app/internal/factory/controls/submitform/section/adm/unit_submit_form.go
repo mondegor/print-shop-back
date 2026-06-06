@@ -6,14 +6,14 @@ import (
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/section/adm/repository"
+	"print-shop-back/internal/controls/submitform/section/adm/usecase"
+	"print-shop-back/internal/controls/submitform/shared/validate"
 )
 
 func initSubmitFormController(
@@ -57,7 +57,7 @@ func initSubmitFormController(
 }
 
 func initSubmitFormStorage(
-	logger mrlog.Logger,
+	logger log.Logger,
 	dbConnManager mrstorage.DBConnManager,
 	pageSizeMax int,
 ) (*repository.SubmitFormPostgres, *mrsql.EntityMetaOrderBy, error) {

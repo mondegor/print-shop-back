@@ -6,9 +6,9 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
+	"print-shop-back/internal/dictionaries/papercolor/module"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
 )
 
 type (

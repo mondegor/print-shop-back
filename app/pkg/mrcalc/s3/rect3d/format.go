@@ -3,8 +3,8 @@ package rect3d
 import (
 	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s3"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/s3"
 )
 
 type (

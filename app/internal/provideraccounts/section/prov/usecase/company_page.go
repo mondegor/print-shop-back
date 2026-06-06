@@ -8,12 +8,12 @@ import (
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrpath"
-	"github.com/mondegor/go-sysmess/mrstatus"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 		imgBaseURL    mrpath.Builder
 		eventEmitter  mrevent.Emitter
 		errorWrapper  errors.Wrapper
-		statusFlowMap mrstatus.FlowMap[publicstatus.Enum]
+		statusFlowMap workflow.FlowMap[publicstatus.Enum]
 	}
 )
 

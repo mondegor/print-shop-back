@@ -15,13 +15,11 @@ import (
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlocale"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
-	"github.com/mondegor/go-sysmess/mrtrace"
 	"github.com/mondegor/go-sysmess/util/xio"
-	"github.com/mondegor/go-webcore/mraccess"
 	"github.com/mondegor/go-webcore/mrclient/sentry"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
 	"github.com/mondegor/go-webcore/mrrun"
@@ -31,18 +29,20 @@ import (
 	"github.com/mondegor/go-webcore/mrworker/process/collect"
 	"github.com/mondegor/go-webcore/mrworker/process/consume"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	validate2 "github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/pkg/dictionaries/api"
+	validate2 "print-shop-back/pkg/transport/validate"
 )
 
 type (
 	// Options - comment struct.
 	Options struct {
 		Cfg             config.Config
-		Logger          mrlog.Logger
-		Tracer          mrtrace.Tracer
-		TraceManager    mrtrace.ContextManager
+		Logger          log.Logger
+		Tracer          trace.Tracer
+		TraceManager    trace.ContextManager
 		OpenedResources *xio.CloseManager
 		DebugFunc       func(value any) string
 

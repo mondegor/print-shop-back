@@ -361,17 +361,18 @@ formatters:
 
   settings:
     gofumpt:
+      module-path: print-shop-back
       extra-rules: true
 
     goimports:
       local-prefixes:
-        - github.com/mondegor/print-shop-back
+        - print-shop-back
 
     gci:
       sections:
         - standard
         - default
-        - prefix(github.com/mondegor/print-shop-back)
+        - prefix(print-shop-back)
 
 run:
   concurrency: 4

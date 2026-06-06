@@ -5,13 +5,13 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/entity"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/transport/model"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/warehousing/actiongroup/usr"
+	"print-shop-back/internal/warehousing/actiongroup/usr/dto"
+	"print-shop-back/internal/warehousing/actiongroup/usr/entity"
+	"print-shop-back/internal/warehousing/actiongroup/usr/transport/model"
+	"print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/slices/suint64"
 	"github.com/mondegor/go-sysmess/util/xstrings"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/locationkind"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/warehousing/actiongroup/back/dto"
+	"print-shop-back/internal/warehousing/enum/locationkind"
+	"print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (
@@ -19,7 +19,7 @@ type (
 	RefreshGroupContainers struct {
 		storageContainer containerStorage
 		storageStock     stockStorage
-		logger           mrlog.Logger
+		logger           log.Logger
 		errorWrapper     errors.Wrapper
 	}
 
@@ -37,7 +37,7 @@ type (
 func NewRefreshGroupContainers(
 	storageContainer containerStorage,
 	storageStock stockStorage,
-	logger mrlog.Logger,
+	logger log.Logger,
 ) *RefreshGroupContainers {
 	return &RefreshGroupContainers{
 		storageContainer: storageContainer,

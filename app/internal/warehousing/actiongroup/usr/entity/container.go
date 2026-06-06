@@ -6,9 +6,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/locationkind"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
-	"github.com/mondegor/print-shop-back/internal/warehousing/xtype"
+	"print-shop-back/internal/warehousing/enum/locationkind"
+	"print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/xtype"
 )
 
 type (

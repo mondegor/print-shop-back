@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
+	"print-shop-back/internal/dictionaries/papercolor/module"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
 )
 
 type (

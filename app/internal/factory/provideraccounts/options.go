@@ -4,17 +4,17 @@ import (
 	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/mrpath"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 type (
 	// Options - comment struct.
 	Options struct {
-		Logger         mrlog.Logger
+		Logger         log.Logger
 		EventEmitter   mrevent.Emitter
 		DBConnManager  mrstorage.DBConnManager
 		Locker         mrlock.Locker

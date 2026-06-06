@@ -5,7 +5,6 @@ import (
 
 	mrauthconf "github.com/mondegor/go-components/wire/mrauth/config"
 	"github.com/mondegor/go-components/wire/mrauth/mapping"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-sysmess/util/mime"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
@@ -13,10 +12,11 @@ import (
 	"github.com/mondegor/go-webcore/mrview"
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-	mrcalcvalidate "github.com/mondegor/print-shop-back/pkg/mrcalc/validate"
-	validate2 "github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
+	mrcalcvalidate "print-shop-back/pkg/mrcalc/validate"
+	validate2 "print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -25,7 +25,7 @@ const (
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
 func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
-	mrlog.Info(opts.Logger, "Create and init base request parsers")
+	log.Info(opts.Logger, "Create and init base request parsers")
 
 	validator, err := NewValidator(opts.Logger, opts.Cfg)
 	if err != nil {
@@ -121,8 +121,8 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 }
 
 // NewValidator - создаёт объект mrplayvalidator.ValidatorAdapter.
-func NewValidator(logger mrlog.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
-	mrlog.Info(logger, "Create and init data validator")
+func NewValidator(logger log.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
+	log.Info(logger, "Create and init data validator")
 
 	customTags := []mrview.Tag{
 		mrview.TagArticle(),

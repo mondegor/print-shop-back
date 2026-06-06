@@ -6,8 +6,8 @@ import (
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/usecase"
+	"print-shop-back/internal/filestation/section/pub/controller/httpv1"
+	"print-shop-back/internal/filestation/section/pub/usecase"
 )
 
 func initImageProxyController(

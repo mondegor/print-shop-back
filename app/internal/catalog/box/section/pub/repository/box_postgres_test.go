@@ -7,9 +7,9 @@ import (
 	"github.com/mondegor/go-storage/mrtests/infra"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/repository"
-	"github.com/mondegor/print-shop-back/tests"
+	"print-shop-back/internal/catalog/box/section/pub/entity"
+	"print-shop-back/internal/catalog/box/section/pub/repository"
+	"print-shop-back/tests"
 )
 
 type BoxPostgresTestSuite struct {

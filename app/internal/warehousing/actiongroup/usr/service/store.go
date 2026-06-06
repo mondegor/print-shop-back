@@ -6,12 +6,12 @@ import (
 	"github.com/google/uuid"
 	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/dto"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/entity"
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/activitystatus"
-	"github.com/mondegor/print-shop-back/internal/warehousing/enum/locationkind"
-	"github.com/mondegor/print-shop-back/internal/warehousing/module"
+	"print-shop-back/internal/warehousing/actiongroup/usr"
+	"print-shop-back/internal/warehousing/actiongroup/usr/dto"
+	"print-shop-back/internal/warehousing/actiongroup/usr/entity"
+	"print-shop-back/internal/warehousing/enum/activitystatus"
+	"print-shop-back/internal/warehousing/enum/locationkind"
+	"print-shop-back/internal/warehousing/module"
 )
 
 type (

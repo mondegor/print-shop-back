@@ -1,7 +1,7 @@
 package rect2d
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/enum"
+	"print-shop-back/pkg/mrcalc/enum"
 )
 
 type (

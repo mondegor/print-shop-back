@@ -3,20 +3,20 @@ package usr
 import (
 	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	repository2 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/repository"
-	usecase3 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/back/usecase"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/repository"
-	service2 "github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/service"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/transport/httpv1"
-	"github.com/mondegor/print-shop-back/internal/warehousing/actiongroup/usr/usecase"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/adapter/log"
+	repository2 "print-shop-back/internal/warehousing/actiongroup/back/repository"
+	usecase3 "print-shop-back/internal/warehousing/actiongroup/back/usecase"
+	"print-shop-back/internal/warehousing/actiongroup/usr/repository"
+	service2 "print-shop-back/internal/warehousing/actiongroup/usr/service"
+	"print-shop-back/internal/warehousing/actiongroup/usr/transport/httpv1"
+	"print-shop-back/internal/warehousing/actiongroup/usr/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
 func initStockController(
-	logger mrlog.Logger,
+	logger log.Logger,
 	eventEmitter mrevent.Emitter,
 	dbConnManager mrstorage.DBConnManager,
 	requestExtendParser *validate.ExtendParser,

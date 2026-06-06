@@ -7,11 +7,11 @@ import (
 	"github.com/mondegor/go-storage/mrpostgres/db"
 	"github.com/mondegor/go-storage/mrsql"
 	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/controls/elementtemplate/module"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (
@@ -19,7 +19,7 @@ type (
 	ElementTemplatePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, itemstatus.Enum]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
 		repoTotalRows   db.TotalRowsFetcher[int]
 	}
@@ -30,7 +30,7 @@ func NewElementTemplatePostgres(client mrstorage.DBConnManager, sqlBuilder mrsto
 	return &ElementTemplatePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, itemstatus.Enum](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNameElementTemplates,
 			"template_id",
@@ -201,8 +201,8 @@ func (re *ElementTemplatePostgres) FetchOne(ctx context.Context, rowID uint64) (
 }
 
 // FetchStatus - comment method.
-// result: itemstatus.Enum - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
-func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (itemstatus.Enum, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *ElementTemplatePostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 

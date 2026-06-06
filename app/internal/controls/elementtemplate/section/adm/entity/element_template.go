@@ -3,12 +3,12 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-sysmess/mrstatus/itemstatus"
 	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementdetailing"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum/elementtype"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/pkg/controls/enum/elementtype"
 )
 
 const (
@@ -26,7 +26,7 @@ type (
 		Type       elementtype.Enum      `json:"elementType"`
 		Detailing  elementdetailing.Enum `json:"detailing"`
 		Body       []byte                `json:"-" upd:"element_body"`
-		Status     itemstatus.Enum       `json:"status"`
+		Status     workflow.ItemStatus   `json:"status"`
 		CreatedAt  time.Time             `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  time.Time             `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -34,7 +34,7 @@ type (
 	// ElementTemplateHead - comment struct.
 	ElementTemplateHead struct {
 		api.ElementTemplateDTO
-		Status itemstatus.Enum
+		Status workflow.ItemStatus
 	}
 
 	// ElementTemplateParams - comment struct.
@@ -48,6 +48,6 @@ type (
 	ElementTemplateListFilter struct {
 		SearchText string
 		Detailing  []elementdetailing.Enum
-		Statuses   []itemstatus.Enum
+		Statuses   []workflow.ItemStatus
 	}
 )

@@ -6,12 +6,12 @@ import (
 	"github.com/mondegor/go-components/wire/mrsettings/cacheget"
 	"github.com/mondegor/go-components/wire/mrsettings/dbset"
 	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-sysmess/mrlog"
 	"github.com/mondegor/go-webcore/mrrun"
 	"github.com/mondegor/go-webcore/mrworker"
 	"github.com/mondegor/go-webcore/mrworker/job/task"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 const (
@@ -23,7 +23,7 @@ const (
 // InitSettingsGetterAPI - создаёт получателя произвольных настроек из БД
 // с использованием кэша и с периодическим его обновлением.
 func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Process) {
-	mrlog.Info(opts.Logger, "Create and init settings getter")
+	log.Info(opts.Logger, "Create and init settings getter")
 
 	getter, reloadScheduler := cacheget.InitServiceSettingsGetter(
 		opts.PostgresConnManager,
@@ -56,7 +56,7 @@ func InitSettingsGetterAPI(opts app.Options) (mrsettings.MustGetter, mrrun.Proce
 
 // InitSettingsSetterAPI - создаёт объект для сохранения произвольных настроек в БД.
 func InitSettingsSetterAPI(opts app.Options) mrsettings.Setter {
-	mrlog.Info(opts.Logger, "Create and init settings setter")
+	log.Info(opts.Logger, "Create and init settings setter")
 
 	return dbset.InitServiceSettingsSetter(
 		opts.PostgresConnManager,

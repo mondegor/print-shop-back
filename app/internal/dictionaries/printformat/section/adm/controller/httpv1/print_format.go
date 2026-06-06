@@ -7,13 +7,13 @@ import (
 	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
-	"github.com/mondegor/print-shop-back/pkg/transport/model"
-	"github.com/mondegor/print-shop-back/pkg/transport/validate"
+	"print-shop-back/internal/dictionaries/printformat/module"
+	"print-shop-back/internal/dictionaries/printformat/section/adm"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

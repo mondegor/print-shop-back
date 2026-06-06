@@ -1,7 +1,7 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum/publicstatus"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (

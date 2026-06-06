@@ -6,8 +6,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/measure"
-	"github.com/mondegor/print-shop-back/pkg/mrcalc/s2/rect2d"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func TestDivideIn(t *testing.T) {
