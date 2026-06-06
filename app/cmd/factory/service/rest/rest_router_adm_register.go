@@ -31,10 +31,10 @@ import (
 func RegisterRestRouterAdmHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
-	actionGroup *mraccess.ActionGroup,
+	actionGroup mraccess.ActionGroup,
 	userProvider mraccess.UserProvider,
 ) error {
-	router.HandlerFunc(http.MethodGet, actionGroup.BasePath.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
+	router.HandlerFunc(http.MethodGet, actionGroup.BasePath, mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,

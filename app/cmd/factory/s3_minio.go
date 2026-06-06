@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/go-storage/mrminio"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-sysmess/util/mime"
 
 	"print-shop-back/config"

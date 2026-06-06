@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
 	"print-shop-back/internal/adapter/workflow"
 	"print-shop-back/internal/dictionaries/printformat/module"

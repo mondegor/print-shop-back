@@ -1,9 +1,9 @@
 package factory
 
 import (
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-storage/mrstorage/mrprometheus"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore/mrinit"
+	"github.com/mondegor/go-webcore/mrstorage/mrprometheus"
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 

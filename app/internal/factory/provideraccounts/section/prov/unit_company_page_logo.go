@@ -1,9 +1,9 @@
 package prov
 
 import (
-	"github.com/mondegor/go-storage/mrlock"
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/adapter/log"

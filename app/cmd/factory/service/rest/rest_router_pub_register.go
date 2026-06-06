@@ -3,9 +3,9 @@ package rest
 import (
 	"net/http"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
@@ -33,10 +33,10 @@ import (
 func RegisterRestRouterPubHandlers(
 	router mrserver.HttpRouter,
 	opts app.Options,
-	actionGroup *mraccess.ActionGroup,
+	actionGroup mraccess.ActionGroup,
 	userProvider mraccess.UserProvider,
 ) error {
-	router.HandlerFunc(http.MethodGet, actionGroup.BasePath.BuildPath("/"), mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
+	router.HandlerFunc(http.MethodGet, actionGroup.BasePath, mrresp.HandlerGetStatusOkAsJSON(opts.Logger))
 
 	controllers, err := initing.CreateHttpControllers(
 		opts.Logger,

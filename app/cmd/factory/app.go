@@ -7,14 +7,14 @@ import (
 	"strings"
 
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
-	authiniting "github.com/mondegor/go-components/wire/mrauth/initing"
-	"github.com/mondegor/go-storage/mrlock/redislocker"
-	"github.com/mondegor/go-storage/mrpostgres/listennotify"
+	wireauth "github.com/mondegor/go-components/wire/mrauth/initing"
+	redislocker "github.com/mondegor/go-storage/mrredis/locker"
 	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrpostgres/listennotify"
+	"github.com/mondegor/go-sysmess/mrrun"
 	"github.com/mondegor/go-sysmess/util/xio"
-	"github.com/mondegor/go-sysmess/wire"
-	"github.com/mondegor/go-webcore/mrrun"
-	wirecore "github.com/mondegor/go-webcore/wire"
+	wireerrors "github.com/mondegor/go-sysmess/wire/errors"
+	wireaccess "github.com/mondegor/go-sysmess/wire/mraccess"
 
 	dictionariesapi "print-shop-back/cmd/factory/api/dictionaries"
 	"print-shop-back/cmd/factory/service"
@@ -118,8 +118,8 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	}
 
 	// !!! only after init Sentry and Prometheus
-	wire.InitErrors(
-		wire.ErrorConfig{
+	wireerrors.InitErrors(
+		wireerrors.ErrorConfig{
 			HasCaller:         opts.Cfg.StackTraceIsEnabled,
 			CallerDepth:       opts.Cfg.StackTraceDepth,
 			CallerShowFunc:    opts.Cfg.StackTraceShowFunc,
@@ -128,7 +128,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	)
 
 	opts.EventEmitter = InitEventEmitter(opts)
-	opts.ErrorHandler = wire.InitErrorHandler(opts.Logger)
+	opts.ErrorHandler = wireerrors.InitErrorHandler(opts.Logger)
 	opts.AppHealth = mrrun.NewAppHealth()
 
 	if opts.PostgresConnManager == nil {
@@ -173,7 +173,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	opts.Locker = redislocker.NewLockerAdapter(
+	opts.Locker = redislocker.NewAdapter(
 		redisCli,
 		opts.Logger,
 		opts.Tracer,
@@ -191,7 +191,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	if opts.PermsProvider, err = wirecore.InitPermsProvider(
+	if opts.PermsProvider, err = wireaccess.InitPermsProvider(
 		opts.Logger,
 		opts.Cfg.AccessControl.RolesDirPath,
 		opts.Cfg.AccessControl.Roles,
@@ -201,12 +201,12 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	rights, err := authiniting.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
+	rights, err := wireauth.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
 	if err != nil {
 		return app.Options{}, err
 	}
 
-	opts.RealmUserProviders = authiniting.InitUserProviders(
+	opts.RealmUserProviders = wireauth.InitUserProviders(
 		opts.Logger,
 		opts.PostgresConnManager,
 		rights,

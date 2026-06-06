@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/mondegor/go-components/mrauth/component/produce"
-	"github.com/mondegor/go-webcore/mrcore/initing"
+	"github.com/mondegor/go-sysmess/wire/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/middleware"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
@@ -22,7 +22,7 @@ func InitRestRouterWithHandlers(opts app.Options) (*mrchi.RouterAdapter, error) 
 		return nil, err
 	}
 
-	name2group := initing.InitActionGroups(opts.Logger, opts.Cfg.AccessControl.ActionGroups)
+	name2group := mraccess.InitActionGroups(opts.Logger, opts.Cfg.AccessControl.ActionGroups)
 
 	err = RegisterRestRouterAuthHandlers(router, opts, name2group["auth-api"], opts.RealmUserProviders["*"])
 	if err != nil {

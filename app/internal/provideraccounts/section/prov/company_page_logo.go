@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrentity"
+	"github.com/mondegor/go-sysmess/mrentity"
 	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 )
 

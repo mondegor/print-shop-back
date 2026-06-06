@@ -18,8 +18,8 @@ stack_trace_show_func: false
 stack_trace_upper_bounds:
   - github.com/mondegor/go-sysmess/errors/runtime
   - github.com/mondegor/go-sysmess/errors/helper
-  - github.com/mondegor/go-storage/mrpostgres
-  - github.com/mondegor/go-storage/mrpostgres/db
+  - github.com/mondegor/go-sysmess/mrpostgres
+  - github.com/mondegor/go-sysmess/mrpostgres/db
 
 unexpected_error_http_status: 500 # 418, 599
 

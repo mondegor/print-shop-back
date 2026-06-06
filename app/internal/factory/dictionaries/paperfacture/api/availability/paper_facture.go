@@ -1,7 +1,7 @@
 package availability
 
 import (
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
 	"print-shop-back/internal/adapter/trace"
 	"print-shop-back/internal/dictionaries/paperfacture/api/availability/repository"

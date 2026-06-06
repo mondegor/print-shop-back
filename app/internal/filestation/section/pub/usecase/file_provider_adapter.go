@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
 	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
+	"github.com/mondegor/go-sysmess/mrstorage"
 )
 
 type (

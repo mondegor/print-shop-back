@@ -8,8 +8,8 @@ import (
 	maliercfg "github.com/mondegor/go-components/wire/mrmailer/config"
 	notifiercfg "github.com/mondegor/go-components/wire/mrnotifier/config"
 	modelcfg "github.com/mondegor/go-sysmess/mrmodel/config"
+	workercfg "github.com/mondegor/go-sysmess/mrworker/config"
 	"github.com/mondegor/go-sysmess/util/mime"
-	workercfg "github.com/mondegor/go-webcore/mrworker/config"
 )
 
 type (

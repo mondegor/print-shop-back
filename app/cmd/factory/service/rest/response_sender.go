@@ -20,7 +20,7 @@ func CreateResponseSenders(logger log.Logger) (app.ResponseSenders, error) {
 	sender := mrresp.NewSender(mrjson.NewEncoder())
 
 	return app.ResponseSenders{
-		Sender:     mrresp.NewSender(mrjson.NewEncoder()),
+		Sender:     sender,
 		FileSender: mrresp.NewFileSender(sender, logger),
 	}, nil
 }

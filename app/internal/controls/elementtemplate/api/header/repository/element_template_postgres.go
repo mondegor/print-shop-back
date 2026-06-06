@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
 	"print-shop-back/internal/controls/elementtemplate/module"
 	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"

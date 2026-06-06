@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/mondegor/go-storage/mrfilestorage"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-sysmess/util/mime"
 
 	"print-shop-back/config"

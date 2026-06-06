@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
 	"print-shop-back/config"
 	"print-shop-back/internal/adapter/log"

@@ -7,9 +7,9 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrlock"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
 	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
 	"print-shop-back/internal/controls/submitform/module"

@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrentity"
-	"github.com/mondegor/go-storage/mrlock"
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrentity"
 	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
 	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/provideraccounts/module"

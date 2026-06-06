@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mondegor/go-webcore/mrrun"
+	"github.com/mondegor/go-sysmess/mrrun"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
 	"print-shop-back/internal/adapter/log"

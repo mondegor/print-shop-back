@@ -6,10 +6,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-sysmess/util/xio"
-	"github.com/mondegor/go-sysmess/wire"
+	"github.com/mondegor/go-sysmess/wire/mrlog"
+	"github.com/mondegor/go-sysmess/wire/mrtrace"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
@@ -51,7 +52,7 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 
 	logger := log.NopLogger()
 	tracer := trace.NopTracer()
-	traceManager, err := wire.InitTraceContextManager(wire.DefaultProcessIDs(), logger)
+	traceManager, err := mrtrace.InitTraceContextManager(mrlog.DefaultProcessIDs(), logger)
 	require.NoError(t, err)
 
 	pgt := infra.NewPostgresTester(t, tests.DBSchemas(), tests.ExcludedDBTables())
