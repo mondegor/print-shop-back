@@ -8,7 +8,7 @@ import (
 	maliercfg "github.com/mondegor/go-components/wire/mrmailer/config"
 	notifiercfg "github.com/mondegor/go-components/wire/mrnotifier/config"
 	modelcfg "github.com/mondegor/go-sysmess/mrmodel/config"
-	workercfg "github.com/mondegor/go-sysmess/mrworker/config"
+	processcfg "github.com/mondegor/go-sysmess/mrprocess/config"
 	"github.com/mondegor/go-sysmess/util/mime"
 )
 
@@ -158,9 +158,9 @@ type (
 		// TaskSchedule - настройки задач, запускаемых по расписанию
 		TaskScheduleSettings struct {
 			// Caption        string        `yaml:"caption"`
-			ReloadSettings              workercfg.SchedulerTask `yaml:"reload_settings"`
-			NotificationCheckConnPeriod time.Duration           `yaml:"notification_check_conn_period"`
-			DefaultPeriodRatio          float64                 `yaml:"default_period_ratio"`
+			ReloadSettings              processcfg.SchedulerTask `yaml:"reload_settings"`
+			NotificationCheckConnPeriod time.Duration            `yaml:"notification_check_conn_period"`
+			DefaultPeriodRatio          float64                  `yaml:"default_period_ratio"`
 		} `yaml:"task_schedule_settings"`
 
 		// TaskSchedule Auth - настройки задач модуля Auth, запускаемых по расписанию

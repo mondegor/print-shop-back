@@ -65,16 +65,18 @@ Controllers depend on narrow inline interfaces (e.g. `createContainerUseCase`) r
 Routes are registered per realm in `app/cmd/factory/service/rest/rest_router_{usr,adm,prov,pub,auth}_register.go`. Each registration builds the section's HTTP modules, wraps them in a check-access middleware (`actionGroup`, `userProvider`, `PermsProvider`), and mounts them. Access control is config-driven: roles in `app/roles/*.yaml`, with realms, permissions and privileges configured under `config.AccessControl`.
 
 ### Cross-cutting infrastructure
-Built heavily on the **mondegor** library family: `go-webcore` (HTTP server, routing, access, runner), `go-storage` (Postgres/Redis/locks), `go-sysmess` (errors, events, logging), `go-components` (auth, mailer, notifier, settings). When adding features, prefer these libraries' abstractions over rolling your own.
+Built heavily on the **mondegor** library family: `go-webcore` (HTTP server, routing, access, runner), `go-storage` (Postgres/Redis/locks, S3/MinIO via `mrminio`), `go-sysmess` (errors, logging, async processes via `mrprocess`), `go-components` (auth, mailer, notifier, settings). When adding features, prefer these libraries' abstractions over rolling your own. `app/go.mod` carries commented-out `replace` directives pointing these libs at sibling checkouts (`../../go-*`) for local development.
+
+Thin local wrappers over these libs live in `app/internal/adapter/`: `log` (logger), `trace` (Sentry), `workflow`. Use them instead of importing the underlying clients directly.
 
 - **Config**: `ilyakaznacheev/cleanenv` over layered `app/config/*.yaml` + `.env`; env vars (mostly `APPX_*`) override YAML. `config_tests.yaml` is used by integration tests.
 - **Migrations**: `golang-migrate` SQL files in `app/migrations/` (timestamped `*.up.sql`/`*.down.sql`), auto-applied on startup when `db_migrations_dir` is set. DB is split into Postgres schemas per domain (e.g. `warehousing`, `printshop_catalog`).
-- **Events / async**: `mrevent.Emitter` for domain events; Postgres `LISTEN/NOTIFY` drives task schedulers for mailer, notifier and settings reload.
+- **Events / async**: `mrevent.Emitter` for domain events; Postgres `LISTEN/NOTIFY` drives task schedulers for mailer, notifier and settings reload. The async process toolkit lives in `go-sysmess/mrprocess` (formerly `mrworker`): `schedule` (task schedulers), `collect`/`consume` (message collectors/processors), `job/task`, plus startup/signal processes and period strategies (`NewDoubleDelayedStartStrategy`, `NewQuadQuickStartStrategy`). These are wired in `app/cmd/factory/service/*_service.go`.
 - **Errors**: `go-sysmess/errors` — sentinel errors prefixed `Err`, wrapped through an `errorWrapper` (`errors.NewServiceOperationFailedWrapper()`) to distinguish system from user errors.
 - **Localization**: `golang.org/x/text` message catalogs under `internal/localization/dict/`, generated via `go generate` (sources in `localization/`).
 
 ### API contracts & docs
-OpenAPI contracts live in `contracts/published/<realm>/` (admin, auth, provider, public, user, monitoring) and are bundled via the `bundle.sh`/`build.sh` scripts there. Project documentation, PlantUML diagrams and sequence diagrams are in `docs/`.
+OpenAPI contracts live in `contracts/published/<realm>/` (admin, auth, provider, public, user, monitoring), with a `template/` skeleton and per-realm `_shared/` fragments. Each realm dir carries `lint.sh`, `bundle.sh` and `build.sh` scripts that run `redocly/cli` in Docker to lint, bundle (`bundled-openapi.yaml`) and render docs from its `openapi.yaml`. Project documentation, PlantUML diagrams and sequence diagrams are in `docs/`.
 
 ## Conventions
 - Code comments and documentation are written in **English** or **Russian**; follow the surrounding style.

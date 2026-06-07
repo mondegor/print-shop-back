@@ -7,11 +7,11 @@ import (
 	"github.com/mondegor/go-components/wire/mrnotifier/processor"
 	"github.com/mondegor/go-components/wire/mrnotifier/producer"
 	"github.com/mondegor/go-components/wire/mrnotifier/scheduler"
+	"github.com/mondegor/go-sysmess/mrprocess"
+	"github.com/mondegor/go-sysmess/mrprocess/consume"
+	"github.com/mondegor/go-sysmess/mrprocess/job/task"
+	"github.com/mondegor/go-sysmess/mrprocess/schedule"
 	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
-	"github.com/mondegor/go-sysmess/mrworker"
-	"github.com/mondegor/go-sysmess/mrworker/job/task"
-	"github.com/mondegor/go-sysmess/mrworker/process/consume"
-	"github.com/mondegor/go-sysmess/mrworker/process/schedule"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/app"
@@ -69,7 +69,7 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 			consume.WithCaptionPrefix[entity.Note]("Notifier/"),
 			consume.WithReadyTimeout[entity.Note](opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ReadyTimeout),
 			consume.WithReadPeriodStrategy[entity.Note](
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleNotifier.NoticeProcessor.ReadPeriod,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
@@ -115,7 +115,7 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleNotifier.ChangeFromToRetry.Period,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
@@ -126,7 +126,7 @@ func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			task.WithCaptionPrefix("Notifier/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
-				mrworker.NewQuadQuickStartStrategy(
+				mrprocess.NewQuadQuickStartStrategy(
 					opts.Cfg.TaskScheduleNotifier.CleanQueue.Period,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),

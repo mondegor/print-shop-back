@@ -11,11 +11,11 @@ import (
 	"github.com/mondegor/go-components/wire/mrmailer/processor"
 	"github.com/mondegor/go-components/wire/mrmailer/producer"
 	"github.com/mondegor/go-components/wire/mrmailer/scheduler"
+	"github.com/mondegor/go-sysmess/mrprocess"
+	"github.com/mondegor/go-sysmess/mrprocess/consume"
+	"github.com/mondegor/go-sysmess/mrprocess/job/task"
+	"github.com/mondegor/go-sysmess/mrprocess/schedule"
 	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
-	"github.com/mondegor/go-sysmess/mrworker"
-	"github.com/mondegor/go-sysmess/mrworker/job/task"
-	"github.com/mondegor/go-sysmess/mrworker/process/consume"
-	"github.com/mondegor/go-sysmess/mrworker/process/schedule"
 	"github.com/mondegor/go-webcore/mrclient/mail"
 	"github.com/mondegor/go-webcore/mrclient/telegram"
 
@@ -106,7 +106,7 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 			consume.WithCaptionPrefix[entity.Message]("Mailer/"),
 			consume.WithReadyTimeout[entity.Message](opts.Cfg.TaskScheduleMailer.MessageProcessor.ReadyTimeout),
 			consume.WithReadPeriodStrategy[entity.Message](
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleMailer.MessageProcessor.ReadPeriod,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
@@ -157,7 +157,7 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleMailer.ChangeFromToRetry.Period,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
@@ -168,7 +168,7 @@ func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			task.WithCaptionPrefix("Mailer/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
-				mrworker.NewQuadQuickStartStrategy(
+				mrprocess.NewQuadQuickStartStrategy(
 					opts.Cfg.TaskScheduleMailer.CleanQueue.Period,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),

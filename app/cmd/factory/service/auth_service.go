@@ -4,11 +4,11 @@ import (
 	"github.com/mondegor/go-components/mrauth/dto"
 	"github.com/mondegor/go-components/wire/mrauth/scheduler"
 	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
+	"github.com/mondegor/go-sysmess/mrprocess"
+	"github.com/mondegor/go-sysmess/mrprocess/collect"
+	"github.com/mondegor/go-sysmess/mrprocess/job/task"
+	"github.com/mondegor/go-sysmess/mrprocess/schedule"
 	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
-	"github.com/mondegor/go-sysmess/mrworker"
-	"github.com/mondegor/go-sysmess/mrworker/job/task"
-	"github.com/mondegor/go-sysmess/mrworker/process/collect"
-	"github.com/mondegor/go-sysmess/mrworker/process/schedule"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/app"
@@ -46,7 +46,7 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
 			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.ReadyTimeout),
 			collect.WithFlushPeriodStrategy[dto.UserActivityLogMessage](
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.FlushPeriod,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),
@@ -84,7 +84,7 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 			task.WithCaptionPrefix("Auth/"),
 			task.WithStartup(false),
 			task.WithPeriodStrategy(
-				mrworker.NewDoubleDelayedStartStrategy(
+				mrprocess.NewDoubleDelayedStartStrategy(
 					opts.Cfg.TaskScheduleAuth.CleanRecords.Period,
 					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
 				),

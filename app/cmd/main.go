@@ -7,10 +7,10 @@ import (
 	"io"
 	"os"
 
+	"github.com/mondegor/go-sysmess/mrprocess"
+	"github.com/mondegor/go-sysmess/mrprocess/onstartup"
+	"github.com/mondegor/go-sysmess/mrprocess/signal"
 	"github.com/mondegor/go-sysmess/mrrun"
-	"github.com/mondegor/go-sysmess/mrworker"
-	"github.com/mondegor/go-sysmess/mrworker/process/onstartup"
-	"github.com/mondegor/go-sysmess/mrworker/process/signal"
 	"github.com/oklog/run"
 
 	"print-shop-back/cmd/factory"
@@ -69,7 +69,7 @@ func runApp(args []string, stdout io.Writer) error {
 	// the last process in the startup app chain
 	{
 		onStartupProcess := onstartup.NewProcess(
-			mrworker.JobFunc(
+			mrprocess.JobFunc(
 				func(_ context.Context) error {
 					opts.AppHealth.StartupCompleted()
 					log.Info(opts.Logger, "The application started, waiting for requests. To exit press CTRL+C")
