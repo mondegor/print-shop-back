@@ -195,13 +195,11 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		opts.Logger,
 		opts.Cfg.AccessControl.RolesDirPath,
 		opts.Cfg.AccessControl.Roles,
-		opts.Cfg.AccessControl.AllowedPrivileges,
-		opts.Cfg.AccessControl.AllowedPermissions,
 	); err != nil {
 		return app.Options{}, err
 	}
 
-	rights, err := wireauth.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
+	userGroupRights, err := wireauth.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
 	if err != nil {
 		return app.Options{}, err
 	}
@@ -209,7 +207,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 	opts.RealmUserProviders = wireauth.InitUserProviders(
 		opts.Logger,
 		opts.PostgresConnManager,
-		rights,
+		userGroupRights,
 		opts.Cfg.AccessControl.Realms,
 		authcfg.TestUser{
 			ID:       opts.Cfg.TestUserID,

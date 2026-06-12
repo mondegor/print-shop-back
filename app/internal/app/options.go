@@ -12,6 +12,7 @@ import (
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-sysmess/mraccess"
+	"github.com/mondegor/go-sysmess/mraccess/provider/filestorage"
 	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-sysmess/mrlocale"
 	"github.com/mondegor/go-sysmess/mrlock"
@@ -61,7 +62,7 @@ type (
 		LocalePool                  *mrlocale.Pool
 		RequestParsers              RequestParsers
 		ResponseSenders             ResponseSenders
-		PermsProvider               mraccess.RightsSource
+		PermsProvider               *filestorage.PermsProvider
 		RealmUserProviders          map[string]mraccess.UserProvider
 		ImageURLBuilder             mrpath.Builder
 

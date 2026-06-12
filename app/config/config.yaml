@@ -215,27 +215,6 @@ access_control:
     - providers/pro
     - users
 
-  allowed_privileges:
-    - api/admin
-    - api/providers
-    - api/users
-
-  allowed_permissions:
-    - modAuth
-    - modCatalogBox
-    - modCatalogPaper
-    - modCatalogLaminate
-    - modControlsElementTemplate
-    - modControlsSubmitForm
-    - modControlsSubmitFormToPublish
-    - modDictionariesMaterialType
-    - modDictionariesPaperColor
-    - modDictionariesPaperFacture
-    - modDictionariesPrintFormat
-    - modFileStation
-    - modProviderAccounts
-    - modWarehousing
-
 #  override_auth_token:
 #    access_type: jwt
 #    access_expiry: 720h # 30 days

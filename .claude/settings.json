@@ -5,7 +5,13 @@
       "Glob",
       "Grep",
       "Bash(git *)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(cp *)",
+      "Bash(make *)",
+      "Bash(go *)",
+      "Bash(gofumpt *)",
+      "Bash(golangci-lint *)",
+      "Bash(timeout *)"
     ],
     "deny": [
       "Bash(rm -rf *)",

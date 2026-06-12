@@ -56,7 +56,7 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		return Config{}, err
 	}
 
-	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups, cfg.AccessControl.AllowedPrivileges); err != nil {
+	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups); err != nil {
 		return Config{}, err
 	}
 
