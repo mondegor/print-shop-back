@@ -4,6 +4,8 @@ get:
   operationId: getUserInfo
   tags:
     - Auth
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

@@ -37,8 +37,8 @@ func NewSheetImposition(parser request.ParserValidate, sender mrserver.ResponseS
 // Handlers - возвращает обработчики контроллера SheetImposition.
 func (ht *SheetImposition) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetImpositionCalcURL, Permission: mraccess.PermissionAnyUser, Func: ht.Calc},
-		{Method: http.MethodPost, URL: sheetImpositionCalcVariantsURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcVariants},
+		{Method: http.MethodPost, URL: sheetImpositionCalcURL, Permission: mraccess.PermissionEveryone, Func: ht.Calc},
+		{Method: http.MethodPost, URL: sheetImpositionCalcVariantsURL, Permission: mraccess.PermissionEveryone, Func: ht.CalcVariants},
 	}
 }
 

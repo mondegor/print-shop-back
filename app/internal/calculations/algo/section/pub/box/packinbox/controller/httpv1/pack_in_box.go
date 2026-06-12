@@ -36,7 +36,7 @@ func NewBoxPackInBox(parser request.ParserValidate, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера BoxPackInBox.
 func (ht *BoxPackInBox) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: boxPackInBoxURL, Permission: mraccess.PermissionAnyUser, Func: ht.Calc},
+		{Method: http.MethodPost, URL: boxPackInBoxURL, Permission: mraccess.PermissionEveryone, Func: ht.Calc},
 	}
 }
 

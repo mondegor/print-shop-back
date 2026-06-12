@@ -5,6 +5,8 @@ patch:
   tags:
     - Auth.Operation
 
+  security: []
+
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"

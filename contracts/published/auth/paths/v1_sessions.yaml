@@ -4,6 +4,8 @@ get:
   operationId: getUserSessions
   tags:
     - Auth.Sessions
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

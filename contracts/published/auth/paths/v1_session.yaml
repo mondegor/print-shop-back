@@ -11,6 +11,8 @@ post:
   operationId: openUserSession
   tags:
     - Auth
+  x-auth-scopes:
+    - guests-only
 
   security: []
 
@@ -100,6 +102,8 @@ delete:
   operationId: closeUserSession
   tags:
     - Auth
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

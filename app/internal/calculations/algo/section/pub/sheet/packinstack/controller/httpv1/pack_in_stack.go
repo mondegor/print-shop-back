@@ -36,7 +36,7 @@ func NewSheetPackInStack(parser request.ParserValidate, sender mrserver.Response
 // Handlers - возвращает обработчики контроллера PackInStack.
 func (ht *PackInStack) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetPackInStackURL, Permission: mraccess.PermissionAnyUser, Func: ht.Calc},
+		{Method: http.MethodPost, URL: sheetPackInStackURL, Permission: mraccess.PermissionEveryone, Func: ht.Calc},
 	}
 }
 

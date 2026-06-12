@@ -16,6 +16,8 @@ post:
   operationId: changeUserPhone
   tags:
     - Auth.Security
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

@@ -36,7 +36,7 @@ func NewSheetCutting(parser request.ParserValidate, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера SheetCutting.
 func (ht *SheetCutting) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetCuttingQuantityURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcQuantity},
+		{Method: http.MethodPost, URL: sheetCuttingQuantityURL, Permission: mraccess.PermissionEveryone, Func: ht.CalcQuantity},
 	}
 }
 

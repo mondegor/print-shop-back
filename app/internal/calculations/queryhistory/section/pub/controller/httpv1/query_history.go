@@ -41,8 +41,8 @@ func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера QueryHistory.
 func (ht *QueryHistory) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mraccess.PermissionAnyUser, Func: ht.Get},
-		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mraccess.PermissionAnyUser, Func: ht.Create},
+		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mraccess.PermissionEveryone, Func: ht.Get},
+		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mraccess.PermissionEveryone, Func: ht.Create},
 	}
 }
 

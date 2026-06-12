@@ -16,6 +16,8 @@ post:
   operationId: changeUser2faTotpGenerator
   tags:
     - Auth.Security
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
@@ -39,6 +41,8 @@ patch:
   operationId: applyUserOperationTotpGenerator
   tags:
     - Auth.Security
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

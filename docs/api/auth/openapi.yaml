@@ -69,6 +69,8 @@ paths:
       operationId: createUser
       tags:
         - Auth
+      x-auth-scopes:
+        - guests-only
       security: []
       requestBody:
         required: true
@@ -107,6 +109,8 @@ paths:
       operationId: authorizeUser
       tags:
         - Auth
+      x-auth-scopes:
+        - guests-only
       security: []
       requestBody:
         required: true
@@ -137,6 +141,8 @@ paths:
       operationId: openUserSession
       tags:
         - Auth
+      x-auth-scopes:
+        - guests-only
       security: []
       parameters:
         - $ref: '#/components/parameters/Auth.Request.Header.Web.UseCookie'
@@ -197,6 +203,8 @@ paths:
       operationId: closeUserSession
       tags:
         - Auth
+      x-auth-scopes:
+        - any-users
       responses:
         '204':
           description: Текущая сессия пользователя была закрыта
@@ -211,6 +219,8 @@ paths:
       operationId: getUserInfo
       tags:
         - Auth
+      x-auth-scopes:
+        - any-users
       responses:
         '200':
           description: Сформирован ответ с информацией о текущем пользователе
@@ -275,6 +285,7 @@ paths:
       operationId: generatePassword
       tags:
         - Auth.Check
+      security: []
       responses:
         '200':
           description: Сгенерирован новый пароль
@@ -282,8 +293,6 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Auth.Check.Response.GeneratedPassword'
-        '401':
-          $ref: '#/components/responses/Api.ResponseJson.Error401'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/operation/confirm:
@@ -293,6 +302,7 @@ paths:
       operationId: confirmUserOperation
       tags:
         - Auth.Operation
+      security: []
       requestBody:
         required: true
         content:
@@ -317,6 +327,7 @@ paths:
       operationId: resendUserOperationConfirmCode
       tags:
         - Auth.Operation
+      security: []
       requestBody:
         required: true
         content:
@@ -339,6 +350,8 @@ paths:
       operationId: revokeUserOperation
       tags:
         - Auth.Operation
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -350,6 +363,8 @@ paths:
           description: Указанная операция была отозвана
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
         '403':
           $ref: '#/components/responses/Api.ResponseJson.Error403'
         '500':
@@ -373,6 +388,8 @@ paths:
       operationId: changeUserEmail
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -407,6 +424,8 @@ paths:
       operationId: changeUserPhone
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -441,6 +460,8 @@ paths:
       operationId: changeUser2faPassword
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -475,6 +496,8 @@ paths:
       operationId: changeUser2faTotpGenerator
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       responses:
         '200':
           $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
@@ -490,6 +513,8 @@ paths:
       operationId: applyUserOperationTotpGenerator
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -530,6 +555,8 @@ paths:
       operationId: disableUser2fa
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       responses:
         '200':
           $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
@@ -546,6 +573,8 @@ paths:
       operationId: applyUserOperation
       tags:
         - Auth.Security
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -570,6 +599,8 @@ paths:
       operationId: getUserSessions
       tags:
         - Auth.Sessions
+      x-auth-scopes:
+        - any-users
       responses:
         '200':
           description: Сформирован ответ со списком открытых сессий пользователя
@@ -590,6 +621,8 @@ paths:
       operationId: closeUserSessions
       tags:
         - Auth.Sessions
+      x-auth-scopes:
+        - any-users
       requestBody:
         required: true
         content:
@@ -1095,22 +1128,6 @@ components:
           minLength: 64
           maxLength: 256
           example: otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7
-    Auth.Sessions.Request.Model.CloseSessions:
-      description: DTO закрытия указанных сессий текущего пользователя
-      type: object
-      required:
-        - hashes
-      properties:
-        hashes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionHash'
-    Auth.Sessions.Request.Model.SessionHash:
-      description: Идентификатор сессии текущего пользователя
-      type: string
-      minLength: 16
-      maxLength: 16
-      example: "1f3bc817fb1d50cb"
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
@@ -1145,6 +1162,22 @@ components:
           description: Признак, что сессия является текущей
           type: boolean
           example: false
+    Auth.Sessions.Request.Model.SessionHash:
+      description: Идентификатор сессии текущего пользователя
+      type: string
+      minLength: 16
+      maxLength: 16
+      example: 1f3bc817fb1d50cb
+    Auth.Sessions.Request.Model.CloseSessions:
+      description: DTO закрытия указанных сессий текущего пользователя
+      type: object
+      required:
+        - hashes
+      properties:
+        hashes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionHash'
   responses:
     Auth.ResponseJson.WaitingConfirmOperation:
       description: |

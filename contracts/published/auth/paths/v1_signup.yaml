@@ -12,6 +12,8 @@ post:
   operationId: createUser
   tags:
     - Auth
+  x-auth-scopes:
+    - guests-only
 
   security: []
 

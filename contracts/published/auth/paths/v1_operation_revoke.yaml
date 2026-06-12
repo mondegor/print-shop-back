@@ -4,6 +4,8 @@ patch:
   operationId: revokeUserOperation
   tags:
     - Auth.Operation
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
@@ -24,6 +26,8 @@ patch:
       # Токен операции должен быть указан
       # Токен операции некорректен или недействителен
       $ref: "../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
     "403":
       $ref: "../_shared/components/responses/Api.ResponseJson.Error403.yaml"
     "500":

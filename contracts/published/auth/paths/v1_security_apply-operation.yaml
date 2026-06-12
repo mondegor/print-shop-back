@@ -4,6 +4,8 @@ patch:
   operationId: applyUserOperation
   tags:
     - Auth.Security
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"

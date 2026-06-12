@@ -1,27 +1,28 @@
-/v1/sessions/close:
-  post:
-    summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
-    description: Метод предназначен для закрытия указанных открытых сессий пользователя
-    operationId: closeUserSessions
-    tags:
-      - Auth.Sessions
+post:
+  summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
+  description: Метод предназначен для закрытия указанных открытых сессий пользователя
+  operationId: closeUserSessions
+  tags:
+    - Auth.Sessions
+  x-auth-scopes:
+    - any-users
 
 #  parameters:
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
 #    - $ref: "../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
 #    - $ref: "../_shared/components/parameters/Api.Request.Query.Language.yaml"
 
-    requestBody:
-      required: true
-      content:
-        application/json;charset=UTF-8:
-          schema:
-            $ref: "../components/models/Auth.Sessions.Request.Model.CloseSessions.yaml"
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Auth.Sessions.Request.Model.CloseSessions.yaml"
 
-    responses:
-      "204":
-        description: Указанные сессии пользователя были закрыты
-      "401":
-        $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
-      "500":
-        $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+  responses:
+    "204":
+      description: Указанные сессии пользователя были закрыты
+    "401":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

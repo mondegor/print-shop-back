@@ -19,6 +19,8 @@ post:
   operationId: authorizeUser
   tags:
     - Auth
+  x-auth-scopes:
+    - guests-only
 
   security: []
 

@@ -37,8 +37,8 @@ func NewSheetInsideOutside(parser request.ParserValidate, sender mrserver.Respon
 // Handlers - возвращает обработчики контроллера SheetInsideOutside.
 func (ht *SheetInsideOutside) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetQuantityInsideOnOutsideURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcQuantity},
-		{Method: http.MethodPost, URL: sheetMaxInsideOnOutsideURL, Permission: mraccess.PermissionAnyUser, Func: ht.CalcMax},
+		{Method: http.MethodPost, URL: sheetQuantityInsideOnOutsideURL, Permission: mraccess.PermissionEveryone, Func: ht.CalcQuantity},
+		{Method: http.MethodPost, URL: sheetMaxInsideOnOutsideURL, Permission: mraccess.PermissionEveryone, Func: ht.CalcMax},
 	}
 }
 
