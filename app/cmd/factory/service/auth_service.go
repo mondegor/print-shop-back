@@ -16,7 +16,7 @@ import (
 
 const (
 	serviceAuthTokensTableName  = "printshop_auth.auth_tokens" //nolint:gosec
-	serviceAuthTokensPrimaryKey = "refresh_token"
+	serviceAuthTokensPrimaryKey = "auth_token"
 
 	serviceOperationTableName    = "printshop_auth.secure_operations"
 	serviceOperationPrimaryKey   = "operation_token"

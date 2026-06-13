@@ -82,19 +82,30 @@ CREATE INDEX ix_users_activity_log_visited_at ON printshop_auth.users_activity_l
 
 -- --------------------------------------------------------------------------------------------------
 
-CREATE TABLE printshop_auth.auth_tokens (
-    refresh_token character varying(128) NOT NULL CONSTRAINT pk_auth_tokens PRIMARY KEY,
-    access_token character varying(128) NULL,
-    access_expires_at timestamp with time zone NOT NULL,
+CREATE TABLE printshop_auth.sessions (
     user_id uuid NOT NULL,
+    session_id int8 NOT NULL,
+    user_agent character varying(512) NULL,
+    last_ip int8 NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+    updated_at timestamp with time zone NOT NULL,
+    CONSTRAINT pk_sessions PRIMARY KEY (user_id, session_id)
+);
+
+-- --------------------------------------------------------------------------------------------------
+
+CREATE TABLE printshop_auth.auth_tokens (
+    auth_token character varying(128) NOT NULL CONSTRAINT pk_auth_tokens PRIMARY KEY,
+    token_type int2 NOT NULL, -- 1=ACCESS, 2=REFRESH, 3=API
+    user_id uuid NOT NULL,
+    session_id int8 NOT NULL,
     token_scopes jsonb NOT NULL,
-    token_status int2 NOT NULL, -- 1=OPENED, 2=CLOSED, 3=REVOKED, 4=UNEXPECTED_REVOKED
+    token_status int2 NOT NULL, -- 1=ENABLED, 2=REVOKED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     expires_at timestamp with time zone NOT NULL
 );
 
-CREATE UNIQUE INDEX iu_auth_tokens_access_token ON printshop_auth.auth_tokens (access_token);
-CREATE INDEX ix_auth_tokens_user_id ON printshop_auth.auth_tokens (user_id);
+CREATE INDEX ix_auth_tokens_user_id_session_id ON printshop_auth.auth_tokens (user_id, session_id);
 CREATE INDEX ix_auth_tokens_expires_at ON printshop_auth.auth_tokens (expires_at);
 
 -- --------------------------------------------------------------------------------------------------
@@ -140,19 +151,5 @@ CREATE TABLE printshop_auth.secure_operations_log (
 );
 
 CREATE INDEX ix_secure_operations_log_created_at ON printshop_auth.secure_operations_log (created_at);
-
--- --------------------------------------------------------------------------------------------------
-
-CREATE TABLE printshop_auth.api_tokens (
-    access_token character varying(128) NOT NULL CONSTRAINT pk_api_tokens PRIMARY KEY,
-    token_name character varying(32) NOT NULL,
-    user_id uuid NOT NULL,
-    token_scopes jsonb NOT NULL,
-    created_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    expires_at timestamp with time zone NOT NULL
-);
-
-CREATE INDEX ix_api_tokens_user_id ON printshop_auth.api_tokens (user_id);
-CREATE INDEX ix_api_tokens_expires_at ON printshop_auth.api_tokens (expires_at);
 
 -- --------------------------------------------------------------------------------------------------

@@ -1131,17 +1131,17 @@ components:
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
-        - session_hash
+        - session_id
         - app_name
         - device_name
         - last_ip
         - location
         - is_current
       properties:
-        session_hash:
+        session_id:
           description: Идентификатор открытой сессии
           type: string
-          example: 1f3bc817fb1d50cb
+          example: 1f3bc817
         app_name:
           description: Приложение, в котором открыта сессия
           type: string
@@ -1162,12 +1162,12 @@ components:
           description: Признак, что сессия является текущей
           type: boolean
           example: false
-    Auth.Sessions.Request.Model.SessionHash:
+    Auth.Sessions.Request.Model.SessionID:
       description: Идентификатор сессии текущего пользователя
       type: string
-      minLength: 16
-      maxLength: 16
-      example: 1f3bc817fb1d50cb
+      minLength: 8
+      maxLength: 8
+      example: 1f3bc817
     Auth.Sessions.Request.Model.CloseSessions:
       description: DTO закрытия указанных сессий текущего пользователя
       type: object
@@ -1177,7 +1177,7 @@ components:
         hashes:
           type: array
           items:
-            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionHash'
+            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionID'
   responses:
     Auth.ResponseJson.WaitingConfirmOperation:
       description: |

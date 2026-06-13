@@ -6,4 +6,4 @@ properties:
   hashes:
     type: array
     items:
-      $ref: "./Auth.Sessions.Request.Model.SessionHash.yaml"
+      $ref: "./Auth.Sessions.Request.Model.SessionID.yaml"

@@ -1,16 +1,16 @@
 type: object
 required:
-  - session_hash
+  - session_id
   - app_name
   - device_name
   - last_ip
   - location
   - is_current
 properties:
-  session_hash:
+  session_id:
     description: Идентификатор открытой сессии
     type: string
-    example: "1f3bc817fb1d50cb"
+    example: "1f3bc817"
   app_name:
     description: Приложение, в котором открыта сессия
     type: string
