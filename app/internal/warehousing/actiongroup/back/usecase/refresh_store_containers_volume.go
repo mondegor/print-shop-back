@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/util/slices/suint64"
+	"github.com/mondegor/go-sysmess/util/slices/ordered"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/warehousing/actiongroup/back/dto"
@@ -45,7 +45,7 @@ func NewRefreshStoreContainersVolume(
 
 // Execute - comment method.
 func (uc *RefreshStoreContainersVolume) Execute(ctx context.Context, storeIDs []uint64) error {
-	storeIDs = suint64.FilterFunc(
+	storeIDs = ordered.FilterFunc(
 		storeIDs,
 		func(el uint64) bool {
 			return locationkind.Is(el, locationkind.Store)
@@ -57,7 +57,7 @@ func (uc *RefreshStoreContainersVolume) Execute(ctx context.Context, storeIDs []
 		return nil
 	}
 
-	storeIDs = suint64.SortedUnique(storeIDs)
+	storeIDs = ordered.SortedUnique(storeIDs)
 
 	stocks, hasNext, err := uc.storageStock.FetchByLocationIDs(
 		ctx,
@@ -93,7 +93,7 @@ func (uc *RefreshStoreContainersVolume) Execute(ctx context.Context, storeIDs []
 
 	// помечаются все склады со стоками обработанными
 	for i := range stocks {
-		if index := suint64.BinaryIndex(storeIDs, stocks[i].LocationID); index >= 0 {
+		if index := ordered.BinaryIndex(storeIDs, stocks[i].LocationID); index >= 0 {
 			storeIDs[index] = 0
 		}
 	}

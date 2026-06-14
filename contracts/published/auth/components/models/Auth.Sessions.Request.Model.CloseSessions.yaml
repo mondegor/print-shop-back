@@ -1,9 +1,9 @@
 description: DTO закрытия указанных сессий текущего пользователя
 type: object
 required:
-  - hashes
+  - session_ids
 properties:
-  hashes:
+  session_ids:
     type: array
     items:
       $ref: "./Auth.Sessions.Request.Model.SessionID.yaml"

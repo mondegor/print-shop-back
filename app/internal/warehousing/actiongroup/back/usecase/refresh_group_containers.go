@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/util/slices/suint64"
+	"github.com/mondegor/go-sysmess/util/slices/ordered"
 	"github.com/mondegor/go-sysmess/util/xstrings"
 
 	"print-shop-back/internal/adapter/log"
@@ -49,14 +49,14 @@ func NewRefreshGroupContainers(
 
 // Execute - comment method.
 func (uc *RefreshGroupContainers) Execute(ctx context.Context, groupIDs []uint64) error {
-	groupIDs = suint64.FilterFunc(
+	groupIDs = ordered.FilterFunc(
 		groupIDs,
 		func(el uint64) bool {
 			return locationkind.Is(el, locationkind.Group)
 		},
 	)
 
-	for _, groupID := range suint64.SortedUnique(groupIDs) {
+	for _, groupID := range ordered.SortedUnique(groupIDs) {
 		if err := uc.executeGroup(ctx, groupID); err != nil {
 			return uc.errorWrapper.Wrap(err)
 		}

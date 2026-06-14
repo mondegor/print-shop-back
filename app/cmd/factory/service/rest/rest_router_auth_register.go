@@ -64,6 +64,8 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 				Method: opts.Cfg.AccessControl.JWTMethod,
 				Secret: []byte(opts.Cfg.AccessControl.JWTSecret),
 			},
+			nil, // appResolver
+			nil, // locationResolver
 			opts.DebugFunc,
 		),
 	}
