@@ -24,6 +24,11 @@ import (
 	"print-shop-back/internal/app"
 )
 
+// TODO: дублирование название таблиц.
+const (
+	serviceAuthTokensTableName = "printshop_auth.auth_tokens" //nolint:gosec
+)
+
 // InitApp - Настраивает конфигурацию, внешнее окружение приложения, после этого создаёт её модули и компоненты.
 func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 	parsedArgs, err := config.ParseCmdArgs(args)
@@ -216,6 +221,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 			LangCode: opts.Cfg.TestUserLangCode,
 		},
 		opts.Cfg.AccessControl.JWTSecret,
+		serviceAuthTokensTableName,
 	)
 
 	if opts.ImageURLBuilder, err = InitImageURLBuilder(opts.Cfg); err != nil {

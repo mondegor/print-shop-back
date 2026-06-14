@@ -14,6 +14,19 @@ import (
 	"print-shop-back/internal/app"
 )
 
+// TODO: дублирование название таблиц.
+const (
+	serviceAuthTokensTableName      = "printshop_auth.auth_tokens" //nolint:gosec
+	serviceSecureOperationTableName = "printshop_auth.secure_operations"
+	// serviceSecureOperationLogTableName = "printshop_auth.secure_operations_log".
+	serviceSessionsTableName = "printshop_auth.sessions"
+	serviceUsersTableName    = "printshop_auth.users"
+	// serviceUsersActivityLogTableName = "printshop_auth.users_activity_log".
+	serviceUsersActivityStatTableName = "printshop_auth.users_activity_stat"
+	serviceUsersAuth2faTableName      = "printshop_auth.users_auth_2fa"
+	serviceUsersRealmsTableName       = "printshop_auth.users_realms"
+)
+
 // RegisterRestRouterAuthHandlers - регистрирует в указанном роутере обработчики секции AuthAPI.
 func RegisterRestRouterAuthHandlers(
 	router mrserver.HttpRouter,
@@ -66,6 +79,15 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			},
 			nil, // appResolver
 			nil, // locationResolver
+			serviceAuthTokensTableName,
+			serviceSecureOperationTableName,
+			// serviceSecureOperationLogTableName,
+			serviceSessionsTableName,
+			serviceUsersTableName,
+			// serviceUsersActivityLogTableName,
+			serviceUsersActivityStatTableName,
+			serviceUsersAuth2faTableName,
+			serviceUsersRealmsTableName,
 			opts.DebugFunc,
 		),
 	}

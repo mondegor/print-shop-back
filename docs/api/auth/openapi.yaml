@@ -634,6 +634,8 @@ paths:
           description: Указанные сессии пользователя были закрыты
         '401':
           $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
 components:

@@ -8,24 +8,22 @@ import (
 	"github.com/mondegor/go-sysmess/mrprocess/collect"
 	"github.com/mondegor/go-sysmess/mrprocess/job/task"
 	"github.com/mondegor/go-sysmess/mrprocess/schedule"
-	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/app"
 )
 
+// TODO: дублирование название таблиц.
 const (
-	serviceAuthTokensTableName  = "printshop_auth.auth_tokens" //nolint:gosec
-	serviceAuthTokensPrimaryKey = "auth_token"
-
-	serviceOperationTableName    = "printshop_auth.secure_operations"
-	serviceOperationPrimaryKey   = "operation_token"
-	serviceOperationLogTableName = "printshop_auth.secure_operations_log"
-
-	serviceUserTableName     = "printshop_auth.users"
-	serviceUserPrimaryKey    = "user_id"
-	serviceUserStatTableName = "printshop_auth.users_activity_stat"
-	serviceUserLogTableName  = "printshop_auth.users_activity_log"
+	serviceAuthTokensTableName         = "printshop_auth.auth_tokens" //nolint:gosec
+	serviceSecureOperationTableName    = "printshop_auth.secure_operations"
+	serviceSecureOperationLogTableName = "printshop_auth.secure_operations_log"
+	// serviceSessionsTableName           = "printshop_auth.sessions".
+	// serviceUsersTableName              = "printshop_auth.users".
+	serviceUsersActivityLogTableName  = "printshop_auth.users_activity_log"
+	serviceUsersActivityStatTableName = "printshop_auth.users_activity_stat"
+	// serviceUsersAuth2faTableName       = "printshop_auth.users_auth_2fa".
+	// serviceUsersRealmsTableName        = "printshop_auth.users_realms".
 )
 
 // InitUserStatRequestCollectorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
@@ -37,11 +35,8 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 		opts.ErrorHandler,
 		opts.Logger,
 		opts.TraceManager,
-		mrsql.DBTableInfo{
-			Name:       serviceUserStatTableName,
-			PrimaryKey: serviceUserPrimaryKey,
-		},
-		serviceUserLogTableName,
+		serviceUsersActivityStatTableName,
+		serviceUsersActivityLogTableName,
 		collector.WithMessageCollectorOpts(
 			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
 			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.ReadyTimeout),
@@ -67,16 +62,10 @@ func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 		opts.ErrorHandler,
 		opts.Logger,
 		opts.TraceManager,
-		mrsql.DBTableInfo{
-			Name:       serviceAuthTokensTableName,
-			PrimaryKey: serviceAuthTokensPrimaryKey,
-		},
-		mrsql.DBTableInfo{
-			Name:       serviceOperationTableName,
-			PrimaryKey: serviceOperationPrimaryKey,
-		},
-		serviceOperationLogTableName,
-		serviceUserLogTableName,
+		serviceAuthTokensTableName,
+		serviceSecureOperationTableName,
+		serviceSecureOperationLogTableName,
+		serviceUsersActivityLogTableName,
 		scheduler.WithCaptionPrefix("Auth/"),
 		scheduler.WithCleanLimit(int(opts.Cfg.TaskScheduleAuth.CleanRecordsLimit)),
 		scheduler.WithLogLifeTime(opts.Cfg.TaskScheduleAuth.LogsLifeTime),
