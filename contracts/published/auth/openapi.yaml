@@ -70,6 +70,8 @@ paths:
     $ref: "./paths/v1_check_calc-password-strength.yaml"
   /v1/check/generate-password:
     $ref: "./paths/v1_check_generate-password.yaml"
+  /.well-known/jwks.json:
+    $ref: "./paths/well-known_jwks.yaml"
 
   /v1/operation/confirm:
     $ref: "./paths/v1_operation_confirm.yaml"

@@ -209,7 +209,7 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		return app.Options{}, err
 	}
 
-	opts.RealmUserProviders = wireauth.InitUserProviders(
+	if opts.RealmUserProviders, err = wireauth.InitUserProviders(
 		opts.Logger,
 		opts.PostgresConnManager,
 		userGroupRights,
@@ -220,9 +220,11 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 			Kind:     opts.Cfg.TestUserKind,
 			LangCode: opts.Cfg.TestUserLangCode,
 		},
-		opts.Cfg.AccessControl.JWTSecret,
+		opts.Cfg.JWT.Verifier,
 		serviceAuthTokensTableName,
-	)
+	); err != nil {
+		return app.Options{}, err
+	}
 
 	if opts.ImageURLBuilder, err = InitImageURLBuilder(opts.Cfg); err != nil {
 		return app.Options{}, err

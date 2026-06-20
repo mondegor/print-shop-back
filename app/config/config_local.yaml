@@ -15,9 +15,12 @@ unexpected_error_http_status: 599 # 418, 599
 s3_use_ssl: false
 
 cors_allowed_origins: # env:APPX_CORS_ALLOWED_ORIGINS
-  - http://print-shop.local
-  - http://localhost:3000
-  - http://127.0.0.1:3000
+  - "http://print-shop.local"
+  - "http://localhost:3000"
+  - "http://127.0.0.1:3000"
+
+refresh_cookie:
+  domain: "localhost" # env:APPX_REFRESH_COOKIE_DOMAIN
 
 access_control:
   override_auth_token:

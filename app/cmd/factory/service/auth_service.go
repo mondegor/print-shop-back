@@ -18,7 +18,7 @@ const (
 	serviceAuthTokensTableName         = "printshop_auth.auth_tokens" //nolint:gosec
 	serviceSecureOperationTableName    = "printshop_auth.secure_operations"
 	serviceSecureOperationLogTableName = "printshop_auth.secure_operations_log"
-	// serviceSessionsTableName           = "printshop_auth.sessions".
+	serviceSessionsTableName           = "printshop_auth.sessions"
 	// serviceUsersTableName              = "printshop_auth.users".
 	serviceUsersActivityLogTableName  = "printshop_auth.users_activity_log"
 	serviceUsersActivityStatTableName = "printshop_auth.users_activity_stat"
@@ -35,8 +35,9 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 		opts.ErrorHandler,
 		opts.Logger,
 		opts.TraceManager,
-		serviceUsersActivityStatTableName,
 		serviceUsersActivityLogTableName,
+		serviceUsersActivityStatTableName,
+		serviceSessionsTableName,
 		collector.WithMessageCollectorOpts(
 			collect.WithCaptionPrefix[dto.UserActivityLogMessage]("UserStat/"),
 			collect.WithReadyTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.ReadyTimeout),

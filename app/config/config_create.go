@@ -64,8 +64,10 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		return Config{}, err
 	}
 
-	if err = authcfg.ValidateJWT(cfg.AccessControl); err != nil {
-		return Config{}, err
+	if authcfg.IsJWTUsed(cfg.AccessControl.Realms) {
+		if cfg.JWT, err = authcfg.InitJWT(cfg.JWT); err != nil {
+			return Config{}, err
+		}
 	}
 
 	if cfg.UnexpectedErrorHttpStatus < 400 || cfg.UnexpectedErrorHttpStatus > 599 {

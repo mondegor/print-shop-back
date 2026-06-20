@@ -44,6 +44,42 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
   other types/files, name the file `<thing>_options.go` after the owning type (e.g.
   `session_list_options.go` next to `session_list.go`), so it's clear which type the
   options belong to — a bare `options.go` would be ambiguous there.
+- **Normalize zero-value inputs to defaults in the constructor.** When a constructor takes
+  config-like scalar params (durations, counts, names) with a sensible default, replace the
+  zero/empty value with a package-level default **inside the constructor**, so callers can pass
+  `0`/`""` to mean "use the default". Keep defaults in a private grouped `const ( defaultXxx = … )`
+  block next to the type. Two shapes:
+  - Plain constructor — guard each param before building the struct:
+    ```go
+    const defaultTimeout = 5 * time.Second
+
+    func NewService(timeout time.Duration) *Service {
+        if timeout == 0 {
+            timeout = defaultTimeout
+        }
+
+        return &Service{timeout: timeout}
+    }
+    ```
+  - Functional-options constructor — seed defaults in the initial struct literal, apply the
+    options, then zero-check the rest:
+    ```go
+    func newOptions(opts []Option) options {
+        o := options{timeout: defaultTimeout}
+
+        for _, opt := range opts {
+            opt(&o)
+        }
+
+        if o.maxAttempts < 1 {
+            o.maxAttempts = defaultMaxAttempts
+        }
+
+        return o
+    }
+    ```
+  Validation that *rejects* invalid values (e.g. an upper bound) stays separate — defaults only
+  fill in zeros.
 - No global mutable state (`gochecknoglobals`) — error/sentinel `var`s are the accepted
   exception. No `init()` functions (`gochecknoinits`).
 - **Repository/storage methods return simple shapes — slices or entities, never `map`.**
@@ -51,6 +87,32 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
   structure (a lookup set, an index, a grouping) is built by the **consuming layer**
   (usecase/service), not by the repository. This keeps the data-access API uniform and
   decoupled from how a caller chooses to index the rows.
+- **Avoid maps in config/input DTOs — use a slice of structs with an explicit key field.**
+  Конфиги и входные DTO не используют мапы. Вместо `KindLimits map[string]uint32` — слайс:
+  ```go
+  type (
+      LimitRealm struct {
+          Name       string
+          KindLimits []UserKindLimit
+      }
+
+      UserKindLimit struct {
+          Kind       string
+          SessionMax uint32
+      }
+  )
+  ```
+- **Avoid nested maps (`map[K1]map[K2]V`) — use a flat map keyed by a small private struct.**
+  Двойные мапы только по согласованию. Внутренний lookup-индекс собирается в конструкторе из
+  входного слайса; ключуется приватной составной структурой:
+  ```go
+  type realmKindKey struct {
+      realm string
+      kind  string
+  }
+
+  sessionLimits map[realmKindKey]uint32
+  ```
 - **Name the result parameters of interface methods when the results are native types.**
   In an interface declaration, give the returns names when their types are built-in/native
   (`[]uint32`, `string`, `bool`, `int`, …) so the signature is self-documenting, e.g.

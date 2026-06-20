@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	authvalidate "github.com/mondegor/go-components/mrauth/validate"
-	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	auth "github.com/mondegor/go-components/wire/mrauth/infra/pub"
 	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
@@ -73,10 +72,8 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.NotifierAPI,
 			opts.Cfg.AccessControl.Realms,
 			opts.Cfg.AccessControl.DefaultOperationConfirm,
-			authcfg.JWT{
-				Method: opts.Cfg.AccessControl.JWTMethod,
-				Secret: []byte(opts.Cfg.AccessControl.JWTSecret),
-			},
+			opts.Cfg.JWT,
+			opts.Cfg.RefreshCookie,
 			nil, // appResolver
 			nil, // locationResolver
 			serviceAuthTokensTableName,

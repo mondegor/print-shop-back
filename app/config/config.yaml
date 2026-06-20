@@ -108,6 +108,12 @@ cors_exposed_headers:
   - X-Request-Id
 cors_allow_credentials: true
 
+refresh_cookie:
+  name: "RTID"
+  # domain: "localhost" # env:APPX_REFRESH_COOKIE_DOMAIN
+  path: "/"
+  expiry: 4320h # 180 days
+
 access_control:
   realms:
     - name: "admin.printshop/backend"
@@ -233,8 +239,17 @@ access_control:
       max_attempts: 5
       max_resends: 2
       min_resend_time: 2m
-  # jwt_method: "HS256" # env:APPX_JWT_METHOD [OPTIONAL]
-  # jwt_secret: "The secret for symmetric security key" # env:APPX_JWT_SECRET [OPTIONAL], ключ для расшифровки jwt токена, необходим только если используется в realms
+
+# [IGNORE if realms/*/access_type != jwt]
+jwt:
+  issuer: "print-shop" # env:APPX_JWT_ISSUER
+  alg: "HS256" # HS256/HS512/RS256/ES256, env:APPX_JWT_ALG
+  # kid: "dev-key-2026" # env:APPX_JWT_KID
+  # secret: "..." # env:APPX_JWT_SECRET
+  # verify_keys:
+  #   - kid: "old-key-2025"
+  #     alg: "RS256"
+  #     public_key: "-----BEGIN PUBLIC KEY-----..."
 
 module_settings:
   general:

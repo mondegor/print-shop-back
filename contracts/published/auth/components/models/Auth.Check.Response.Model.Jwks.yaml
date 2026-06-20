@@ -1,0 +1,9 @@
+description: Набор публичных ключей в формате JWKS (RFC 7517)
+type: object
+required:
+  - keys
+properties:
+  keys:
+    type: array
+    items:
+      $ref: "./Auth.Check.Response.Model.Jwk.yaml"

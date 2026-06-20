@@ -93,7 +93,7 @@ type (
 		} `yaml:"file_providers"`
 
 		// Mail - настройки службы отправки электронных писем
-		// MailDefaultFrom - e-mail от которого отправляются письма [по умолчанию].
+		// MailDefaultFrom - e-mail от которого отправляются письма [OPTIONAL].
 		MailDefaultFrom string `yaml:"mail_default_from" env:"APPX_MAIL_DEFAULT_FROM" env-required:"true"`
 		// MailSmtpHost - SMTP сервер для отправки почты (домен или IP).
 		MailSmtpHost string `yaml:"mail_smtp_host" env:"APPX_MAIL_SMTP_HOST" env-required:"true"`
@@ -129,8 +129,14 @@ type (
 		CorsExposedHeaders   []string `yaml:"cors_exposed_headers"`
 		CorsAllowCredentials bool     `yaml:"cors_allow_credentials"`
 
+		// RefreshCookie - настройки cookie с refresh токеном (web-версия)
+		RefreshCookie authcfg.RefreshCookie `yaml:"refresh_cookie"`
+
 		// AccessControl - настройки доступа к системе
 		AccessControl authcfg.AccessControl `yaml:"access_control"`
+
+		// JWT - крипто ключи для шифрования JWT токенов [OPTIONAL]
+		JWT authcfg.JWT `yaml:"jwt"`
 
 		// Module settings - настройки модулей системы
 		ModuleSettings struct {

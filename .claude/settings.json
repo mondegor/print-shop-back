@@ -1,17 +1,23 @@
 {
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true
+  },
   "permissions": {
     "allow": [
       "Read",
       "Glob",
       "Grep",
+      "Bash(echo *)",
       "Bash(git *)",
+      "Bash(git diff *)",
       "Bash(ls *)",
       "Bash(cp *)",
       "Bash(make *)",
       "Bash(go *)",
       "Bash(gofumpt *)",
       "Bash(golangci-lint *)",
-      "Bash(timeout *)"
+      "Bash(timeout *)",
+      "Skill(code-review)"
     ],
     "deny": [
       "Bash(rm -rf *)",

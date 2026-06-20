@@ -29,11 +29,14 @@ mail_smtp_user_name: test # env:APPX_MAIL_SMTP_USERNAME
 mail_smtp_password: test # env:APPX_MAIL_SMTP_PASSWORD
 
 cors_allowed_origins: # env:APPX_CORS_ALLOWED_ORIGINS
-  - http://127.0.0.1:3000
+  - "http://127.0.0.1:3000"
+
+refresh_cookie:
+  domain: "127.0.0.1" # env:APPX_REFRESH_COOKIE_DOMAIN
 
 module_settings:
   file_station:
-    image_proxy_host: http://127.0.0.1 # env:APPX_IMAGE_PROXY_HOST
+    image_proxy_host: "http://127.0.0.1" # env:APPX_IMAGE_PROXY_HOST
 
 access_control:
   override_auth_token:
