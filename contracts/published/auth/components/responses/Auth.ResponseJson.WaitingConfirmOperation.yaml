@@ -1,9 +1,0 @@
-description: |
-  - Ожидается подтверждение регистрации пользователя
-  - Ожидается подтверждение входа пользователя в систему
-  - Ожидается подтверждение изменения значения защищённого поля
-  - Ожидается подтверждение какой либо операции
-content:
-  application/json;charset=UTF-8:
-    schema:
-      $ref: "../models/Auth.Response.Model.WaitingConfirmOperation.yaml"

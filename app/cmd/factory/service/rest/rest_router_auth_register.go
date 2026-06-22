@@ -72,6 +72,7 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.NotifierAPI,
 			opts.Cfg.AccessControl.Realms,
 			opts.Cfg.AccessControl.DefaultOperationConfirm,
+			opts.Cfg.AccessControl.Auth2FA,
 			opts.Cfg.JWT,
 			opts.Cfg.RefreshCookie,
 			nil, // appResolver

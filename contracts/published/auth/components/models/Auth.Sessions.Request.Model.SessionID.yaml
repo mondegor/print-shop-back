@@ -1,5 +1,0 @@
-description: Идентификатор сессии текущего пользователя
-type: string
-minLength: 8
-maxLength: 8
-example: "1f3bc817"

@@ -1,5 +1,0 @@
-description: Набор публичных JWT-ключей в формате JWKS (RFC 7517)
-content:
-  application/json;charset=UTF-8:
-    schema:
-      $ref: "../models/Auth.Check.Response.Model.Jwks.yaml"

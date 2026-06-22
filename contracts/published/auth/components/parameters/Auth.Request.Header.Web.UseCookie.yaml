@@ -1,7 +1,0 @@
-description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
-name: X-Use-Cookie
-in: header
-required: false
-schema:
-  type: boolean
-example: true

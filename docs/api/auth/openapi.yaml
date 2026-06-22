@@ -399,15 +399,15 @@ paths:
         Метод предназначен для создания операции изменения емаила текущего пользователя.
 
         ### Алгоритм изменения емаила пользователя:
-        1. Отправляется код подтверждения на новый емаил;
-        2. Пользователь указывает полученный код и подтверждает новый емаил;
-        3. Если 2FA включена:\
-          3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
-          3.2. Пользователь указывает 2FA пароль и его емаил изменяется на новый;\
-          3.3. На старый емаил отправляется уведомление, что емаил был изменён;
-        4. Если 2FA выключена:\
-          4.1. Новый емаил ставится в лист ожидания и через 3 дня старый емаил изменяется на новый;\
-          4.2. На старый емаил отправляется уведомление, что емаил был изменён со ссылкой блокировки аккаунта до выяснения обстоятельств (ссылка действует 14 дней);
+        1. `POST /v1/security/email` (новый емаил) — отправляется код подтверждения на новый емаил;
+        2. Пользователь указывает полученный код и подтверждает новый емаил (`POST /v1/operation/confirm`);
+        3. Если 2FA включена — пользователю предлагается ввести пароль или TOTP код (или одноразовый
+          аварийный код) для подтверждения операции;
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation`:\
+          4.1. Если 2FA включена — емаил изменяется на новый, на старый емаил отправляется уведомление;\
+          4.2. Если 2FA выключена — новый емаил ставится в лист ожидания и через 3 дня старый емаил
+            изменяется на новый; на старый емаил отправляется уведомление со ссылкой блокировки аккаунта
+            до выяснения обстоятельств (ссылка действует 14 дней);
       operationId: changeUserEmail
       tags:
         - Auth.Security
@@ -435,15 +435,13 @@ paths:
         Метод предназначен для создания операции установки/изменения телефона текущего пользователя.
 
         ### Алгоритм установки/изменения телефона пользователя:
-        1. Отправляется код подтверждения на текущий емаил;
-        2. Пользователь указывает полученный код и подтверждает установку нового телефона;
-        3. Если 2FA включена:\
-          3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
-          3.2. Пользователь указывает 2FA пароль и его телефон устанавливается/изменяется на новый;\
-          3.3. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
-        4. Если 2FA выключена:\
-          4.1. Телефон пользователя устанавливается/изменяется на новый;\
-          4.2. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
+        1. `POST /v1/security/phone` (новый телефон) — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Если 2FA включена — пользователю предлагается ввести пароль или TOTP код (или одноразовый
+          аварийный код) для подтверждения операции;
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation` —
+          телефон устанавливается/изменяется на новый;
+        5. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
       operationId: changeUserPhone
       tags:
         - Auth.Security
@@ -466,20 +464,22 @@ paths:
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/password:
     post:
-      summary: Auth/SC/R3. Метод создания операции на установку/изменение пароля пользователя (2FA)
+      summary: Auth/SC/R3. Метод создания операции на установку пароля пользователя (2FA)
       description: |-
-        Метод предназначен для создания операции установки/изменения пароля текущего пользователя (при этом включается 2FA).
+        Метод предназначен для создания операции установки пароля текущего пользователя в качестве
+        второго фактора (2FA по паролю).
 
-        ### Алгоритм установки/изменения пароля:
-        1. Отправляется код подтверждения на текущий емаил;
-        2. Пользователь указывает полученный код и подтверждает установку нового пароля;
-        3. Если 2FA включена:\
-          3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
-          3.2. Пользователь указывает 2FA пароль и его устанавливаемый пароль изменяется на новый;\
-          3.3. На текущий емаил отправляется уведомление, что пароль был установлен/изменён;
-        4. Если 2FA выключена:\
-          4.1. Включается 2FA и пароль пользователя устанавливается;\
-          4.2. На текущий емаил отправляется уведомление, что включена 2FA и пароль установлен;
+        **Важно:** установить пароль как 2FA можно только когда 2FA **выключена**. Если уже включён
+        любой второй фактор (пароль или TOTP), метод возвращает ошибку — сначала нужно отключить 2FA
+        через `POST /v1/security/disable2fa`, и только затем установить новый пароль.
+
+        ### Алгоритм установки пароля как 2FA (2FA выключена):
+        1. `POST /v1/security/password` (новый пароль) — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Пользователь применяет операцию методом `POST /v1/security/apply-password` — включается 2FA
+          по паролю и единоразово возвращается набор одноразовых аварийных кодов (их нужно сохранить —
+          повторно они не показываются);
+        4. На текущий емаил отправляется уведомление, что включена 2FA по паролю;
       operationId: changeUser2faPassword
       tags:
         - Auth.Security
@@ -500,40 +500,15 @@ paths:
           $ref: '#/components/responses/Api.ResponseJson.Error401'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
-  /v1/security/totp:
+  /v1/security/apply-password:
     post:
-      summary: Auth/SC/R4. Метод создания операции на установку/изменение TOTP генератора для 2FA аутентификации пользователя
+      summary: Auth/SC/R9. Метод применяет подтверждённую операцию смены пароля и выдаёт аварийные коды
       description: |-
-        Метод предназначен для создания операции установки/изменения TOTP генератора для 2FA аутентификации текущего пользователя (при этом включается 2FA).
-
-        ### Алгоритм установки/изменения TOTP генератора:
-        1. Отправляется код подтверждения на текущий емаил;
-        2. Пользователь указывает полученный код и подтверждает установку нового TOTP генератора;
-        3. Если 2FA включена:\
-          3.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
-          3.2. Пользователь указывает 2FA пароль и его устанавливаемый TOTP генератор изменяется на новый;\
-          3.3. На текущий емаил отправляется уведомление, что TOTP генератор был установлен/изменён;
-        4. Если 2FA выключена:\
-          4.1. Включается 2FA и TOTP генератор пользователя устанавливается;\
-          4.2. На текущий емаил отправляется уведомление, что включена 2FA и TOTP генератор установлен;
-      operationId: changeUser2faTotpGenerator
-      tags:
-        - Auth.Security
-      x-auth-scopes:
-        - any-users
-      responses:
-        '200':
-          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
-        '400':
-          $ref: '#/components/responses/Api.ResponseJson.Error400'
-        '401':
-          $ref: '#/components/responses/Api.ResponseJson.Error401'
-        '500':
-          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
-    patch:
-      summary: Auth/SC/R5. Метод устанавливает TOTP генератор для 2FA аутентификации пользователя
-      description: Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя
-      operationId: applyUserOperationTotpGenerator
+        Метод завершает установку/смену пароля как 2FA после подтверждения операции, созданной
+        методом `POST /v1/security/password`. При успехе 2FA по паролю включается (или пароль
+        обновляется) и единоразово возвращается набор одноразовых аварийных кодов
+        (их нужно сохранить — повторно они не показываются).
+      operationId: applyUser2faPassword
       tags:
         - Auth.Security
       x-auth-scopes:
@@ -543,14 +518,14 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyOperation'
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyByToken'
       responses:
         '200':
-          description: Операция пользователя на установку TOTP генератора была применена
+          description: Пароль установлен как 2FA, возвращены аварийные коды
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Auth.Security.Response.TotpGenerator'
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
         '400':
           $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
@@ -559,39 +534,9 @@ paths:
           $ref: '#/components/responses/Api.ResponseJson.Error403'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
-  /v1/security/disable2fa:
-    post:
-      summary: Auth/SC/R6. Метод создания операции отключения 2FA аутентификацию пользователя
-      description: |-
-        Метод предназначен для создания операции отключения 2FA аутентификации текущего пользователя.
-
-        ### Алгоритм отключения 2FA аутентификации пользователя (если 2FA включена):
-        1. Отправляется код подтверждения на текущий емаил;
-        2. Пользователь указывает полученный код и подтверждает отключение 2FA;
-        3. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);
-        4. Пользователь указывает 2FA пароль и 2FA аутентификация отключается;
-        5. На текущий емаил отправляется уведомление, что 2FA аутентификация отключена;
-
-        Если включена 2FA аутентификация по TOTP и доступ к TOTP генератору временно невозможен или он был утерян,
-        то предоставляется возможность ввести один из аварийных TOTP кодов, которые были сгенерированы при подключении
-        TOTP генератора.
-      operationId: disableUser2fa
-      tags:
-        - Auth.Security
-      x-auth-scopes:
-        - any-users
-      responses:
-        '200':
-          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
-        '400':
-          $ref: '#/components/responses/Api.ResponseJson.Error400'
-        '401':
-          $ref: '#/components/responses/Api.ResponseJson.Error401'
-        '500':
-          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/security/apply-operation:
-    patch:
-      summary: Auth/SC/R7. Метод применяет подтверждённую пользователем операцию
+    post:
+      summary: Auth/SC/R4. Метод применяет подтверждённую пользователем операцию
       description: Метод предназначен для применения подтверждённой пользователем операции (изменение защищённого свойства пользователя, отмены 2FA и т.д.)
       operationId: applyUserOperation
       tags:
@@ -613,6 +558,200 @@ paths:
           $ref: '#/components/responses/Api.ResponseJson.Error401'
         '403':
           $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/totp:
+    post:
+      summary: Auth/SC/R5. Метод создания операции на установку TOTP генератора для 2FA аутентификации пользователя
+      description: |-
+        Метод предназначен для создания операции установки TOTP генератора в качестве второго фактора
+        (2FA по TOTP) для текущего пользователя.
+
+        **Важно:** установить TOTP как 2FA можно только когда 2FA **выключена**. Если уже включён любой
+        второй фактор (пароль или TOTP), метод возвращает ошибку — сначала нужно отключить 2FA через
+        `POST /v1/security/disable2fa`, и только затем привязать новый TOTP генератор.
+
+        ### Алгоритм установки TOTP как 2FA (2FA выключена):
+        1. `POST /v1/security/totp` — создаётся операция (в ней генерируется TOTP-секрет) и отправляется
+          код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. `GET /v1/security/totp/{token}` — пользователь получает QR-код и добавляет генератор в
+          TOTP-приложение (сам генератор пока не активирован);
+        4. `POST /v1/security/apply-totp` (код из приложения) — генератор активируется, включается 2FA
+          по TOTP и единоразово возвращается набор одноразовых аварийных кодов (их нужно сохранить);
+        5. На текущий емаил отправляется уведомление, что включена 2FA по TOTP;
+      operationId: changeUser2faTotpGenerator
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/totp/{token}:
+    get:
+      summary: Auth/SC/R6. Метод возвращает QR-код TOTP генератора для 2FA аутентификации пользователя
+      description: |-
+        Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя.
+        В ответ возвращается QR-код (изображение) для добавления генератора в приложение 2FA аутентификации,
+        построенный на основе секрета, который уже сохранён в операции. При этом сам TOTP генератор пока не
+        активируется и 2FA не включается: для этого пользователь должен подтвердить владение генератором,
+        отправив код из приложения через `POST /v1/security/apply-totp`, который и активирует генератор,
+        включит 2FA и единоразово выдаст набор одноразовых аварийных кодов.
+      operationId: renderTotpGeneratorQr
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Security.Request.Path.Token'
+      responses:
+        '200':
+          description: QR-код TOTP генератора (изображение для сканирования приложением 2FA)
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-totp:
+    post:
+      summary: Auth/SC/R7. Метод проверяет TOTP-код и привязывает генератор, выдавая аварийные коды
+      description: |-
+        Пользователь вводит код из TOTP-приложения для подтверждения владения генератором.
+        При успехе генератор привязывается, 2FA по TOTP включается и единоразово возвращается
+        набор одноразовых аварийных кодов (их нужно сохранить — повторно они не показываются).
+      operationId: applyTotpGenerator
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyTotpGenerator'
+      responses:
+        '200':
+          description: TOTP-генератор привязан, возвращены аварийные коды
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/recovery-codes:
+    post:
+      summary: Auth/SC/R10. Метод создания операции перевыпуска одноразовых аварийных кодов
+      description: |-
+        Метод предназначен для перевыпуска набора одноразовых аварийных кодов текущего пользователя
+        без смены второго фактора (например, когда коды заканчиваются). Требует включённую 2FA.
+
+        ### Алгоритм перевыпуска аварийных кодов:
+        1. Отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает перевыпуск (`POST /v1/operation/confirm`);
+        3. Пользователю предлагается ввести пароль или TOTP код (или один из оставшихся аварийных кодов);
+        4. После подтверждения пользователь применяет операцию методом `POST /v1/security/apply-recovery-codes`,
+           который заменяет набор аварийных кодов на новый и единоразово возвращает его
+           (старые коды становятся недействительными);
+        5. На текущий емаил отправляется уведомление, что аварийные коды были перевыпущены;
+      operationId: regenerateUser2faRecoveryCodes
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-recovery-codes:
+    post:
+      summary: Auth/SC/R11. Метод применяет подтверждённую операцию перевыпуска и выдаёт новые аварийные коды
+      description: |-
+        Метод завершает перевыпуск аварийных кодов после подтверждения операции, созданной методом
+        `POST /v1/security/recovery-codes`. Набор аварийных кодов заменяется на новый и единоразово
+        возвращается (старые коды становятся недействительными, новые нужно сохранить — повторно
+        они не показываются).
+      operationId: applyUser2faRecoveryCodes
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyByToken'
+      responses:
+        '200':
+          description: Аварийные коды перевыпущены, возвращён новый набор
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/disable2fa:
+    post:
+      summary: Auth/SC/R8. Метод создания операции отключения 2FA аутентификацию пользователя
+      description: |-
+        Метод предназначен для создания операции отключения 2FA аутентификации текущего пользователя.
+
+        ### Алгоритм отключения 2FA аутентификации пользователя (если 2FA включена):
+        1. `POST /v1/security/disable2fa` — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation` —
+          2FA аутентификация отключается;
+        5. На текущий емаил отправляется уведомление, что 2FA аутентификация отключена;
+
+        Если доступ ко второму фактору (паролю или TOTP генератору) временно невозможен или он был утерян,
+        то предоставляется возможность ввести один из аварийных кодов, которые были сгенерированы при
+        включении 2FA или их перевыпуске.
+      operationId: disableUser2fa
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/sessions:
@@ -921,14 +1060,14 @@ components:
     Auth.Enum.UserAuth2fa:
       description: |-
         Тип двухфакторной аутентификации пользователя:
+        - NONE - отсутствует (отключена);
         - PASSWORD - дополнительная авторизация по паролю;
         - TOTP - дополнительная авторизация по TOTP;
-        - DISABLED - отключена;
       type: string
       enum:
+        - NONE
         - PASSWORD
         - TOTP
-        - DISABLED
       example: PASSWORD
     Api.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
@@ -1195,6 +1334,30 @@ components:
           minLength: 8
           maxLength: 32
           example: L$QI.qA6eu7zG%7w
+    Auth.Security.Request.Model.ApplyByToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен операции, которая подтверждена пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Security.Response.RecoveryCodes:
+      type: object
+      required:
+        - recovery_codes
+      properties:
+        recovery_codes:
+          description: Набор одноразовых аварийных кодов, выданных при включении 2FA (по паролю или TOTP) либо при их перевыпуске
+          type: array
+          items:
+            type: string
+          example:
+            - QW39L7R0-417X5FKV
+            - 67DO040V-17K59ABP
     Auth.Security.Request.Model.ApplyOperation:
       type: object
       required:
@@ -1206,17 +1369,26 @@ components:
           minLength: 64
           maxLength: 128
           example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
-    Auth.Security.Response.TotpGenerator:
+    Auth.Security.Request.Model.ApplyTotpGenerator:
       type: object
       required:
-        - totp_url
+        - token
+        - totp_code
       properties:
-        totp_url:
-          description: URL для добавления его в приложение 2FA аутентификации
+        token:
+          description: Токен операции, которая подтверждена пользователем
           type: string
           minLength: 64
-          maxLength: 256
-          example: otpauth://totp/App:email@localhost.sample?algorithm=SHA1&digits=6&issuer=App&period=30&secret=JHCCFI4KHKOEZFWDVQIKKRP22KGEDNQ7
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        totp_code:
+          description: |-
+            6-значный цифровой код, сгенерированный TOTP-приложением пользователя
+            - pattern: "^[0-9]{6}$"
+          type: string
+          minLength: 6
+          maxLength: 6
+          example: '183947'
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
@@ -1371,6 +1543,16 @@ components:
         minLength: 64
         maxLength: 128
       example: 02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704
+    Auth.Security.Request.Path.Token:
+      description: Токен операции, которая подтверждена пользователем
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 64
+        maxLength: 128
+      example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
   headers:
     Auth.Response.Cookie.Web.RefreshToken:
       schema:

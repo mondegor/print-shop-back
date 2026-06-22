@@ -230,6 +230,7 @@ access_control:
   default_operation_confirm:
     token_length: 80
     code_length: 6
+    code_max_attempts: 3
     session_expiry: 10m
     send_by_email:
       max_attempts: 5
@@ -239,6 +240,11 @@ access_control:
       max_attempts: 5
       max_resends: 2
       min_resend_time: 2m
+
+  auth_2fa:
+    recovery_count: 10
+    recovery_code_length: 17
+    recovery_low_threshold: 3
 
 # [IGNORE if realms/*/access_type != jwt]
 jwt:
