@@ -80,6 +80,28 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
     ```
   Validation that *rejects* invalid values (e.g. an upper bound) stays separate — defaults only
   fill in zeros.
+- **Default an optional interface/callback dependency to a no-op, applied *after* the options
+  loop.** For an `// OPTIONAL` collaborator set via `WithXxx` (an interface or func field),
+  substitute a no-op default instead of `nil`-checking it at every call site. Do the substitution
+  **after** applying the options (not in the initial struct literal), so it covers both "option
+  not provided" **and** `WithXxx(nil)` — the latter would overwrite a literal default and panic
+  at the call site. Globals are banned, so make the no-op a tiny unexported type, not a package
+  `var`:
+  ```go
+  type defaultAlerter struct{}
+
+  func (defaultAlerter) SendAlert(context.Context, uuid.UUID, int) error { return nil }
+
+  // ... in the constructor:
+  for _, opt := range opts {
+      opt(&o)
+  }
+
+  if o.svc.alerter == nil {
+      o.svc.alerter = defaultAlerter{} // covers "not set" and WithAlerter(nil)
+  }
+  ```
+  Then call sites stay clean: `o.svc.alerter.SendAlert(…)` with no `nil` guard.
 - No global mutable state (`gochecknoglobals`) — error/sentinel `var`s are the accepted
   exception. No `init()` functions (`gochecknoinits`).
 - **Repository/storage methods return simple shapes — slices or entities, never `map`.**
@@ -87,6 +109,41 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
   structure (a lookup set, an index, a grouping) is built by the **consuming layer**
   (usecase/service), not by the repository. This keeps the data-access API uniform and
   decoupled from how a caller chooses to index the rows.
+- **In Postgres repositories, express "rows lacking a related row" as a `LEFT JOIN … WHERE
+  x IS NULL` anti-join — not `NOT EXISTS`/`NOT IN`.** Applies to both `SELECT` and
+  `DELETE … USING …` (the `USING` from-list may contain the `LEFT JOIN`). The anti-join is
+  the project canon (uniform with existing queries) and keeps "find the orphan" and the
+  action it feeds atomic in one statement, e.g.:
+  ```sql
+  DELETE FROM <sessions> s
+  USING UNNEST($1::uuid[], $2::int8[]) as c(user_id, session_id)
+      LEFT JOIN <auth_tokens> t
+          ON  t.user_id = c.user_id
+          AND t.session_id = c.session_id
+          AND t.token_type = $3 AND t.token_status = $4 AND t.expires_at > NOW()
+  WHERE s.user_id = c.user_id AND s.session_id = c.session_id
+      AND t.auth_token IS NULL; -- anti-join: no live related row
+  ```
+- **Inline `LIMIT` (and similar planner-sensitive integer clauses) into the SQL text — don't
+  pass them as `$N` bind parameters.** Build the clause from the concrete value
+  (`mrstorage.NonZeroLimit(limit)`) and drop the arg from the
+  `Query`/`Exec`/`ExecAffected`/`fetchRowsIDs` call. With `LIMIT $N` the planner can't see
+  the real value at plan time and may pick a worse plan (poor row-count estimates, wrong
+  scan/sort); inlining lets it plan against the actual bound. `limit` is always a
+  caller-controlled `int` (a batch-size config, never user input), so this is
+  injection-safe — never inline string/user-supplied values this way. `LIMIT` is normally
+  the highest-numbered placeholder, so removing it needs no `$N` renumbering; keep the
+  `limit` parameter (still used for the inline and for slice-capacity hints). Trade-off
+  accepted: distinct limit values produce distinct SQL text (less prepared-statement reuse),
+  fine because these limits are fixed configs. Canonical examples:
+  `mrauth/repository/session_postgres.go`, `mrqueue/repository/queue_postgres.go`.
+  ```go
+  sql := `
+      ... ORDER BY
+          updated_at ASC
+      ` + mrstorage.NonZeroLimit(limit) + `
+      FOR UPDATE SKIP LOCKED ...`
+  ```
 - **Avoid maps in config/input DTOs — use a slice of structs with an explicit key field.**
   Конфиги и входные DTO не используют мапы. Вместо `KindLimits map[string]uint32` — слайс:
   ```go
@@ -143,6 +200,23 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
 - Sentinel errors prefixed `Err`, error *types* suffixed `Error` (`errname`).
   Note: error *codes* are camelCase string literals (e.g. `"errSomethingFailed"`).
 - Initialisms via `revive var-naming`: `HTTP`, `JSON` (not `Http`/`Json`).
+- **One canonical spelling per domain abbreviation — `2FA` for two-factor auth.** The concept
+  has exactly one name: the abbreviation `2FA`. Do **not** introduce synonyms (`secondFactor`,
+  `TwoFA`, `TFA`, `MFA`, `two_factor`). Because a Go package/identifier can't start with a digit,
+  the spelling is context-bound but the abbreviation never changes:
+  - **Exported identifiers** — treat `2FA` as an initialism, uppercase: `Auth2FA`, `User2FA`,
+    `Disable2FA`, `Confirm2FA`, `Auth2FAType`, `Err2FAMustBeDisabledFirst`.
+  - **Unexported locals/fields** — keep `2fa` lowercase for readability: `auth2faStorage`,
+    `auth2faTableName`, `auth2faVerifier` (the compromise — uppercase mid-identifier reads
+    heavy here, and `staticcheck -ST1003` is off so it's allowed).
+  - **Package/dir names** (lowercase, no leading digit) — prefix with a word: `auth2fa`,
+    `auth2fatype`. The verifier service package is `service/auth2fa` (not `secondfactor`).
+  - **Persistence/transport** (SQL columns, JSON, YAML keys, URLs) — `2fa` / `auth_2fa` /
+    `disable2fa`; never `two_fa`. Error *code* string literals follow the same form
+    (`"2FAMustBeDisabledFirst"`), matching the Go var.
+  The mechanism (`TOTP`) and supporting concept (`recovery`) are **not** synonyms of `2FA` —
+  they keep their own names. Apply the same single-canonical-spelling rule to any future domain
+  abbreviation.
 - **Layer-based entity & method naming.** In the `usecase`/`service` layers, name domain
   entity values `item` / `items` and give methods **business-intent** names that describe
   the operation in domain terms. In the `repository` layer, name DB-row values

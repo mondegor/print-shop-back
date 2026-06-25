@@ -16,6 +16,7 @@
       "Bash(go *)",
       "Bash(gofumpt *)",
       "Bash(golangci-lint *)",
+      "Bash(grep *)",
       "Bash(timeout *)",
       "Skill(code-review)"
     ],

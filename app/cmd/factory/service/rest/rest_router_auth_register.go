@@ -86,6 +86,7 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			serviceUsersActivityStatTableName,
 			serviceUsersAuth2faTableName,
 			serviceUsersRealmsTableName,
+			opts.Cfg.AccessControl.MaxUserSessions,
 			opts.DebugFunc,
 		),
 	}

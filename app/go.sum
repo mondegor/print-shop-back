@@ -157,12 +157,12 @@ github.com/moby/sys/userns v0.1.0 h1:tVLXkFOxVu9A64/yh59slHVv9ahO9UIev4JZusOLG/g
 github.com/moby/sys/userns v0.1.0/go.mod h1:IHUYgu/kao6N8YZlp9Cf444ySSvCmDlmzUcYfDHOl28=
 github.com/moby/term v0.5.2 h1:6qk3FJAFDs6i/q3W/pQ97SX192qKfZgGjCQqfCJkgzQ=
 github.com/moby/term v0.5.2/go.mod h1:d3djjFCrjnB+fl8NJux+EJzu0msscUP+f8it8hPkFLc=
-github.com/mondegor/go-components v0.8.3-0.20260622204745-12ea7383e3c9 h1:A8p7WmaoV5KIazkdNEYHKYiStt6C6J06ux1F5iMMIQY=
-github.com/mondegor/go-components v0.8.3-0.20260622204745-12ea7383e3c9/go.mod h1:njB5pCxFdnrpLYDHDWJd9CfdCWWqmIFQ4D5ofx/1Gmg=
+github.com/mondegor/go-components v0.8.3-0.20260625214004-f0e4a9430d95 h1:5IEpG2oW99JuAx4YseaPGo9NizJOxqXVv9hbn8udgvY=
+github.com/mondegor/go-components v0.8.3-0.20260625214004-f0e4a9430d95/go.mod h1:Wa7603NTvyX/zePalLpcIXyN4db9kqosUPtXxg6s3FM=
 github.com/mondegor/go-storage v0.17.2-0.20260612115913-ee3afc23bbb1 h1:BZ6Cyw4DLzq9hYNnCbiAqeyzJwckIS3QdlokxzfEHMI=
 github.com/mondegor/go-storage v0.17.2-0.20260612115913-ee3afc23bbb1/go.mod h1:I6+2xHd/I8QohomtLAe+MTwz2SIixX/Oz99p/J7iBP4=
-github.com/mondegor/go-sysmess v0.15.4-0.20260614223833-0fb848459712 h1:De/Flf8B2SMz+2CxASXHdJm3NofdHs7Owgqh5QoZw88=
-github.com/mondegor/go-sysmess v0.15.4-0.20260614223833-0fb848459712/go.mod h1:5LpaJL5P1RJYhavLkKN2CH1rpdJmQAsYRRFqeCkWDTk=
+github.com/mondegor/go-sysmess v0.15.4-0.20260625213641-5555ade1c9aa h1:/hx06PFOn8CtHDh1vYfq+UPkeHDyLQW+CpJjNJZyaYs=
+github.com/mondegor/go-sysmess v0.15.4-0.20260625213641-5555ade1c9aa/go.mod h1:5LpaJL5P1RJYhavLkKN2CH1rpdJmQAsYRRFqeCkWDTk=
 github.com/mondegor/go-webcore v0.29.3-0.20260614231125-83fff05c60ed h1:NV9FtCYK1VPLATXae/IcTRWRYpHEsMxPligiBNzWs8U=
 github.com/mondegor/go-webcore v0.29.3-0.20260614231125-83fff05c60ed/go.mod h1:SWYrUmt+Lms8703hIicQkTeIEDSfJEnvh2m9xChHGxQ=
 github.com/morikuni/aec v1.1.0 h1:vBBl0pUnvi/Je71dsRrhMBtreIqNMYErSAbEeb8jrXQ=

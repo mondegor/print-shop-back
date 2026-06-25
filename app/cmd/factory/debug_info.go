@@ -20,7 +20,7 @@ func InitDebugInfo(isDebug bool) func(value any) string {
 		case error:
 			return hint.DetailedError(o)
 		case secureoperation.SecureOperation:
-			return authdebug.Info(o)
+			return authdebug.Info(o, isDebug)
 		default:
 			return ""
 		}

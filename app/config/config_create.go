@@ -51,11 +51,6 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		return Config{}, err
 	}
 
-	// дополнительно проверяется загруженная конфигурация
-	if err = authcfg.ValidateRealms(cfg.AccessControl.Realms, cfg.AccessControl.Roles); err != nil {
-		return Config{}, err
-	}
-
 	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups); err != nil {
 		return Config{}, err
 	}

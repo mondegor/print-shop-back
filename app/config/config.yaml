@@ -246,6 +246,8 @@ access_control:
     recovery_code_length: 17
     recovery_low_threshold: 3
 
+  max_user_sessions: 4 # максимальное кол-во сессий на одного пользователя
+
 # [IGNORE if realms/*/access_type != jwt]
 jwt:
   issuer: "print-shop" # env:APPX_JWT_ISSUER
