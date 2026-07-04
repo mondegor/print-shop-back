@@ -33,7 +33,6 @@ func NewErrorResponseSender(opts app.Options) (*mrresp.ErrorSender, error) {
 		int(opts.Cfg.UnexpectedErrorHttpStatus),
 		mrauth.ErrTokenInvalid.Code(), http.StatusForbidden,
 		mrauth.ErrTokenNotFoundOrExpired.Code(), http.StatusUnauthorized,
-		mrauth.ErrTooManyOpenSessionRequests.Code(), http.StatusTooManyRequests,
 	)
 	if err != nil {
 		return nil, err

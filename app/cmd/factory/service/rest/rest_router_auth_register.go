@@ -18,8 +18,9 @@ const (
 	serviceAuthTokensTableName      = "printshop_auth.auth_tokens" //nolint:gosec
 	serviceSecureOperationTableName = "printshop_auth.secure_operations"
 	// serviceSecureOperationLogTableName = "printshop_auth.secure_operations_log".
-	serviceSessionsTableName = "printshop_auth.sessions"
-	serviceUsersTableName    = "printshop_auth.users"
+	serviceSessionsTableName            = "printshop_auth.sessions"
+	serviceSessionsExcessQueueTableName = "printshop_auth.sessions_excess_queue"
+	serviceUsersTableName               = "printshop_auth.users"
 	// serviceUsersActivityLogTableName = "printshop_auth.users_activity_log".
 	serviceUsersActivityStatTableName = "printshop_auth.users_activity_stat"
 	serviceUsersAuth2faTableName      = "printshop_auth.users_auth_2fa"
@@ -75,18 +76,20 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.Cfg.AccessControl.Auth2FA,
 			opts.Cfg.JWT,
 			opts.Cfg.RefreshCookie,
+			opts.Cfg.AccessControl.SessionSoftThreshold,
+			opts.Cfg.AccessControl.SessionHardThreshold,
 			nil, // appResolver
 			nil, // locationResolver
 			serviceAuthTokensTableName,
 			serviceSecureOperationTableName,
 			// serviceSecureOperationLogTableName,
 			serviceSessionsTableName,
+			serviceSessionsExcessQueueTableName,
 			serviceUsersTableName,
 			// serviceUsersActivityLogTableName,
 			serviceUsersActivityStatTableName,
 			serviceUsersAuth2faTableName,
 			serviceUsersRealmsTableName,
-			opts.Cfg.AccessControl.MaxUserSessions,
 			opts.DebugFunc,
 		),
 	}

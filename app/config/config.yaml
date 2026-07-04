@@ -116,32 +116,34 @@ refresh_cookie:
 
 access_control:
   realms:
-    - name: "admin.printshop/backend"
+    - id: 10
+      name: "printshop/users"
       auth_token:
-        access_type: session
-        access_expiry: 15m
-        refresh_expiry: 2h
-        length: 96
+        access_type: jwt
+        access_expiry: 60m
+        refresh_expiry: 4320h # 180 days
+        length: 64
       user_kinds:
-        - name: admin
+        - name: standard
           roles:
-            - administrators
+            - users
           session_max: 4
-      register_user_kind: none
+      register_user_kind: standard
       operation_confirm:
-        token_length: 96
-        # code_length: 6
-        session_expiry: 5m
+        token_length: 64
+        code_length: 4
+        # session_expiry: 10m
         send_by_email:
           max_attempts: 3
           # max_resends: 8
           # min_resend_time: 1m
         send_by_phone:
           max_attempts: 3
-          max_resends: 2
-          # min_resend_time: 2m
+          # max_resends: 2
+          min_resend_time: 3m
 
-    - name: "printshop/providers"
+    - id: 20
+      name: "printshop/providers"
       auth_token:
         access_type: jwt
         access_expiry: 30m
@@ -171,30 +173,31 @@ access_control:
           # max_resends: 2
           # min_resend_time: 2m
 
-    - name: "printshop/users"
+    - id: 50
+      name: "admin.printshop/backend"
       auth_token:
-        access_type: jwt
-        access_expiry: 60m
-        refresh_expiry: 4320h # 180 days
-        length: 64
+        access_type: session
+        access_expiry: 15m
+        refresh_expiry: 2h
+        length: 96
       user_kinds:
-        - name: standard
+        - name: admin
           roles:
-            - users
+            - administrators
           session_max: 4
-      register_user_kind: standard
+      register_user_kind: none
       operation_confirm:
-        token_length: 64
-        code_length: 4
-        # session_expiry: 10m
+        token_length: 96
+        # code_length: 6
+        session_expiry: 5m
         send_by_email:
           max_attempts: 3
           # max_resends: 8
           # min_resend_time: 1m
         send_by_phone:
           max_attempts: 3
-          # max_resends: 2
-          min_resend_time: 3m
+          max_resends: 2
+          # min_resend_time: 2m
 
   action_groups:
     - name: public-api
@@ -246,7 +249,8 @@ access_control:
     recovery_code_length: 17
     recovery_low_threshold: 3
 
-  max_user_sessions: 4 # максимальное кол-во сессий на одного пользователя
+  session_soft_threshold: 0
+  session_hard_threshold: 4
 
 # [IGNORE if realms/*/access_type != jwt]
 jwt:

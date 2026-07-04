@@ -80,6 +80,12 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
     ```
   Validation that *rejects* invalid values (e.g. an upper bound) stays separate — defaults only
   fill in zeros.
+- **Flexible/self-validating types live in config; constructors take standard types.** Narrow
+  YAML-bound types (`int8`, `uint16`, `uint8`, …) belong to the `wire/<comp>/config` model, where
+  the type itself documents and bounds the input. Object **constructors** take the *standard* widened
+  type — `int` for sizes/lengths/limits/offsets (which may legitimately be negative), `uint64` for
+  identifiers — and the `wire` factory does the conversion (`int(cfg.SampleParam)`). Don't
+  push narrow config types into domain signatures.
 - **Default an optional interface/callback dependency to a no-op, applied *after* the options
   loop.** For an `// OPTIONAL` collaborator set via `WithXxx` (an interface or func field),
   substitute a no-op default instead of `nil`-checking it at every call site. Do the substitution

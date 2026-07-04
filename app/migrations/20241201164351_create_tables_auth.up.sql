@@ -23,15 +23,15 @@ VALUES  ('5ad9475b-25e5-4014-9331-567a61c51f24', 'mondegor@gmail.com', 792627512
 
 CREATE TABLE printshop_auth.users_realms (
     user_id uuid NOT NULL REFERENCES printshop_auth.users(user_id) ON DELETE CASCADE,
-    user_realm character varying(32) NOT NULL, -- domain + '/' + user_group
+    realm_id int4 NOT NULL, -- 10=printshop/users, 20=printshop/providers, 50=admin.printshop/backend
     user_kind character varying(16) NOT NULL,
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    CONSTRAINT pk_users_realms PRIMARY KEY (user_id, user_realm)
+    CONSTRAINT pk_users_realms PRIMARY KEY (user_id, realm_id)
 );
 
-INSERT INTO printshop_auth.users_realms (user_id, user_realm, user_kind, created_at, updated_at)
-VALUES  ('5ad9475b-25e5-4014-9331-567a61c51f24', 'printshop/providers', 'standard', '2024-12-09 04:39:08.482000 +03:00', '2024-12-09 04:39:08.482000 +03:00');
+INSERT INTO printshop_auth.users_realms (user_id, realm_id, user_kind, created_at, updated_at)
+VALUES  ('5ad9475b-25e5-4014-9331-567a61c51f24', 20/*'printshop/providers'*/, 'standard', '2024-12-09 04:39:08.482000 +03:00', '2024-12-09 04:39:08.482000 +03:00');
 
 -- --------------------------------------------------------------------------------------------------
 
@@ -107,10 +107,23 @@ CREATE INDEX ix_sessions_cleanup_queue_created_at ON printshop_auth.sessions_cle
 
 -- --------------------------------------------------------------------------------------------------
 
+CREATE TABLE printshop_auth.sessions_excess_queue (
+    user_id uuid NOT NULL,
+    realm_id int4 NOT NULL,
+    session_max int4 NOT NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT NOW(),
+    CONSTRAINT pk_sessions_excess_queue PRIMARY KEY (user_id, realm_id)
+);
+
+CREATE INDEX ix_sessions_excess_queue_created_at ON printshop_auth.sessions_excess_queue (created_at);
+
+-- --------------------------------------------------------------------------------------------------
+
 CREATE TABLE printshop_auth.auth_tokens (
     auth_token character varying(128) NOT NULL CONSTRAINT pk_auth_tokens PRIMARY KEY,
     token_type int2 NOT NULL, -- 1=ACCESS, 2=REFRESH, 3=API
     user_id uuid NOT NULL,
+    realm_id int4 NOT NULL, -- 10=printshop/users, 20=printshop/providers, 50=admin.printshop/backend
     session_id int8 NOT NULL,
     token_scopes jsonb NOT NULL,
     token_status int2 NOT NULL, -- 1=ENABLED, 2=REVOKED
@@ -121,6 +134,9 @@ CREATE TABLE printshop_auth.auth_tokens (
 CREATE INDEX ix_auth_tokens_user_id_session_id ON printshop_auth.auth_tokens (user_id, session_id);
 CREATE INDEX ix_auth_tokens_token_type_expires_at ON printshop_auth.auth_tokens (token_type, expires_at); -- очистка refresh-токенов
 CREATE INDEX ix_auth_tokens_expires_at ON printshop_auth.auth_tokens (expires_at); -- очистка не-refresh токенов
+
+CREATE INDEX ix_auth_tokens_user_id_realm_id_session_id ON printshop_auth.auth_tokens (user_id, realm_id, session_id)
+    WHERE token_type = 2 AND token_status = 1; -- 2=REFRESH, 1=ENABLED
 
 -- --------------------------------------------------------------------------------------------------
 

@@ -51,6 +51,10 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		return Config{}, err
 	}
 
+	if err = authcfg.ValidateSessionThresholds(cfg.AccessControl.SessionSoftThreshold, cfg.AccessControl.SessionHardThreshold); err != nil {
+		return Config{}, err
+	}
+
 	if err = accesscfg.ValidateActionGroups(cfg.AccessControl.ActionGroups); err != nil {
 		return Config{}, err
 	}
