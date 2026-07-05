@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/catalog/paper"
+	"print-shop-back/internal/catalog/paper/section/pub/controller/httpv1"
+	"print-shop-back/internal/catalog/paper/section/pub/repository"
+	"print-shop-back/internal/catalog/paper/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitPaper(ctx context.Context, opts paper.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPaper(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPaper(_ context.Context, opts paper.Options) (*httpv1.Paper, error) { //nolint:unparam
+func initPaperController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewPaperPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewPaper(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewPaper(storage)
+
 	controller := httpv1.NewPaper(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

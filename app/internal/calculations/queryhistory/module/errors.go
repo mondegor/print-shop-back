@@ -1,9 +1,8 @@
 package module
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 // ErrQueryHistoryNotFound - query with ShortLink not found.
-var ErrQueryHistoryNotFound = mrerr.NewProto(
-	"calculations.errQueryHistoryNotFound", mrerr.ErrorKindUser, "query {{ .shortLink }} not found")
+var ErrQueryHistoryNotFound = errors.NewUserProto("QueryHistoryNotFound", "query {ShortLink} not found")

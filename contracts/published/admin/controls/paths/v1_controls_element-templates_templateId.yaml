@@ -1,0 +1,94 @@
+get:
+  summary: Метод получения шаблона элемента формы по его идентификатору
+  description: Метод предназначен для получения информации о шаблоне элемента формы из БД
+  operationId: getElementTemplate
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.ElementTemplates.Request.Path.TemplateID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о шаблоне элемента формы
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Controls.ElementTemplates.Response.Model.ElementTemplate.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+patch:
+  summary: Метод сохранения шаблона элемента формы
+  description: |-
+    Метод предназначен для сохранения шаблона элемента формы в БД
+
+    **Ограничения и ошибки полей:**
+    - template.paramName: unique,min=4,max=32,pattern=variable
+    - template.caption: max=64
+    - attachment: size=1Mb; ext=[.json]
+
+  operationId: storeElementTemplate
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.ElementTemplates.Request.Path.TemplateID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: "../components/models/Controls.ElementTemplates.Request.Model.StoreElementTemplateWithAttachment.yaml"
+
+  responses:
+    "204":
+      description: Информация о шаблоне элемента формы успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления шаблона элемента формы
+  description: Метод предназначен для удаления информации о шаблоне элемента формы из БД
+  operationId: removeElementTemplate
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.ElementTemplates.Request.Path.TemplateID.yaml"
+
+  responses:
+    "204":
+      description: Информация о шаблоне элемента формы успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

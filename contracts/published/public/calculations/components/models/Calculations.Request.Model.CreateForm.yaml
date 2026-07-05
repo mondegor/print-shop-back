@@ -1,0 +1,10 @@
+description: DTO - расчёт
+type: object
+required:
+  - id
+  - caption
+properties:
+  id:
+    $ref: "../../../_shared/components/fields/Api.Field.UUID.yaml"
+  caption:
+    $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"

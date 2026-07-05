@@ -1,0 +1,42 @@
+post:
+  summary: Метод создания нового элемента формы
+  description: |-
+    Метод предназначен для создания информации о новом элементе формы в БД
+
+    **Ограничения и ошибки полей:**
+    - formId: required,UUID (Controls.SubmitForm::FormID)
+    - templateId: required,gte=1 (Controls.ElementTemplate::TemplateID)
+    - paramName: omitempty,unique,min=4,max=32,pattern=variable
+    - caption: omitempty,max=64
+
+  operationId: createSubmitFormElement
+  tags:
+    - Controls
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Controls.SubmitForms.Request.Model.CreateFormElement.yaml"
+
+  responses:
+    "201":
+      description: Информация об элементе формы успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItem.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

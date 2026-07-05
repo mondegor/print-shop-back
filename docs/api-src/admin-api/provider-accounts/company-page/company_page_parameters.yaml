@@ -1,8 +1,0 @@
-ProviderAccounts.CompanyPages.AdminAPI.Request.Query.Statuses:
-  name: statuses
-  in: query
-  required: false
-  description: Список статусов страницы через ","
-  schema:
-    type: string
-  example: "HIDDEN,PUBLISHED"

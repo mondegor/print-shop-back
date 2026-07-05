@@ -4,16 +4,15 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-components/mrordering"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -25,9 +24,10 @@ const (
 type (
 	// FormElement - comment struct.
 	FormElement struct {
-		parser  validate.RequestSubmitFormParser
-		sender  mrserver.ResponseSender
-		useCase adm.FormElementUseCase
+		parser       validate.RequestSubmitFormParser
+		sender       mrserver.ResponseSender
+		useCase      adm.FormElementUseCase
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -37,6 +37,15 @@ func NewFormElement(parser validate.RequestSubmitFormParser, sender mrserver.Res
 		parser:  parser,
 		sender:  sender,
 		useCase: useCase,
+		errorWrapper: errors.NewCustomWrapper(
+			module.ErrSubmitFormNotFound.Code(), "formId",
+			module.ErrFormElementDetailingNotAllowed.Code(), "formId",
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			module.ErrFormElementParamNameAlreadyExists.Code(), "paramName",
+			api.ErrElementTemplateNotFound.Code(), "templateId",
+			api.ErrElementTemplateIsDisabled.Code(), "templateId",
+			mrordering.ErrAfterNodeNotFound.Code(), "afterNodeId",
+		),
 	}
 }
 
@@ -46,7 +55,7 @@ func (ht *FormElement) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: formElementListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: formElementItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: formElementItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: formElementItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: formElementItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: formElementItemMoveURL, Func: ht.Move},
@@ -65,18 +74,18 @@ func (ht *FormElement) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateFormElementRequest{}
+	req := CreateFormElementRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.FormElement{
-		FormID:     request.FormID,
-		TemplateID: request.TemplateID,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
-		Required:   &request.Required,
+		FormID:     req.FormID,
+		TemplateID: req.TemplateID,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
+		Required:   &req.Required,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -87,29 +96,29 @@ func (ht *FormElement) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *FormElement) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreFormElementRequest{}
+// Save - comment method.
+func (ht *FormElement) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreFormElementRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.FormElement{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
-		Required:   request.Required,
+		TagVersion: req.TagVersion,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
+		Required:   req.Required,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -127,14 +136,14 @@ func (ht *FormElement) Remove(w http.ResponseWriter, r *http.Request) error {
 
 // Move - comment method.
 func (ht *FormElement) Move(w http.ResponseWriter, r *http.Request) error {
-	request := view.MoveItemRequest{}
+	req := model.MoveItemRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), request.AfterNodeID); err != nil {
-		return ht.wrapErrorNode(r, err)
+	if err := ht.useCase.MoveAfterID(r.Context(), ht.getItemID(r), req.AfterNodeID); err != nil {
+		return ht.wrapError(err, r)
 	}
 
 	return ht.sender.SendNoContent(w)
@@ -149,39 +158,9 @@ func (ht *FormElement) getRawItemID(r *http.Request) string {
 }
 
 func (ht *FormElement) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if module.ErrSubmitFormNotFound.Is(err) ||
-		module.ErrFormElementDetailingNotAllowed.Is(err) {
-		return mrerr.NewCustomError("formId", err)
-	}
-
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if module.ErrFormElementParamNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("paramName", err)
-	}
-
-	if api.ErrElementTemplateNotFound.Is(err) ||
-		api.ErrElementTemplateIsDisabled.Is(err) {
-		return mrerr.NewCustomError("templateId", err)
-	}
-
-	return err
-}
-
-func (ht *FormElement) wrapErrorNode(r *http.Request, err error) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
-		return module.ErrFormElementNotFound.Wrap(err, ht.getRawItemID(r))
-	}
-
-	if mrordering.ErrAfterNodeNotFound.Is(err) {
-		return mrerr.NewCustomError("afterNodeId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

@@ -1,0 +1,32 @@
+post:
+  summary: Метод расчёта указанной формы
+  description: |-
+    Метод предназначен для расчёта указанной формы
+
+  operationId: createCalc
+  tags:
+    - Calculations
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          $ref: "../components/models/Calculations.Request.Model.CreateForm.yaml"
+
+  responses:
+    "201":
+      description: Форма была рассчитана
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItem.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

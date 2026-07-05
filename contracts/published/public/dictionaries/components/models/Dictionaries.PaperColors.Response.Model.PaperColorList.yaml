@@ -1,0 +1,4 @@
+description: DTO - список цветов бумаги
+type: array
+items:
+  $ref: "./Dictionaries.PaperColors.Response.Model.PaperColor.yaml"

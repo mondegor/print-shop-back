@@ -1,0 +1,40 @@
+description: DTO - место хранения
+type: object
+required:
+  - id
+  - tag_version
+  - territory_id
+  - kind
+  - code
+  - volume
+  - status
+  - containers_volume
+  - fullness
+  - created_at
+  - updated_at
+properties:
+  id: # storeId
+    $ref: "../fields/Warehousing.Field.StoreID.yaml"
+  tag_version:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  territory_id:
+    $ref: "../fields/Warehousing.Field.TerritoryID.yaml"
+  kind:
+    $ref: "../enums/Warehousing.Enum.StoreKind.yaml"
+  code:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 16
+      - example: "E-48-23/121"
+  volume:
+    $ref: "../../../_shared/components/models/Api.Response.Model.Volume.yaml"
+  status:
+    $ref: "../enums/Warehousing.Enum.StoreStatus.yaml"
+  containers_volume:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+  fullness:
+    $ref: "../../../_shared/components/fields/Api.Field.Percent.yaml"
+  created_at:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updated_at:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

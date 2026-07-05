@@ -3,18 +3,17 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/dictionaries/printformat/module"
+	"print-shop-back/internal/dictionaries/printformat/section/adm"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -26,10 +25,11 @@ const (
 type (
 	// PrintFormat - comment struct.
 	PrintFormat struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.PrintFormatUseCase
-		listSorter mrview.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.PrintFormatUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -38,13 +38,17 @@ func NewPrintFormat(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
 	useCase adm.PrintFormatUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *PrintFormat {
 	return &PrintFormat{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+		),
 	}
 }
 
@@ -55,7 +59,7 @@ func (ht *PrintFormat) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: printFormatListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: printFormatItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: printFormatItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: printFormatItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: printFormatItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: printFormatItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -104,16 +108,16 @@ func (ht *PrintFormat) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePrintFormatRequest{}
+	req := CreatePrintFormatRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
-		Caption: request.Caption,
-		Width:   measure.Meter(request.Width * measure.OneThousandth),
-		Height:  measure.Meter(request.Height * measure.OneThousandth),
+		Caption: req.Caption,
+		Width:   measure.Meter(req.Width * measure.OneThousandth),
+		Height:  measure.Meter(req.Height * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -124,29 +128,29 @@ func (ht *PrintFormat) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePrintFormatRequest{}
+// Save - comment method.
+func (ht *PrintFormat) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StorePrintFormatRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
-		Width:      measure.Meter(request.Width * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
+		Width:      measure.Meter(req.Width * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -155,16 +159,16 @@ func (ht *PrintFormat) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *PrintFormat) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.PrintFormat{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -192,17 +196,9 @@ func (ht *PrintFormat) getRawItemID(r *http.Request) string {
 }
 
 func (ht *PrintFormat) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrPrintFormatNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

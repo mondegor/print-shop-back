@@ -1,6 +1,0 @@
-Custom.Field.Dictionaries.PrintFormatID:
-  description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
-  type: integer
-  # format: uint64
-  minimum: 1
-  example: 2

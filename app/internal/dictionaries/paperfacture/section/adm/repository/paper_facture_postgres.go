@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/paperfacture/module"
+	"print-shop-back/internal/dictionaries/paperfacture/section/adm/entity"
 )
 
 type (
@@ -18,9 +18,9 @@ type (
 	PaperFacturePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -29,7 +29,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 	return &PaperFacturePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNamePaperFactures,
 			"facture_id",
@@ -44,7 +44,7 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNamePaperFactures,
 		),
@@ -55,8 +55,16 @@ func NewPaperFacturePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 func (re *PaperFacturePostgres) FetchWithTotal(
 	ctx context.Context,
 	params entity.PaperFactureParams,
-) (rows []entity.PaperFacture, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+) (rows []entity.PaperFacture, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(facture_caption)", strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("facture_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -67,7 +75,14 @@ func (re *PaperFacturePostgres) FetchWithTotal(
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("facture_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -84,7 +99,7 @@ func (re *PaperFacturePostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.PaperFacture, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -101,7 +116,7 @@ func (re *PaperFacturePostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -170,8 +185,8 @@ func (re *PaperFacturePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PaperFacturePostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -235,27 +250,4 @@ func (re *PaperFacturePostgres) UpdateStatus(ctx context.Context, row entity.Pap
 // Delete - comment method.
 func (re *PaperFacturePostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *PaperFacturePostgres) fetchCondition(filter entity.PaperFactureListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLike("UPPER(facture_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("facture_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *PaperFacturePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("facture_id", mrenum.SortDirectionASC),
-			)
-		},
-	)
 }

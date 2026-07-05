@@ -3,28 +3,27 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/laminate/module"
+	"print-shop-back/internal/catalog/laminate/section/adm"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// Laminate - comment struct.
 	Laminate struct {
-		storage         adm.LaminateStorage
-		materialTypeAPI api.MaterialTypeAvailability
-		eventEmitter    mrsender.EventEmitter
-		errorWrapper    mrcore.UseCaseErrorWrapper
-		statusFlow      mrstatus.Flow
+		storage                     adm.LaminateStorage
+		materialTypeAPI             api.MaterialTypeAvailability
+		eventEmitter                mrevent.Emitter
+		errorWrapper                errors.Wrapper
+		errorNotFoundWrapper        errors.Wrapper
+		errorVersionConflictWrapper errors.Wrapper
+		statusFlowMap               workflow.FlowMap[workflow.ItemStatus]
 	}
 )
 
@@ -32,23 +31,24 @@ type (
 func NewLaminate(
 	storage adm.LaminateStorage,
 	materialTypeAPI api.MaterialTypeAvailability,
-	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UseCaseErrorWrapper,
+	eventEmitter mrevent.Emitter,
 ) *Laminate {
 	return &Laminate{
-		storage:         storage,
-		materialTypeAPI: materialTypeAPI,
-		eventEmitter:    decorator.NewSourceEmitter(eventEmitter, entity.ModelNameLaminate),
-		errorWrapper:    errorWrapper,
-		statusFlow:      mrflow.ItemStatusFlow(),
+		storage:                     storage,
+		materialTypeAPI:             materialTypeAPI,
+		eventEmitter:                mrevent.EmitterWithSource(eventEmitter, entity.ModelNameLaminate),
+		errorWrapper:                errors.NewServiceOperationFailedWrapper(),
+		errorNotFoundWrapper:        errors.NewServiceRecordNotFoundWrapper(),
+		errorVersionConflictWrapper: errors.NewServiceRecordVersionConflictWrapper(),
+		statusFlowMap:               itemstatus.NewFlowMap(),
 	}
 }
 
 // GetList - comment method.
-func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (items []entity.Laminate, countItems uint64, err error) {
+func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (items []entity.Laminate, countItems int, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return nil, 0, uc.errorWrapper.Wrap(err)
 	}
 
 	if countItems == 0 {
@@ -61,12 +61,12 @@ func (uc *Laminate) GetList(ctx context.Context, params entity.LaminateParams) (
 // GetItem - comment method.
 func (uc *Laminate) GetItem(ctx context.Context, itemID uint64) (entity.Laminate, error) {
 	if itemID == 0 {
-		return entity.Laminate{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.Laminate{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.Laminate{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, itemID)
+		return entity.Laminate{}, uc.errorNotFoundWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	return item, nil
@@ -78,32 +78,32 @@ func (uc *Laminate) Create(ctx context.Context, item entity.Laminate) (itemID ui
 		return 0, err
 	}
 
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return 0, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	return itemID, nil
 }
 
-// Store - comment method.
-func (uc *Laminate) Store(ctx context.Context, item entity.Laminate) error {
+// Save - comment method.
+func (uc *Laminate) Save(ctx context.Context, item entity.Laminate) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return errors.ErrRecordVersionConflict
 	}
 
 	// предварительная проверка существования записи нужна для того,
-	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
+	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionConflict
 	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
@@ -112,14 +112,10 @@ func (uc *Laminate) Store(ctx context.Context, item entity.Laminate) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
-		}
-
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", "itemId", item.ID, "tagVersion", tagVersion)
 
 	return nil
 }
@@ -127,36 +123,32 @@ func (uc *Laminate) Store(ctx context.Context, item entity.Laminate) error {
 // ChangeStatus - comment method.
 func (uc *Laminate) ChangeStatus(ctx context.Context, item entity.Laminate) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return errors.ErrRecordVersionConflict
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if currentStatus == item.Status {
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
-		}
-
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", "itemId", item.ID, "tagVersion", tagVersion, "status", item.Status)
 
 	return nil
 }
@@ -164,14 +156,14 @@ func (uc *Laminate) ChangeStatus(ctx context.Context, item entity.Laminate) erro
 // Remove - comment method.
 func (uc *Laminate) Remove(ctx context.Context, itemID uint64) error {
 	if itemID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.storage.Delete(ctx, itemID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameLaminate, itemID)
+		return uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", "itemId", itemID)
 
 	return nil
 }
@@ -182,7 +174,7 @@ func (uc *Laminate) checkItem(ctx context.Context, item *entity.Laminate) error 
 	}
 
 	if item.ID == 0 || item.TypeID > 0 {
-		if err := uc.materialTypeAPI.CheckingAvailability(ctx, item.TypeID); err != nil {
+		if err := uc.materialTypeAPI.CheckAvailability(ctx, item.TypeID); err != nil {
 			return err
 		}
 	}
@@ -193,11 +185,11 @@ func (uc *Laminate) checkItem(ctx context.Context, item *entity.Laminate) error 
 func (uc *Laminate) checkArticle(ctx context.Context, item *entity.Laminate) error {
 	id, err := uc.storage.FetchIDByArticle(ctx, item.Article)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameLaminate)
+		return uc.errorWrapper.Wrap(err)
 	}
 
 	if item.ID != id {

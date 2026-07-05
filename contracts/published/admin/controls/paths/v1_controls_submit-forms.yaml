@@ -1,0 +1,92 @@
+get:
+  summary: Метод получения списка форм
+  description: |-
+    Метод предназначен для получения списка всех форм, сохраненных в БД
+
+    Фильтр `Api.Request.Query.Filter.SearchText` использует для поиска следующие поля:
+    - rewriteName;
+    - paramName;
+    - caption;
+
+    Возможные значения `Api.Request.Query.ListPager.PageSize`:
+    - от 1 до 1000 (default: 50)
+
+    Возможные значения `Api.Request.Query.ListSorter.SortColumn`:
+    - rewriteName;
+    - paramName;
+    - caption,default,asc;
+    - createdAt;
+    - updatedAt;
+
+  operationId: getSubmitFormList
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.SearchText.yaml"
+    - $ref: "../components/parameters/Controls.Request.Query.Filter.ElementDetailing.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.Filter.Statuses.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortColumn.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListSorter.SortDirection.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageIndex.yaml"
+    - $ref: "../../_shared/components/parameters/Api.Request.Query.ListPager.PageSize.yaml"
+
+  responses:
+    "200":
+      description: Получен список форм
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Controls.SubmitForms.Response.Model.FormList.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+post:
+  summary: Метод добавления новой формы
+  description: |-
+    Метод предназначен для создания информации о новой форме в БД
+
+    **Ограничения и ошибки полей:**
+    - rewriteName: required,unique,min=4,max=32,pattern=rewrite_name
+    - paramName: required,unique,min=4,max=32,pattern=variable
+    - caption: required,max=128
+    - detailing: required (Custom.Enum.FormElementDetailing)
+
+  operationId: createSubmitForm
+  tags:
+    - Controls
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Controls.SubmitForms.Request.Model.CreateForm.yaml"
+
+  responses:
+    "201":
+      description: Информация о форме успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItem.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/pub/entity"
+	"print-shop-back/pkg/controls/enum/activitystatus"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 type (
@@ -41,8 +42,8 @@ func (re *SubmitFormPostgres) Fetch(ctx context.Context, _ entity.SubmitFormPara
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		enum.ActivityStatusPublished,
-		enum.ElementDetailingNormal,
+		activitystatus.Published,
+		elementdetailing.Normal,
 	)
 	if err != nil {
 		return nil, err
@@ -89,8 +90,8 @@ func (re *SubmitFormPostgres) FetchByRewriteName(ctx context.Context, rewriteNam
 		ctx,
 		sql,
 		rewriteName,
-		enum.ActivityStatusPublished,
-		enum.ElementDetailingNormal,
+		activitystatus.Published,
+		elementdetailing.Normal,
 	).Scan(
 		&row.Version,
 		&row.RewriteName,

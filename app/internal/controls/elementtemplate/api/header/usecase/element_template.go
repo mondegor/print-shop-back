@@ -3,60 +3,65 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-sysmess/util/conv"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/api/header"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/controls/elementtemplate/api/header"
+	"print-shop-back/pkg/controls/api"
 )
 
 type (
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
 		storage      header.ElementTemplateStorage
-		errorWrapper mrcore.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
+		tracer       trace.Tracer
 	}
 )
 
 // NewElementTemplate - создаёт объект ElementTemplate.
-func NewElementTemplate(storage header.ElementTemplateStorage, errorWrapper mrcore.UseCaseErrorWrapper) *ElementTemplate {
+func NewElementTemplate(
+	storage header.ElementTemplateStorage,
+	tracer trace.Tracer,
+) *ElementTemplate {
 	return &ElementTemplate{
 		storage:      storage,
-		errorWrapper: errorWrapper,
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
+		tracer:       tracer,
 	}
 }
 
 // GetItemHeader - comment method.
 func (uc *ElementTemplate) GetItemHeader(ctx context.Context, itemID uint64) (api.ElementTemplateDTO, error) {
-	uc.debugCmd(ctx, "GetHead", mrmsg.Data{"id": itemID})
+	uc.traceCmd(ctx, "GetHead", conv.Group{"id": itemID})
 
 	if itemID == 0 {
-		return api.ElementTemplateDTO{}, api.ErrElementTemplateRequired.New()
+		return api.ElementTemplateDTO{}, api.ErrElementTemplateRequired
 	}
 
 	item, err := uc.storage.FetchOneHead(ctx, itemID)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return api.ElementTemplateDTO{}, api.ErrElementTemplateNotFound.New(itemID)
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
+			return api.ElementTemplateDTO{}, api.ErrElementTemplateNotFound.Wrap(err, itemID)
 		}
 
-		return api.ElementTemplateDTO{}, uc.errorWrapper.WrapErrorFailed(err, api.ElementTemplateHeaderName)
+		return api.ElementTemplateDTO{}, uc.errorWrapper.Wrap(err)
 	}
 
-	if item.Status == mrenum.ItemStatusDisabled {
+	if item.Status == itemstatus.Disabled {
 		return api.ElementTemplateDTO{}, api.ErrElementTemplateIsDisabled.New(itemID)
 	}
 
 	return item.ElementTemplateDTO, nil
 }
 
-func (uc *ElementTemplate) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrlog.Ctx(ctx).
-		Debug().
-		Str("storage", api.ElementTemplateHeaderName).
-		Str("cmd", command).
-		Any("data", data).
-		Send()
+func (uc *ElementTemplate) traceCmd(ctx context.Context, command string, data conv.Group) {
+	uc.tracer.Trace(
+		ctx,
+		"storage", api.ElementTemplateHeaderName,
+		"cmd", command,
+		"data", data,
+	)
 }

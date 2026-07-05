@@ -1,0 +1,16 @@
+description: Прямоугольный формат
+type: object
+required:
+  - width
+  - height
+properties:
+  width:
+    description: Ширина в метрах
+    type: number
+    format: double
+    example: 0.210
+  height:
+    description: Высота в метрах
+    type: number
+    format: double
+    example: 0.297

@@ -1,8 +1,8 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
@@ -32,6 +32,6 @@ type (
 	// LaminateListResponse - comment struct.
 	LaminateListResponse struct {
 		Items []entity.Laminate `json:"items"`
-		Total uint64            `json:"total"`
+		Total int               `json:"total"`
 	}
 )

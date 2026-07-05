@@ -1,0 +1,18 @@
+description: DTO создания новой формы
+type: object
+required:
+  - rewriteName
+  - paramName
+  - caption
+  - detailing
+properties:
+  rewriteName:
+    $ref: "../../../_shared/components/fields/Api.Field.RewriteName.yaml"
+  paramName:
+    $ref: "../../../_shared/components/fields/Api.Field.VariableCamelCase.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - example: "Листовая продукция"
+  detailing:
+    $ref: "../enums/Controls.Enum.FormElementDetailing.yaml"

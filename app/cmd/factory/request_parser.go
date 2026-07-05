@@ -1,28 +1,33 @@
 package factory
 
 import (
-	"context"
+	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrlog"
+	mrauthconf "github.com/mondegor/go-components/wire/mrauth/config"
+	"github.com/mondegor/go-components/wire/mrauth/mapping"
+	"github.com/mondegor/go-sysmess/util/mime"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 	"github.com/mondegor/go-webcore/mrview"
 	"github.com/mondegor/go-webcore/mrview/mrplayvalidator"
 
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
+	mrcalcvalidate "print-shop-back/pkg/mrcalc/validate"
+	validate2 "print-shop-back/pkg/transport/validate"
+)
+
+const (
+	langURLParam = "lang"
 )
 
 // CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
-func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestParsers, error) {
-	logger := mrlog.Ctx(ctx)
-	logger.Info().Msg("Create and init base request parsers")
+func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
+	log.Info(opts.Logger, "Create and init base request parsers")
 
-	validator, err := NewValidator(ctx, cfg)
+	validator, err := NewValidator(opts.Logger, opts.Cfg)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -31,101 +36,122 @@ func CreateRequestParsers(ctx context.Context, cfg config.Config) (app.RequestPa
 	// поэтому её можно менять только при смене самого роутера
 	pathFunc := mrchi.URLPathParam
 
-	registeredMimeTypes := mrlib.NewMimeTypeList(logger, cfg.Validation.MimeTypes)
+	registeredMimeTypes := mime.NewTypeList(opts.Cfg.AllowedMimeTypes)
 
-	jsonMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfg.Validation.Files.Json.Extensions)
+	jsonMimeTypes, err := registeredMimeTypes.TypesByExts(opts.Cfg.ValidationFilesJson.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
-	logoMimeTypes, err := registeredMimeTypes.MimeTypesByExts(cfg.Validation.Images.Logo.File.Extensions)
+	logoMimeTypes, err := registeredMimeTypes.TypesByExts(opts.Cfg.ValidationImagesLogo.File.Extensions)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
 
 	parsers := app.RequestParsers{
-		// Bool:       mrparser.NewBool(),
-		// DateTime:   mrparser.NewDateTime(),
-		Int64:      mrparser.NewInt64(pathFunc),
-		ItemStatus: mrparser.NewItemStatus(),
-		Uint64:     mrparser.NewUint64(pathFunc),
-		ListSorter: mrparser.NewListSorter(mrparser.ListSorterOptions{}),
-		ListPager: mrparser.NewListPager(
-			mrparser.ListPagerOptions{
-				PageSizeMax:     cfg.General.PageSizeMax,
-				PageSizeDefault: cfg.General.PageSizeDefault,
+		// Bool:       parser.NewBool(),
+		// DateTime:   parser.NewDateTime(),
+		Int64:      parser.NewInt64(opts.Logger),
+		ItemStatus: parser.NewItemStatus(opts.Logger),
+		Uint64:     parser.NewUint64(pathFunc, opts.Logger),
+		ListCursor: parser.NewListCursor(
+			opts.Logger,
+			parser.ListCursorOptions{
+				LimitMax:     int(opts.Cfg.ModuleSettings.General.PageSizeMax),
+				LimitDefault: int(opts.Cfg.ModuleSettings.General.PageSizeDefault),
 			},
 		),
-		String:    mrparser.NewString(pathFunc),
-		UUID:      mrparser.NewUUID(pathFunc),
-		Validator: mrparser.NewValidator(mrjson.NewDecoder(), validator),
-		FileJson: mrparser.NewFile(
-			logger,
-			mrparser.WithFileMinSize(cfg.Validation.Files.Json.MinSize),
-			mrparser.WithFileMaxSize(cfg.Validation.Files.Json.MaxSize),
-			mrparser.WithFileMaxFiles(cfg.Validation.Files.Json.MaxFiles),
-			mrparser.WithFileCheckRequestContentType(cfg.Validation.Files.Json.CheckRequestContentType),
-			mrparser.WithFileAllowedMimeTypes(jsonMimeTypes),
+		ListPager: parser.NewListPager(
+			opts.Logger,
+			parser.ListPagerOptions{
+				PageSizeMax:     int(opts.Cfg.ModuleSettings.General.PageSizeMax),
+				PageSizeDefault: int(opts.Cfg.ModuleSettings.General.PageSizeDefault),
+			},
 		),
-		ImageLogo: mrparser.NewImage(
-			logger,
-			mrparser.WithImageMaxWidth(cfg.Validation.Images.Logo.MaxWidth),
-			mrparser.WithImageMaxHeight(cfg.Validation.Images.Logo.MaxHeight),
-			mrparser.WithImageCheckBody(cfg.Validation.Images.Logo.CheckBody),
-			mrparser.WithImageFileOptions(
-				mrparser.WithFileMinSize(cfg.Validation.Images.Logo.File.MinSize),
-				mrparser.WithFileMaxSize(cfg.Validation.Images.Logo.File.MaxSize),
-				mrparser.WithFileMaxFiles(cfg.Validation.Images.Logo.File.MaxFiles),
-				mrparser.WithFileCheckRequestContentType(cfg.Validation.Images.Logo.File.CheckRequestContentType),
-				mrparser.WithFileAllowedMimeTypes(logoMimeTypes),
+		ListSorter: parser.NewListSorter(opts.Logger, parser.ListSorterOptions{}),
+		String:     parser.NewString(pathFunc, opts.Logger),
+		UUID:       parser.NewUUID(pathFunc, opts.Logger),
+		Validator:  parser.NewValidator(mrjson.NewDecoder(), validator),
+		ClientIP:   parser.NewClientIP(opts.Logger),
+		User:       parser.NewUser(opts.Logger),
+		Locale:     parser.NewLocale(opts.LocalePool, opts.Logger, langURLParam),
+		FileJson: parser.NewFile(
+			opts.Logger,
+			parser.WithFileMinSize(int64(opts.Cfg.ValidationFilesJson.MinSize)),
+			parser.WithFileMaxSize(int64(opts.Cfg.ValidationFilesJson.MaxSize)),
+			parser.WithFileMaxFiles(int(opts.Cfg.ValidationFilesJson.MaxFiles)),
+			parser.WithFileCheckRequestContentType(opts.Cfg.ValidationFilesJson.CheckRequestContentType),
+			parser.WithFileAllowedMimeTypes(jsonMimeTypes),
+		),
+		ImageLogo: parser.NewImage(
+			opts.Logger,
+			parser.WithImageMaxWidth(int32(opts.Cfg.ValidationImagesLogo.MaxWidth)),
+			parser.WithImageMaxHeight(int32(opts.Cfg.ValidationImagesLogo.MaxHeight)),
+			parser.WithImageCheckBody(opts.Cfg.ValidationImagesLogo.CheckBody),
+			parser.WithImageFileOpts(
+				parser.WithFileMinSize(int64(opts.Cfg.ValidationImagesLogo.File.MinSize)),
+				parser.WithFileMaxSize(int64(opts.Cfg.ValidationImagesLogo.File.MaxSize)),
+				parser.WithFileMaxFiles(int(opts.Cfg.ValidationImagesLogo.File.MaxFiles)),
+				parser.WithFileCheckRequestContentType(opts.Cfg.ValidationImagesLogo.File.CheckRequestContentType),
+				parser.WithFileAllowedMimeTypes(logoMimeTypes),
 			),
 		),
 	}
 
-	parsers.Parser = validate.NewParser(
+	parsers.Parser = validate2.NewParser(
 		parsers.Int64,
 		parsers.Uint64,
 		parsers.String,
 		parsers.UUID,
 		parsers.Validator,
+		parsers.ClientIP,
+		parsers.User,
+		parsers.Locale,
+		parsers.ListCursor,
 	)
 
-	parsers.ExtendParser = validate.NewExtendParser(
+	parsers.ExtendParser = validate2.NewExtendParser(
 		parsers.Parser,
 		parsers.ItemStatus,
-		parsers.ListSorter,
 		parsers.ListPager,
+		parsers.ListSorter,
 	)
 
 	return parsers, nil
 }
 
 // NewValidator - создаёт объект mrplayvalidator.ValidatorAdapter.
-func NewValidator(ctx context.Context, _ config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init data validator")
+func NewValidator(logger log.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
+	log.Info(logger, "Create and init data validator")
 
-	validator := mrplayvalidator.New()
-
-	// registers custom tags for validation (see mrview.validator_tags.go)
-
-	if err := validator.Register("tag_article", mrview.ValidateAnyNotSpaceSymbol); err != nil {
-		return nil, err
+	customTags := []mrview.Tag{
+		mrview.TagArticle(),
+		mrauthconf.TagEmail(),
+		mrauthconf.TagPhone(),
+		mrauthconf.TagEmailPhone(),
+		mrview.TagVariable(),
+		mrview.TagName(),
+		mrview.TagRewriteName(),
+		mrview.TagPassword(),
+		mrauthconf.TagRealm(
+			mapping.OptionUserRealmsToStringRealms(cfg.AccessControl.Realms),
+		),
+		{
+			Name:         "tag_2d_size",
+			ValidateFunc: mrcalcvalidate.Size2d,
+		},
+		{
+			Name:         "tag_3d_size",
+			ValidateFunc: mrcalcvalidate.Size3d,
+		},
 	}
 
-	if err := validator.Register("tag_rewrite_name", mrview.ValidateRewriteName); err != nil {
-		return nil, err
-	}
+	validator := mrplayvalidator.New(logger)
 
-	if err := validator.Register("tag_variable", mrview.ValidateVariable); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_2d_size", view.Validate2dSize); err != nil {
-		return nil, err
-	}
-
-	if err := validator.Register("tag_3d_size", view.Validate3dSize); err != nil {
-		return nil, err
+	for _, tag := range customTags {
+		if err := validator.Register(tag.Name, tag.ValidateFunc); err != nil {
+			return nil, fmt.Errorf("tag %s: %w", tag.Name, err)
+		}
 	}
 
 	return validator, nil

@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 const (
-	ModelNameCompanyPage = "admin-api.ProviderAccounts.CompanyPage" // ModelNameCompanyPage - название сущности
+	// ModelNameCompanyPage - название сущности.
+	ModelNameCompanyPage = "admin-api.ProviderAccounts.CompanyPage"
 )
 
 type (
@@ -21,7 +22,7 @@ type (
 		PageTitle   string            `json:"pageTitle" sort:"pageTitle,default"`
 		LogoURL     string            `json:"logoUrl,omitempty"` // logo_meta.path
 		SiteURL     string            `json:"siteUrl" sort:"siteUrl"`
-		Status      enum.PublicStatus `json:"status"`
+		Status      publicstatus.Enum `json:"status"`
 		CreatedAt   time.Time         `json:"createdAt" sort:"createdAt"`
 		UpdatedAt   time.Time         `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -36,6 +37,6 @@ type (
 	// CompanyPageListFilter - comment struct.
 	CompanyPageListFilter struct {
 		SearchText string
-		Statuses   []enum.PublicStatus
+		Statuses   []publicstatus.Enum
 	}
 )

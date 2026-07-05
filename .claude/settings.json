@@ -1,0 +1,52 @@
+{
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(echo *)",
+      "Bash(ls *)",
+      "Bash(grep *)",
+      "Bash(go build *)",
+      "Bash(go test *)",
+      "Bash(go vet *)",
+      "Bash(golangci-lint run *)",
+      "Bash(gofumpt *)",
+      "Bash(cp *)",
+      "Bash(make lint)",
+      "Bash(make test)",
+      "Bash(make generate)",
+      "Bash(make check-and-fix)",
+      "Bash(make deps)",
+      "Skill(code-review)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(sudo rm *)",
+      "Bash(docker rm *)",
+      "Bash(dd *)",
+      "Bash(mkfs*)",
+      "Bash(shred *)",
+      "Bash(chmod -R 777 *)",
+      "Bash(shutdown *)",
+      "Bash(reboot *)",
+      "Bash(halt *)",
+      "Bash(poweroff *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git push --force-with-lease*)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -*f*)",
+      "Bash(git rebase *)",
+      "Bash(git commit --amend *)",
+      "Bash(git filter-branch *)"
+    ]
+  },
+  "attribution": {
+    "commit": ""
+  }
+}

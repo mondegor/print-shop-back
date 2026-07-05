@@ -1,0 +1,22 @@
+description: DTO - остатки контейнера
+type: object
+required:
+  - id
+  - container_id
+  - location_id
+  - quantity
+  - volume
+  - created_at
+properties:
+  id: # stockId
+    $ref: "../fields/Warehousing.Field.StockID.yaml"
+  container_id:
+    $ref: "../fields/Warehousing.Field.ContainerID.yaml"
+  location_id:
+    $ref: "../fields/Warehousing.Field.LocationID.yaml"
+  quantity:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
+  volume:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+  created_at:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"

@@ -1,0 +1,8 @@
+---
+privileges:
+  - api/users
+
+permissions:
+  - modAuth
+  - modFileStation
+  - modWarehousing

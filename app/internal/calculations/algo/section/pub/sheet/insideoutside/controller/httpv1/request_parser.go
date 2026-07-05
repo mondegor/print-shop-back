@@ -1,10 +1,10 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/s2/rect2d"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/insideoutside/dto"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )
 
 func (ht *SheetInsideOutside) parseRequest(data model.SheetInsideOutsideQuantityRequest) (dto.ParsedData, error) {

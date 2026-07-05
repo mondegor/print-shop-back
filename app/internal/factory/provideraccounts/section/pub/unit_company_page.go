@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/usecase"
+	"print-shop-back/internal/provideraccounts/section/pub/controller/httpv1"
+	"print-shop-back/internal/provideraccounts/section/pub/repository"
+	"print-shop-back/internal/provideraccounts/section/pub/usecase"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
-func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitCompanyPage(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitCompanyPage(_ context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) { //nolint:unparam
-	storage := repository.NewCompanyPagePostgres(opts.DBConnManager)
-	useCase := usecase.NewCompanyPage(storage, opts.UseCaseErrorWrapper)
+func initCompanyPageController(
+	dbConnManager mrstorage.DBConnManager,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoURLBuilder mrpath.Builder,
+) (mrserver.HttpController, error) {
+	storage := repository.NewCompanyPagePostgres(dbConnManager)
+	useCase := usecase.NewCompanyPage(storage)
 	controller := httpv1.NewCompanyPage(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestModuleParser,
+		responseSender,
 		useCase,
-		opts.UnitCompanyPage.LogoURLBuilder,
+		logoURLBuilder,
 	)
 
 	return controller, nil

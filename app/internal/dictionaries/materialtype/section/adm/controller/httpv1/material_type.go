@@ -3,17 +3,16 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/dictionaries/materialtype/module"
+	"print-shop-back/internal/dictionaries/materialtype/section/adm"
+	"print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -25,10 +24,11 @@ const (
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.MaterialTypeUseCase
-		listSorter mrview.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.MaterialTypeUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
@@ -37,13 +37,17 @@ func NewMaterialType(
 	parser validate.RequestExtendParser,
 	sender mrserver.ResponseSender,
 	useCase adm.MaterialTypeUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *MaterialType {
 	return &MaterialType{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+		),
 	}
 }
 
@@ -54,7 +58,7 @@ func (ht *MaterialType) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: materialTypeListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: materialTypeItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: materialTypeItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: materialTypeItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: materialTypeItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: materialTypeItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -101,14 +105,14 @@ func (ht *MaterialType) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *MaterialType) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateMaterialTypeRequest{}
+	req := CreateMaterialTypeRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
-		Caption: request.Caption,
+		Caption: req.Caption,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -119,27 +123,27 @@ func (ht *MaterialType) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreMaterialTypeRequest{}
+// Save - comment method.
+func (ht *MaterialType) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreMaterialTypeRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		Caption:    req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -148,16 +152,16 @@ func (ht *MaterialType) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *MaterialType) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.MaterialType{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -185,17 +189,9 @@ func (ht *MaterialType) getRawItemID(r *http.Request) string {
 }
 
 func (ht *MaterialType) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrMaterialTypeNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

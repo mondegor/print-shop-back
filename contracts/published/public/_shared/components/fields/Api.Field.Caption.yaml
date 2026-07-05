@@ -1,0 +1,4 @@
+description: Название записи
+type: string
+maxLength: 128
+example: "Название"

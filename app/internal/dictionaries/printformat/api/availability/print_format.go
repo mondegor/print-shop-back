@@ -3,12 +3,12 @@ package availability
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrenum"
+	"print-shop-back/internal/adapter/workflow"
 )
 
 type (
 	// PrintFormatStorage - comment interface.
 	PrintFormatStorage interface {
-		FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 	}
 )

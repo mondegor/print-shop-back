@@ -1,268 +1,302 @@
 package factory
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
-	"github.com/mondegor/go-storage/mrredislock"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrrun"
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
+	wireauth "github.com/mondegor/go-components/wire/mrauth/initing"
+	redislocker "github.com/mondegor/go-storage/mrredis/locker"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrpostgres/listennotify"
+	"github.com/mondegor/go-sysmess/mrrun"
+	"github.com/mondegor/go-sysmess/util/xio"
+	wireerrors "github.com/mondegor/go-sysmess/wire/errors"
+	wireaccess "github.com/mondegor/go-sysmess/wire/mraccess"
 
-	"github.com/mondegor/print-shop-back/cmd/factory/calculations"
-	"github.com/mondegor/print-shop-back/cmd/factory/catalog"
-	"github.com/mondegor/print-shop-back/cmd/factory/controls"
-	"github.com/mondegor/print-shop-back/cmd/factory/dictionaries"
-	"github.com/mondegor/print-shop-back/cmd/factory/filestation"
-	"github.com/mondegor/print-shop-back/cmd/factory/provideraccounts"
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
+	dictionariesapi "print-shop-back/cmd/factory/api/dictionaries"
+	"print-shop-back/cmd/factory/service"
+	"print-shop-back/cmd/factory/service/rest"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
+)
+
+// TODO: дублирование название таблиц.
+const (
+	serviceAuthTokensTableName = "printshop_auth.auth_tokens" //nolint:gosec
 )
 
 // InitApp - Настраивает конфигурацию, внешнее окружение приложения, после этого создаёт её модули и компоненты.
-func InitApp(ctx context.Context, args []string, stdout io.Writer) (context.Context, app.Options, error) {
-	parsedArgs, err := ParseAppArgs(args)
+func InitApp(args []string, stdout io.Writer) (app.Options, error) {
+	parsedArgs, err := config.ParseCmdArgs(args)
 	if err != nil {
-		return nil, app.Options{}, err
+		return app.Options{}, err
 	}
 
-	cfg, err := config.Create(
-		config.Args{
-			WorkDir:     parsedArgs.WorkDir,
-			ConfigPath:  parsedArgs.ConfigPath,
-			DotEnvPath:  parsedArgs.DotEnvPath,
-			Environment: parsedArgs.Environment,
-			LogLevel:    parsedArgs.LogLevel,
-			Stdout:      stdout,
+	cfg, err := config.Create(parsedArgs, stdout)
+	if err != nil {
+		return app.Options{}, fmt.Errorf("factory.InitApp(): %w", err)
+	}
+
+	logger, tracer, err := InitLoggerAndTracer(cfg)
+	if err != nil {
+		return app.Options{}, err
+	}
+
+	traceManager, err := InitTraceContextManager(cfg, logger)
+	if err != nil {
+		return app.Options{}, err
+	}
+
+	return InitAppEnvironment(
+		app.Options{
+			Cfg:             cfg,
+			Logger:          logger,
+			Tracer:          tracer,
+			TraceManager:    traceManager,
+			OpenedResources: xio.NewCloseManager(logger),
+			DebugFunc:       InitDebugInfo(cfg.DebugIsEnabled),
 		},
 	)
-	if err != nil {
-		return nil, app.Options{}, fmt.Errorf("factory.InitApp(): %w", err)
-	}
-
-	return InitAppEnvironment(ctx, app.Options{Cfg: cfg})
 }
 
 // InitAppEnvironment - Настраивает внешнее окружение приложения на основе переданной конфигурации,
 // после этого создаёт её модули и компоненты.
 // Имеется возможность заранее задать некоторые параметры и компонентов приложения (актуально для использования в тестах):
 // К ним относится: opts.PostgresConnManager, opts.RedisAdapter, opts.FileProviderPool.
-func InitAppEnvironment(ctx context.Context, opts app.Options) (context.Context, app.Options, error) {
-	ctx, err := InitLogger(ctx, opts.Cfg)
-	if err != nil {
-		return nil, app.Options{}, err
-	}
-
-	logger := mrlog.Ctx(ctx)
+func InitAppEnvironment(opts app.Options) (app.Options, error) {
+	logger := opts.Logger
 
 	// show head info about started app
-	logger.Info().Msgf("%s, environment: %s, version: %s", opts.Cfg.App.Name, opts.Cfg.App.Environment, opts.Cfg.App.Version)
+	log.Info(logger, opts.Cfg.AppName, "environment", opts.Cfg.Environment, "version", opts.Cfg.AppVersion)
 
-	if opts.Cfg.Debugging.Debug {
-		logger.Info().Msg("DEBUG MODE: ON")
+	if opts.Cfg.WorkDir != "" {
+		log.Debug(logger, "WORK DIR: "+opts.Cfg.WorkDir)
 	}
 
-	logger.Info().Msgf("LOG LEVEL: %s", logger.Level())
+	log.Debug(logger, "CONFIG PATHs: "+strings.Join(opts.Cfg.ConfigPaths, ", "))
 
-	if opts.Cfg.App.WorkDir != "" {
-		logger.Debug().Msgf("WORK DIR: %s", opts.Cfg.App.WorkDir)
+	if opts.Cfg.DotEnvPath != "" {
+		log.Debug(logger, ".ENV PATH: "+opts.Cfg.DotEnvPath)
 	}
 
-	logger.Debug().Msgf("CONFIG PATH: %s", opts.Cfg.ConfigPath)
-
-	if opts.Cfg.App.DotEnvPath != "" {
-		logger.Debug().Msgf(".ENV PATH: %s", opts.Cfg.App.DotEnvPath)
+	if opts.Cfg.DebugIsEnabled {
+		log.Info(logger, "DEBUG MODE: ON")
 	}
 
-	opts.AppHealth = mrrun.NewAppHealth()
-	opts.ErrorHandler = NewErrorHandler(logger, opts.Cfg)
+	log.Info(logger, "LOG LEVEL: "+opts.Cfg.LogLevel)
 
-	opts, err = createAppEnvironment(ctx, opts)
+	opts, err := createAppEnvironment(opts)
 	if err != nil {
-		return nil, app.Options{}, err
+		return app.Options{}, err
 	}
 
 	// Shared APIs init section (!!! only after create environment)
-	if opts, err = createAppAPI(ctx, opts); err != nil {
-		return nil, app.Options{}, err
+	opts = createSharedAPI(opts)
+
+	// Shared service's options (!!! only after create modules)
+	if opts, err = createSharedServices(opts); err != nil {
+		return app.Options{}, err
 	}
 
-	// Shared module's options (!!! only after create APIs)
-	if opts, err = createAppModules(ctx, opts); err != nil {
-		return nil, app.Options{}, err
-	}
-
-	return ctx, opts, nil
+	return opts, nil
 }
 
 // createAppEnvironment - создаёт, и настраивает внешнее окружение приложения.
-func createAppEnvironment(ctx context.Context, opts app.Options) (enrichedOpts app.Options, err error) {
-	if opts.Cfg.Sentry.DSN != "" {
-		sentry, err := NewSentry(ctx, opts.Cfg)
-		if err != nil {
+func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error) {
+	if sentry, err := InitSentry(opts.Logger, opts.Cfg); err != nil {
+		if !errors.Is(err, errSentryDisabled) {
 			return app.Options{}, err
 		}
-
-		opts.OpenedResources = append(opts.OpenedResources, mrlib.CloseFunc(sentry))
+	} else {
+		opts.OpenedResources.Register(sentry)
 		opts.Sentry = sentry
 	}
 
-	opts.InternalRouter = http.NewServeMux()
-	opts.Prometheus = NewPrometheusRegistry(ctx, opts)
+	opts.MonitoringRouter = http.NewServeMux()
+
+	if opts.Prometheus == nil {
+		opts.Prometheus = InitPrometheus(opts)
+	}
 
 	// !!! only after init Sentry and Prometheus
-	InitProtoAppErrors(opts)
-	opts.EventEmitter = NewEventEmitter(opts)
+	wireerrors.InitErrors(
+		wireerrors.ErrorConfig{
+			HasCaller:         opts.Cfg.StackTraceIsEnabled,
+			CallerDepth:       opts.Cfg.StackTraceDepth,
+			CallerShowFunc:    opts.Cfg.StackTraceShowFunc,
+			CallerUpperBounds: opts.Cfg.StackTraceUpperBounds,
+		},
+	)
+
+	opts.EventEmitter = InitEventEmitter(opts)
+	opts.ErrorHandler = wireerrors.InitErrorHandler(opts.Logger)
+	opts.AppHealth = mrrun.NewAppHealth()
 
 	if opts.PostgresConnManager == nil {
-		postgresAdapter, err := NewPostgres(ctx, opts)
+		postgresAdapter, err := InitPostgres(opts.Logger, opts.Tracer, opts.Cfg)
 		if err != nil {
 			return app.Options{}, err
 		}
 
-		opts.OpenedResources = append(opts.OpenedResources, mrlib.CloseFunc(postgresAdapter))
-		opts.PostgresConnManager = NewPostgresConnManager(ctx, postgresAdapter)
+		opts.OpenedResources.Register(postgresAdapter)
+		opts.PostgresConnManager = InitPostgresConnManager(postgresAdapter, opts.Logger)
 
-		if opts.Cfg.Storage.MigrationsDir != "" {
-			if err = ApplyPostgresMigrations(ctx, opts); err != nil {
-				return app.Options{}, err
-			}
+		if err = InitPrometheusStatPostgres(opts); err != nil {
+			return app.Options{}, err
+		}
+
+		if err = ApplyPostgresMigrations(opts.Logger, opts.PostgresConnManager, opts.Cfg); err != nil {
+			return app.Options{}, err
 		}
 	}
 
 	if opts.RedisAdapter == nil {
-		redisAdapter, err := NewRedis(ctx, opts.Cfg)
+		redisAdapter, err := InitRedis(opts.Logger, opts.Tracer, opts.Cfg)
 		if err != nil {
 			return app.Options{}, err
 		}
 
-		opts.OpenedResources = append(opts.OpenedResources, mrlib.CloseFunc(redisAdapter))
+		opts.OpenedResources.Register(redisAdapter)
 		opts.RedisAdapter = redisAdapter
 	}
 
 	if opts.FileProviderPool == nil {
-		opts.FileProviderPool, err = NewFileProviderPool(ctx, opts.Cfg)
+		opts.FileProviderPool, err = InitFileProviderPool(opts.Logger, opts.Tracer, opts.Cfg)
 		if err != nil {
 			return app.Options{}, err
 		}
 
-		opts.OpenedResources = append(opts.OpenedResources, mrlib.CloseFunc(opts.FileProviderPool))
+		opts.OpenedResources.Register(opts.FileProviderPool)
 	}
 
-	opts.Locker = mrredislock.NewLockerAdapter(opts.RedisAdapter.Cli())
-
-	if opts.Translator, err = NewTranslator(ctx, opts.Cfg); err != nil {
+	redisCli, err := opts.RedisAdapter.Cli()
+	if err != nil {
 		return app.Options{}, err
 	}
 
-	if opts.RequestParsers, err = CreateRequestParsers(ctx, opts.Cfg); err != nil {
+	opts.Locker = redislocker.NewAdapter(
+		redisCli,
+		opts.Logger,
+		opts.Tracer,
+	)
+
+	if opts.LocalePool, err = LocalePool(opts.Logger, opts.Cfg); err != nil {
 		return app.Options{}, err
 	}
 
-	if opts.ResponseSenders, err = CreateResponseSenders(ctx, opts.Cfg); err != nil {
+	if opts.RequestParsers, err = CreateRequestParsers(opts); err != nil {
 		return app.Options{}, err
 	}
 
-	if opts.AccessControl, err = NewAccessControl(ctx, opts.Cfg); err != nil {
+	if opts.ResponseSenders, err = rest.CreateResponseSenders(opts.Logger); err != nil {
 		return app.Options{}, err
 	}
 
-	if opts.ImageURLBuilder, err = NewImageURLBuilder(opts.Cfg); err != nil {
+	if opts.PermsProvider, err = wireaccess.InitPermsProvider(
+		opts.Logger,
+		opts.Cfg.AccessControl.RolesDirPath,
+		opts.Cfg.AccessControl.Roles,
+	); err != nil {
 		return app.Options{}, err
 	}
 
-	if err = RegisterSystemHandlers(ctx, opts); err != nil {
+	userGroupRights, err := wireauth.InitRealmKindRights(opts.Logger, opts.Cfg.AccessControl.Realms, opts.PermsProvider)
+	if err != nil {
 		return app.Options{}, err
+	}
+
+	if opts.RealmUserProviders, err = wireauth.InitUserProviders(
+		opts.Logger,
+		opts.PostgresConnManager,
+		userGroupRights,
+		opts.Cfg.AccessControl.Realms,
+		authcfg.TestUser{
+			ID:       opts.Cfg.TestUserID,
+			Realm:    opts.Cfg.TestUserRealm,
+			Kind:     opts.Cfg.TestUserKind,
+			LangCode: opts.Cfg.TestUserLangCode,
+		},
+		opts.Cfg.JWT.Verifier,
+		serviceAuthTokensTableName,
+	); err != nil {
+		return app.Options{}, err
+	}
+
+	if opts.ImageURLBuilder, err = InitImageURLBuilder(opts.Cfg); err != nil {
+		return app.Options{}, err
+	}
+
+	if err = RegisterSystemHandlers(opts); err != nil {
+		return app.Options{}, err
+	}
+
+	if opts.Prometheus != nil {
+		if err = opts.Prometheus.Register(); err != nil {
+			return app.Options{}, err
+		}
 	}
 
 	return opts, nil
 }
 
-func createAppAPI(ctx context.Context, opts app.Options) (enrichedOpts app.Options, err error) {
+func createSharedAPI(opts app.Options) app.Options {
+	opts.PostgresNotificationService = listennotify.NewProcessWaitForNotification(
+		opts.PostgresConnManager.ConnAdapter(),
+		opts.Logger,
+		[]string{
+			opts.Cfg.TaskScheduleNotifier.NoticeProcessor.NotificationChannel,
+			opts.Cfg.TaskScheduleMailer.MessageProcessor.NotificationChannel,
+			opts.Cfg.TaskScheduleSettings.ReloadSettings.NotificationChannel,
+		},
+		opts.Cfg.TaskScheduleSettings.NotificationCheckConnPeriod,
+	)
+
+	// create settings module
 	{
-		getter, task := NewSettingsGetterAPI(ctx, opts)
+		getter, reloadScheduler := service.InitSettingsGetterAPI(opts)
 		opts.SettingsGetterAPI = getter
-		opts.SchedulerTasks = append(opts.SchedulerTasks, task)
+		opts.TaskSchedulerServices = append(opts.TaskSchedulerServices, reloadScheduler)
 
-		opts.SettingsSetterAPI = NewSettingsSetterAPI(ctx, opts)
+		opts.SettingsSetterAPI = service.InitSettingsSetterAPI(opts)
 	}
 
-	opts.MailerAPI = NewMailerAPI(ctx, opts)
-	opts.NotifierAPI = NewNotifierAPI(ctx, opts)
+	opts.MailerAPI = service.InitMailerAPI(opts)
+	opts.NotifierAPI = service.InitNotifierAPI(opts)
+	opts.DictionariesMaterialTypeAPI = dictionariesapi.InitMaterialTypeAvailabilityAPI(opts)
+	opts.DictionariesPaperColorAPI = dictionariesapi.InitPaperColorAvailabilityAPI(opts)
+	opts.DictionariesPaperFactureAPI = dictionariesapi.InitPaperFactureAvailabilityAPI(opts)
+	opts.DictionariesPrintFormatAPI = dictionariesapi.InitPrintFormatAvailabilityAPI(opts)
 
-	if opts.DictionariesMaterialTypeAPI, err = dictionaries.NewMaterialTypeAvailabilityAPI(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperColorAPI, err = dictionaries.NewPaperColorAvailabilityAPI(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperFactureAPI, err = dictionaries.NewPaperFactureAvailabilityAPI(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPrintFormatAPI, err = dictionaries.NewPrintFormatAvailabilityAPI(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	return opts, nil
+	return opts
 }
 
-func createAppModules(ctx context.Context, opts app.Options) (enrichedOpts app.Options, err error) {
-	if opts.CalculationsAlgoModule, err = calculations.NewAlgoModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
+func createSharedServices(opts app.Options) (enrichedOpts app.Options, err error) {
+	opts.UserStatRequestCollectorService = service.InitUserStatRequestCollectorService(opts)
+
+	opts.MailProcessorService, err = service.InitMailerProcessorService(opts)
+	if err != nil {
+		return app.Options{}, fmt.Errorf("factory.InitMailerProcessorService(): %w", err)
 	}
 
-	if opts.CalculationsQueryHistoryModule, err = calculations.NewQueryHistoryModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
+	opts.NoticeProcessorService = service.InitNotifierProcessorService(opts)
+
+	opts.HttpServer, err = rest.InitRestServer(opts)
+	if err != nil {
+		return app.Options{}, fmt.Errorf("factory.InitRestServer(): %w", err)
 	}
 
-	if opts.CatalogBoxModule, err = catalog.NewBoxModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
+	opts.HttpMonitoringServer = InitMonitoringServer(opts)
 
-	if opts.CatalogLaminateModule, err = catalog.NewLaminateModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.CatalogPaperModule, err = catalog.NewPaperModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.ControlsElementTemplateModule, err = controls.NewElementTemplateModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.ControlsSubmitFormModule, err = controls.NewSubmitFormModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesMaterialTypeModule, err = dictionaries.NewMaterialTypeModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperColorModule, err = dictionaries.NewPaperColorModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPaperFactureModule, err = dictionaries.NewPaperFactureModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.DictionariesPrintFormatModule, err = dictionaries.NewPrintFormatModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.FileStationModule, err = filestation.NewModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
-
-	if opts.ProviderAccountsModule, err = provideraccounts.NewModuleOptions(ctx, opts); err != nil {
-		return app.Options{}, err
-	}
+	opts.TaskSchedulerServices = append(
+		opts.TaskSchedulerServices,
+		service.InitAuthSchedulerService(opts),
+		service.InitMailerSchedulerService(opts),
+		service.InitNotifierSchedulerService(opts),
+	)
 
 	return opts, nil
 }

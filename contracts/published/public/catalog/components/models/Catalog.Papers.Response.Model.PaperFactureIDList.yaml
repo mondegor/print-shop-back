@@ -1,0 +1,4 @@
+description: DTO - список ID фактур бумаги
+type: array
+items:
+  $ref: "../../../dictionaries/components/fields/Dictionaries.Field.PaperFactureID.yaml"

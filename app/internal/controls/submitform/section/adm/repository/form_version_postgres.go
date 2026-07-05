@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/pkg/controls/enum/activitystatus"
 )
 
 type (
@@ -204,7 +204,7 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
         WHERE
             form_id = $1 AND version = $2 AND activity_status = $3;`
 
-	return re.client.Conn(ctx).Exec(
+	err := re.client.Conn(ctx).Exec(
 		ctx,
 		sql,
 		row.ID,
@@ -215,10 +215,15 @@ func (re *FormVersionPostgres) Update(ctx context.Context, row entity.FormVersio
 		row.Detailing,
 		row.Body,
 	)
+	if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+		return errors.ErrEventStorageNoRecordFound
+	}
+
+	return err
 }
 
 // UpdateStatus - comment method.
-func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus enum.ActivityStatus) error {
+func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.FormVersionStatus, toStatus activitystatus.Enum) error {
 	return re.client.Do(ctx, func(ctx context.Context) error {
 		conn := re.client.Conn(ctx)
 
@@ -239,13 +244,11 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			row.FormID,
 			row.Version,
 			toStatus,
-			enum.ActivityStatusArchived,
+			activitystatus.Archived,
 		)
-		if err != nil {
-			// если это системная ошибка
-			if !mrcore.ErrStorageRowsNotAffected.Is(err) {
-				return err
-			}
+		// если это внутренняя ошибка
+		if err != nil && !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+			return err
 		}
 
 		// переключение только указанной версии в указанный статус
@@ -258,7 +261,7 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			WHERE
 				form_id = $1 AND version = $2 AND activity_status = $3;`
 
-		return conn.Exec(
+		err = conn.Exec(
 			ctx,
 			sql,
 			row.FormID,
@@ -266,5 +269,10 @@ func (re *FormVersionPostgres) UpdateStatus(ctx context.Context, row entity.Form
 			row.ActivityStatus,
 			toStatus,
 		)
+		if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+			return errors.ErrEventStorageNoRecordFound
+		}
+
+		return err
 	})
 }

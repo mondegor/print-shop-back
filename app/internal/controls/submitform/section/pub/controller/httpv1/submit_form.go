@@ -5,9 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"print-shop-back/internal/controls/submitform/section/pub"
+	"print-shop-back/internal/controls/submitform/section/pub/entity"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (

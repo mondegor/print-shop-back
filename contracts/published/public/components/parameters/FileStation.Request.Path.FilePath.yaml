@@ -1,0 +1,9 @@
+description: Относительный путь к файлу
+name: filePath
+in: path
+required: true
+schema:
+  type: string
+  minLength: 5
+  maxLength: 128
+example: "category/item-name.jpg"

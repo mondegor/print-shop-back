@@ -1,0 +1,13 @@
+description: DTO - перемещение остатков контейнера
+type: object
+required:
+  - stock_id
+  - location_id
+  - quantity
+properties:
+  stock_id:
+    $ref: "../fields/Warehousing.Field.StockID.yaml"
+  location_id:
+    $ref: "../fields/Warehousing.Field.LocationID.yaml"
+  quantity:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"

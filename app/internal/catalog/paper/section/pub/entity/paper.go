@@ -1,12 +1,13 @@
 package entity
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/pkg/catalog/type/paperside"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
-	ModelNamePaper = "public-api.Catalog.Paper" // ModelNamePaper - название сущности
+	// ModelNamePaper - название сущности.
+	ModelNamePaper = "public-api.Catalog.Paper"
 )
 
 type (
@@ -22,7 +23,7 @@ type (
 		Height    measure.Meter             `json:"height"`
 		Thickness measure.Meter             `json:"thickness"`
 		Density   measure.KilogramPerMeter2 `json:"density"`
-		Sides     enum.PaperSide            `json:"sides"`
+		Sides     paperside.Enum            `json:"sides"`
 	}
 
 	// PaperParams - comment struct.

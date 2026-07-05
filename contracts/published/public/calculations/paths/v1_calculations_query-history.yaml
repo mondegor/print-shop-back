@@ -1,0 +1,36 @@
+post:
+  summary: Метод сохранения расчёта запроса
+  description: |-
+    Метод предназначен для сохранения расчётов запроса в БД
+
+  operationId: storeCalcQuery
+  tags:
+    - Calculations
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Calculations.QueryHistory.Request.Model.Query.yaml"
+
+  responses:
+    "201":
+      description: Информация о запросе успешно сохранена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../../_shared/components/models/Api.Response.Model.SuccessCreatedItemWithStringID.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

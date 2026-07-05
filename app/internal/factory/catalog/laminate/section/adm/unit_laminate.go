@@ -1,50 +1,49 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-storage/mrpostgres/builder"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/catalog/laminate/section/adm/controller/httpv1"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/internal/catalog/laminate/section/adm/repository"
+	"print-shop-back/internal/catalog/laminate/section/adm/usecase"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitLaminate(ctx context.Context, opts laminate.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitLaminate(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitLaminate(ctx context.Context, opts laminate.Options) (*httpv1.Laminate, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.Laminate{})
+func initLaminateController(
+	logger log.Logger,
+	eventEmitter mrevent.Emitter,
+	dbConnManager mrstorage.DBConnManager,
+	requestExtendParser *validate.ExtendParser,
+	responseSender mrserver.ResponseSender,
+	materialTypeAPI api.MaterialTypeAvailability,
+	pageSizeMax int,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.Laminate{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewLaminatePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewLaminate(storage, opts.MaterialTypeAPI, opts.EventEmitter, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewLaminate(storage, materialTypeAPI, eventEmitter)
+
 	controller := httpv1.NewLaminate(
-		opts.RequestParsers.ExtendParser,
-		opts.ResponseSender,
+		requestExtendParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

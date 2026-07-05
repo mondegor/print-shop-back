@@ -4,14 +4,15 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/calculations/queryhistory/module"
+	"print-shop-back/internal/calculations/queryhistory/section/pub"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -40,8 +41,8 @@ func NewQueryHistory(parser validate.RequestParser, sender mrserver.ResponseSend
 // Handlers - возвращает обработчики контроллера QueryHistory.
 func (ht *QueryHistory) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodGet, URL: queryHistoryItemURL, Func: ht.Get},
-		{Method: http.MethodPost, URL: queryHistoryURL, Func: ht.Create},
+		{Method: http.MethodGet, URL: queryHistoryItemURL, Permission: mraccess.PermissionEveryone, Func: ht.Get},
+		{Method: http.MethodPost, URL: queryHistoryURL, Permission: mraccess.PermissionEveryone, Func: ht.Create},
 	}
 }
 
@@ -57,16 +58,16 @@ func (ht *QueryHistory) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *QueryHistory) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateQueryHistoryRequest{}
+	req := CreateQueryHistoryRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.QueryHistoryItem{
-		Caption: request.Caption,
-		Params:  request.Params,
-		Result:  request.Result,
+		Caption: req.Caption,
+		Params:  req.Params,
+		Result:  req.Result,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -77,7 +78,7 @@ func (ht *QueryHistory) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		model.SuccessCreatedItemResponse{
 			ItemID: itemID.String(),
 		},
 	)
@@ -92,7 +93,7 @@ func (ht *QueryHistory) getRawItemID(r *http.Request) string {
 }
 
 func (ht *QueryHistory) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrQueryHistoryNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 

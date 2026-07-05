@@ -1,7 +1,8 @@
 package entity
 
 const (
-	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat" // ModelNamePrintFormat - название сущности
+	// ModelNamePrintFormat - название сущности.
+	ModelNamePrintFormat = "public-api.Dictionaries.PrintFormat"
 )
 
 type (

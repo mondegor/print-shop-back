@@ -1,15 +1,13 @@
 package module
 
 import (
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 )
 
 var (
 	// ErrLaminateNotFound - laminate with ID not found.
-	ErrLaminateNotFound = mrerr.NewProto(
-		"catalog.errLaminateNotFound", mrerr.ErrorKindUser, "laminate with ID={{ .id }} not found")
+	ErrLaminateNotFound = errors.NewUserProto("LaminateNotFound", "laminate with ID={Id} not found")
 
-	// ErrLaminateArticleAlreadyExists - laminate article already exist.
-	ErrLaminateArticleAlreadyExists = mrerr.NewProto(
-		"catalog.errLaminateArticleAlreadyExists", mrerr.ErrorKindUser, "laminate article '{{ .name }}' already exist")
+	// ErrLaminateArticleAlreadyExists - laminate article already exists.
+	ErrLaminateArticleAlreadyExists = errors.NewUserProto("LaminateArticleAlreadyExists", "laminate article '{Name}' already exists")
 )

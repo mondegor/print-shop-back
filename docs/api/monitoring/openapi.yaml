@@ -1,0 +1,148 @@
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Monitoring API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: Monitoring REST API проекта print-shop
+servers:
+  - url: http://print-shop.internal
+    description: Local Domain
+  - url: http://localhost:8084
+    description: Local Host
+tags:
+  - name: System
+    description: API System Methods
+paths:
+  /health:
+    get:
+      summary: Метод для ответа о работоспособности приложения и готовности к работе
+      description: Метод предназначен для проверки, что все сервисы приложения исправно работают и готовы к приёму запросов
+      operationId: getHealthResponse
+      tags:
+        - System
+      responses:
+        '200':
+          description: Возвращён ответ приложения 200 OK
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/system-info:
+    get:
+      summary: Метод получения системной информации приложения
+      description: Метод предназначен для получения системной информации о работающим приложении
+      operationId: getSystemInfo
+      tags:
+        - System
+      responses:
+        '200':
+          description: Получена системная информация о приложении
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/System.Response.Model.SystemInfo'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+components:
+  schemas:
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - status
+        - detail
+        - instance
+        - time
+      properties:
+        type:
+          description: Ссылки на ресурс с описанием проблемы данного типа
+          type: string
+          default: about:blank
+          example: https://api.example.com/problem/type
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: Resource not found
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 404
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        error_trace_id:
+          description: Идентификатор экземпляра конкретной ошибки
+          type: string
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    System.Response.Model.SystemInfoProcess:
+      description: DTO - системная информация о запущенном процессе
+      type: object
+      properties:
+        name:
+          description: Название процесса
+          type: string
+          example: PostgreSQL
+        status:
+          description: Статус работоспособности процесса
+          type: string
+          example: 200 OK
+    System.Response.Model.SystemInfo:
+      description: DTO - системная информация о запущенном приложении
+      type: object
+      properties:
+        name:
+          description: Название приложения
+          type: string
+          example: Sample App
+        version:
+          description: Версия приложения
+          type: string
+          example: v0.1.0
+        environment:
+          description: Окружение, на котором запущено приложение
+          type: string
+          example: prod
+        host_name:
+          description: Название хоста, на котором запущено приложение
+          type: string
+          example: host-name
+        is_debug:
+          description: Статус режима отладки
+          type: boolean
+          example: true
+        log_level:
+          type: string
+          enum:
+            - DEBUG
+            - INFO
+            - WARN
+            - ERROR
+          example: ERROR
+        started_at:
+          description: Время запуска приложения (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        processes:
+          description: Процессы приложения со статусом работоспособности
+          type: array
+          items:
+            $ref: '#/components/schemas/System.Response.Model.SystemInfoProcess'
+  responses:
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'

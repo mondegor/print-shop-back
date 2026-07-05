@@ -3,57 +3,62 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-sysmess/util/conv"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/dictionaries/materialtype/api/availability"
+	"print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// MaterialType - comment struct.
 	MaterialType struct {
 		storage      availability.MaterialTypeStorage
-		errorWrapper mrcore.UseCaseErrorWrapper
+		errorWrapper errors.Wrapper
+		tracer       trace.Tracer
 	}
 )
 
 // NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(storage availability.MaterialTypeStorage, errorWrapper mrcore.UseCaseErrorWrapper) *MaterialType {
+func NewMaterialType(
+	storage availability.MaterialTypeStorage,
+	tracer trace.Tracer,
+) *MaterialType {
 	return &MaterialType{
 		storage:      storage,
-		errorWrapper: errorWrapper,
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
+		tracer:       tracer,
 	}
 }
 
-// CheckingAvailability - comment method.
-func (uc *MaterialType) CheckingAvailability(ctx context.Context, itemID uint64) error {
-	uc.debugCmd(ctx, "CheckingAvailability", mrmsg.Data{"id": itemID})
+// CheckAvailability - comment method.
+func (uc *MaterialType) CheckAvailability(ctx context.Context, itemID uint64) error {
+	uc.traceCmd(ctx, "CheckAvailability", conv.Group{"id": itemID})
 
 	if itemID == 0 {
-		return api.ErrMaterialTypeRequired.New()
+		return api.ErrMaterialTypeRequired
 	}
 
 	if status, err := uc.storage.FetchStatus(ctx, itemID); err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return api.ErrMaterialTypeNotFound.New(itemID)
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
+			return api.ErrMaterialTypeNotFound.Wrap(err, itemID)
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, api.MaterialTypeAvailabilityName)
-	} else if status != mrenum.ItemStatusEnabled {
+		return uc.errorWrapper.Wrap(err)
+	} else if status != itemstatus.Enabled {
 		return api.ErrMaterialTypeNotAvailable.New(itemID)
 	}
 
 	return nil
 }
 
-func (uc *MaterialType) debugCmd(ctx context.Context, command string, data mrmsg.Data) {
-	mrlog.Ctx(ctx).
-		Debug().
-		Str("storage", api.MaterialTypeAvailabilityName).
-		Str("cmd", command).
-		Any("data", data).
-		Send()
+func (uc *MaterialType) traceCmd(ctx context.Context, command string, data conv.Group) {
+	uc.tracer.Trace(
+		ctx,
+		"storage", api.MaterialTypeAvailabilityName,
+		"cmd", command,
+		"data", data,
+	)
 }

@@ -1,0 +1,12 @@
+allOf:
+  - $ref: "./Controls.SubmitForms.Response.Model.Form.yaml"
+  - type: object
+    properties:
+      elements:
+        type: array
+        items:
+          $ref: "./Controls.SubmitForms.Response.Model.FormElement.yaml"
+      versions:
+        type: array
+        items:
+          $ref: "./Controls.SubmitForms.Response.Model.FormVersion.yaml"

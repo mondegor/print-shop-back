@@ -4,29 +4,32 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder/helper"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
 )
 
 type (
 	// FormElementPostgres - comment struct.
 	FormElementPostgres struct {
-		client          mrstorage.DBConnManager
-		sqlBuilder      mrstorage.SQLBuilder
-		rowExistChecker db.RowExistsChecker[uint64]
-		repoSoftDeleter db.RowSoftDeleter[uint64]
+		client             mrstorage.DBConnManager
+		sqlBuilder         mrstorage.SQLBuilder
+		sqlConditionHelper mrstorage.SQLConditionHelper
+		rowExistChecker    db.RowExistsChecker[uint64]
+		repoSoftDeleter    db.RowSoftDeleter[uint64]
 	}
 )
 
 // NewFormElementPostgres - создаёт объект FormElementPostgres.
 func NewFormElementPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBuilder) *FormElementPostgres {
 	return &FormElementPostgres{
-		client:     client,
-		sqlBuilder: sqlBuilder,
+		client:             client,
+		sqlBuilder:         sqlBuilder,
+		sqlConditionHelper: helper.NewSQLCondition(),
 		rowExistChecker: db.NewRowExistsChecker[uint64](
 			client,
 			module.DBTableNameSubmitFormElements,
@@ -45,11 +48,7 @@ func NewFormElementPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 
 // NewCondition - comment method.
 func (re *FormElementPostgres) NewCondition(formID uuid.UUID) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.Equal("form_id", formID)
-		},
-	)
+	return re.sqlConditionHelper.Equal("form_id", formID)
 }
 
 // Fetch - comment method.
@@ -195,7 +194,7 @@ func (re *FormElementPostgres) FetchIDByParamName(ctx context.Context, formID uu
 }
 
 // IsExist - comment method.
-// result: nil - exists, ErrStorageNoRowFound - not exists, error - query error
+// result: nil - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error
 func (re *FormElementPostgres) IsExist(ctx context.Context, rowID uint64) error {
 	return re.rowExistChecker.IsExist(ctx, rowID)
 }

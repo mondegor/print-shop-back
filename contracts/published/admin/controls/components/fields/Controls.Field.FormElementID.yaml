@@ -1,0 +1,5 @@
+description: Идентификатор элемента формы (модуль - Controls.SubmitForm)
+type: integer
+format: int64
+minimum: 1
+example: 2

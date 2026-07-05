@@ -5,11 +5,13 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/pkg/controls/enum/elementtype"
 )
 
 const (
-	ModelNameFormElement = "admin-api.Controls.FormElement" // ModelNameFormElement - название сущности
+	// ModelNameFormElement - название сущности.
+	ModelNameFormElement = "admin-api.Controls.FormElement"
 )
 
 type (
@@ -23,8 +25,8 @@ type (
 		TemplateID      uint64                `json:"templateId"` // element_templates::template_id
 		TemplateVersion uint32                `json:"templateVersion"`
 		Required        *bool                 `json:"elementRequired" upd:"element_required"`
-		Type            enum.ElementType      `json:"elementType"` // element_templates::element_type
-		Detailing       enum.ElementDetailing `json:"detailing"`   // element_templates::element_detailing
+		Type            elementtype.Enum      `json:"elementType"` // element_templates::element_type
+		Detailing       elementdetailing.Enum `json:"detailing"`   // element_templates::element_detailing
 		Body            []byte                `json:"-"`           // element_templates::element_body
 		CreatedAt       time.Time             `json:"createdAt"`
 		UpdatedAt       time.Time             `json:"updatedAt"`

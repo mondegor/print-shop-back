@@ -1,6 +1,0 @@
-App.Field.ListPager.Total:
-  description: Количество записей в БД с учётом указанных в запросе фильтров
-  type: integer
-  # format: uint64
-  minimum: 0
-  example: 584

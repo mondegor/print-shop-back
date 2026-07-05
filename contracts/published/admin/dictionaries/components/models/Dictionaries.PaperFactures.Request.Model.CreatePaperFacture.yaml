@@ -1,0 +1,10 @@
+description: DTO создания нового фактуры бумаги
+type: object
+required:
+  - caption
+properties:
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Гладкая"

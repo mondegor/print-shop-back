@@ -1,17 +1,20 @@
 package availability
 
 import (
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/api/availability/usecase"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/dictionaries/materialtype/api/availability/repository"
+	"print-shop-back/internal/dictionaries/materialtype/api/availability/usecase"
 )
 
-// NewMaterialType - создаёт объект MaterialType.
-func NewMaterialType(client mrstorage.DBConnManager) *usecase.MaterialType {
+// NewMaterialTypeAPI - создаёт объект MaterialType.
+func NewMaterialTypeAPI(
+	dbConnManager mrstorage.DBConnManager,
+	tracer trace.Tracer,
+) *usecase.MaterialType {
 	return usecase.NewMaterialType(
-		repository.NewMaterialTypePostgres(client),
-		mrapp.NewUseCaseErrorWrapper(),
+		repository.NewMaterialTypePostgres(dbConnManager),
+		tracer,
 	)
 }

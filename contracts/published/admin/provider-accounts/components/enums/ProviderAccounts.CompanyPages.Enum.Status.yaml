@@ -1,0 +1,9 @@
+description: |-
+  Текущий статус страницы:
+  - HIDDEN - скрыто;
+  - PUBLISHED - опубликована;
+type: string
+enum:
+  - HIDDEN
+  - PUBLISHED
+example: "PUBLISHED"

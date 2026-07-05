@@ -5,12 +5,11 @@ import (
 	"testing"
 
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/repository"
-	"github.com/mondegor/print-shop-back/tests"
+	"print-shop-back/internal/catalog/box/section/pub/entity"
+	"print-shop-back/internal/catalog/box/section/pub/repository"
+	"print-shop-back/tests"
 )
 
 type BoxPostgresTestSuite struct {
@@ -26,7 +25,7 @@ func TestBoxPostgresTestSuite(t *testing.T) {
 }
 
 func (ts *BoxPostgresTestSuite) SetupSuite() {
-	ts.ctx = helpers.ContextWithNopLogger()
+	ts.ctx = context.Background()
 	ts.pgt = infra.NewPostgresTester(ts.T(), tests.DBSchemas(), tests.ExcludedDBTables())
 	ts.pgt.ApplyMigrations(tests.AppMigrationsDir())
 

@@ -1,32 +1,24 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitSheetCutting(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
+func initBoxSheetCuttingController(
+	eventEmitter mrevent.Emitter,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
+	useCase := usecase.NewSheetCutting(eventEmitter)
 
-	if c, err := newUnitSheetCutting(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitSheetCutting(_ context.Context, opts algo.Options) (*httpv1.SheetCutting, error) { //nolint:unparam
-	useCase := usecase.NewSheetCutting(opts.EventEmitter, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewSheetCutting(
-		opts.RequestParsers.Validator,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

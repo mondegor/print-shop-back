@@ -1,73 +1,73 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-components/factory/mrordering"
-	"github.com/mondegor/go-storage/mrpostgres/builder"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-components/wire/mrordering"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/controls/submitform"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm/controller/httpv1"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/section/adm/repository"
+	"print-shop-back/internal/controls/submitform/section/adm/usecase"
+	"print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/pkg/controls/api"
 )
 
-func initUnitFormElementEnvironment(ctx context.Context, opts submitform.Options) (formElementOptions, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.FormElement{})
+func initFormElementController(
+	logger log.Logger,
+	eventEmitter mrevent.Emitter,
+	dbConnManager mrstorage.DBConnManager,
+	storageSubmitForm *repository.SubmitFormPostgres,
+	storageFormElement *repository.FormElementPostgres,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	elementTemplateAPI api.ElementTemplateHeader,
+) (mrserver.HttpController, error) {
+	useCase := usecase.NewFormElement(
+		storageFormElement,
+		storageSubmitForm,
+		elementTemplateAPI,
+		mrordering.InitServiceMover(
+			dbConnManager,
+			eventEmitter,
+			mrsql.DBTableInfo{
+				Name:       module.DBTableNameSubmitFormElements,
+				PrimaryKey: "form_id",
+			},
+		),
+		eventEmitter,
+		logger,
+	)
+
+	controller := httpv1.NewFormElement(
+		requestParser,
+		responseSender,
+		useCase,
+	)
+
+	return controller, nil
+}
+
+func initFormElementStorage(
+	logger log.Logger,
+	dbConnManager mrstorage.DBConnManager,
+) (*repository.FormElementPostgres, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.FormElement{})
 	if err != nil {
-		return formElementOptions{}, err
+		return nil, err
 	}
 
 	storage := repository.NewFormElementPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 		),
 	)
 
-	return formElementOptions{
-		storage: storage,
-	}, nil
-}
-
-func createUnitFormElement(ctx context.Context, opts moduleOptions) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitFormElement(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitFormElement(_ context.Context, opts moduleOptions) (*httpv1.FormElement, error) { //nolint:unparam
-	useCase := usecase.NewFormElement(
-		opts.formElement.storage,
-		opts.submitForm.storage,
-		opts.ElementTemplateAPI,
-		mrordering.NewComponentMover(
-			opts.DBConnManager,
-			mrsql.DBTableInfo{
-				Name:       module.DBTableNameSubmitFormElements,
-				PrimaryKey: "form_id",
-			},
-			opts.EventEmitter,
-		),
-		opts.EventEmitter,
-		opts.UseCaseErrorWrapper,
-	)
-	controller := httpv1.NewFormElement(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
-		useCase,
-	)
-
-	return controller, nil
+	return storage, nil
 }

@@ -1,0 +1,16 @@
+description: DTO изделия
+type: object
+required:
+  - format
+  - weight
+  - quantity
+properties:
+  format:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter3.yaml"
+  weight:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Gram.yaml"
+  quantity:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
+      - description: Количество изделий
+      - example: 315

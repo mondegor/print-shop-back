@@ -1,0 +1,1602 @@
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Auth API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Auth REST API проекта print-shop
+    - При создании нового аккаунта, пользователь, в качестве логина должен указать свой емаил, на который будет отправлен код, для подтверждения емаила и активации аккаунта;
+    - Для последующего входа пользователем в систему, ему нужно указать свой емаил/телефон и далее ввести код подтверждения отправленный на его емаил. При включенной 2FA ему дополнительно нужно будет ввести пароль/TOTP код от своей учётной записи;
+    - Авторизованный пользователь может:
+      - включить 2FA аутентификацию, выбрав один из способов дополнительной проверки: по паролю или по TOTP коду;
+      - отключить 2FA аутентификацию введя пароль/TOTP код (или одноразовый аварийный код выданный при включении 2FA-TOTP аутентификации);
+      - изменять свои емаил/телефон с их обязательным подтверждением;
+      - следить за всеми своими открытыми сессиями и закрыть любую из них при необходимости;
+      - осуществлять особые операции требующие дополнительного подтверждения по емаилу/телефону или 2FA методами;
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local/auth
+    description: Local Domain
+  - url: http://localhost:8080/auth
+    description: Local Host
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+    description: Auth API
+  - name: Auth.Check
+    description: Auth API Helps to check user data
+  - name: Auth.Operation
+    description: Auth API Confirmation operations
+  - name: Auth.Security
+    description: Auth API User security methods change protected user properties
+  - name: Auth.Sessions
+    description: Auth API User Sessions
+paths:
+  /v1/signup:
+    post:
+      summary: Auth/R1. Метод создания нового пользователя в системе
+      description: |-
+        Метод предназначен для подготовки создания в БД системы новой учётной записи пользователя.
+
+        ### Алгоритм создания нового пользователя:
+        1. Пользователь указывает свой емаил в качестве логина;
+        2. Отправляется код подтверждения на указанный емаил;
+        3. Пользователь указывает полученный код и подтверждает регистрацию своего аккаунта;
+        4. Создаётся аккаунт пользователя;
+        5. Пользователь получает доступ к своему аккаунту;
+      operationId: createUser
+      tags:
+        - Auth
+      x-auth-scopes:
+        - guests-only
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.CreateUser'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/signin:
+    post:
+      summary: Auth/R2. Метод авторизации пользователя в системе
+      description: |-
+        Метод предназначен для авторизации пользователя под указанным емаилом/телефоном.
+
+        ### Алгоритм авторизации пользователя:
+        1. Пользователь указывает свой емаил/телефон в качестве логина;
+        2. Отправляется код подтверждения на указанный емаил или на емаил привязанный к указанному телефону;
+        3. Пользователь указывает полученный код и подтверждает авторизацию;
+        4. Если 2FA включена:\
+          4.1. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);\
+          4.2. Пользователь указывает 2FA пароль и получает доступ к своему аккаунту;
+        5. Если 2FA выключена:\
+          5.1. Пользователь получает доступ к своему аккаунту;
+
+        Если включена 2FA аутентификация по TOTP и доступ к TOTP генератору временно невозможен или он был утерян,
+        то предоставляется возможность ввести один из аварийных TOTP кодов, которые были сгенерированы при подключении
+        TOTP генератора.
+      operationId: authorizeUser
+      tags:
+        - Auth
+      x-auth-scopes:
+        - guests-only
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.AuthorizeUser'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/session:
+    post:
+      summary: Auth/R3. Метод открытия новой сессии пользователя
+      description: |-
+        Метод предназначен для открытия новой сессии пользователя по подтверждённой операции,
+        при этом возвращаются сгенерированные access и refresh токены для поддержания активности сессии.
+
+        В теле запроса должен быть указан параметр token, который может являться токеном операции или API токеном.
+        При указании токена операции должно быть также передан параметр secret для подтверждения этой операции.
+
+        При передачи параметра useCookie=true новый refreshToken вернётся в заголовке Set-Cookie.
+      operationId: openUserSession
+      tags:
+        - Auth
+      x-auth-scopes:
+        - guests-only
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Auth.Request.Header.Web.UseCookie'
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.LoginByToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '201':
+          $ref: '#/components/responses/Auth.ResponseJson.SuccessAccess'
+        '400':
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+    patch:
+      summary: Auth/R4. Метод продления текущей сессии пользователя
+      description: |-
+        Метод предназначен для продления текущей сессии пользователя по указанному refreshToken,
+        при этом возвращаются новые сгенерированные access и refresh токены для поддержания активности сессии.
+        Идентификатор сессии (sid) сохраняется — продление происходит в рамках той же сессии.
+
+        Важно! RefreshToken одноразовый. В течение короткого grace-окна (≈60 секунд) после ротации
+        повторный запрос с тем же refreshToken вернёт те же ранее выданные токены (идемпотентный
+        ретрай — для устойчивости к гонкам и повторам сети между вкладками).
+
+        Повторное использование того же refreshToken вне grace-окна трактуется как компрометация:
+        текущая сессия принудительно закрывается (отзываются её refresh-линия и видимость сессии),
+        остальные сессии пользователя не затрагиваются. (В будущем при наличии fingerprint устройства
+        сильный сигнал кражи сможет эскалировать отзыв до всех сессий пользователя.)
+
+        Если в заголовке запроса будет присутствовать кука под именем RTID, то в ней должен лежать
+        refreshToken. Иначе refreshToken должен находиться в теле запроса.
+
+        Если refreshToken был найден в куке RTID, то новый refreshToken вернётся в заголовке Set-Cookie.
+      operationId: continueUserSession
+      tags:
+        - Auth
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/Auth.Request.Cookie.Web.RefreshToken'
+      requestBody:
+        required: false
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.ContinueSession'
+      responses:
+        '201':
+          $ref: '#/components/responses/Auth.ResponseJson.SuccessAccess'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+    delete:
+      summary: Auth/R5. Метод закрытия текущей сессий пользователя
+      description: |-
+        Метод предназначен для закрытия текущей сессии пользователя.
+
+        Если в заголовке запроса присутствует кука RTID, refreshToken берётся из неё и тело не требуется
+        (web-клиент). Иначе (мобайл/API-клиент) refreshToken должен быть передан в теле запроса.
+      operationId: closeUserSession
+      tags:
+        - Auth
+      x-auth-scopes:
+        - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Request.Cookie.Web.RefreshToken'
+      requestBody:
+        required: false
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.ContinueSession'
+      responses:
+        '204':
+          description: Текущая сессия пользователя была закрыта
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/user:
+    get:
+      summary: Auth/R6. Метод получения информации о пользователе
+      description: Метод предназначен для получения информации из БД о текущем пользователе
+      operationId: getUserInfo
+      tags:
+        - Auth
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          description: Сформирован ответ с информацией о текущем пользователе
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Response.Model.UserInfo'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/check/check-login:
+    post:
+      summary: Auth/CK/R1. Метод проверяет свободен ли указанный емаил/телефон
+      description: Метод предназначен для проверки возможности регистрации пользователя с помощью указанного емаила/телефона
+      operationId: checkLogin
+      tags:
+        - Auth.Check
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Check.Request.Model.CheckLogin'
+      responses:
+        '204':
+          description: Указанный емаил/телефон свободен для регистрации пользователя
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/check/calc-password-strength:
+    post:
+      summary: Auth/CK/R2. Метод рассчитывает надёжность указанного пароля
+      description: Метод предназначен для расчёта надёжности указанного пароля
+      operationId: calcPasswordStrength
+      tags:
+        - Auth.Check
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Check.Request.Model.CalcPasswordStrength'
+      responses:
+        '200':
+          description: Сформирован ответ с информацией о надёжности пароля
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Check.Response.Model.CalcPasswordStrength'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/check/generate-password:
+    post:
+      summary: Auth/CK/R3. Метод генерации пароля
+      description: Метод предназначен для помощи пользователю при установке нового пароля.
+      operationId: generatePassword
+      tags:
+        - Auth.Check
+      security: []
+      responses:
+        '200':
+          description: Сгенерирован новый пароль
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Check.Response.GeneratedPassword'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /.well-known/jwks.json:
+    get:
+      summary: Auth/CK/R4. Метод отдаёт публичные JWT-ключи (JWKS, RFC 7517)
+      description: |
+        Метод предназначен для публикации набора публичных ключей (JWKS, RFC 7517),
+        которыми внешние сервисы могут самостоятельно проверять подпись выданных
+        этим сервисом access-токенов. Симметричные (HMAC) ключи не публикуются.
+      operationId: getJwks
+      tags:
+        - Auth.Check
+      security: []
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.Check.ResponseJson.Jwks'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/operation/confirm:
+    patch:
+      summary: Auth/OP/R1. Метод подтверждения операции
+      description: Метод предназначен для подтверждения указанной операции инициированной пользователем
+      operationId: confirmUserOperation
+      tags:
+        - Auth.Operation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.ConfirmOperation'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '204':
+          description: Указанная операция была подтверждена
+        '400':
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/operation/resend:
+    patch:
+      summary: Auth/OP/R2. Метод повторной отправки кода подтверждения
+      description: Метод предназначен для повторной отправки кода подтверждения указанной операции инициированной пользователем на емаил/телефон
+      operationId: resendUserOperationConfirmCode
+      tags:
+        - Auth.Operation
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.OperationToken'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/operation/revoke:
+    patch:
+      summary: Auth/OP/R3. Метод отзыва/отмены операции
+      description: Метод предназначен для отзыва/отмены пользователем указанной операции, если это возможно
+      operationId: revokeUserOperation
+      tags:
+        - Auth.Operation
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Operation.Request.Model.OperationToken'
+      responses:
+        '204':
+          description: Указанная операция была отозвана
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/email:
+    post:
+      summary: Auth/SC/R1. Метод создания операции на изменение емаила пользователя
+      description: |-
+        Метод предназначен для создания операции изменения емаила текущего пользователя.
+
+        ### Алгоритм изменения емаила пользователя:
+        1. `POST /v1/security/email` (новый емаил) — отправляется код подтверждения на новый емаил;
+        2. Пользователь указывает полученный код и подтверждает новый емаил (`POST /v1/operation/confirm`);
+        3. Если 2FA включена — пользователю предлагается ввести пароль или TOTP код (или одноразовый
+          аварийный код) для подтверждения операции;
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation`:\
+          4.1. Если 2FA включена — емаил изменяется на новый, на старый емаил отправляется уведомление;\
+          4.2. Если 2FA выключена — новый емаил ставится в лист ожидания и через 3 дня старый емаил
+            изменяется на новый; на старый емаил отправляется уведомление со ссылкой блокировки аккаунта
+            до выяснения обстоятельств (ссылка действует 14 дней);
+      operationId: changeUserEmail
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangeEmail'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/phone:
+    post:
+      summary: Auth/SC/R2. Метод создания операции на установку/изменение телефона пользователя
+      description: |-
+        Метод предназначен для создания операции установки/изменения телефона текущего пользователя.
+
+        ### Алгоритм установки/изменения телефона пользователя:
+        1. `POST /v1/security/phone` (новый телефон) — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Если 2FA включена — пользователю предлагается ввести пароль или TOTP код (или одноразовый
+          аварийный код) для подтверждения операции;
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation` —
+          телефон устанавливается/изменяется на новый;
+        5. На текущий емаил отправляется уведомление, что телефон был установлен/изменён;
+      operationId: changeUserPhone
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangePhone'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/password:
+    post:
+      summary: Auth/SC/R3. Метод создания операции на установку пароля пользователя (2FA)
+      description: |-
+        Метод предназначен для создания операции установки пароля текущего пользователя в качестве
+        второго фактора (2FA по паролю).
+
+        **Важно:** установить пароль как 2FA можно только когда 2FA **выключена**. Если уже включён
+        любой второй фактор (пароль или TOTP), метод возвращает ошибку — сначала нужно отключить 2FA
+        через `POST /v1/security/disable2fa`, и только затем установить новый пароль.
+
+        ### Алгоритм установки пароля как 2FA (2FA выключена):
+        1. `POST /v1/security/password` (новый пароль) — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Пользователь применяет операцию методом `POST /v1/security/apply-password` — включается 2FA
+          по паролю и единоразово возвращается набор одноразовых аварийных кодов (их нужно сохранить —
+          повторно они не показываются);
+        4. На текущий емаил отправляется уведомление, что включена 2FA по паролю;
+      operationId: changeUser2faPassword
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ChangePassword'
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-password:
+    post:
+      summary: Auth/SC/R9. Метод применяет подтверждённую операцию смены пароля и выдаёт аварийные коды
+      description: |-
+        Метод завершает установку/смену пароля как 2FA после подтверждения операции, созданной
+        методом `POST /v1/security/password`. При успехе 2FA по паролю включается (или пароль
+        обновляется) и единоразово возвращается набор одноразовых аварийных кодов
+        (их нужно сохранить — повторно они не показываются).
+      operationId: applyUser2faPassword
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyByToken'
+      responses:
+        '200':
+          description: Пароль установлен как 2FA, возвращены аварийные коды
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-operation:
+    post:
+      summary: Auth/SC/R4. Метод применяет подтверждённую пользователем операцию
+      description: Метод предназначен для применения подтверждённой пользователем операции (изменение защищённого свойства пользователя, отмены 2FA и т.д.)
+      operationId: applyUserOperation
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyOperation'
+      responses:
+        '204':
+          description: Указанная пользователем операция была применена
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/totp:
+    post:
+      summary: Auth/SC/R5. Метод создания операции на установку TOTP генератора для 2FA аутентификации пользователя
+      description: |-
+        Метод предназначен для создания операции установки TOTP генератора в качестве второго фактора
+        (2FA по TOTP) для текущего пользователя.
+
+        **Важно:** установить TOTP как 2FA можно только когда 2FA **выключена**. Если уже включён любой
+        второй фактор (пароль или TOTP), метод возвращает ошибку — сначала нужно отключить 2FA через
+        `POST /v1/security/disable2fa`, и только затем привязать новый TOTP генератор.
+
+        ### Алгоритм установки TOTP как 2FA (2FA выключена):
+        1. `POST /v1/security/totp` — создаётся операция (в ней генерируется TOTP-секрет) и отправляется
+          код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. `GET /v1/security/totp/{token}` — пользователь получает QR-код и добавляет генератор в
+          TOTP-приложение (сам генератор пока не активирован);
+        4. `POST /v1/security/apply-totp` (код из приложения) — генератор активируется, включается 2FA
+          по TOTP и единоразово возвращается набор одноразовых аварийных кодов (их нужно сохранить);
+        5. На текущий емаил отправляется уведомление, что включена 2FA по TOTP;
+      operationId: changeUser2faTotpGenerator
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/totp/{token}:
+    get:
+      summary: Auth/SC/R6. Метод возвращает QR-код TOTP генератора для 2FA аутентификации пользователя
+      description: |-
+        Метод предназначен для применения операции по установке TOTP генератора для 2FA аутентификации пользователя.
+        В ответ возвращается QR-код (изображение) для добавления генератора в приложение 2FA аутентификации,
+        построенный на основе секрета, который уже сохранён в операции. При этом сам TOTP генератор пока не
+        активируется и 2FA не включается: для этого пользователь должен подтвердить владение генератором,
+        отправив код из приложения через `POST /v1/security/apply-totp`, который и активирует генератор,
+        включит 2FA и единоразово выдаст набор одноразовых аварийных кодов.
+      operationId: renderTotpGeneratorQr
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Security.Request.Path.Token'
+      responses:
+        '200':
+          description: QR-код TOTP генератора (изображение для сканирования приложением 2FA)
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-totp:
+    post:
+      summary: Auth/SC/R7. Метод проверяет TOTP-код и привязывает генератор, выдавая аварийные коды
+      description: |-
+        Пользователь вводит код из TOTP-приложения для подтверждения владения генератором.
+        При успехе генератор привязывается, 2FA по TOTP включается и единоразово возвращается
+        набор одноразовых аварийных кодов (их нужно сохранить — повторно они не показываются).
+      operationId: applyTotpGenerator
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyTotpGenerator'
+      responses:
+        '200':
+          description: TOTP-генератор привязан, возвращены аварийные коды
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/recovery-codes:
+    post:
+      summary: Auth/SC/R10. Метод создания операции перевыпуска одноразовых аварийных кодов
+      description: |-
+        Метод предназначен для перевыпуска набора одноразовых аварийных кодов текущего пользователя
+        без смены второго фактора (например, когда коды заканчиваются). Требует включённую 2FA.
+
+        ### Алгоритм перевыпуска аварийных кодов:
+        1. Отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает перевыпуск (`POST /v1/operation/confirm`);
+        3. Пользователю предлагается ввести пароль или TOTP код (или один из оставшихся аварийных кодов);
+        4. После подтверждения пользователь применяет операцию методом `POST /v1/security/apply-recovery-codes`,
+           который заменяет набор аварийных кодов на новый и единоразово возвращает его
+           (старые коды становятся недействительными);
+        5. На текущий емаил отправляется уведомление, что аварийные коды были перевыпущены;
+      operationId: regenerateUser2faRecoveryCodes
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/apply-recovery-codes:
+    post:
+      summary: Auth/SC/R11. Метод применяет подтверждённую операцию перевыпуска и выдаёт новые аварийные коды
+      description: |-
+        Метод завершает перевыпуск аварийных кодов после подтверждения операции, созданной методом
+        `POST /v1/security/recovery-codes`. Набор аварийных кодов заменяется на новый и единоразово
+        возвращается (старые коды становятся недействительными, новые нужно сохранить — повторно
+        они не показываются).
+      operationId: applyUser2faRecoveryCodes
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Security.Request.Model.ApplyByToken'
+      responses:
+        '200':
+          description: Аварийные коды перевыпущены, возвращён новый набор
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Security.Response.RecoveryCodes'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/security/disable2fa:
+    post:
+      summary: Auth/SC/R8. Метод создания операции отключения 2FA аутентификацию пользователя
+      description: |-
+        Метод предназначен для создания операции отключения 2FA аутентификации текущего пользователя.
+
+        ### Алгоритм отключения 2FA аутентификации пользователя (если 2FA включена):
+        1. `POST /v1/security/disable2fa` — отправляется код подтверждения на текущий емаил;
+        2. Пользователь указывает полученный код и подтверждает операцию (`POST /v1/operation/confirm`);
+        3. Пользователю предлагается ввести пароль или TOTP код (или одноразовый аварийный код);
+        4. Пользователь применяет подтверждённую операцию методом `POST /v1/security/apply-operation` —
+          2FA аутентификация отключается;
+        5. На текущий емаил отправляется уведомление, что 2FA аутентификация отключена;
+
+        Если доступ ко второму фактору (паролю или TOTP генератору) временно невозможен или он был утерян,
+        то предоставляется возможность ввести один из аварийных кодов, которые были сгенерированы при
+        включении 2FA или их перевыпуске.
+      operationId: disableUser2fa
+      tags:
+        - Auth.Security
+      x-auth-scopes:
+        - any-users
+      responses:
+        '200':
+          $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/sessions:
+    get:
+      summary: Auth/SES/R1. Метод получения списка открытых сессий пользователя
+      description: Метод предназначен для получения из БД списка открытых сессий пользователя
+      operationId: getUserSessions
+      tags:
+        - Auth.Sessions
+      x-auth-scopes:
+        - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Sessions.Request.Query.Realm'
+      responses:
+        '200':
+          description: Сформирован ответ со списком открытых сессий пользователя
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Auth.Sessions.Response.Model.UserSession'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/sessions/close:
+    post:
+      summary: Auth/SES/R2. Метод закрытия указанных сессий пользователя
+      description: Метод предназначен для закрытия указанных открытых сессий пользователя
+      operationId: closeUserSessions
+      tags:
+        - Auth.Sessions
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Sessions.Request.Model.CloseSessions'
+      responses:
+        '204':
+          description: Указанные сессии пользователя были закрыты
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+components:
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Auth.Request.Model.CreateUser:
+      type: object
+      required:
+        - realm
+        - user_email
+      properties:
+        realm:
+          description: Область, пространство, где должен быть зарегистрирован пользователь
+          type: string
+          maxLength: 32
+          example: domain_name/user_group
+        user_email:
+          description: Eмаил, который будет использован в качестве логина при создании пользователя
+          type: string
+          format: email
+          minLength: 7
+          maxLength: 64
+          example: user-email@example.com
+    Auth.Enum.ConfirmMethod:
+      description: |-
+        Метод подтверждения подлинности пользователя:
+        - EMAIL - электронный адрес;
+        - PHONE - телефон;
+        - PASSWORD - пароль;
+        - TOTP - генератор одноразовых паролей;
+      type: string
+      enum:
+        - EMAIL
+        - PHONE
+        - PASSWORD
+        - TOTP
+      example: EMAIL
+    Auth.Response.Model.WaitingConfirmOperation:
+      type: object
+      required:
+        - token
+        - confirm_method
+        - remaining_attempts
+        - expires_in
+      properties:
+        token:
+          description: Токен операции, с помощью которой проводится процедура подтверждения подлинности пользователя
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        confirm_method:
+          $ref: '#/components/schemas/Auth.Enum.ConfirmMethod'
+        remaining_attempts:
+          description: Оставшееся количество попыток ввода кода подтверждения
+          type: integer
+          example: 2
+        remaining_resends:
+          description: Оставшееся количество повторных отправок кода подтверждения
+          type: integer
+          example: 1
+        resends_in:
+          description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
+          type: integer
+          example: 1
+        expires_in:
+          description: Количество оставшихся секунд до истечения срока действия подтверждения операции
+          type: integer
+          example: 1
+        message:
+          type: string
+          example: Вы были успешно зарегистрированы, на ваш емаил/телефон отправлен код, с помощью которого необходимо подтвердить регистрацию | Для входа в систему необходимо ввести код подтверждения, отправленный на ваш емаил/телефон | На новый емаил был выслан код для подтверждения его владением | На текущий емаил был выслан код для подтверждения изменения емаила/телефона/пароля
+    Api.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: attributeName
+        detail:
+          description: Описание ошибки
+          type: string
+          example: Атрибут не может быть пустым | Указано недопустимое значение атрибута
+    Api.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Response.Model.ErrorAttribute'
+    Api.Response.Model.Error400:
+      description: DTO ошибки 400
+      type: object
+      required:
+        - status
+        - instance
+        - errors
+        - time
+      properties:
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 400
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        errors:
+          $ref: '#/components/schemas/Api.Response.Model.ErrorList'
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - status
+        - detail
+        - instance
+        - time
+      properties:
+        type:
+          description: Ссылки на ресурс с описанием проблемы данного типа
+          type: string
+          default: about:blank
+          example: https://api.example.com/problem/type
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: Resource not found
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 404
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        error_trace_id:
+          description: Идентификатор экземпляра конкретной ошибки
+          type: string
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    Auth.Request.Model.AuthorizeUser:
+      type: object
+      required:
+        - realm
+        - user_login
+      properties:
+        realm:
+          description: Область, пространство, где должен быть авторизован пользователь
+          type: string
+          maxLength: 32
+          example: domain_name/user_group
+        user_login:
+          description: Eмаил/телефон пользователя зарегистрированного в системе
+          type: string
+          minLength: 7
+          maxLength: 64
+          example: user-email@example.com
+    Auth.Request.Model.LoginByToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен подтверждённой операции пользователем или apiToken
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        secret:
+          description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
+          type: string
+          minLength: 4
+          maxLength: 32
+          example: '183947'
+    Auth.Response.Model.SuccessAccess:
+      type: object
+      required:
+        - access_token
+      properties:
+        access_token:
+          description: |-
+            Access токен. В режиме access_type=session — непрозрачная строка, проверяемая на сервере
+            (отзыв мгновенный). В режиме access_type=jwt — подписанный JWT (HS/RS/ES) с короткоживущими
+            claim'ами sub/sid/aud/scope/iss/iat/jti и заголовком kid; проверяется по подписи (для RS/ES
+            публичные ключи публикуются хостом на /.well-known/jwks.json),
+            отзыв реализован коротким TTL: при DELETE/повторном refresh refresh-линия гасится сразу,
+            а сам access остаётся валиден до истечения своего короткого срока жизни.
+          type: string
+          example: 425b91568a1801dc02fb5463db17f2be3a4b357929cee700974b1d50cb1f3bc8
+        expires_in:
+          description: |-
+            Оставшееся время жизни access токена в секундах. В режиме access_type=jwt значение короткое
+            (несколько минут), так как именно короткий TTL служит механизмом отзыва access.
+          type: integer
+          example: 1800
+        refresh_token:
+          description: RefreshToken возвращается в этом поле отсутствии в заголовке куки с типом RTID иначе он возвращается в заголовке Set-Cookie
+          type: string
+          example: 02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704
+        message:
+          type: string
+          example: Ваш аккаунт был успешно зарегистрирован | Доступ к вашему аккаунту разрешён
+    Auth.Response.Model.ConfirmOperationState:
+      type: object
+      required:
+        - remaining_attempts
+        - expires_in
+      properties:
+        remaining_attempts:
+          description: Оставшееся количество попыток ввода кода подтверждения
+          type: integer
+          example: 2
+        remaining_resends:
+          description: Оставшееся количество повторных отправок кода подтверждения
+          type: integer
+          example: 1
+        resends_in:
+          description: Количество оставшихся секунд по истечении которых можно сделать повторную отправку кода подтверждения
+          type: integer
+          example: 1
+        expires_in:
+          description: Количество оставшихся секунд до истечения срока действия подтверждения операции
+          type: integer
+          example: 1
+    Auth.Request.Model.ContinueSession:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          description: Ранее выданный при авторизации/продолжении сессии refreshToken
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Api.Field.DateTimeUpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Auth.Enum.UserAuth2fa:
+      description: |-
+        Тип двухфакторной аутентификации пользователя:
+        - NONE - отсутствует (отключена);
+        - PASSWORD - дополнительная авторизация по паролю;
+        - TOTP - дополнительная авторизация по TOTP;
+      type: string
+      enum:
+        - NONE
+        - PASSWORD
+        - TOTP
+      example: PASSWORD
+    Api.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Auth.Response.Model.UserRealm:
+      type: object
+      required:
+        - name
+        - user_kind
+        - created_at
+        - updated_at
+      properties:
+        name:
+          type: string
+          maxLength: 32
+          example: domain_name/user_group
+        user_kind:
+          type: string
+          maxLength: 16
+          example: standard
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Auth.Enum.UserStatus:
+      description: |-
+        Текущий статус пользователя:
+        - DRAFT - черновик;
+        - ENABLED - используется;
+        - DISABLED - отключён (админом);
+        - BLOCKED - заблокирован (системой);
+      type: string
+      enum:
+        - DRAFT
+        - ENABLED
+        - DISABLED
+        - BLOCKED
+      example: ENABLED
+    Auth.Response.Model.UserInfo:
+      type: object
+      required:
+        - email
+        - lang
+        - last_login_ip
+        - last_logged_at
+        - auth_2fa_type
+        - realms
+        - status
+        - created_at
+        - updated_at
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 64
+          example: user-email@example.com
+        phone:
+          type: string
+          format: phone
+          maxLength: 32
+          example: +7 999 888 77 66
+        lang:
+          type: string
+          maxLength: 5
+          example: ru-RU
+        last_login_ip:
+          type: string
+          example: 95.165.01.01
+        last_logged_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+        auth_2fa_type:
+          $ref: '#/components/schemas/Auth.Enum.UserAuth2fa'
+        realms:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auth.Response.Model.UserRealm'
+        status:
+          $ref: '#/components/schemas/Auth.Enum.UserStatus'
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        updated_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+    Auth.Check.Request.Model.CheckLogin:
+      type: object
+      required:
+        - realm
+        - user_login
+      properties:
+        realm:
+          description: Область, пространство, где планируется регистрация
+          type: string
+          maxLength: 32
+          example: domain_name/user_group
+        user_login:
+          description: Eмаил/телефон пользователя под которым планируется регистрация
+          type: string
+          minLength: 7
+          maxLength: 64
+          example: user-email@example.com
+    Auth.Check.Request.Model.CalcPasswordStrength:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          description: Проверяемый пароль
+          type: string
+          minLength: 8
+          maxLength: 32
+          example: L$QI.qA6eu7zG%7w
+    Auth.Enum.PasswordStrength:
+      description: |-
+        Виды надёжности пароля:
+        - NOT_RATED - пароль без оценки;
+        - WEAK - слабый пароль;
+        - MIDDLE - средний пароль;
+        - STRONG - надёжный пароль;
+        - THE_BEST - максимально надёжный пароль;
+      type: string
+      enum:
+        - NOT_RATED
+        - WEAK
+        - MIDDLE
+        - STRONG
+        - THE_BEST
+      example: STRONG
+    Auth.Check.Response.Model.CalcPasswordStrength:
+      type: object
+      required:
+        - strength
+      properties:
+        strength:
+          $ref: '#/components/schemas/Auth.Enum.PasswordStrength'
+    Auth.Check.Response.GeneratedPassword:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          description: Сгенерированный пароль для пользователя
+          type: string
+          minLength: 8
+          maxLength: 32
+          example: L$QI.qA6eu7zG%7w
+    Auth.Check.Enum.KeyType:
+      description: |
+        Тип криптографического ключа (JWK 'kty', RFC 7517):
+        - RSA - RSA ключ
+        - EC - ключ на эллиптических кривых
+      type: string
+      enum:
+        - RSA
+        - EC
+    Auth.Check.Response.Model.Jwk:
+      description: Публичный ключ в формате JWK (RFC 7517)
+      type: object
+      required:
+        - kty
+      properties:
+        kty:
+          $ref: '#/components/schemas/Auth.Check.Enum.KeyType'
+        use:
+          description: Назначение ключа (JWK 'use')
+          type: string
+          example: sig
+        kid:
+          description: Идентификатор ключа (JWT-заголовок 'kid')
+          type: string
+          example: 2026-key-01
+        alg:
+          description: Алгоритм подписи (JWK 'alg')
+          type: string
+          example: RS256
+        'n':
+          description: RSA - модуль (base64url)
+          type: string
+        e:
+          description: RSA - публичная экспонента (base64url)
+          type: string
+        crv:
+          description: EC - имя кривой
+          type: string
+          example: P-256
+        x:
+          description: EC - координата X (base64url)
+          type: string
+        'y':
+          description: EC - координата Y (base64url)
+          type: string
+    Auth.Check.Response.Model.Jwks:
+      description: Набор публичных ключей в формате JWKS (RFC 7517)
+      type: object
+      required:
+        - keys
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auth.Check.Response.Model.Jwk'
+    Auth.Operation.Request.Model.ConfirmOperation:
+      description: DTO подтверждения операции, которая инициирована пользователем
+      type: object
+      required:
+        - token
+        - secret
+      properties:
+        token:
+          description: Токен для подтверждения операции
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        secret:
+          description: Пароль, одноразовый пароль или код подтверждения, высланный на емаил/телефон
+          type: string
+          minLength: 4
+          maxLength: 32
+          example: '183947'
+    Auth.Operation.Request.Model.OperationToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен операции, которая инициирована пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Security.Request.Model.ChangeEmail:
+      type: object
+      required:
+        - new_email
+      properties:
+        new_email:
+          description: Новый емаил пользователя
+          type: string
+          format: email
+          minLength: 7
+          maxLength: 64
+          example: new-user-email@example.com
+    Auth.Security.Request.Model.ChangePhone:
+      type: object
+      required:
+        - new_phone
+      properties:
+        new_phone:
+          description: Новый телефон пользователя
+          type: string
+          format: phone
+          minLength: 10
+          maxLength: 32
+          example: +7 999 888 77 66
+    Auth.Security.Request.Model.ChangePassword:
+      type: object
+      required:
+        - new_password
+      properties:
+        new_password:
+          description: Новый пароль пользователя
+          type: string
+          minLength: 8
+          maxLength: 32
+          example: L$QI.qA6eu7zG%7w
+    Auth.Security.Request.Model.ApplyByToken:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен операции, которая подтверждена пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Security.Response.RecoveryCodes:
+      type: object
+      required:
+        - recovery_codes
+      properties:
+        recovery_codes:
+          description: Набор одноразовых аварийных кодов, выданных при включении 2FA (по паролю или TOTP) либо при их перевыпуске
+          type: array
+          items:
+            type: string
+          example:
+            - QW39L7R0-417X5FKV
+            - 67DO040V-17K59ABP
+    Auth.Security.Request.Model.ApplyOperation:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          description: Токен операции, которая подтверждена пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Security.Request.Model.ApplyTotpGenerator:
+      type: object
+      required:
+        - token
+        - totp_code
+      properties:
+        token:
+          description: Токен операции, которая подтверждена пользователем
+          type: string
+          minLength: 64
+          maxLength: 128
+          example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+        totp_code:
+          description: |-
+            6-значный цифровой код, сгенерированный TOTP-приложением пользователя
+            - pattern: "^[0-9]{6}$"
+          type: string
+          minLength: 6
+          maxLength: 6
+          example: '183947'
+    Auth.Sessions.Response.Model.UserSession:
+      type: object
+      required:
+        - session_id
+        - app_name
+        - device_name
+        - last_ip
+        - location
+        - created_at
+        - last_seen_at
+        - is_current
+      properties:
+        session_id:
+          description: Идентификатор открытой сессии
+          type: string
+          example: 1f3bc817
+        app_name:
+          description: Приложение, в котором открыта сессия
+          type: string
+          example: Web, Firefox
+        device_name:
+          description: Название устройства, на котором открыта сессия
+          type: string
+          example: Device 1
+        last_ip:
+          description: IP адрес последнего посещения
+          type: string
+          example: 95.165.01.01
+        location:
+          description: Местоположение на основе IP
+          type: string
+          example: Moscow, Russia
+        created_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+        last_seen_at:
+          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+        is_current:
+          description: Признак, что сессия является текущей
+          type: boolean
+          example: false
+    Auth.Sessions.Request.Model.SessionID:
+      description: Идентификатор сессии текущего пользователя
+      type: string
+      minLength: 8
+      maxLength: 8
+      example: 1f3bc817
+    Auth.Sessions.Request.Model.CloseSessions:
+      description: DTO закрытия указанных сессий текущего пользователя
+      type: object
+      required:
+        - session_ids
+      properties:
+        session_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Auth.Sessions.Request.Model.SessionID'
+  responses:
+    Auth.ResponseJson.WaitingConfirmOperation:
+      description: |
+        - Ожидается подтверждение регистрации пользователя
+        - Ожидается подтверждение входа пользователя в систему
+        - Ожидается подтверждение изменения значения защищённого поля
+        - Ожидается подтверждение какой либо операции
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Auth.Response.Model.WaitingConfirmOperation'
+    Api.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.Error400'
+    Api.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Auth.ResponseJson.SuccessAccess:
+      description: |
+        - Пользователь успешно зарегистрирован в системе
+        - Доступ к аккаунту пользователя разрешён
+        - Refresh и Access токены сгенерированы на основе токена операции
+        - Refresh и Access токены перегенерированы
+      headers:
+        Set-Cookie:
+          $ref: '#/components/headers/Auth.Response.Cookie.Web.RefreshToken'
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Auth.Response.Model.SuccessAccess'
+    Auth.ResponseJson.Error400:
+      description: Некорректный токен операции или код подтверждения
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: object
+            required:
+              - errors
+            properties:
+              status:
+                description: Код HTTP статуса (дублируется из заголовка)
+                type: integer
+                example: 400
+              instance:
+                description: Метод и URL запроса
+                type: string
+                example: POST /users/123456
+              operation_state:
+                $ref: '#/components/schemas/Auth.Response.Model.ConfirmOperationState'
+              errors:
+                $ref: '#/components/schemas/Api.Response.Model.ErrorList'
+              time:
+                description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+                type: string
+                format: date-time
+                example: '2023-01-01T12:00:00.000+03:00'
+    Api.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Auth.Check.ResponseJson.Jwks:
+      description: Набор публичных JWT-ключей в формате JWKS (RFC 7517)
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Auth.Check.Response.Model.Jwks'
+    Api.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+  parameters:
+    Auth.Request.Header.Web.UseCookie:
+      description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
+      name: X-Use-Cookie
+      in: header
+      required: false
+      schema:
+        type: boolean
+      example: true
+    Auth.Request.Cookie.Web.RefreshToken:
+      name: RTID
+      in: cookie
+      schema:
+        description: Используется платформой WEB
+        type: string
+        minLength: 64
+        maxLength: 128
+      example: 02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704
+    Auth.Security.Request.Path.Token:
+      description: Токен операции, которая подтверждена пользователем
+      name: token
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 64
+        maxLength: 128
+      example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Sessions.Request.Query.Realm:
+      description: Область, пространство, чьи сессии нужно вернуть (если не указано, берётся realm текущей сессии)
+      name: realm
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 32
+      example: domain_name/user_group
+  headers:
+    Auth.Response.Cookie.Web.RefreshToken:
+      schema:
+        description: |-
+          Используется платформой WEB. Кука с refreshToken.
+          Атрибуты по умолчанию: Path=/, Secure, HttpOnly, SameSite=Strict, Max-Age=15552000 (180 дней).
+          Domain задаётся host-приложением обязательно. Secure/SameSite настраиваемы (Secure=true,
+          SameSite=Strict по умолчанию; SameSite=None требует Secure=true). HttpOnly всегда включён.
+        type: string
+        example: RTID=02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704; Path=/; Domain=example.com; Max-Age=15552000; HttpOnly; Secure; SameSite=Strict

@@ -3,23 +3,25 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
+
+	"print-shop-back/internal/adapter/workflow"
 )
 
 const (
-	ModelNameMaterialType = "admin-api.Dictionaries.MaterialType" // ModelNameMaterialType - название сущности
+	// ModelNameMaterialType - название сущности.
+	ModelNameMaterialType = "admin-api.Dictionaries.MaterialType"
 )
 
 type (
 	// MaterialType - comment struct.
 	MaterialType struct { // DB: printshop_dictionaries.material_types
-		ID         uint64            `json:"id"` // type_id
-		TagVersion uint32            `json:"tagVersion"`
-		Caption    string            `json:"caption" sort:"caption,default"`
-		Status     mrenum.ItemStatus `json:"status"`
-		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  time.Time         `json:"updatedAt" sort:"updatedAt"`
+		ID         uint64              `json:"id"` // type_id
+		TagVersion uint32              `json:"tagVersion"`
+		Caption    string              `json:"caption" sort:"caption,default"`
+		Status     workflow.ItemStatus `json:"status"`
+		CreatedAt  time.Time           `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  time.Time           `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// MaterialTypeParams - comment struct.
@@ -32,6 +34,6 @@ type (
 	// MaterialTypeListFilter - comment struct.
 	MaterialTypeListFilter struct {
 		SearchText string
-		Statuses   []mrenum.ItemStatus
+		Statuses   []workflow.ItemStatus
 	}
 )

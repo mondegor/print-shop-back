@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/catalog/laminate"
+	"print-shop-back/internal/catalog/laminate/section/pub/controller/httpv1"
+	"print-shop-back/internal/catalog/laminate/section/pub/repository"
+	"print-shop-back/internal/catalog/laminate/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitLaminate(ctx context.Context, opts laminate.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitLaminate(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitLaminate(_ context.Context, opts laminate.Options) (*httpv1.Laminate, error) { //nolint:unparam
+func initLaminateController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewLaminatePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewLaminate(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewLaminate(storage)
+
 	controller := httpv1.NewLaminate(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

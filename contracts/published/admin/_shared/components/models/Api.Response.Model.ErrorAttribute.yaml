@@ -1,0 +1,14 @@
+description: DTO пользовательской ошибки 400
+type: object
+required:
+  - code
+  - detail
+properties:
+  code:
+    description: Название атрибута, где произошла ошибка
+    type: string
+    example: "attributeName"
+  detail:
+    description: Описание ошибки
+    type: string
+    example: "Атрибут не может быть пустым | Указано недопустимое значение атрибута"

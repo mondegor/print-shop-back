@@ -1,0 +1,36 @@
+post:
+  summary: Метод создания новой группы контейнеров
+  description: |-
+    Метод предназначен для создания информации о новой группе контейнеров в БД
+
+  operationId: createContainerGroup
+  tags:
+    - Warehousing.Container
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Warehousing.Containers.Request.Model.CreateContainerGroup.yaml"
+
+  responses:
+    "201":
+      description: Информация о группе контейнеров успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Warehousing.Containers.Response.Model.SuccessCreatedContainer.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

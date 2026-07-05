@@ -1,0 +1,11 @@
+description: |-
+  Статус активности формы:
+  - TESTING - тестируется (доступно тестерам);
+  - PUBLISHED - опубликована;
+  - ARCHIVED - перенесено в архив;
+type: string
+enum:
+  - TESTING
+  - PUBLISHED
+  - ARCHIVED
+example: "PUBLISHED"

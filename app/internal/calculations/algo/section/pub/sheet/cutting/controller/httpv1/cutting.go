@@ -3,10 +3,12 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-sysmess/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
+	"print-shop-back/internal/calculations/algo/section/pub"
+	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
 )
 
 const (
@@ -16,14 +18,14 @@ const (
 type (
 	// SheetCutting - comment struct.
 	SheetCutting struct {
-		parser  mrserver.RequestParserValidate
+		parser  request.ParserValidate
 		sender  mrserver.ResponseSender
 		useCase pub.SheetCuttingUseCase
 	}
 )
 
 // NewSheetCutting - создаёт контроллер SheetCutting.
-func NewSheetCutting(parser mrserver.RequestParserValidate, sender mrserver.ResponseSender, useCase pub.SheetCuttingUseCase) *SheetCutting {
+func NewSheetCutting(parser request.ParserValidate, sender mrserver.ResponseSender, useCase pub.SheetCuttingUseCase) *SheetCutting {
 	return &SheetCutting{
 		parser:  parser,
 		sender:  sender,
@@ -34,19 +36,19 @@ func NewSheetCutting(parser mrserver.RequestParserValidate, sender mrserver.Resp
 // Handlers - возвращает обработчики контроллера SheetCutting.
 func (ht *SheetCutting) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
-		{Method: http.MethodPost, URL: sheetCuttingQuantityURL, Func: ht.CalcQuantity},
+		{Method: http.MethodPost, URL: sheetCuttingQuantityURL, Permission: mraccess.PermissionEveryone, Func: ht.CalcQuantity},
 	}
 }
 
 // CalcQuantity - comment method.
 func (ht *SheetCutting) CalcQuantity(w http.ResponseWriter, r *http.Request) error {
-	request := model.SheetCuttingQuantityRequest{}
+	req := model.SheetCuttingQuantityRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
-	item, err := ht.parseRequest(request)
+	item, err := ht.parseRequest(req)
 	if err != nil {
 		return err
 	}

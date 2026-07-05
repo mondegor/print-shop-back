@@ -1,0 +1,113 @@
+---
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Public API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Public REST API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local
+    description: Local Domain
+  - url: http://localhost:8080
+    description: Local Host
+security: []
+tags:
+  - name: Calculations
+    description: Public API Calculations
+  - name: Catalog
+    description: Public API Catalog
+  - name: CompanyPage
+    description: Public API Companies' pages
+  - name: Controls.SubmitForm
+    description: Public API Controls submit forms
+  - name: Dictionaries
+    description: Public API Dictionaries
+  - name: FileStation
+    description: Public API Files and images
+paths:
+  /v1/calculations:
+    $ref: "./calculations/paths/v1_calculations.yaml"
+
+  /v1/calculations/algo/box/pack-in-box:
+    $ref: "./calculations/paths/v1_calculations_algo_box_pack-in-box.yaml"
+  /v1/calculations/algo/sheet/cutting-quantity:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_cutting-quantity.yaml"
+  /v1/calculations/algo/sheet/imposition:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_imposition.yaml"
+  /v1/calculations/algo/sheet/imposition/variants:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_imposition_variants.yaml"
+  /v1/calculations/algo/sheet/inside-on-outside-quantity:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_inside-on-outside-quantity.yaml"
+  /v1/calculations/algo/sheet/inside-on-outside-max:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_inside-on-outside-max.yaml"
+  /v1/calculations/algo/sheet/pack-in-stack:
+    $ref: "./calculations/paths/v1_calculations_algo_sheet_pack-in-stack.yaml"
+
+  /v1/calculations/query-history:
+    $ref: "./calculations/paths/v1_calculations_query-history.yaml"
+  /v1/calculations/query-history/{queryId}:
+    $ref: "./calculations/paths/v1_calculations_query-history_queryId.yaml"
+
+  /v1/catalog/boxes:
+    $ref: "./catalog/paths/v1_catalog_boxes.yaml"
+
+  /v1/catalog/laminates:
+    $ref: "./catalog/paths/v1_catalog_laminates.yaml"
+  /v1/catalog/laminates/types:
+    $ref: "./catalog/paths/v1_catalog_laminates_types.yaml"
+  /v1/catalog/laminates/thicknesses:
+    $ref: "./catalog/paths/v1_catalog_laminates_thicknesses.yaml"
+
+  /v1/catalog/papers:
+    $ref: "./catalog/paths/v1_catalog_papers.yaml"
+  /v1/catalog/papers/types:
+    $ref: "./catalog/paths/v1_catalog_papers_types.yaml"
+  /v1/catalog/papers/colors:
+    $ref: "./catalog/paths/v1_catalog_papers_colors.yaml"
+  /v1/catalog/papers/densities:
+    $ref: "./catalog/paths/v1_catalog_papers_densities.yaml"
+  /v1/catalog/papers/factures:
+    $ref: "./catalog/paths/v1_catalog_papers_factures.yaml"
+
+  /v1/company/{pageName}:
+    $ref: "./paths/v1_company_pageName.yaml"
+
+  /v1/controls/submit-forms:
+    $ref: "./paths/v1_controls_submit-forms.yaml"
+  /v1/controls/submit-forms/{rewriteName}:
+    $ref: "./paths/v1_controls_submit-forms_rewriteName.yaml"
+
+  /v1/dictionaries/material-types:
+    $ref: "./dictionaries/paths/v1_dictionaries_material-types.yaml"
+  /v1/dictionaries/paper-colors:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-colors.yaml"
+  /v1/dictionaries/paper-factures:
+    $ref: "./dictionaries/paths/v1_dictionaries_paper-factures.yaml"
+  /v1/dictionaries/print-formats:
+    $ref: "./dictionaries/paths/v1_dictionaries_print-formats.yaml"
+
+  /img/{filePath}:
+    $ref: "./paths/img_filePath.yaml"

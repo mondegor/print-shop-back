@@ -3,19 +3,16 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
-	tmpAccountID = "b8a75cd5-ddd1-46ab-be84-406e669cbfa9"
-
 	companyPageItemURL             = "/v1/account/company-page"
 	companyPageItemChangeStatusURL = "/v1/account/company-page/status"
 )
@@ -42,7 +39,7 @@ func NewCompanyPage(parser validate.RequestParser, sender mrserver.ResponseSende
 func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 	return []mrserver.HttpHandler{
 		{Method: http.MethodGet, URL: companyPageItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: companyPageItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: companyPageItemURL, Func: ht.Save},
 
 		{Method: http.MethodPatch, URL: companyPageItemChangeStatusURL, Func: ht.ChangeStatus},
 	}
@@ -50,7 +47,7 @@ func (ht *CompanyPage) Handlers() []mrserver.HttpHandler {
 
 // Get - comment method.
 func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
-	item, err := ht.useCase.GetItem(r.Context(), uuid.MustParse(tmpAccountID)) // TODO:
+	item, err := ht.useCase.GetItem(r.Context(), ht.parser.UserID(r))
 	if err != nil {
 		return ht.wrapError(err, r)
 	}
@@ -58,22 +55,22 @@ func (ht *CompanyPage) Get(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(w, http.StatusOK, item)
 }
 
-// Store - comment method.
-func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreCompanyPageRequest{}
+// Save - comment method.
+func (ht *CompanyPage) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreCompanyPageRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.CompanyPage{
-		AccountID:   uuid.MustParse(tmpAccountID), // TODO:
-		RewriteName: request.RewriteName,
-		PageTitle:   request.PageTitle,
-		SiteURL:     request.SiteURL,
+		AccountID:   ht.parser.UserID(r),
+		RewriteName: req.RewriteName,
+		PageTitle:   req.PageTitle,
+		SiteURL:     req.SiteURL,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -82,15 +79,15 @@ func (ht *CompanyPage) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := ChangePublicStatusRequest{}
+	req := ChangePublicStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.CompanyPage{
-		AccountID: uuid.MustParse(tmpAccountID),
-		Status:    request.Status,
+		AccountID: ht.parser.UserID(r),
+		Status:    req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -101,8 +98,8 @@ func (ht *CompanyPage) ChangeStatus(w http.ResponseWriter, r *http.Request) erro
 }
 
 func (ht *CompanyPage) wrapError(err error, _ *http.Request) error {
-	if module.ErrCompanyPageRewriteNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("rewriteName", err)
+	if errors.Is(err, module.ErrCompanyPageRewriteNameAlreadyExists) {
+		return errors.WithCustomCode(err, "rewriteName")
 	}
 
 	return err

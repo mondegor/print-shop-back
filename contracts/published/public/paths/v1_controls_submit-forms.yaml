@@ -1,0 +1,30 @@
+get:
+  summary: Метод получения списка форм
+  description: |-
+    Метод предназначен для получения списка всех форм, сохраненных в БД,
+    со следующими условиями:
+    - isPublished = true;
+
+    Записи выводятся на языке пользователя или на языке по умолчанию;
+
+    Порядок следования списка:
+    - caption ASC
+
+  operationId: getSubmitFormList
+  tags:
+    - Controls.SubmitForm
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Получен список форм
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Controls.SubmitForms.Response.Model.FormList.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

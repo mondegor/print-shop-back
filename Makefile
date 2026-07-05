@@ -3,9 +3,6 @@
 build:
 	mrcmd install
 
-build-api:
-	mrcmd openapi build-all
-
 deps:
 	mrcmd go deps
 
@@ -19,14 +16,11 @@ migrate:
 generate:
 	mrcmd go generate
 
-fmt:
-	mrcmd go fmt
-
-fmti:
-	mrcmd go fmti
-
 lint:
-	mrcmd golangci-lint check
+	mrcmd go fmt
+	mrcmd go fmti
+	mrcmd go fmti2
+	mrcmd go lint
 
 test:
 	mrcmd go test
@@ -53,4 +47,4 @@ app-logs:
 app-stop:
 	mrcmd stop
 
-.PHONY: build build-api deps deps-upgrade migrate generate fmt fmti lint test test-report plantuml app-conf app-start app-state app-logs app-stop
+.PHONY: build deps deps-upgrade migrate generate lint test test-report plantuml app-conf app-start app-state app-logs app-stop

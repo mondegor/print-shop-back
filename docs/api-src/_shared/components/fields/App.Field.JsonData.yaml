@@ -1,6 +1,0 @@
-App.Field.JsonData:
-  description: Данные в формате json
-  type: string
-  # format: json
-  maxLength: 16384
-  example: "{'data': 'value'}"

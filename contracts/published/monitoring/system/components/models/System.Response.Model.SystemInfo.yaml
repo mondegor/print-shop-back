@@ -1,0 +1,41 @@
+description: DTO - системная информация о запущенном приложении
+type: object
+properties:
+  name:
+    description: Название приложения
+    type: string
+    example: "Sample App"
+  version:
+    description: Версия приложения
+    type: string
+    example: "v0.1.0"
+  environment:
+    description: Окружение, на котором запущено приложение
+    type: string
+    example: "prod"
+  host_name:
+    description: Название хоста, на котором запущено приложение
+    type: string
+    example: "host-name"
+  is_debug:
+    description: Статус режима отладки
+    type: boolean
+    example: true
+  log_level:
+    type: string
+    enum:
+      - DEBUG
+      - INFO
+      - WARN
+      - ERROR
+    example: "ERROR"
+  started_at:
+    description: Время запуска приложения (UTC)
+    type: string
+    format: date-time
+    example: "2023-01-01T12:00:00.000+03:00"
+  processes:
+    description: Процессы приложения со статусом работоспособности
+    type: array
+    items:
+      $ref: "./System.Response.Model.SystemInfoProcess.yaml"

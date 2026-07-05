@@ -1,0 +1,8 @@
+description: Список тегов через ","
+name: tags
+in: query
+required: false
+schema:
+  type: string
+  maxLength: 256
+example: "КУРТКИ,ОТВЁРТКИ"

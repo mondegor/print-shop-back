@@ -1,0 +1,11 @@
+description: DTO - системная информация о запущенном процессе
+type: object
+properties:
+  name:
+    description: Название процесса
+    type: string
+    example: "PostgreSQL"
+  status:
+    description: Статус работоспособности процесса
+    type: string
+    example: "200 OK"

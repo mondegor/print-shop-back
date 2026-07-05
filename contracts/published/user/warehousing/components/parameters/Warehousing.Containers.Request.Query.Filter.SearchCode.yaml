@@ -1,0 +1,8 @@
+description: Код контейнера
+name: query
+in: query
+required: false
+schema:
+  type: string
+  maxLength: 32
+example: "E-48"

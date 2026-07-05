@@ -3,13 +3,15 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
 )
 
 type (
 	// PaperColorUseCase - comment interface.
 	PaperColorUseCase interface {
-		GetList(ctx context.Context, params entity.PaperColorParams) ([]entity.PaperColor, error)
+		GetList(ctx context.Context, lz mrcore.Localizer, params entity.PaperColorParams) ([]entity.PaperColor, error)
 	}
 
 	// PaperColorStorage - comment interface.

@@ -3,14 +3,15 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
-	ModelNameLaminate = "admin-api.Catalog.Laminate" // ModelNameLaminate - название сущности
+	// ModelNameLaminate - название сущности.
+	ModelNameLaminate = "admin-api.Catalog.Laminate"
 )
 
 type (
@@ -25,7 +26,7 @@ type (
 		Width      measure.Meter             `json:"width" sort:"width" upd:"laminate_width"`
 		Thickness  measure.Meter             `json:"thickness" upd:"laminate_thickness"`
 		WeightM2   measure.KilogramPerMeter2 `json:"weightM2" sort:"weightM2" upd:"laminate_weight_m2"`
-		Status     mrenum.ItemStatus         `json:"status"`
+		Status     workflow.ItemStatus       `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  time.Time                 `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -43,6 +44,6 @@ type (
 		TypeIDs    []uint64
 		Length     measure.RangeMeter
 		Width      measure.RangeMeter
-		Statuses   []mrenum.ItemStatus
+		Statuses   []workflow.ItemStatus
 	}
 )

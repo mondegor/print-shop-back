@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/papercolor"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/controller/httpv1"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/repository"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitPaperColor(ctx context.Context, opts papercolor.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPaperColor(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPaperColor(_ context.Context, opts papercolor.Options) (*httpv1.PaperColor, error) { //nolint:unparam
+func initPaperColorController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewPaperColorPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewPaperColor(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewPaperColor(storage)
+
 	controller := httpv1.NewPaperColor(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
+	"print-shop-back/internal/dictionaries/papercolor/module"
+	"print-shop-back/internal/dictionaries/papercolor/section/pub/entity"
 )
 
 type (
@@ -40,7 +40,7 @@ func (re *PaperColorPostgres) Fetch(ctx context.Context, _ entity.PaperColorPara
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err

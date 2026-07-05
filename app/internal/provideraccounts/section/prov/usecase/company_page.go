@@ -4,30 +4,27 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrpath"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
-	"github.com/mondegor/go-webcore/mrstatus"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/flow"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
-		txManager    mrstorage.DBTxManager
-		storage      prov.CompanyPageStorage
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
-		imgBaseURL   mrpath.PathBuilder
-		statusFlow   mrstatus.Flow
+		txManager     mrstorage.DBTxManager
+		storage       prov.CompanyPageStorage
+		imgBaseURL    mrpath.Builder
+		eventEmitter  mrevent.Emitter
+		errorWrapper  errors.Wrapper
+		statusFlowMap workflow.FlowMap[publicstatus.Enum]
 	}
 )
 
@@ -35,29 +32,28 @@ type (
 func NewCompanyPage(
 	txManager mrstorage.DBTxManager,
 	storage prov.CompanyPageStorage,
-	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UseCaseErrorWrapper,
-	imgBaseURL mrpath.PathBuilder,
+	imgBaseURL mrpath.Builder,
+	eventEmitter mrevent.Emitter,
 ) *CompanyPage {
 	return &CompanyPage{
-		txManager:    txManager,
-		storage:      storage,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameCompanyPage),
-		errorWrapper: errorWrapper,
-		imgBaseURL:   imgBaseURL,
-		statusFlow:   flow.PublicStatusFlow(),
+		txManager:     txManager,
+		storage:       storage,
+		imgBaseURL:    imgBaseURL,
+		eventEmitter:  mrevent.EmitterWithSource(eventEmitter, entity.ModelNameCompanyPage),
+		errorWrapper:  errors.NewServiceRecordNotFoundWrapper(),
+		statusFlowMap: publicstatus.NewFlowMap(),
 	}
 }
 
 // GetItem - comment method.
 func (uc *CompanyPage) GetItem(ctx context.Context, accountID uuid.UUID) (entity.CompanyPage, error) {
 	if accountID == uuid.Nil {
-		return entity.CompanyPage{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.CompanyPage{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, accountID)
 	if err != nil {
-		return entity.CompanyPage{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, accountID)
+		return entity.CompanyPage{}, uc.errorWrapper.Wrap(err, "accountId", accountID)
 	}
 
 	item.LogoURL = uc.imgBaseURL.BuildPath(item.LogoURL)
@@ -65,24 +61,24 @@ func (uc *CompanyPage) GetItem(ctx context.Context, accountID uuid.UUID) (entity
 	return item, nil
 }
 
-// Store - comment method.
-func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error {
+// Save - comment method.
+func (uc *CompanyPage) Save(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == uuid.Nil {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
 		return err
 	}
 
-	item.Status = enum.PublicStatusDraft // only for insert
+	item.Status = publicstatus.Draft // only for insert
 
 	return uc.txManager.Do(ctx, func(ctx context.Context) error {
 		if err := uc.storage.InsertOrUpdate(ctx, item); err != nil {
-			return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+			return uc.errorWrapper.Wrap(err, "accountId", item.AccountID)
 		}
 
-		uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"accountId": item.AccountID})
+		uc.eventEmitter.Emit(ctx, "Store", "accountId", item.AccountID)
 
 		return nil
 	})
@@ -91,27 +87,27 @@ func (uc *CompanyPage) Store(ctx context.Context, item entity.CompanyPage) error
 // ChangeStatus - comment method.
 func (uc *CompanyPage) ChangeStatus(ctx context.Context, item entity.CompanyPage) error {
 	if item.AccountID == uuid.Nil {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.AccountID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		return uc.errorWrapper.Wrap(err, "accountId", item.AccountID)
 	}
 
 	if currentStatus == item.Status {
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	if err = uc.storage.UpdateStatus(ctx, item); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameCompanyPage, item.AccountID)
+		return uc.errorWrapper.Wrap(err, "accountId", item.AccountID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"accountId": item.AccountID, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", "accountId", item.AccountID, "status", item.Status)
 
 	return nil
 }
@@ -123,11 +119,11 @@ func (uc *CompanyPage) checkItem(ctx context.Context, item *entity.CompanyPage) 
 func (uc *CompanyPage) checkRewriteName(ctx context.Context, item *entity.CompanyPage) error {
 	accountID, err := uc.storage.FetchAccountIDByRewriteName(ctx, item.RewriteName)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
+		return uc.errorWrapper.Wrap(err)
 	}
 
 	if item.AccountID != accountID {

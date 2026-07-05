@@ -4,14 +4,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (
-	ModelNameSubmitForm = "admin-api.Controls.SubmitForm" // ModelNameSubmitForm - название сущности
+	// ModelNameSubmitForm - название сущности.
+	ModelNameSubmitForm = "admin-api.Controls.SubmitForm"
 )
 
 type (
@@ -22,8 +23,8 @@ type (
 		RewriteName string                `json:"rewriteName" sort:"rewriteName" upd:"rewrite_name"`
 		ParamName   string                `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption     string                `json:"caption" sort:"caption,default" upd:"form_caption"`
-		Detailing   enum.ElementDetailing `json:"detailing"`
-		Status      mrenum.ItemStatus     `json:"status"`
+		Detailing   elementdetailing.Enum `json:"detailing"`
+		Status      workflow.ItemStatus   `json:"status"`
 		CreatedAt   time.Time             `json:"createdAt" sort:"createdAt"`
 		UpdatedAt   time.Time             `json:"updatedAt" sort:"updatedAt"`
 
@@ -41,7 +42,7 @@ type (
 	// SubmitFormListFilter - comment struct.
 	SubmitFormListFilter struct {
 		SearchText string
-		Detailing  []enum.ElementDetailing
-		Statuses   []mrenum.ItemStatus
+		Detailing  []elementdetailing.Enum
+		Statuses   []workflow.ItemStatus
 	}
 )

@@ -1,11 +1,12 @@
 package entity
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
-	ModelNameBox = "public-api.Catalog.Box" // ModelNameBox - название сущности
+	// ModelNameBox - название сущности.
+	ModelNameBox = "public-api.Catalog.Box"
 )
 
 type (

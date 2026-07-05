@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
+	"print-shop-back/internal/dictionaries/materialtype/module"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/entity"
 )
 
 type (
@@ -40,7 +40,7 @@ func (re *MaterialTypePostgres) Fetch(ctx context.Context, _ entity.MaterialType
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err

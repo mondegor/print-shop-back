@@ -1,25 +1,27 @@
 package validate
 
 import (
-	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/validate"
-	pkgvalidate "github.com/mondegor/print-shop-back/pkg/validate"
+	"print-shop-back/pkg/provideraccounts/validate"
+	pkgvalidate "print-shop-back/pkg/transport/validate"
 )
 
 type (
 	// RequestProviderAccountsParser - comment interface.
 	RequestProviderAccountsParser interface {
 		pkgvalidate.RequestExtendParser
-		mrserver.RequestParserImage
+		request.ParserUser
+		request.ParserImage
 		validate.RequestPublicStatusParser
 	}
 
 	// Parser - comment struct.
 	Parser struct {
 		*pkgvalidate.ExtendParser
-		*mrparser.Image
+		*parser.User
+		*parser.Image
 		*validate.PublicStatusParser
 	}
 )
@@ -27,12 +29,14 @@ type (
 // NewParser - создаёт объект Parser.
 func NewParser(
 	p1 *pkgvalidate.ExtendParser,
-	p2 *mrparser.Image,
-	p3 *validate.PublicStatusParser,
+	p2 *parser.User,
+	p3 *parser.Image,
+	p4 *validate.PublicStatusParser,
 ) *Parser {
 	return &Parser{
 		ExtendParser:       p1,
-		Image:              p2,
-		PublicStatusParser: p3,
+		User:               p2,
+		Image:              p3,
+		PublicStatusParser: p4,
 	}
 }

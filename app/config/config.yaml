@@ -1,297 +1,389 @@
 ---
-app:
-  name: "Print Shop Service"
-  version: v0.0.0 # auto detection
-  environment: local # local, dev, test, prod
+app_name: "Print Shop Service" # env:APPX_NAME
+# app_version: "v0.0.0" # env:APPX_VER
+app_languages: # env:APPX_LANGS
+  - "ru-RU" # the first language is default
+  - "en-US"
 
-debugging:
-  debug: true
-  unexpected_http_status: 418 # http.StatusTeapot
-  error_caller:
-    enable: true
-    depth: 3
-    show_func_name: true
-    upper_bounds:
-      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).New
-      - github.com/mondegor/go-sysmess/mrerr.(*ProtoAppError).Wrap
-      - github.com/mondegor/go-webcore/mrcore.PrepareError
-      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).Perform
-      - github.com/mondegor/go-webcore/mrcore/mrapp.(*ErrorHandler).PerformWithCommit
-      - github.com/mondegor/go-webcore/mrlog/zerolog.(*eventAdapter).Err
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).begin
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Exec
-      - github.com/mondegor/go-storage/mrpostgres.(*ConnAdapter).Query
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRow).Scan
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Err
-      - github.com/mondegor/go-storage/mrpostgres.(*queryRows).Scan
-      - github.com/mondegor/go-storage/mrpostgres.(*transaction).Exec
+log_level: info # debug, info, warn, error
+log_time_format: DateTime # RFC3339, RFC3339Nano, DateTime, TimeOnly, Kitchen
+log_json_format: true
+log_color_mode: false # true, false; true only if json_format=false
+log_trace_is_enabled: false
+debug_is_enabled: false
 
-logger:
-  level: trace # info, warn, error, fatal, debug, trace
-  timestamp_format: TimeOnly # RFC3339, RFC3339Nano, DateTime, TimeOnly
-  json_format: false
-  console_color: true
+stack_trace_is_enabled: true
+stack_trace_depth: 2
+stack_trace_show_func: false
+stack_trace_upper_bounds:
+  - github.com/mondegor/go-sysmess/errors/runtime
+  - github.com/mondegor/go-sysmess/errors/helper
+  - github.com/mondegor/go-sysmess/mrpostgres
+  - github.com/mondegor/go-sysmess/mrpostgres/db
 
-sentry:
-  # dsn: http://id@127.0.0.1:9980/1
-  traces_sample_rate: 1.0
-  flush_timeout: 2s
+unexpected_error_http_status: 500 # 418, 599
 
-servers:
-  rest_server:
-    read_timeout: 3s
-    write_timeout: 5s
-    shutdown_timeout: 15s
-    listen:
-      bind_ip: 0.0.0.0
-      port: 8080
-  internal_server:
-    read_timeout: 3s
-    write_timeout: 5s
-    shutdown_timeout: 15s
-    listen:
-      bind_ip: 0.0.0.0
-      port: 8084
+# [IGNORE if sentry_dsn == ""]
+# sentry_dsn: http://id@127.0.0.1:9980/1 # env:APPX_SENTRY_DSN [OPTIONAL]
+sentry_traces_sample_rate: 1.0
+sentry_flush_timeout: 2s
 
-storage:
-  type: postgres
-  host: db-postgres
-  port: 5432
-  username: user_pg
-  password: 123456
-  database: db_pg
-  migrations_dir: "./migrations" # if empty automatic migration will be disabled
-  migrations_table: print_shop_migrations
-  max_pool_size: 2
-  max_conn_lifetime: 1h
-  max_conn_idle_time: 15m
-  timeout: 60s
+# db_host: db-postgres # env:APPX_DB_HOST
+db_port: 5432 # env:APPX_DB_PORT
+# db_username: user_pg # env:APPX_DB_USER
+# db_password: 123456 # env:APPX_DB_PASSWORD
+# db_database: db_pg # env:APPX_DB_NAME
+db_migrations_dir: "./migrations" # if empty automatic migration will be disabled
+db_migrations_table: print_shop_migrations # env:APPX_DB_MIGRATIONS_TABLE
+db_max_pool_size: 2
+db_max_conn_lifetime: 1h
+db_max_conn_idle_time: 15m
+db_timeout: 15s
 
-redis:
-  host: db-redis
-  port: 6379
-  password: 123456
-  read_timeout: 15s
-  write_timeout: 15s
+# redis_host: db-redis # env:APPX_REDIS_HOST
+redis_port: 6379 # env:APPX_REDIS_PORT
+# redis_password: 123456 # env:APPX_REDIS_PASSWORD
+redis_read_timeout: 15s
+redis_write_timeout: 15s
 
-file_system:
-  dir_mode: 0775
-  create_dirs: true # check and create if not exists
+# FileSystem (disabled)
+fs_dir_mode: 0775
+fs_create_dirs: true # check and create if not exists
+
+# s3_host: s3-minio # env:APPX_S3_HOST
+s3_port: 9000 # env:APPX_S3_PORT
+s3_use_ssl: true
+# s3_username: admin # env:APPX_S3_USER
+# s3_password: 12345678 # env:APPX_S3_PASSWORD
+s3_create_buckets: true # check and create if not exists
 
 file_providers:
-  image_storage:
-    name: imageStorage
-    root_dir: "../img"
+  # S3
+  image_storage_name: imageStorage
+  image_storage_bucket_name: shared-img
 
-cors:
-  allowed_origins:
-    - http://print-shop.local
-    - http://localhost:3000
-    - http://127.0.0.1:3000
-  allowed_methods:
-    - GET
-    - POST
-    - PUT
-    - PATCH
-    - DELETE
-  allowed_headers:
-    - Content-Type
-    - Authorization
-    - X-Correlation-Id
-    - X-Idempotency-Key
-  exposed_headers:
-    - X-Request-Id
-  allow_credentials: true
+  # FileSystem (disabled)
+  image_storage2_name: imageStorage2
+  image_storage2_root_dir: "../img" # env:APPX_IMAGE_STORAGE2_ROOT_DIR
 
-translation:
-  dir_path: "./translate"
-  lang_codes: # the first language is default
-    - en_EN
-    - ru_RU
-  dictionaries:
-    dir_path: "./translate/dict"
-    list:
-      - catalog/boxes
-      - catalog/laminates
-      - catalog/papers
-      - dictionaries/material-types
-      - dictionaries/paper-colors
-      - dictionaries/paper-factures
-      - dictionaries/print-formats
+# mail_default_from: "PrintShop <user-email@example.com>" # env:APPX_MAIL_DEFAULT_FROM
+# mail_smtp_host: smtp.example.com # env:APPX_MAIL_SMTP_HOST
+# mail_smtp_port: 587 # env:APPX_MAIL_SMTP_PORT
+# mail_smtp_user_name: username # env:APPX_MAIL_SMTP_USERNAME
+# mail_smtp_password: 123abc # env:APPX_MAIL_SMTP_PASSWORD
 
-senders:
-  mail:
-    # default_from: PrintShop <username@yandex.ru>
-    # smtp_host: smtp.yandex.ru
-    # smtp_port: 587 # STARTTLS
-    # smtp_user_name: username
-    # smtp_password: password
-  telegram_bot:
-    # name: "@Telegram_Bot"
-    # token: "0000000000:AAAaaAAaaAAaaAAAA0AAaaaaAaAAAAAAa_a"
+# [IGNORE if name == ""]
+# telegram_channel_name: @Telegram_Bot # env:APPX_TELEGRAM_CHANNEL_NAME
+# telegram_channel_token: 0000000000:AAAaa # env:APPX_TELEGRAM_CHANNEL_TOKEN
 
-app_sections:
-  admin_api:
-    privilege: apiAdm
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
-  providers_api:
-    privilege: apiProv
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
-  public_api:
-    privilege: apiPub
-    auth:
-      secret: "The secret for symmetric security key"
-      audience: "127.0.0.1:80"
+http_server_read_timeout: 3s
+http_server_write_timeout: 5s
+http_server_shutdown_timeout: 15s
+http_server_bind_ip: 0.0.0.0 # env:APPX_HTTP_SERVER_BIND_IP
+http_server_port: 8080 # env:APPX_HTTP_SERVER_PORT
+
+monitoring_server_read_timeout: 3s
+monitoring_server_write_timeout: 5s
+monitoring_server_shutdown_timeout: 15s
+monitoring_server_bind_ip: 0.0.0.0 # env:APPX_MONITORING_SERVER_BIND_IP
+monitoring_server_port: 8084 # env:APPX_MONITORING_SERVER_PORT
+
+# cors_allowed_origins: # env:APPX_CORS_ALLOWED_ORIGINS
+#  - http://print-shop.local
+#  - http://localhost:3000
+#  - http://127.0.0.1:3000
+cors_allowed_methods:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+cors_allowed_headers:
+  - Content-Type
+  - Authorization
+  - X-Correlation-Id
+  - X-Idempotency-Key
+  - X-Use-Cookie
+cors_exposed_headers:
+  - X-Request-Id
+cors_allow_credentials: true
+
+refresh_cookie:
+  name: "RTID"
+  # domain: "localhost" # env:APPX_REFRESH_COOKIE_DOMAIN
+  path: "/"
+  expiry: 4320h # 180 days
 
 access_control:
-  roles:
-    dir_path: "./roles"
-    file_type: yaml
-    list: # the first role is the guest role
-      - guests
-      - administrators
-      - providers
-  privileges:
-    - apiAdm
-    - apiProv
-    - apiPub
-  permissions:
-    - modCalculationsAlgo
-    - modCalculationsBox
-    - modCalculationsQueryHistory
-    - modCatalogBox
-    - modCatalogPaper
-    - modCatalogLaminate
-    - modControlsElementTemplate
-    - modControlsSubmitForm
-    - modControlsSubmitFormToPublish
-    - modDictionariesMaterialType
-    - modDictionariesPaperColor
-    - modDictionariesPaperFacture
-    - modDictionariesPrintFormat
-    - modFileStation
-    - modProviderAccounts
+  realms:
+    - id: 10
+      name: "printshop/users"
+      auth_token:
+        access_type: jwt
+        access_expiry: 60m
+        refresh_expiry: 4320h # 180 days
+        length: 64
+      user_kinds:
+        - name: standard
+          roles:
+            - users
+          session_max: 4
+      register_user_kind: standard
+      operation_confirm:
+        token_length: 64
+        code_length: 4
+        # session_expiry: 10m
+        send_by_email:
+          max_attempts: 3
+          # max_resends: 8
+          # min_resend_time: 1m
+        send_by_phone:
+          max_attempts: 3
+          # max_resends: 2
+          min_resend_time: 3m
 
-modules_settings:
+    - id: 20
+      name: "printshop/providers"
+      auth_token:
+        access_type: jwt
+        access_expiry: 30m
+        refresh_expiry: 720h # 1 month
+        length: 80
+      user_kinds:
+        - name: standard
+          roles:
+            - providers
+          session_max: 4
+        - name: pro
+          roles:
+            - providers
+            - providers/pro
+          session_max: 8
+      register_user_kind: standard
+      # operation_confirm:
+        # token_length: 80
+        # code_length: 6
+        # session_expiry: 10m
+        # send_by_email:
+          # max_attempts: 5
+          # max_resends: 8
+          # min_resend_time: 1m
+        # send_by_phone:
+          # max_attempts: 5
+          # max_resends: 2
+          # min_resend_time: 2m
+
+    - id: 50
+      name: "admin.printshop/backend"
+      auth_token:
+        access_type: session
+        access_expiry: 15m
+        refresh_expiry: 2h
+        length: 96
+      user_kinds:
+        - name: admin
+          roles:
+            - administrators
+          session_max: 4
+      register_user_kind: none
+      operation_confirm:
+        token_length: 96
+        # code_length: 6
+        session_expiry: 5m
+        send_by_email:
+          max_attempts: 3
+          # max_resends: 8
+          # min_resend_time: 1m
+        send_by_phone:
+          max_attempts: 3
+          max_resends: 2
+          # min_resend_time: 2m
+
+  action_groups:
+    - name: public-api
+      base_path: "/"
+      privilege: public
+    - name: auth-api
+      base_path: "/auth/"
+      privilege: public
+    - name: admin-api
+      base_path: "/backend/"
+      privilege: api/admin
+    - name: user-api
+      base_path: "/user/"
+      privilege: api/users
+    - name: provider-api
+      base_path: "/prov/"
+      privilege: api/providers
+
+  roles_dir_path: "./roles" # env:APPX_ROLES_DIR_PATH
+
+  roles:
+    - administrators # will be searched for administrators.yaml in dir_path and etc
+    - providers
+    - providers/pro
+    - users
+
+#  override_auth_token:
+#    access_type: jwt
+#    access_expiry: 720h # 30 days
+#    refresh_expiry: 1440h # 60 days
+#    length: 64
+
+  default_operation_confirm:
+    token_length: 80
+    code_length: 6
+    code_max_attempts: 3
+    session_expiry: 10m
+    send_by_email:
+      max_attempts: 5
+      max_resends: 8
+      min_resend_time: 1m
+    send_by_phone:
+      max_attempts: 5
+      max_resends: 2
+      min_resend_time: 2m
+
+  auth_2fa:
+    recovery_count: 10
+    recovery_code_length: 17
+    recovery_low_threshold: 3
+
+  session_soft_threshold: 0
+  session_hard_threshold: 4
+
+# [IGNORE if realms/*/access_type != jwt]
+jwt:
+  issuer: "print-shop" # env:APPX_JWT_ISSUER
+  alg: "HS256" # HS256/HS512/RS256/ES256, env:APPX_JWT_ALG
+  # kid: "dev-key-2026" # env:APPX_JWT_KID
+  # secret: "..." # env:APPX_JWT_SECRET
+  # verify_keys:
+  #   - kid: "old-key-2025"
+  #     alg: "RS256"
+  #     public_key: "-----BEGIN PUBLIC KEY-----..."
+
+module_settings:
   general:
     page_size_max: 1000
     page_size_default: 50
+
   provider_account:
-    company_page_logo:
-      file_provider: imageStorage # file_providers.image_storage
+    company_page_logo_provider: imageStorage # file_providers.image_storage_name
+
   file_station:
-    image_proxy:
-      host: http://print-shop.local
-      base_path: /img/{{path}}
-      file_provider: imageStorage # file_providers.image_storage
+    # image_proxy_host: http://print-shop.local # env:APPX_IMAGE_PROXY_HOST
+    image_proxy_base_path: /img/{{path}}
+    image_proxy_provider: imageStorage # file_providers.image_storage_name
 
-validation:
-  files:
-    json:
-      min_size: 1 # 1b
-      max_size: 524288 # 512Kb
-      max_files: 4
-      check_request_content_type: true
-      extensions:
-        - json
+validation_files_json:
+  min_size: 1 # 1b
+  max_size: 524288 # 512Kb
+  max_files: 4
+  check_request_content_type: true
+  extensions:
+    - json
 
-  images:
-    logo:
-      max_width: 1920 # pixels
-      max_height: 1080 # pixels
-      check_body: true
-      file:
-        min_size: 512 # 512b
-        max_size: 131072 # 128Kb
-        max_files: 4
-        check_request_content_type: true
-        extensions:
-          - jpeg
-          - jpg
-          - png
+validation_images_logo:
+  max_width: 1920 # pixels
+  max_height: 1080 # pixels
+  check_body: true
+  file:
+    min_size: 512 # 512b
+    max_size: 131072 # 128Kb
+    max_files: 4
+    check_request_content_type: true
+    extensions:
+      - jpeg
+      - jpg
+      - png
 
-  mime_types:
-    - type: "application/octet-stream"
-      ext: psd
-    - type: "application/pdf"
-      ext: pdf
-    - type: "application/json"
-      ext: json
-    - type: "application/x-tar"
-      ext: tgz
-    - type: "application/zip"
-      ext: zip
-    - type: "image/gif"
-      ext: gif
-    - type: "image/jpeg"
-      ext: jpeg
-    - type: "image/jpeg"
-      ext: jpe
-    - type: "image/jpeg"
-      ext: jpg
-    - type: "image/png"
-      ext: png
-    - type: "text/xml"
-      ext: xml
+allowed_mime_types:
+  - type: "application/octet-stream"
+    ext: psd
+  - type: "application/pdf"
+    ext: pdf
+  - type: "application/json"
+    ext: json
+  - type: "application/x-tar"
+    ext: tgz
+  - type: "application/zip"
+    ext: zip
+  - type: "image/gif"
+    ext: gif
+  - type: "image/jpeg"
+    ext: jpeg
+  - type: "image/jpeg"
+    ext: jpe
+  - type: "image/jpeg"
+    ext: jpg
+  - type: "image/png"
+    ext: png
+  - type: "text/xml"
+    ext: xml
 
-task_schedule:
+task_schedule_settings:
   reload_settings:
-    caption: "Settings.Reload"
-    startup: true
+    period: 7m
+    timeout: 15s
+    notification_channel: "event_settings_changed"
+  notification_check_conn_period: 5m
+  default_period_ratio: 0.1 # 10% of period
+
+task_schedule_auth:
+  user_stat_request_collector:
+    ready_timeout: 5s
+    flush_period: 1m
+    handler_timeout: 30s
+    batch_size: 100
+    workers_count: 1
+  clean_records:
     period: 5m
     timeout: 15s
-  mailer:
-    send_processor:
-      caption: "Mailer.SendProcessor"
-      ready_timeout: 60s
-      start_read_delay: 5s
-      read_period: 2m
-      cancel_read_timeout: 5s
-      handler_timeout: 30s
-      queue_size: 25
-      workers_count: 1
-    change_from_to_retry:
-      caption: "Mailer.ChangeFromToRetry"
-      # startup: false
-      period: 600s
-      timeout: 60s
-    clean_queue:
-      caption: "Mailer.CleanQueue"
-      # startup: false
-      period: 45m
-      timeout: 60s
-    send_retry_attempts: 3
-    send_delay_correction: 15s
-    change_queue_limit: 100
-    change_retry_timeout: 60s
-    change_retry_delayed: 0s
-    clean_queue_limit: 100
-  notifier:
-    send_processor:
-      caption: "Notifier.SendProcessor"
-      ready_timeout: 60s
-      start_read_delay: 0s
-      read_period: 2m
-      cancel_read_timeout: 5s
-      handler_timeout: 30s
-      queue_size: 25
-      workers_count: 1
-    change_from_to_retry:
-      caption: "Notifier.ChangeFromToRetry"
-      # startup: false
-      period: 600s
-      timeout: 60s
-    clean_queue:
-      caption: "Notifier.CleanQueue"
-      # startup: false
-      period: 45m
-      timeout: 60s
-    send_retry_attempts: 3
-    change_queue_limit: 100
-    change_retry_timeout: 60s
-    change_retry_delayed: 30s
-    clean_queue_limit: 100
+  clean_records_limit: 100
+  logs_life_time: 168h # 1 week
+
+task_schedule_mailer:
+  message_processor:
+    ready_timeout: 5s
+    read_period: 2m
+    consumer_read_timeout: 2s
+    consumer_write_timeout: 4s
+    handler_timeout: 30s
+    queue_size: 25
+    workers_count: 1
+    notification_channel: "event_mailer_queue_inserted"
+  change_from_to_retry:
+    period: 10m
+    timeout: 2m
+  clean_queue:
+    period: 1h
+    timeout: 3m
+  send_retry_attempts: 3
+  send_delay_correction: 15s
+  change_queue_batch_size: 100
+  change_retry_timeout: 30s
+  change_retry_delayed: 0s
+  clean_queue_batch_size: 1000
+
+task_schedule_notifier:
+  notice_processor:
+    ready_timeout: 5s
+    read_period: 2m
+    consumer_read_timeout: 2s
+    consumer_write_timeout: 4s
+    handler_timeout: 30s
+    queue_size: 25
+    workers_count: 1
+    notification_channel: "event_notifier_queue_inserted"
+  change_from_to_retry:
+    period: 10m
+    timeout: 2m
+  clean_queue:
+    period: 1h
+    timeout: 3m
+  send_retry_attempts: 3
+  change_queue_batch_size: 100
+  change_retry_timeout: 30s
+  change_retry_delayed: 30s
+  clean_queue_batch_size: 1000

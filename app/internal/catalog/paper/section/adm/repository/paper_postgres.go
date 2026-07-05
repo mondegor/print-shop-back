@@ -4,15 +4,16 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/adm/entity"
 )
 
 type (
@@ -21,9 +22,9 @@ type (
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
 		repoIDByArticle db.FieldFetcher[string, uint64]
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -39,7 +40,7 @@ func NewPaperPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBu
 			"paper_id",
 			module.DBFieldDeletedAt,
 		),
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNamePapers,
 			"paper_id",
@@ -54,7 +55,7 @@ func NewPaperPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBu
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNamePapers,
 		),
@@ -62,8 +63,22 @@ func NewPaperPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage.SQLBu
 }
 
 // FetchWithTotal - comment method.
-func (re *PaperPostgres) FetchWithTotal(ctx context.Context, params entity.PaperParams) (rows []entity.Paper, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *PaperPostgres) FetchWithTotal(ctx context.Context, params entity.PaperParams) (rows []entity.Paper, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLikeFields([]string{"UPPER(paper_article)", "UPPER(paper_caption)"}, strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("type_id", params.Filter.TypeIDs),
+				c.FilterAnyOf("color_id", params.Filter.ColorIDs),
+				c.FilterAnyOf("facture_id", params.Filter.FactureIDs),
+				c.FilterRangeFloat64("paper_width", mrtype.RangeFloat64(params.Filter.Width), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("paper_height", mrtype.RangeFloat64(params.Filter.Height), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("paper_density", mrtype.RangeFloat64(params.Filter.Density), 0, xmath.EqualityThresholdE9),
+				c.FilterAnyOf("paper_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -74,7 +89,14 @@ func (re *PaperPostgres) FetchWithTotal(ctx context.Context, params entity.Paper
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("paper_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -91,7 +113,7 @@ func (re *PaperPostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.Paper, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -117,7 +139,7 @@ func (re *PaperPostgres) fetch(
 		WHERE
 			` + whereStr + `
 		ORDER BY
-			` + orderBy.String() + limit.String() + `;`
+			` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -218,8 +240,8 @@ func (re *PaperPostgres) FetchIDByArticle(ctx context.Context, article string) (
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PaperPostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -311,33 +333,4 @@ func (re *PaperPostgres) UpdateStatus(ctx context.Context, row entity.Paper) (ta
 // Delete - comment method.
 func (re *PaperPostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *PaperPostgres) fetchCondition(filter entity.PaperListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLikeFields([]string{"UPPER(paper_article)", "UPPER(paper_caption)"}, strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("type_id", filter.TypeIDs),
-				c.FilterAnyOf("color_id", filter.ColorIDs),
-				c.FilterAnyOf("facture_id", filter.FactureIDs),
-				c.FilterRangeFloat64("paper_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("paper_height", mrtype.RangeFloat64(filter.Height), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("paper_density", mrtype.RangeFloat64(filter.Density), 0, mrlib.EqualityThresholdE9),
-				c.FilterAnyOf("paper_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *PaperPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("paper_id", mrenum.SortDirectionASC),
-			)
-		},
-	)
 }

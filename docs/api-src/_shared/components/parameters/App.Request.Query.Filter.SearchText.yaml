@@ -1,9 +1,0 @@
-App.Request.Query.Filter.SearchText:
-  description: Поисковая строка
-  name: query
-  in: query
-  required: false
-  schema:
-    type: string
-    maxLength: 128
-  example: "перфокарта"

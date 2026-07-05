@@ -3,62 +3,47 @@ package validate
 import (
 	"net/http"
 
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrserver/mrreq"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
 	// RequestPublicStatusParser - comment interface.
-	RequestPublicStatusParser interface {
-		FilterPublicStatusList(r *http.Request, key string) []enum.PublicStatus
+	RequestPublicStatusParser interface { // TODO: ПЕРЕНЕСТИ
+		FilterPublicStatusList(r *http.Request, key string) []publicstatus.Enum
 	}
 
-	// PublicStatusParser - comment struct.
+	// PublicStatusParser - парсер publicstatus.Enum.
 	PublicStatusParser struct {
-		defaultItems []enum.PublicStatus
+		*parser.EnumList[publicstatus.Enum]
 	}
 )
 
 // NewPublicStatusParser - создаёт объект PublicStatusParser.
-func NewPublicStatusParser() *PublicStatusParser {
-	return &PublicStatusParser{}
-}
-
-// NewPublicStatusParserWithDefault - создаёт объект PublicStatusParser.
-func NewPublicStatusParserWithDefault(items []enum.PublicStatus) *PublicStatusParser {
+func NewPublicStatusParser(logger log.Logger) *PublicStatusParser {
 	return &PublicStatusParser{
-		defaultItems: items,
+		EnumList: parser.NewEnumList(
+			logger,
+			publicstatus.ParseList,
+		),
 	}
 }
 
-// FilterPublicStatusList - comment method.
-func (p *PublicStatusParser) FilterPublicStatusList(r *http.Request, key string) []enum.PublicStatus {
-	items, err := p.parseList(r, key)
-	if err != nil {
-		mrlog.Ctx(r.Context()).Warn().Err(err).Send()
-
-		return p.defaultItems
+// NewPublicStatusParserWithDefault - создаёт объект PublicStatusParser со статусами по умолчанию.
+func NewPublicStatusParserWithDefault(logger log.Logger, items []publicstatus.Enum) *PublicStatusParser {
+	return &PublicStatusParser{
+		EnumList: parser.NewEnumListWithDefault(
+			logger,
+			items,
+			publicstatus.ParseList,
+		),
 	}
-
-	if len(items) == 0 {
-		return p.defaultItems
-	}
-
-	return items
 }
 
-func (p *PublicStatusParser) parseList(r *http.Request, key string) ([]enum.PublicStatus, error) {
-	enumList, err := mrreq.ParseEnumList(r.URL.Query(), key)
-	if err != nil {
-		return nil, err
-	}
-
-	items, err := enum.ParsePublicStatusList(enumList)
-	if err != nil {
-		return nil, err
-	}
-
-	return items, nil
+// FilterPublicStatusList - возвращает массив publicstatus.Enum поступивший из внешнего запроса.
+// Если ключ key не найден или возникнет ошибка, то возвращается nil значение.
+func (p *PublicStatusParser) FilterPublicStatusList(r *http.Request, key string) []publicstatus.Enum {
+	return p.FilterEnumList(r, key)
 }

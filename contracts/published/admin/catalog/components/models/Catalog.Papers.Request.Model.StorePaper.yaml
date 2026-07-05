@@ -1,0 +1,30 @@
+description: DTO сохранения бумаги
+type: object
+required:
+  - tagVersion
+properties:
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  article:
+    $ref: "../../../_shared/components/fields/Api.Field.Article.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Мелованная"
+  typeId:
+    $ref: "../../../dictionaries/components/fields/Dictionaries.Field.MaterialTypeID.yaml"
+  colorId:
+    $ref: "../../../dictionaries/components/fields/Dictionaries.Field.PaperColorID.yaml"
+  factureId:
+    $ref: "../../../dictionaries/components/fields/Dictionaries.Field.PaperFactureID.yaml"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  height:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  density:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.GramPerMeter2.yaml"
+  sides:
+    $ref: "../enums/Catalog.Enum.PaperSides.yaml"

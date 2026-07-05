@@ -1,17 +1,20 @@
 package availability
 
 import (
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore/mrapp"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/api/availability/usecase"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/dictionaries/printformat/api/availability/repository"
+	"print-shop-back/internal/dictionaries/printformat/api/availability/usecase"
 )
 
-// NewPrintFormat - создаёт объект PrintFormat.
-func NewPrintFormat(client mrstorage.DBConnManager) *usecase.PrintFormat {
+// NewPrintFormatAPI - создаёт объект PrintFormat.
+func NewPrintFormatAPI(
+	dbConnManager mrstorage.DBConnManager,
+	tracer trace.Tracer,
+) *usecase.PrintFormat {
 	return usecase.NewPrintFormat(
-		repository.NewPrintFormatPostgres(client),
-		mrapp.NewUseCaseErrorWrapper(),
+		repository.NewPrintFormatPostgres(dbConnManager),
+		tracer,
 	)
 }

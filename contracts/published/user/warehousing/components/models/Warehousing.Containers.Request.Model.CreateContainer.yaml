@@ -1,0 +1,27 @@
+description: DTO создания нового контейнера
+type: object
+required:
+  - location_id
+properties:
+  code:
+    $ref: "../fields/Warehousing.Field.ContainerCode.yaml"
+  volume:
+    $ref: "../../../_shared/components/models/Api.Response.Model.Volume.yaml"
+  tags:
+    description: Хеш теги содержимого контейнера
+    type: array
+    items:
+      type: string
+      maxLength: 32
+      example: "ШУРУПЫ"
+  images:
+    description: Изображения контейнера
+    type: array
+    items:
+      type: string
+      maxLength: 256
+      example: "https://example.com/path/image-name.jpg"
+  location_id:
+    $ref: "../fields/Warehousing.Field.LocationID.yaml"
+  exemplar_quantity:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"

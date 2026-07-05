@@ -1,0 +1,5 @@
+description: Идентификатор бумаги (модуль - Catalog.Paper)
+type: integer
+format: int64
+minimum: 1
+example: 2

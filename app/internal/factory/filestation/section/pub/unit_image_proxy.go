@@ -1,34 +1,28 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/internal/factory/filestation"
-	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/filestation/section/pub/usecase"
+	"print-shop-back/internal/filestation/section/pub/controller/httpv1"
+	"print-shop-back/internal/filestation/section/pub/usecase"
 )
 
-func createUnitImageProxy(ctx context.Context, opts filestation.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
+func initImageProxyController(
+	requestParser *parser.String,
+	responseFileSender mrserver.FileResponseSender,
+	fileAPI mrstorage.FileProviderAPI,
+	basePath mrpath.Builder,
+) (mrserver.HttpController, error) {
+	useCase := usecase.NewFileProviderAdapter(fileAPI)
 
-	if c, err := newUnitImageProxy(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitImageProxy(_ context.Context, opts filestation.Options) (*httpv1.ImageProxy, error) { //nolint:unparam
-	useCase := usecase.NewFileProviderAdapter(opts.UnitImageProxy.FileAPI, opts.UseCaseErrorWrapper)
 	controller := httpv1.NewImageProxy(
-		opts.RequestParser,
-		opts.ResponseSender,
+		requestParser,
+		responseFileSender,
 		useCase,
-		opts.UnitImageProxy.BasePath,
+		basePath,
 	)
 
 	return controller, nil

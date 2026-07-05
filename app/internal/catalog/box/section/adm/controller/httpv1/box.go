@@ -3,17 +3,16 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/catalog/box/module"
+	"print-shop-back/internal/catalog/box/section/adm"
+	"print-shop-back/internal/catalog/box/section/adm/entity"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -25,20 +24,31 @@ const (
 type (
 	// Box - comment struct.
 	Box struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.BoxUseCase
-		listSorter mrview.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.BoxUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
 // NewBox - создаёт контроллер Box.
-func NewBox(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.BoxUseCase, listSorter mrview.ListSorter) *Box {
+func NewBox(
+	parser validate.RequestExtendParser,
+	sender mrserver.ResponseSender,
+	useCase adm.BoxUseCase,
+	listSorter mrtype.ListSorter,
+) *Box {
 	return &Box{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+			module.ErrBoxArticleAlreadyExists.Code(), "article",
+		),
 	}
 }
 
@@ -49,7 +59,7 @@ func (ht *Box) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: boxListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: boxItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: boxItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: boxItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: boxItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: boxItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -100,19 +110,19 @@ func (ht *Box) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateBoxRequest{}
+	req := CreateBoxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
-		Article: request.Article,
-		Caption: request.Caption,
-		Length:  measure.Meter(request.Length * measure.OneThousandth),
-		Width:   measure.Meter(request.Width * measure.OneThousandth),
-		Height:  measure.Meter(request.Height * measure.OneThousandth),
-		Weight:  measure.Kilogram(request.Weight * measure.OneThousandth),
+		Article: req.Article,
+		Caption: req.Caption,
+		Length:  measure.Meter(req.Length * measure.OneThousandth),
+		Width:   measure.Meter(req.Width * measure.OneThousandth),
+		Height:  measure.Meter(req.Height * measure.OneThousandth),
+		Weight:  measure.Kilogram(req.Weight * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -123,32 +133,32 @@ func (ht *Box) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreBoxRequest{}
+// Save - comment method.
+func (ht *Box) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreBoxRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Article:    request.Article,
-		Caption:    request.Caption,
-		Length:     measure.Meter(request.Length * measure.OneThousandth),
-		Width:      measure.Meter(request.Width * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
-		Weight:     measure.Kilogram(request.Weight * measure.OneThousandth),
+		TagVersion: req.TagVersion,
+		Article:    req.Article,
+		Caption:    req.Caption,
+		Length:     measure.Meter(req.Length * measure.OneThousandth),
+		Width:      measure.Meter(req.Width * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
+		Weight:     measure.Kilogram(req.Weight * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -157,16 +167,16 @@ func (ht *Box) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Box) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Box{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -194,21 +204,9 @@ func (ht *Box) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Box) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrBoxNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrBoxArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

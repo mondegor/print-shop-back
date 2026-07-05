@@ -4,51 +4,51 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrevent"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/internal/calculations/queryhistory/section/pub"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (
 	// QueryHistory - comment struct.
 	QueryHistory struct {
 		storage      pub.QueryResultStorage
-		eventEmitter mrsender.EventEmitter
-		errorWrapper mrcore.UseCaseErrorWrapper
+		eventEmitter mrevent.Emitter
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewQueryHistory - создаёт объект QueryHistory.
-func NewQueryHistory(storage pub.QueryResultStorage, eventEmitter mrsender.EventEmitter, errorWrapper mrcore.UseCaseErrorWrapper) *QueryHistory {
+func NewQueryHistory(
+	storage pub.QueryResultStorage,
+	eventEmitter mrevent.Emitter,
+) *QueryHistory {
 	return &QueryHistory{
 		storage:      storage,
-		eventEmitter: decorator.NewSourceEmitter(eventEmitter, entity.ModelNameQueryHistory),
-		errorWrapper: errorWrapper,
+		eventEmitter: mrevent.EmitterWithSource(eventEmitter, entity.ModelNameQueryHistory),
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
 // GetItem - comment method.
 func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.QueryHistoryItem, error) {
 	if itemID == uuid.Nil {
-		return entity.QueryHistoryItem{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.QueryHistoryItem{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.QueryHistoryItem{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNameQueryHistory, itemID)
+		return entity.QueryHistoryItem{}, uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	// обновление счётчика посещений
 	// TODO: send to queue
 	go func() {
-		if err := uc.storage.UpdateQuantity(ctx, itemID); err != nil {
-			mrlog.Ctx(ctx).Error().Err(err).Send()
-		}
+		// if err := uc.storage.UpdateQuantity(ctx, itemID); err != nil {
+		//	 log.Ctx(ctx).Error().Err(err).Send()
+		// }
 	}()
 
 	return item, nil
@@ -58,10 +58,10 @@ func (uc *QueryHistory) GetItem(ctx context.Context, itemID uuid.UUID) (entity.Q
 func (uc *QueryHistory) Create(ctx context.Context, item entity.QueryHistoryItem) (itemID uuid.UUID, err error) {
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return uuid.Nil, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameQueryHistory)
+		return uuid.Nil, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	return itemID, nil
 }

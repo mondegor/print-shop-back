@@ -18,12 +18,25 @@ CREATE TABLE printshop_global.mailer_messages (
 
 CREATE TABLE printshop_global.mailer_queue (
     message_id int8 NOT NULL CONSTRAINT pk_mailer_queue PRIMARY KEY,
-    remaining_attempts int2 NOT NULL, -- кол-во оставшихся попыток отправки сообщения
+    remaining_attempts int2 NOT NULL CHECK(remaining_attempts >= 0), -- кол-во оставшихся попыток отправки сообщения
     item_status int2 NOT NULL, -- 1=READY, 2=PROCESSING, 3=RETRY
     updated_at timestamp with time zone NOT NULL DEFAULT NOW() -- item with status = READY and updated_at > NOW() = delayed
 );
 
-CREATE INDEX ix_mailer_queue_item_status ON printshop_global.mailer_queue  (item_status, updated_at);
+CREATE INDEX ix_mailer_queue_item_status ON printshop_global.mailer_queue (item_status, updated_at);
+
+CREATE OR REPLACE FUNCTION printshop_global.event_mailer_queue_inserted()
+    RETURNS trigger AS $$
+BEGIN
+    NOTIFY event_mailer_queue_inserted;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER after_insert
+    AFTER INSERT ON printshop_global.mailer_queue
+    FOR EACH ROW
+EXECUTE FUNCTION printshop_global.event_mailer_queue_inserted();
 
 -- --------------------------------------------------------------------------------------------------
 

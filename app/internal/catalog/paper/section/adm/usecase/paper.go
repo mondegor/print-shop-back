@@ -3,30 +3,29 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrmsg"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrsender"
-	"github.com/mondegor/go-webcore/mrsender/decorator"
-	"github.com/mondegor/go-webcore/mrstatus"
-	"github.com/mondegor/go-webcore/mrstatus/mrflow"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/adm"
+	"print-shop-back/internal/catalog/paper/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
 )
 
 type (
 	// Paper - comment struct.
 	Paper struct {
-		storage         adm.PaperStorage
-		materialTypeAPI api.MaterialTypeAvailability
-		paperColorAPI   api.PaperColorAvailability
-		paperFactureAPI api.PaperFactureAvailability
-		eventEmitter    mrsender.EventEmitter
-		errorWrapper    mrcore.UseCaseErrorWrapper
-		statusFlow      mrstatus.Flow
+		storage                     adm.PaperStorage
+		materialTypeAPI             api.MaterialTypeAvailability
+		paperColorAPI               api.PaperColorAvailability
+		paperFactureAPI             api.PaperFactureAvailability
+		eventEmitter                mrevent.Emitter
+		errorWrapper                errors.Wrapper
+		errorNotFoundWrapper        errors.Wrapper
+		errorVersionConflictWrapper errors.Wrapper
+		statusFlowMap               workflow.FlowMap[workflow.ItemStatus]
 	}
 )
 
@@ -36,25 +35,26 @@ func NewPaper(
 	materialTypeAPI api.MaterialTypeAvailability,
 	paperColorAPI api.PaperColorAvailability,
 	paperFactureAPI api.PaperFactureAvailability,
-	eventEmitter mrsender.EventEmitter,
-	errorWrapper mrcore.UseCaseErrorWrapper,
+	eventEmitter mrevent.Emitter,
 ) *Paper {
 	return &Paper{
-		storage:         storage,
-		materialTypeAPI: materialTypeAPI,
-		paperColorAPI:   paperColorAPI,
-		paperFactureAPI: paperFactureAPI,
-		eventEmitter:    decorator.NewSourceEmitter(eventEmitter, entity.ModelNamePaper),
-		errorWrapper:    errorWrapper,
-		statusFlow:      mrflow.ItemStatusFlow(),
+		storage:                     storage,
+		materialTypeAPI:             materialTypeAPI,
+		paperColorAPI:               paperColorAPI,
+		paperFactureAPI:             paperFactureAPI,
+		eventEmitter:                mrevent.EmitterWithSource(eventEmitter, entity.ModelNamePaper),
+		errorWrapper:                errors.NewServiceOperationFailedWrapper(),
+		errorNotFoundWrapper:        errors.NewServiceRecordNotFoundWrapper(),
+		errorVersionConflictWrapper: errors.NewServiceRecordVersionConflictWrapper(),
+		statusFlowMap:               itemstatus.NewFlowMap(),
 	}
 }
 
 // GetList - comment method.
-func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) (items []entity.Paper, countItems uint64, err error) {
+func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) (items []entity.Paper, countItems int, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return nil, 0, uc.errorWrapper.Wrap(err)
 	}
 
 	if countItems == 0 {
@@ -67,12 +67,12 @@ func (uc *Paper) GetList(ctx context.Context, params entity.PaperParams) (items 
 // GetItem - comment method.
 func (uc *Paper) GetItem(ctx context.Context, itemID uint64) (entity.Paper, error) {
 	if itemID == 0 {
-		return entity.Paper{}, mrcore.ErrUseCaseEntityNotFound.New()
+		return entity.Paper{}, errors.ErrRecordNotFound
 	}
 
 	item, err := uc.storage.FetchOne(ctx, itemID)
 	if err != nil {
-		return entity.Paper{}, uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, itemID)
+		return entity.Paper{}, uc.errorNotFoundWrapper.Wrap(err, "itemId", itemID)
 	}
 
 	return item, nil
@@ -84,32 +84,32 @@ func (uc *Paper) Create(ctx context.Context, item entity.Paper) (itemID uint64, 
 		return 0, err
 	}
 
-	item.Status = mrenum.ItemStatusDraft
+	item.Status = itemstatus.Draft
 
 	itemID, err = uc.storage.Insert(ctx, item)
 	if err != nil {
-		return 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return 0, uc.errorWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Create", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Create", "itemId", itemID)
 
 	return itemID, nil
 }
 
-// Store - comment method.
-func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
+// Save - comment method.
+func (uc *Paper) Save(ctx context.Context, item entity.Paper) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return errors.ErrRecordVersionConflict
 	}
 
 	// предварительная проверка существования записи нужна для того,
-	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionInvalid
+	// чтобы при Update быть уверенным, что отсутствие записи из-за ошибки VersionConflict
 	if _, err := uc.storage.FetchStatus(ctx, item.ID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if err := uc.checkItem(ctx, &item); err != nil {
@@ -118,14 +118,10 @@ func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
 
 	tagVersion, err := uc.storage.Update(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
-		}
-
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Store", mrmsg.Data{"id": item.ID, "ver": tagVersion})
+	uc.eventEmitter.Emit(ctx, "Store", "itemId", item.ID, "tagVersion", tagVersion)
 
 	return nil
 }
@@ -133,36 +129,32 @@ func (uc *Paper) Store(ctx context.Context, item entity.Paper) error {
 // ChangeStatus - comment method.
 func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 	if item.ID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if item.TagVersion == 0 {
-		return mrcore.ErrUseCaseEntityVersionInvalid.New()
+		return errors.ErrRecordVersionConflict
 	}
 
 	currentStatus, err := uc.storage.FetchStatus(ctx, item.ID)
 	if err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, item.ID)
+		return uc.errorNotFoundWrapper.Wrap(err, "itemId", item.ID)
 	}
 
 	if currentStatus == item.Status {
 		return nil
 	}
 
-	if !uc.statusFlow.Check(currentStatus, item.Status) {
-		return mrcore.ErrUseCaseSwitchStatusRejected.New(currentStatus, item.Status)
+	if !uc.statusFlowMap.IsPossible(currentStatus, item.Status) {
+		return errors.ErrSwitchStatusRejected.New(currentStatus, item.Status)
 	}
 
 	tagVersion, err := uc.storage.UpdateStatus(ctx, item)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
-			return mrcore.ErrUseCaseEntityVersionInvalid.Wrap(err)
-		}
-
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.errorVersionConflictWrapper.Wrap(err)
 	}
 
-	uc.eventEmitter.Emit(ctx, "ChangeStatus", mrmsg.Data{"id": item.ID, "ver": tagVersion, "status": item.Status})
+	uc.eventEmitter.Emit(ctx, "ChangeStatus", "itemId", item.ID, "tagVersion", tagVersion, "status", item.Status)
 
 	return nil
 }
@@ -170,14 +162,14 @@ func (uc *Paper) ChangeStatus(ctx context.Context, item entity.Paper) error {
 // Remove - comment method.
 func (uc *Paper) Remove(ctx context.Context, itemID uint64) error {
 	if itemID == 0 {
-		return mrcore.ErrUseCaseEntityNotFound.New()
+		return errors.ErrRecordNotFound
 	}
 
 	if err := uc.storage.Delete(ctx, itemID); err != nil {
-		return uc.errorWrapper.WrapErrorEntityNotFoundOrFailed(err, entity.ModelNamePaper, itemID)
+		return uc.errorWrapper.Wrap(err, "itemId", itemID)
 	}
 
-	uc.eventEmitter.Emit(ctx, "Remove", mrmsg.Data{"id": itemID})
+	uc.eventEmitter.Emit(ctx, "Remove", "itemId", itemID)
 
 	return nil
 }
@@ -188,19 +180,19 @@ func (uc *Paper) checkItem(ctx context.Context, item *entity.Paper) error {
 	}
 
 	if item.ID == 0 || item.TypeID > 0 {
-		if err := uc.materialTypeAPI.CheckingAvailability(ctx, item.TypeID); err != nil {
+		if err := uc.materialTypeAPI.CheckAvailability(ctx, item.TypeID); err != nil {
 			return err
 		}
 	}
 
 	if item.ID == 0 || item.ColorID > 0 {
-		if err := uc.paperColorAPI.CheckingAvailability(ctx, item.ColorID); err != nil {
+		if err := uc.paperColorAPI.CheckAvailability(ctx, item.ColorID); err != nil {
 			return err
 		}
 	}
 
 	if item.ID == 0 || item.FactureID > 0 {
-		if err := uc.paperFactureAPI.CheckingAvailability(ctx, item.FactureID); err != nil {
+		if err := uc.paperFactureAPI.CheckAvailability(ctx, item.FactureID); err != nil {
 			return err
 		}
 	}
@@ -211,11 +203,11 @@ func (uc *Paper) checkItem(ctx context.Context, item *entity.Paper) error {
 func (uc *Paper) checkArticle(ctx context.Context, item *entity.Paper) error {
 	id, err := uc.storage.FetchIDByArticle(ctx, item.Article)
 	if err != nil {
-		if uc.errorWrapper.IsNotFoundError(err) {
+		if errors.Is(err, errors.ErrEventStorageNoRecordFound) {
 			return nil
 		}
 
-		return uc.errorWrapper.WrapErrorFailed(err, entity.ModelNamePaper)
+		return uc.errorWrapper.Wrap(err)
 	}
 
 	if item.ID != id {

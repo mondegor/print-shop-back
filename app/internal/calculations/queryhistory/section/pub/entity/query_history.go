@@ -3,7 +3,8 @@ package entity
 import "time"
 
 const (
-	ModelNameQueryHistory = "public-api.Calculations.QueryHistory" // ModelNameQueryHistory - название сущности
+	// ModelNameQueryHistory - название сущности.
+	ModelNameQueryHistory = "public-api.Calculations.QueryHistory"
 )
 
 type (

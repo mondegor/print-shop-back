@@ -1,0 +1,25 @@
+get:
+  summary: Метод получения списка ID типов бумаги
+  description: |-
+    Метод предназначен для получения списка ID типов бумаги, сохраненных в БД,
+    со следующими условиями:
+    - paper.isEnabled = true;
+
+  operationId: getPaperTypeIDList
+  tags:
+    - Catalog
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Получен список ID типов бумаги
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Papers.Response.Model.PaperTypeIDList.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

@@ -1,0 +1,54 @@
+---
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Protected Provider API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Protected REST Provider API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local/prov
+    description: Local Domain
+  - url: http://localhost:8080/prov
+    description: Local Host
+security:
+  - bearerAuth: []
+tags:
+  - name: Account.CompanyPage
+    description: Protected Providers API. Company page of account
+paths:
+  /v1/account/company-page:
+    $ref: "./account/paths/v1_account_company-page.yaml"
+  /v1/account/company-page/status:
+    $ref: "./account/paths/v1_account_company-page_status.yaml"
+  /v1/account/company-page/logo:
+    $ref: "./account/paths/v1_account_company-page_logo.yaml"
+components:
+  securitySchemes:
+    bearerAuth:
+      description: https://www.rfc-editor.org/rfc/rfc6750
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,49 +1,46 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-storage/mrpostgres/builder"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/factory/provideraccounts"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/usecase"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/provideraccounts/section/adm/controller/httpv1"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm/repository"
+	"print-shop-back/internal/provideraccounts/section/adm/usecase"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
-func createUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitCompanyPage(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitCompanyPage(ctx context.Context, opts provideraccounts.Options) (*httpv1.CompanyPage, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.CompanyPage{})
+func initCompanyPageController(
+	logger log.Logger,
+	dbConnManager mrstorage.DBConnManager,
+	requestModuleParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+	logoURLBuilder mrpath.Builder,
+	pageSizeMax int,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.CompanyPage{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewCompanyPagePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewCompanyPage(storage, opts.UseCaseErrorWrapper, opts.UnitCompanyPage.LogoURLBuilder)
+
+	useCase := usecase.NewCompanyPage(storage, logoURLBuilder)
+
 	controller := httpv1.NewCompanyPage(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestModuleParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

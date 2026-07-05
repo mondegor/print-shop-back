@@ -3,15 +3,17 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
+	"print-shop-back/pkg/controls/enum/elementtype"
 )
 
 const (
-	ModelNameElementTemplate = "admin-api.Controls.ElementTemplate" // ModelNameElementTemplate - название сущности
+	// ModelNameElementTemplate - название сущности.
+	ModelNameElementTemplate = "admin-api.Controls.ElementTemplate"
 )
 
 type (
@@ -21,10 +23,10 @@ type (
 		TagVersion uint32                `json:"tagVersion"`
 		ParamName  string                `json:"paramName" sort:"paramName" upd:"param_name"`
 		Caption    string                `json:"caption" sort:"caption,default" upd:"template_caption"`
-		Type       enum.ElementType      `json:"elementType"`
-		Detailing  enum.ElementDetailing `json:"detailing"`
+		Type       elementtype.Enum      `json:"elementType"`
+		Detailing  elementdetailing.Enum `json:"detailing"`
 		Body       []byte                `json:"-" upd:"element_body"`
-		Status     mrenum.ItemStatus     `json:"status"`
+		Status     workflow.ItemStatus   `json:"status"`
 		CreatedAt  time.Time             `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  time.Time             `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -32,7 +34,7 @@ type (
 	// ElementTemplateHead - comment struct.
 	ElementTemplateHead struct {
 		api.ElementTemplateDTO
-		Status mrenum.ItemStatus
+		Status workflow.ItemStatus
 	}
 
 	// ElementTemplateParams - comment struct.
@@ -45,7 +47,7 @@ type (
 	// ElementTemplateListFilter - comment struct.
 	ElementTemplateListFilter struct {
 		SearchText string
-		Detailing  []enum.ElementDetailing
-		Statuses   []mrenum.ItemStatus
+		Detailing  []elementdetailing.Enum
+		Statuses   []workflow.ItemStatus
 	}
 )

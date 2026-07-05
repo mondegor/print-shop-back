@@ -1,0 +1,17 @@
+description: DTO - расчёты запроса
+type: object
+required:
+  - caption
+  - params
+  - result
+  - createdAt
+  - updatedAt
+properties:
+  caption:
+    $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+  params:
+    $ref: "../../../_shared/components/fields/Api.Field.JsonData.yaml"
+  result:
+    $ref: "../../../_shared/components/fields/Api.Field.JsonData.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"

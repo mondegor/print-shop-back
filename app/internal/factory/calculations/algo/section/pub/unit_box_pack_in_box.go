@@ -1,39 +1,31 @@
 package pub
 
 import (
-	"context"
-
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrevent"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/calculations/algo/section/pub/box/packinbox/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/calculations/algo"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/box/packinbox"
-	"github.com/mondegor/print-shop-back/pkg/libs/mrcalc/algo/sheet/imposition"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1"
+	"print-shop-back/internal/calculations/algo/section/pub/box/packinbox/usecase"
+	"print-shop-back/pkg/mrcalc/algo/box/packinbox"
+	"print-shop-back/pkg/mrcalc/algo/sheet/imposition"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitBoxPackInBox(ctx context.Context, opts algo.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitBoxPackInBox(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitBoxPackInBox(ctx context.Context, opts algo.Options) (*httpv1.BoxPackInBox, error) { //nolint:unparam
-	logger := mrlog.Ctx(ctx)
+func initBoxPackInBoxController(
+	logger log.Logger,
+	eventEmitter mrevent.Emitter,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	impAlgo := imposition.New(logger)
-	packInBoxAlgo := packinbox.New(logger, impAlgo)
+	packInBoxAlgo := packinbox.New(impAlgo)
 
-	useCase := usecase.NewBoxPackInBox(packInBoxAlgo, opts.EventEmitter, opts.UseCaseErrorWrapper)
+	useCase := usecase.NewBoxPackInBox(packInBoxAlgo, logger, eventEmitter)
+
 	controller := httpv1.NewBoxPackInBox(
-		opts.RequestParsers.Validator,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

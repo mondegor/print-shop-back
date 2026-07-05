@@ -1,0 +1,39 @@
+patch:
+  summary: Метод изменения статуса ламината
+  description: |-
+    Метод предназначен для изменения статуса ламината в БД
+
+    **Ограничения и ошибки полей:**
+    - tagVersion: required,gte=1 | ErrVersionInvalid
+    - status: required,enum | ErrSwitchStatusRejected
+
+  operationId: changeLaminateStatus
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Laminates.Request.Path.LaminateID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../../_shared/components/models/Api.Request.Model.ChangeStatus.yaml"
+
+  responses:
+    "204":
+      description: Статус ламината успешно изменён
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

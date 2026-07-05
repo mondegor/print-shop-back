@@ -1,0 +1,35 @@
+description: DTO - публичная страница компании
+type: object
+required:
+  - rewriteName
+  - pageTitle
+  - status
+  - createdAt
+  - updatedAt
+properties:
+  rewriteName:
+    description: Уникальное название страницы
+    type: string
+    maxLength: 64
+    example: "company-name"
+  pageTitle:
+    description: Заголовок страницы компании
+    type: string
+    maxLength: 128
+    example: "Компания 0001"
+  logoPath:
+    description: URL логотипа компании
+    type: string
+    maxLength: 128
+    example: "https://example.com/company-logo.png"
+  siteUrl:
+    description: URL страницы сайта компании
+    type: string
+    maxLength: 512
+    example: "https://site.example.com/"
+  status:
+    $ref: "../enums/CompanyPage.Enum.PublicStatus.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

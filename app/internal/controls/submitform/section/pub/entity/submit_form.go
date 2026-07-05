@@ -1,7 +1,8 @@
 package entity
 
 const (
-	ModelNameSubmitForm = "public-api.Controls.SubmitForm" // ModelNameSubmitForm - название сущности
+	// ModelNameSubmitForm - название сущности.
+	ModelNameSubmitForm = "public-api.Controls.SubmitForm"
 )
 
 type (

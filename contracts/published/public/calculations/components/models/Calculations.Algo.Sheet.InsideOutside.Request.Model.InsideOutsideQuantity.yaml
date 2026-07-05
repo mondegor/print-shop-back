@@ -1,0 +1,10 @@
+description: DTO - параметров алгоритмов размещений элементов на внешнем формате
+type: object
+required:
+  - inFormat
+  - outFormat
+properties:
+  inFormat:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+  outFormat:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"

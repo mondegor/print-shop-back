@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/prov/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/prov/entity"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 	CompanyPagePostgres struct {
 		client            mrstorage.DBConnManager
 		repoByRewriteName db.FieldFetcher[string, uuid.UUID]
-		repoStatus        db.FieldUpdater[uuid.UUID, enum.PublicStatus]
+		repoStatus        db.FieldUpdater[uuid.UUID, publicstatus.Enum]
 	}
 )
 
@@ -33,7 +33,7 @@ func NewCompanyPagePostgres(client mrstorage.DBConnManager) *CompanyPagePostgres
 			"account_id",
 			module.DBFieldWithoutDeletedAt,
 		),
-		repoStatus: db.NewFieldUpdater[uuid.UUID, enum.PublicStatus](
+		repoStatus: db.NewFieldUpdater[uuid.UUID, publicstatus.Enum](
 			client,
 			module.DBTableNameCompaniesPages,
 			"account_id",
@@ -85,8 +85,8 @@ func (re *CompanyPagePostgres) FetchAccountIDByRewriteName(ctx context.Context, 
 }
 
 // FetchStatus - comment method.
-// result: enums.PublicStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (enum.PublicStatus, error) {
+// result: enums.PublicStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *CompanyPagePostgres) FetchStatus(ctx context.Context, accountID uuid.UUID) (publicstatus.Enum, error) {
 	return re.repoStatus.Fetch(ctx, accountID)
 }
 
@@ -115,8 +115,8 @@ func (re *CompanyPagePostgres) InsertOrUpdate(ctx context.Context, row entity.Co
 			row.PageTitle,
 			row.SiteURL,
 		)
-		// если сохранение удачное или если это системная ошибка
-		if err == nil || !mrcore.ErrStorageRowsNotAffected.Is(err) {
+		// если сохранение удачное или если это внутренняя ошибка
+		if err == nil || !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
 			return err
 		}
 

@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/module"
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/internal/calculations/queryhistory/module"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (
@@ -92,14 +93,18 @@ func (re *QueryHistoryPostgres) UpdateQuantity(ctx context.Context, rowID uuid.U
 			used_count = used_count + 1,
 			used_at = NOW()
 		WHERE
-			query_id = $1 AND deleted_at IS NULL
-		LIMIT $2;`
+			query_id = $1 AND deleted_at IS NULL;`
 
-	return re.client.Conn(ctx).Exec(
+	err := re.client.Conn(ctx).Exec(
 		ctx,
 		sql,
 		rowID,
 	)
+	if err != nil && errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+		return errors.ErrEventStorageNoRecordFound
+	}
+
+	return err
 }
 
 // Delete - comment method.
@@ -113,10 +118,16 @@ func (re *QueryHistoryPostgres) Delete(ctx context.Context, expiry time.Duration
 			created_at < NOW() - INTERVAL $1 SECOND AND deleted_at IS NULL
 		LIMIT $2;`
 
-	return re.client.Conn(ctx).Exec(
+	err := re.client.Conn(ctx).Exec(
 		ctx,
 		sql,
 		expiry.Nanoseconds()/1e9, // to seconds
 		limit,
 	)
+	// если это внутренняя ошибка
+	if err != nil && !errors.Is(err, errors.ErrEventStorageRecordsNotAffected) {
+		return err
+	}
+
+	return nil
 }

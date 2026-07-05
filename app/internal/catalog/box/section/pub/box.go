@@ -3,13 +3,15 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/pub/entity"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"print-shop-back/internal/catalog/box/section/pub/entity"
 )
 
 type (
 	// BoxUseCase - comment interface.
 	BoxUseCase interface {
-		GetList(ctx context.Context, params entity.BoxParams) ([]entity.Box, error)
+		GetList(ctx context.Context, lz mrcore.Localizer, params entity.BoxParams) ([]entity.Box, error)
 	}
 
 	// BoxStorage - comment interface.

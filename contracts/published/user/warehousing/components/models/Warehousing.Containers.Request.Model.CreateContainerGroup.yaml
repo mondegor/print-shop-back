@@ -1,0 +1,11 @@
+description: DTO создания новой группы контейнеров
+type: object
+required:
+  - location_id
+properties:
+  code:
+    $ref: "../fields/Warehousing.Field.ContainerCode.yaml"
+  volume:
+    $ref: "../../../_shared/components/models/Api.Response.Model.Volume.yaml"
+  location_id:
+    $ref: "../fields/Warehousing.Field.LocationID.yaml"

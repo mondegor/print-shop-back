@@ -1,8 +1,11 @@
 package uiform
 
 const (
-	ModelNameUIForm      = "uiform.UIForm"      // ModelNameUIForm - название сущности
-	ModelNameUIFieldItem = "uiform.UIFieldItem" // ModelNameUIFieldItem - название сущности
+	// ModelNameUIForm - название сущности.
+	ModelNameUIForm = "uiform.UIForm"
+
+	// ModelNameUIFieldItem - название сущности.
+	ModelNameUIFieldItem = "uiform.UIFieldItem"
 )
 
 type (

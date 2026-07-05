@@ -1,0 +1,31 @@
+description: DTO - печатный формат
+type: object
+required:
+  - id
+  - tagVersion
+  - caption
+  - width
+  - height
+  - status
+  - createdAt
+  - updatedAt
+properties:
+  id: # formatId
+    $ref: "../fields/Dictionaries.Field.PrintFormatID.yaml"
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "A4 (210 x 297 mm)"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  height:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  status:
+    $ref: "../../../_shared/components/enums/Api.Enum.Status.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

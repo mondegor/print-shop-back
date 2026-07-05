@@ -1,0 +1,20 @@
+description: DTO пачки с изделиями
+type: object
+required:
+  - format
+  - weight
+  - volume
+properties:
+  format:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter3.yaml"
+  weight:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Kilogram.yaml"
+      - description: Вес пачки с изделиями
+      - example: 2.5
+  volume:
+    allOf:
+      - $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter3.yaml"
+      - description: Внешний объём пачки
+      - example: 0.04

@@ -1,0 +1,5 @@
+description: Идентификатор ламината (модуль - Catalog.Laminate)
+type: integer
+format: int64
+minimum: 1
+example: 2

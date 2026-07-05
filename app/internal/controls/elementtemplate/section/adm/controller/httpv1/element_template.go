@@ -6,19 +6,17 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
-	"github.com/mondegor/go-webcore/mrtype"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/controls/elementtemplate/module"
+	"print-shop-back/internal/controls/elementtemplate/section/adm"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/controls/elementtemplate/shared/validate"
+	"print-shop-back/pkg/controls/api"
+	"print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -26,15 +24,19 @@ const (
 	elementTemplateItemURL             = "/v1/controls/element-templates/{id}"
 	elementTemplateItemChangeStatusURL = "/v1/controls/element-templates/{id}/status"
 	elementTemplateItemJsonURL         = "/v1/controls/element-templates/{id}/json"
+
+	maxElementTemplateSize = 512 * 1024 // 5120 Kb limit
 )
 
 type (
 	// ElementTemplate - comment struct.
 	ElementTemplate struct {
-		parser     validate.RequestElementTemplateParser
-		sender     mrserver.FileResponseSender
-		useCase    adm.ElementTemplateUseCase
-		listSorter mrview.ListSorter
+		parser           validate.RequestElementTemplateParser
+		sender           mrserver.FileResponseSender
+		useCase          adm.ElementTemplateUseCase
+		listSorter       mrtype.ListSorter
+		errorWrapper     errors.CustomWrapper
+		fileErrorWrapper errors.CustomWrapper
 	}
 )
 
@@ -43,13 +45,18 @@ func NewElementTemplate(
 	parser validate.RequestElementTemplateParser,
 	sender mrserver.FileResponseSender,
 	useCase adm.ElementTemplateUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *ElementTemplate {
 	return &ElementTemplate{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+		),
+		fileErrorWrapper: errors.NewDownloadFileWrapper(module.ParamNameElementTemplateAttachment),
 	}
 }
 
@@ -60,7 +67,7 @@ func (ht *ElementTemplate) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: elementListTemplateURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: elementTemplateItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: elementTemplateItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: elementTemplateItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: elementTemplateItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: elementTemplateItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -120,11 +127,11 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 	return ht.sender.SendAttachmentFile(
 		r.Context(),
 		w,
-		mrtype.File{
-			FileInfo: mrtype.FileInfo{
+		mrmodel.File{
+			FileInfo: mrmodel.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, itemID),
-				Size:         uint64(len(body)),
+				Size:         int64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -133,23 +140,24 @@ func (ht *ElementTemplate) GetJson(w http.ResponseWriter, r *http.Request) error
 
 // Create - comment method.
 func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateElementTemplateRequest{}
+	req := CreateElementTemplateRequest{}
+	r.Body = http.MaxBytesReader(w, r.Body, maxElementTemplateSize)
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
 		return err
 	}
 
 	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
 	if err != nil {
-		return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
+		return ht.fileErrorWrapper.Wrap(err)
 	}
 
 	item := entity.ElementTemplate{
-		ParamName: request.ParamName,
-		Caption:   request.Caption,
-		Type:      request.Type,
-		Detailing: request.Detailing,
+		ParamName: req.ParamName,
+		Caption:   req.Caption,
+		Type:      req.Type,
+		Detailing: req.Detailing,
 		Body:      file.Body,
 	}
 
@@ -161,26 +169,27 @@ func (ht *ElementTemplate) Create(w http.ResponseWriter, r *http.Request) error 
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreElementTemplateRequest{}
+// Save - comment method.
+func (ht *ElementTemplate) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreElementTemplateRequest{}
+	r.Body = http.MaxBytesReader(w, r.Body, maxElementTemplateSize)
 	rawElementTemplate := []byte(r.FormValue(module.ParamNameElementTemplateObject))
 
-	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &request); err != nil {
+	if err := ht.parser.ValidateContent(r.Context(), rawElementTemplate, &req); err != nil {
 		return err
 	}
 
 	file, err := ht.parser.FormFileContent(r, module.ParamNameElementTemplateAttachment)
 	if err != nil {
 		// указывать файл необязательно
-		if !mrcore.ErrHttpFileUpload.Is(err) {
-			return mrparser.WrapFileError(err, module.ParamNameElementTemplateAttachment)
+		if !errors.Is(err, errors.ErrHttpFileUpload) {
+			return ht.fileErrorWrapper.Wrap(err)
 		}
 
 		file.Body = nil
@@ -188,13 +197,13 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 
 	item := entity.ElementTemplate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		ParamName:  request.ParamName,
-		Caption:    request.Caption,
+		TagVersion: req.TagVersion,
+		ParamName:  req.ParamName,
+		Caption:    req.Caption,
 		Body:       file.Body,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -203,16 +212,16 @@ func (ht *ElementTemplate) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *ElementTemplate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.ElementTemplate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -240,17 +249,9 @@ func (ht *ElementTemplate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *ElementTemplate) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return api.ErrElementTemplateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

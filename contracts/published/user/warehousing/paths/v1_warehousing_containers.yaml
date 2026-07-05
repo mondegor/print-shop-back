@@ -1,0 +1,66 @@
+get:
+  summary: Метод получения списка контейнеров
+  description: |-
+    Метод предназначен для получения списка всех контейнеров текущего аккаунта, сохраненных в БД
+
+  operationId: getContainerList
+  tags:
+    - Warehousing.Container
+
+  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Warehousing.Containers.Request.Query.Filter.SearchCode.yaml"
+    - $ref: "../components/parameters/Warehousing.Containers.Request.Query.Filter.SearchTags.yaml"
+
+  responses:
+    "200":
+      description: Получен список контейнеров
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Warehousing.Containers.Response.Model.ContainerList.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+post:
+  summary: Метод создания нового контейнера
+  description: |-
+    Метод предназначен для создания информации о новом контейнере в БД
+
+  operationId: createContainer
+  tags:
+    - Warehousing.Container
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Warehousing.Containers.Request.Model.CreateContainer.yaml"
+
+  responses:
+    "201":
+      description: Информация о контейнере успешно добавлена
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Warehousing.Containers.Response.Model.SuccessCreatedContainer.yaml"
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

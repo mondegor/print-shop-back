@@ -3,13 +3,14 @@ package api
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrerr"
+	"github.com/mondegor/go-sysmess/errors"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
+	"print-shop-back/pkg/controls/enum/elementdetailing"
 )
 
 const (
-	ElementTemplateHeaderName = "Controls.API.ElementTemplateHeader" // ElementTemplateHeaderName - название API
+	// ElementTemplateHeaderName - название API.
+	ElementTemplateHeaderName = "Controls.API.ElementTemplateHeader"
 )
 
 type (
@@ -19,7 +20,7 @@ type (
 		TagVersion uint32
 		ParamName  string
 		Caption    string
-		Detailing  enum.ElementDetailing
+		Detailing  elementdetailing.Enum
 	}
 
 	// ElementTemplateHeader - comment interface.
@@ -34,14 +35,11 @@ type (
 
 var (
 	// ErrElementTemplateRequired - element template ID is required.
-	ErrElementTemplateRequired = mrerr.NewProto(
-		"controls.errElementTemplateRequired", mrerr.ErrorKindUser, "element template ID is required")
+	ErrElementTemplateRequired = errors.NewUserProto("ElementTemplateRequired", "element template ID is required")
 
 	// ErrElementTemplateNotFound - element template with ID not found.
-	ErrElementTemplateNotFound = mrerr.NewProto(
-		"controls.errElementTemplateNotFound", mrerr.ErrorKindUser, "element template with ID={{ .id }} not found")
+	ErrElementTemplateNotFound = errors.NewUserProto("ElementTemplateNotFound", "element template with ID={Id} not found")
 
 	// ErrElementTemplateIsDisabled - element template with ID is disabled.
-	ErrElementTemplateIsDisabled = mrerr.NewProto(
-		"controls.errElementTemplateIsDisabled", mrerr.ErrorKindUser, "element template with ID={{ .id }} is disabled")
+	ErrElementTemplateIsDisabled = errors.NewUserProto("ElementTemplateIsDisabled", "element template with ID={Id} is disabled")
 )

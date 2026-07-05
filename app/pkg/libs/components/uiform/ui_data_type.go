@@ -3,19 +3,19 @@ package uiform
 import (
 	"encoding/json"
 
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+)
+
+// Типы данных.
+const (
+	UIDataTypeBoolean UIDataType = iota + 1
+	UIDataTypeGroup
+	UIDataTypeEnum
+	UIDataTypeNumber
+	UIDataTypeString
 )
 
 const (
-	_                 UIDataType = iota
-	UIDataTypeBoolean            // UIDataTypeBoolean - comment const
-	UIDataTypeGroup              // UIDataTypeGroup - comment const
-	UIDataTypeEnum               // UIDataTypeEnum - comment const
-	UIDataTypeNumber             // UIDataTypeNumber - comment const
-	UIDataTypeString             // UIDataTypeString - comment const
-
-	// uiDataTypeLast = uint8(UIDataTypeString).
-
 	enumNameUIDataType = "UIDataType"
 )
 
@@ -24,8 +24,9 @@ type (
 	UIDataType uint8
 )
 
+//nolint:gochecknoglobals
 var (
-	uiDataTypeName = map[UIDataType]string{ //nolint:gochecknoglobals
+	uiDataTypeName = map[UIDataType]string{
 		UIDataTypeBoolean: "BOOLEAN",
 		UIDataTypeGroup:   "GROUP",
 		UIDataTypeEnum:    "ENUM",
@@ -33,7 +34,7 @@ var (
 		UIDataTypeString:  "STRING",
 	}
 
-	uiDataTypeValue = map[string]UIDataType{ //nolint:gochecknoglobals
+	uiDataTypeValue = map[string]UIDataType{
 		"BOOLEAN": UIDataTypeBoolean,
 		"GROUP":   UIDataTypeGroup,
 		"ENUM":    UIDataTypeEnum,
@@ -50,19 +51,11 @@ func (e *UIDataType) ParseAndSet(value string) error {
 		return nil
 	}
 
-	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
+	return errors.ErrInternalKeyNotFoundInSource.New(
+		"key", value,
+		"source", enumNameUIDataType,
+	)
 }
-
-// Set - устанавливает указанное значение, если оно является enum значением.
-// func (e *UIDataType) Set(value uint8) error {
-// 	if value > 0 && value <= uiDataTypeLast {
-// 		*e = UIDataType(value)
-//
-// 		return nil
-// 	}
-//
-// 	return mrcore.ErrInternalKeyNotFoundInSource.New(value, enumNameUIDataType)
-// }
 
 // String - возвращает значение в виде строки.
 func (e UIDataType) String() string {

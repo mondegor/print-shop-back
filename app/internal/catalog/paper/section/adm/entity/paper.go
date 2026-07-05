@@ -3,15 +3,16 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
 
-	"github.com/mondegor/print-shop-back/pkg/catalog/enum"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/pkg/catalog/type/paperside"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 const (
-	ModelNamePaper = "admin-api.Catalog.Paper" // ModelNamePaper - название сущности
+	// ModelNamePaper - название сущности.
+	ModelNamePaper = "admin-api.Catalog.Paper"
 )
 
 type (
@@ -28,8 +29,8 @@ type (
 		Height     measure.Meter             `json:"height" sort:"height" upd:"paper_height"`
 		Thickness  measure.Meter             `json:"thickness" upd:"paper_thickness"`
 		Density    measure.KilogramPerMeter2 `json:"density" sort:"density" upd:"paper_density"`
-		Sides      enum.PaperSide            `json:"sides" upd:"paper_sides"`
-		Status     mrenum.ItemStatus         `json:"status"`
+		Sides      paperside.Enum            `json:"sides" upd:"paper_sides"`
+		Status     workflow.ItemStatus       `json:"status"`
 		CreatedAt  time.Time                 `json:"createdAt" sort:"createdAt"`
 		UpdatedAt  time.Time                 `json:"updatedAt" sort:"updatedAt"`
 	}
@@ -50,6 +51,6 @@ type (
 		Width      measure.RangeMeter
 		Height     measure.RangeMeter
 		Density    measure.RangeKilogramPerMeter2
-		Statuses   []mrenum.ItemStatus
+		Statuses   []workflow.ItemStatus
 	}
 )

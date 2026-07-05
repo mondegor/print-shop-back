@@ -1,0 +1,22 @@
+description: DTO - объём объекта
+type: object
+required:
+  - length
+  - width
+  - height
+properties:
+  length:
+    description: Длина объекта
+    type: number
+    format: double
+    example: 800
+  width:
+    description: Ширина объекта
+    type: number
+    format: double
+    example: 300
+  height:
+    description: Высота объекта
+    type: number
+    format: double
+    example: 500

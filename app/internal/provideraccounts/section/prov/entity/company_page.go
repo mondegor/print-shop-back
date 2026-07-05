@@ -5,12 +5,15 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 const (
-	ModelNameCompanyPage     = "providers-api.ProviderAccounts.CompanyPage"     // ModelNameCompanyPage - название сущности
-	ModelNameCompanyPageLogo = "providers-api.ProviderAccounts.CompanyPageLogo" // ModelNameCompanyPageLogo - название сущности
+	// ModelNameCompanyPage - название сущности.
+	ModelNameCompanyPage = "provider-api.ProviderAccounts.CompanyPage"
+
+	// ModelNameCompanyPageLogo - название сущности.
+	ModelNameCompanyPageLogo = "provider-api.ProviderAccounts.CompanyPageLogo"
 )
 
 type (
@@ -21,7 +24,7 @@ type (
 		PageTitle   string            `json:"pageTitle"`
 		LogoURL     string            `json:"logoUrl,omitempty"` // logo_meta.path
 		SiteURL     string            `json:"siteUrl"`
-		Status      enum.PublicStatus `json:"status"`
+		Status      publicstatus.Enum `json:"status"`
 		CreatedAt   time.Time         `json:"createdAt"`
 		UpdatedAt   time.Time         `json:"updatedAt"`
 	}

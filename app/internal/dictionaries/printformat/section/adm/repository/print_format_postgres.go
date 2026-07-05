@@ -4,14 +4,15 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-sysmess/util/xmath"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/printformat/module"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
 )
 
 type (
@@ -19,9 +20,9 @@ type (
 	PrintFormatPostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -30,7 +31,7 @@ func NewPrintFormatPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 	return &PrintFormatPostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNamePrintFormats,
 			"format_id",
@@ -45,7 +46,7 @@ func NewPrintFormatPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNamePrintFormats,
 		),
@@ -53,8 +54,18 @@ func NewPrintFormatPostgres(client mrstorage.DBConnManager, sqlBuilder mrstorage
 }
 
 // FetchWithTotal - comment method.
-func (re *PrintFormatPostgres) FetchWithTotal(ctx context.Context, params entity.PrintFormatParams) (rows []entity.PrintFormat, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+func (re *PrintFormatPostgres) FetchWithTotal(ctx context.Context, params entity.PrintFormatParams) (rows []entity.PrintFormat, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(format_caption)", strings.ToUpper(params.Filter.SearchText)),
+				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(params.Filter.Width), 0, xmath.EqualityThresholdE9),
+				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(params.Filter.Height), 0, xmath.EqualityThresholdE9),
+				c.FilterAnyOf("format_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -65,7 +76,14 @@ func (re *PrintFormatPostgres) FetchWithTotal(ctx context.Context, params entity
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("format_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -82,7 +100,7 @@ func (re *PrintFormatPostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.PrintFormat, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -101,7 +119,7 @@ func (re *PrintFormatPostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -176,8 +194,8 @@ func (re *PrintFormatPostgres) FetchOne(ctx context.Context, rowID uint64) (enti
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *PrintFormatPostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -249,29 +267,4 @@ func (re *PrintFormatPostgres) UpdateStatus(ctx context.Context, row entity.Prin
 // Delete - comment method.
 func (re *PrintFormatPostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *PrintFormatPostgres) fetchCondition(filter entity.PrintFormatListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLike("UPPER(format_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterRangeFloat64("format_width", mrtype.RangeFloat64(filter.Width), 0, mrlib.EqualityThresholdE9),
-				c.FilterRangeFloat64("format_height", mrtype.RangeFloat64(filter.Height), 0, mrlib.EqualityThresholdE9),
-				c.FilterAnyOf("format_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *PrintFormatPostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("format_id", mrenum.SortDirectionASC),
-			)
-		},
-	)
 }

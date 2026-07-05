@@ -3,7 +3,7 @@ package header
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
 )
 
 type (

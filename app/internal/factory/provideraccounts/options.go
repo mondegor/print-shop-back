@@ -1,36 +1,36 @@
 package provideraccounts
 
 import (
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlock"
-	"github.com/mondegor/go-webcore/mrpath"
-	"github.com/mondegor/go-webcore/mrsender"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrlock"
+	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 type (
 	// Options - comment struct.
 	Options struct {
-		EventEmitter        mrsender.EventEmitter
-		UseCaseErrorWrapper mrcore.UseCaseErrorWrapper
-		DBConnManager       mrstorage.DBConnManager
-		Locker              mrlock.Locker
-		RequestParsers      RequestParsers
-		ResponseSender      mrserver.ResponseSender
+		Logger         log.Logger
+		EventEmitter   mrevent.Emitter
+		DBConnManager  mrstorage.DBConnManager
+		Locker         mrlock.Locker
+		RequestParsers RequestParsers
+		ResponseSender mrserver.ResponseSender
 
 		UnitCompanyPage UnitCompanyPageOptions
 
-		PageSizeMax     uint64
-		PageSizeDefault uint64
+		PageSizeMax     int
+		PageSizeDefault int
 	}
 
 	// UnitCompanyPageOptions - comment struct.
 	UnitCompanyPageOptions struct {
 		LogoFileAPI    mrstorage.FileProviderAPI
-		LogoURLBuilder mrpath.PathBuilder
+		LogoURLBuilder mrpath.Builder
 	}
 
 	// RequestParsers - comment struct.

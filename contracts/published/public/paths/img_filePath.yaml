@@ -1,0 +1,27 @@
+get:
+  summary: Метод получения указанного изображения
+  description: Метод предназначен для получения указанного файла изображения из файлового хранилища
+  operationId: getImageFile
+  tags:
+    - FileStation
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/FileStation.Request.Path.FilePath.yaml"
+
+  responses:
+    "200":
+      description: Получен файл указанного изображения
+      content:
+        image/png:
+          schema:
+            $ref: "../_shared/components/models/Api.Response.Model.BinaryImage.yaml"
+        image/jpeg:
+          schema:
+            $ref: "../_shared/components/models/Api.Response.Model.BinaryImage.yaml"
+    "404":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

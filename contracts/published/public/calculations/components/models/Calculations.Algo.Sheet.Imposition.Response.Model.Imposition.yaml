@@ -1,0 +1,27 @@
+description: DTO - расчёта алгоритма "Спуск полос"
+type: object
+required:
+  - containerFormat
+  - fragmentDistance
+  - fragments
+  - totalElements
+  - garbage
+  - allowRotation
+  - useMirror
+properties:
+  containerFormat:
+    $ref: "../fields/Calculations.Field.Rect2dFormat.yaml"
+  fragmentDistance:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter.yaml"
+  fragments:
+    type: array
+    items:
+      $ref: "../fields/Calculations.Field.Fragment.yaml"
+  totalElements:
+    $ref: "../../../_shared/components/fields/Api.Field.Uint63.yaml"
+  garbage:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Meter2.yaml"
+  allowRotation:
+    $ref: "../../../_shared/components/fields/Api.Field.Boolean.yaml"
+  useMirror:
+    $ref: "../../../_shared/components/fields/Api.Field.Boolean.yaml"

@@ -1,49 +1,57 @@
 package factory
 
 import (
-	"context"
+	"fmt"
 	"os"
 
 	"github.com/mondegor/go-storage/mrfilestorage"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrlib"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/util/mime"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
 // NewFileSystem - создаёт объект mrfilestorage.FileSystem.
-func NewFileSystem(ctx context.Context, cfg config.Config) *mrfilestorage.FileSystem {
-	mrlog.Ctx(ctx).Info().Msg("Create and init file system")
+func NewFileSystem(logger log.Logger, cfg config.Config) *mrfilestorage.FileSystem {
+	log.Info(logger, "Create and init file system")
 
 	return mrfilestorage.New(
-		os.FileMode(cfg.FileSystem.DirMode),
-		cfg.FileSystem.CreateDirs,
-		mrlib.NewMimeTypeList(mrlog.Ctx(ctx), cfg.MimeTypes), // TODO: можно вынести в общую переменную
+		os.FileMode(cfg.FSDirMode),
+		cfg.FSCreateDirs,
+		mime.NewTypeList(cfg.AllowedMimeTypes), // TODO: можно вынести в общую переменную
 	)
 }
 
 // RegisterFileImageStorage - comment func.
-func RegisterFileImageStorage(ctx context.Context, cfg config.Config, pool *mrstorage.FileProviderPool, fs *mrfilestorage.FileSystem) error {
+func RegisterFileImageStorage(
+	logger log.Logger,
+	tracer trace.Tracer,
+	cfg config.Config,
+	pool *mrstorage.FileProviderPool,
+	fs *mrfilestorage.FileSystem,
+) error {
 	storage, err := newFileStorageProvider(
-		ctx,
+		logger,
+		tracer,
 		fs,
-		cfg.FileProviders.ImageStorage.RootDir,
+		cfg.FileProviders.ImageStorage2RootDir,
 	)
 	if err != nil {
 		return err
 	}
 
-	return pool.Register(cfg.FileProviders.ImageStorage.Name, storage)
+	return pool.Register(cfg.FileProviders.ImageStorageName, storage)
 }
 
 func newFileStorageProvider(
-	ctx context.Context,
+	logger log.Logger,
+	tracer trace.Tracer,
 	fs *mrfilestorage.FileSystem,
 	rootDir string,
 ) (*mrfilestorage.FileProvider, error) {
-	logger := mrlog.Ctx(ctx)
-	logger.Info().Msgf("Create and init file provider with root dir '%s'", rootDir)
+	log.Info(logger, fmt.Sprintf("Create and init file provider with root dir '%s'", rootDir))
 
 	created, err := fs.InitRootDir(rootDir)
 	if err != nil {
@@ -51,10 +59,10 @@ func newFileStorageProvider(
 	}
 
 	if created {
-		logger.Debug().Msgf("Root dir '%s' created", rootDir)
+		log.Debug(logger, fmt.Sprintf("Root dir '%s' created", rootDir))
 	} else {
-		logger.Debug().Msgf("Root dir '%s' exists, OK", rootDir)
+		log.Debug(logger, fmt.Sprintf("Root dir '%s' exists, OK", rootDir))
 	}
 
-	return mrfilestorage.NewFileProvider(fs, rootDir), nil
+	return mrfilestorage.NewFileProvider(fs, tracer, rootDir), nil
 }

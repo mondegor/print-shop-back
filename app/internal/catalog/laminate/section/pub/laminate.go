@@ -3,14 +3,16 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"github.com/mondegor/go-webcore/mrcore"
+
+	"print-shop-back/internal/catalog/laminate/section/pub/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
 	// LaminateUseCase - comment interface.
 	LaminateUseCase interface {
-		GetList(ctx context.Context, params entity.LaminateParams) ([]entity.Laminate, error)
+		GetList(ctx context.Context, lz mrcore.Localizer, params entity.LaminateParams) ([]entity.Laminate, error)
 		GetTypeList(ctx context.Context) ([]uint64, error)
 		GetThicknessList(ctx context.Context) ([]measure.Meter, error)
 	}

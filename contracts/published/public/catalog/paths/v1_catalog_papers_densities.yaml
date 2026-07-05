@@ -1,0 +1,28 @@
+get:
+  summary: Метод получения списка плотностей бумаги
+  description: |-
+    Метод предназначен для получения списка плотностей бумаги, сохраненных в БД,
+    со следующими условиями:
+    - paper.isEnabled = true;
+
+    Порядок следования списка:
+    - density ASC
+
+  operationId: getPaperDensityList
+  tags:
+    - Catalog
+
+#  parameters:
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+#    - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+
+  responses:
+    "200":
+      description: Получен список плотностей бумаги
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Papers.Response.Model.PaperDensityList.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

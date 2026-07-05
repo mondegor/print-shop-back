@@ -1,0 +1,16 @@
+description: Фрагмент прямоугольного формата на котором размещены элементы указанного формата на указанной дистанции между ними
+type: object
+required:
+  - element
+  - distance
+  - layout
+  - position
+properties:
+  element:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+  distance:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"
+  layout:
+    $ref: "../fields/Calculations.Field.Layout.yaml"
+  position:
+    $ref: "../enums/Calculations.Enum.FragmentPosition.yaml"

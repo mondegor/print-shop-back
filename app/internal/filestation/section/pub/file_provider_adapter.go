@@ -3,12 +3,12 @@ package pub
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrtype"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
 )
 
 type (
 	// FileProviderAdapterUseCase - comment interface.
 	FileProviderAdapterUseCase interface {
-		Get(ctx context.Context, filePath string) (mrtype.File, error)
+		Get(ctx context.Context, filePath string) (mrmodel.File, error)
 	}
 )

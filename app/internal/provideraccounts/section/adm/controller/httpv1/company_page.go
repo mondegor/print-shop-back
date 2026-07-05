@@ -3,13 +3,13 @@ package httpv1
 import (
 	"net/http"
 
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/shared/validate"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/adm"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/shared/validate"
 )
 
 const (
@@ -22,7 +22,7 @@ type (
 		parser     validate.RequestProviderAccountsParser
 		sender     mrserver.ResponseSender
 		useCase    adm.CompanyPageUseCase
-		listSorter mrview.ListSorter
+		listSorter mrtype.ListSorter
 	}
 )
 
@@ -31,7 +31,7 @@ func NewCompanyPage(
 	parser validate.RequestProviderAccountsParser,
 	sender mrserver.ResponseSender,
 	useCase adm.CompanyPageUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *CompanyPage {
 	return &CompanyPage{
 		parser:     parser,

@@ -3,18 +3,17 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/adm"
+	"print-shop-back/internal/catalog/paper/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -26,20 +25,37 @@ const (
 type (
 	// Paper - comment struct.
 	Paper struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.PaperUseCase
-		listSorter mrview.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.PaperUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
 // NewPaper - создаёт контроллер Paper.
-func NewPaper(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.PaperUseCase, listSorter mrview.ListSorter) *Paper {
+func NewPaper(
+	parser validate.RequestExtendParser,
+	sender mrserver.ResponseSender,
+	useCase adm.PaperUseCase,
+	listSorter mrtype.ListSorter,
+) *Paper {
 	return &Paper{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+			module.ErrPaperArticleAlreadyExists.Code(), "article",
+			api.ErrMaterialTypeRequired.Code(), "typeId",
+			api.ErrMaterialTypeNotFound.Code(), "typeId",
+			api.ErrPaperColorRequired.Code(), "colorId",
+			api.ErrPaperColorNotFound.Code(), "colorId",
+			api.ErrPaperFactureRequired.Code(), "factureId",
+			api.ErrPaperFactureNotFound.Code(), "factureId",
+		),
 	}
 }
 
@@ -50,7 +66,7 @@ func (ht *Paper) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: paperListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: paperItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: paperItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: paperItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: paperItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: paperItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -105,23 +121,23 @@ func (ht *Paper) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreatePaperRequest{}
+	req := CreatePaperRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
-		Article:   request.Article,
-		Caption:   request.Caption,
-		TypeID:    request.TypeID,
-		ColorID:   request.ColorID,
-		FactureID: request.FactureID,
-		Width:     measure.Meter(request.Length * measure.OneThousandth),
-		Height:    measure.Meter(request.Height * measure.OneThousandth),
-		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
-		Density:   measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
-		Sides:     request.Sides,
+		Article:   req.Article,
+		Caption:   req.Caption,
+		TypeID:    req.TypeID,
+		ColorID:   req.ColorID,
+		FactureID: req.FactureID,
+		Width:     measure.Meter(req.Length * measure.OneThousandth),
+		Height:    measure.Meter(req.Height * measure.OneThousandth),
+		Thickness: measure.Meter(req.Thickness * measure.OneMillionth),
+		Density:   measure.KilogramPerMeter2(req.Density * measure.OneThousandth),
+		Sides:     req.Sides,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -132,36 +148,36 @@ func (ht *Paper) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StorePaperRequest{}
+// Save - comment method.
+func (ht *Paper) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StorePaperRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Article:    request.Article,
-		Caption:    request.Caption,
-		TypeID:     request.TypeID,
-		ColorID:    request.ColorID,
-		FactureID:  request.FactureID,
-		Width:      measure.Meter(request.Length * measure.OneThousandth),
-		Height:     measure.Meter(request.Height * measure.OneThousandth),
-		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
-		Density:    measure.KilogramPerMeter2(request.Density * measure.OneThousandth),
-		Sides:      request.Sides,
+		TagVersion: req.TagVersion,
+		Article:    req.Article,
+		Caption:    req.Caption,
+		TypeID:     req.TypeID,
+		ColorID:    req.ColorID,
+		FactureID:  req.FactureID,
+		Width:      measure.Meter(req.Length * measure.OneThousandth),
+		Height:     measure.Meter(req.Height * measure.OneThousandth),
+		Thickness:  measure.Meter(req.Thickness * measure.OneMillionth),
+		Density:    measure.KilogramPerMeter2(req.Density * measure.OneThousandth),
+		Sides:      req.Sides,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -170,16 +186,16 @@ func (ht *Paper) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Paper) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Paper{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -207,36 +223,9 @@ func (ht *Paper) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Paper) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrPaperNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrPaperArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	if api.ErrMaterialTypeRequired.Is(err) ||
-		api.ErrMaterialTypeNotFound.Is(err) {
-		return mrerr.NewCustomError("typeId", err)
-	}
-
-	if api.ErrPaperColorRequired.Is(err) ||
-		api.ErrPaperColorNotFound.Is(err) {
-		return mrerr.NewCustomError("colorId", err)
-	}
-
-	if api.ErrPaperFactureRequired.Is(err) ||
-		api.ErrPaperFactureNotFound.Is(err) {
-		return mrerr.NewCustomError("factureId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

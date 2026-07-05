@@ -1,0 +1,12 @@
+description: DTO параметров алгоритма "Количество резов"
+type: object
+required:
+  - layouts
+  - distance
+properties:
+  layouts:
+    type: array
+    items:
+      $ref: "../../../_shared/components/fields/Api.Field.Size2D.yaml"
+  distance:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter2.yaml"

@@ -1,7 +1,8 @@
 package entity
 
 const (
-	ModelNameCompanyPage = "public-api.ProviderAccounts.CompanyPage" // ModelNameCompanyPage - название сущности
+	// ModelNameCompanyPage - название сущности.
+	ModelNameCompanyPage = "public-api.ProviderAccounts.CompanyPage"
 )
 
 type (

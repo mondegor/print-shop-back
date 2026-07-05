@@ -1,0 +1,4 @@
+description: DTO - список толщин ламината
+type: array
+items:
+  $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"

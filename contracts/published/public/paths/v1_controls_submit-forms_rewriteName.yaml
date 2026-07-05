@@ -1,0 +1,24 @@
+get:
+  summary: Метод получения формы
+  description: Метод предназначен для получения формы из БД
+  operationId: getSubmitForm
+  tags:
+    - Controls.SubmitForm
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormRewriteName.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о форме
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Controls.SubmitForms.Response.Model.Form.yaml"
+    "404":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

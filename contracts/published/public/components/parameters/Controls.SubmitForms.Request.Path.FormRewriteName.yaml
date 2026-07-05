@@ -1,0 +1,7 @@
+description: Человекопонятное название используемое в URL формы
+name: rewriteName
+in: path
+required: true
+schema:
+  type: string
+example: "form-name"

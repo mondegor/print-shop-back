@@ -1,0 +1,98 @@
+get:
+  summary: Метод получения упаковочной коробки
+  description: Метод предназначен для получения информации об упаковочной коробке из БД
+  operationId: getBox
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Boxes.Request.Path.BoxID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация об упаковочной коробке
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Catalog.Boxes.Response.Model.Box.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+patch:
+  summary: Метод сохранения упаковочной коробки
+  description: |-
+    Метод предназначен для сохранения информации об упаковочной коробке в БД
+
+    **Ограничения и ошибки полей:**
+    - version: required,gte=1
+    - article: omitempty,unique,min=3,max=32,pattern=article
+    - caption: omitempty,max=64
+    - length: omitempty,gte=1,lte=10000000
+    - width: omitempty,gte=1,lte=10000000
+    - height: omitempty,gte=1,lte=10000000
+    - weight: omitempty,gte=1,lte=10000000
+
+  operationId: storeBox
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Boxes.Request.Path.BoxID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Catalog.Boxes.Request.Model.StoreBox.yaml"
+
+  responses:
+    "204":
+      description: Информация об упаковочной коробке успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления упаковочной коробки
+  description: Метод предназначен для удаления информации об упаковочной коробке из БД
+  operationId: removeBox
+  tags:
+    - Catalog
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Catalog.Boxes.Request.Path.BoxID.yaml"
+
+  responses:
+    "204":
+      description: Информация об упаковочной коробке успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

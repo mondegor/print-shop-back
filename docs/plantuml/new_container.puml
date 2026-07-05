@@ -1,0 +1,29 @@
+@startuml
+title Упаковка заказа в контейнер для хранения (ключевые шаги)
+
+actor "Оператор" as User order 10 #blue
+participant "Приложение" as App order 20 #orange
+
+User-> App: Нажимает "Упаковать заказ"
+User-> App: Вводит номер заказа (OCR/голос/вручную)
+App-> App: Валидирует номер заказа
+User-> App: Делает фото продукции заказа
+User-> App: Добавляет теги (опционально)
+User-> App: Вводит детали контейнера (опционально)
+User-> App: Нажимает «Сохранить»
+App-> App: Сохраняет контейнер с заказом (статус ожидает размещения)
+App-> User: Ok
+
+@enduml
+
+@startuml
+
+[*] --> State1
+State1 --> [*]
+State1 : this is a string
+State1 : this is another string
+
+State1 -> State2
+State2 --> [*]
+
+@enduml

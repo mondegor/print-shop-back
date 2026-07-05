@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/module"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/api"
+	"print-shop-back/internal/controls/elementtemplate/module"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/pkg/controls/api"
 )
 
 type (

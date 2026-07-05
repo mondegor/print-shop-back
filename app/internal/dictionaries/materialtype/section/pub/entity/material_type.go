@@ -1,7 +1,8 @@
 package entity
 
 const (
-	ModelNameMaterialType = "public-api.Dictionaries.MaterialType" // ModelNameMaterialType - название сущности
+	// ModelNameMaterialType - название сущности.
+	ModelNameMaterialType = "public-api.Dictionaries.MaterialType"
 )
 
 type (

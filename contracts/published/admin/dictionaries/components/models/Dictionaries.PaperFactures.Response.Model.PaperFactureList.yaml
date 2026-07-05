@@ -1,0 +1,13 @@
+description: DTO - список фактур бумаги
+type: object
+required:
+  - items
+  - total
+properties:
+  items:
+    description: Список записей ограниченный фильтром и pageSize
+    type: array
+    items:
+      $ref: "./Dictionaries.PaperFactures.Response.Model.PaperFacture.yaml"
+  total:
+    $ref: "../../../_shared/components/fields/Api.Field.ListPager.Total.yaml"

@@ -1,8 +1,8 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
@@ -24,6 +24,6 @@ type (
 	// PrintFormatListResponse - comment struct.
 	PrintFormatListResponse struct {
 		Items []entity.PrintFormat `json:"items"`
-		Total uint64               `json:"total"`
+		Total int                  `json:"total"`
 	}
 )

@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-storage/mrentity"
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrentity"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/module"
 )
 
 type (

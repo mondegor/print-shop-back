@@ -1,7 +1,7 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
@@ -14,6 +14,6 @@ type (
 
 	// ChangePublicStatusRequest - comment struct.
 	ChangePublicStatusRequest struct {
-		Status enum.PublicStatus `json:"status" validate:"required"`
+		Status publicstatus.Enum `json:"status" validate:"required"`
 	}
 )

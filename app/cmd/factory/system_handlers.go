@@ -6,29 +6,32 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrrun"
+	"github.com/mondegor/go-sysmess/mrrun"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"
 
-	"github.com/mondegor/print-shop-back/internal/app"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/app"
 )
 
 // RegisterSystemHandlers - регистрация системных обработчиков.
-func RegisterSystemHandlers(ctx context.Context, opts app.Options) error {
-	mrlog.Ctx(ctx).Info().Msgf("Init system handlers")
+func RegisterSystemHandlers(opts app.Options) error {
+	log.Info(opts.Logger, "Init system handlers")
 
 	probes := []mrrun.ProbeChecker{
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"App",
 			mrrun.WithAppReadyProbe(opts.AppHealth),
 			time.Microsecond,
 		),
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"Postgres",
 			opts.PostgresConnManager.ConnAdapter().Ping,
 			0, // timeout by default
 		),
 		mrrun.NewHealthProbe(
+			opts.Logger,
 			"Redis",
 			opts.RedisAdapter.Ping,
 			0, // timeout by default
@@ -36,29 +39,36 @@ func RegisterSystemHandlers(ctx context.Context, opts app.Options) error {
 	}
 
 	// :TODO: логировать регистрацию обработчиков
-	opts.InternalRouter.Handle(
+	opts.MonitoringRouter.Handle(
 		"/health",
 		mrresp.HandlerGetHealth(
-			mrrun.PrepareProbesForCheck(probes...),
+			mrrun.PrepareProbesForCheck(opts.Logger, probes...),
 		),
 	)
 
-	probesFunc := mrrun.PrepareProbes(probes...)
+	probesFunc := mrrun.PrepareProbes(opts.Logger, probes...)
 
 	systemInfoFunc, err := mrresp.HandlerGetSystemInfoAsJSON(
+		opts.Logger,
 		mrresp.SystemInfoConfig{
-			Name:        opts.Cfg.App.Name,
-			Version:     opts.Cfg.App.Version,
-			Environment: opts.Cfg.App.Environment,
-			IsDebug:     opts.Cfg.Debugging.Debug,
-			LogLevel:    mrlog.Ctx(ctx).Level(),
-			StartedAt:   opts.Cfg.App.StartedAt,
-			Processes: func(ctx context.Context) map[string]string {
+			Caption:     opts.Cfg.AppName,
+			Version:     opts.Cfg.AppVersion,
+			Environment: opts.Cfg.Environment,
+			IsDebug:     opts.Cfg.DebugIsEnabled,
+			LogLevel:    opts.Cfg.LogLevel,
+			StartedAt:   opts.Cfg.StartedAt,
+			ProcessesFunc: func(ctx context.Context) []mrresp.SystemInfoProcess {
 				finishedProbes := probesFunc(ctx)
-				processes := make(map[string]string, len(finishedProbes))
+				processes := make([]mrresp.SystemInfoProcess, 0, len(finishedProbes))
 
 				for _, probe := range finishedProbes {
-					processes[probe.Caption] = strconv.Itoa(probe.Status) + " " + http.StatusText(probe.Status)
+					processes = append(
+						processes,
+						mrresp.SystemInfoProcess{
+							Caption: probe.Caption,
+							Status:  strconv.Itoa(probe.Status) + " " + http.StatusText(probe.Status),
+						},
+					)
 				}
 
 				return processes
@@ -69,7 +79,7 @@ func RegisterSystemHandlers(ctx context.Context, opts app.Options) error {
 		return err
 	}
 
-	opts.InternalRouter.Handle("/system-info", systemInfoFunc)
+	opts.MonitoringRouter.Handle("/v1/system-info", systemInfoFunc)
 
 	return nil
 }

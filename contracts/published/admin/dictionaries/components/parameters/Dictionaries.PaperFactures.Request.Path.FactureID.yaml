@@ -1,0 +1,9 @@
+description: Идентификатор фактуры бумаги
+name: factureId
+in: path
+required: true
+schema:
+  type: integer
+  format: int64
+  minimum: 1
+example: 1000

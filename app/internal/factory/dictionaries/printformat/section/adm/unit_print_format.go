@@ -1,49 +1,46 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-storage/mrpostgres/builder"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/controller/httpv1"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/entity"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/repository"
+	"print-shop-back/internal/dictionaries/printformat/section/adm/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPrintFormat(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPrintFormat(ctx context.Context, opts printformat.Options) (*httpv1.PrintFormat, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.PrintFormat{})
+func initPrintFormatController(
+	logger log.Logger,
+	eventEmitter mrevent.Emitter,
+	dbConnManager mrstorage.DBConnManager,
+	requestExtendParser *validate.ExtendParser,
+	responseSender mrserver.ResponseSender,
+	pageSizeMax int,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.PrintFormat{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewPrintFormatPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewPrintFormat(storage, eventEmitter)
+
 	controller := httpv1.NewPrintFormat(
-		opts.RequestParsers.ExtendParser,
-		opts.ResponseSender,
+		requestExtendParser,
+		responseSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

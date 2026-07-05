@@ -3,36 +3,39 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrpath"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrpath"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/adm/entity"
+	"print-shop-back/internal/provideraccounts/section/adm"
+	"print-shop-back/internal/provideraccounts/section/adm/entity"
 )
 
 type (
 	// CompanyPage - comment struct.
 	CompanyPage struct {
 		storage      adm.CompanyPageStorage
-		errorWrapper mrcore.UseCaseErrorWrapper
-		imgBaseURL   mrpath.PathBuilder
+		imgBaseURL   mrpath.Builder
+		errorWrapper errors.Wrapper
 	}
 )
 
 // NewCompanyPage - создаёт объект CompanyPage.
-func NewCompanyPage(storage adm.CompanyPageStorage, errorWrapper mrcore.UseCaseErrorWrapper, imgBaseURL mrpath.PathBuilder) *CompanyPage {
+func NewCompanyPage(
+	storage adm.CompanyPageStorage,
+	imgBaseURL mrpath.Builder,
+) *CompanyPage {
 	return &CompanyPage{
 		storage:      storage,
-		errorWrapper: errorWrapper,
 		imgBaseURL:   imgBaseURL,
+		errorWrapper: errors.NewServiceRecordNotFoundWrapper(),
 	}
 }
 
 // GetList - comment method.
-func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) (items []entity.CompanyPage, countItems uint64, err error) {
+func (uc *CompanyPage) GetList(ctx context.Context, params entity.CompanyPageParams) (items []entity.CompanyPage, countItems int, err error) {
 	items, countItems, err = uc.storage.FetchWithTotal(ctx, params)
 	if err != nil {
-		return nil, 0, uc.errorWrapper.WrapErrorFailed(err, entity.ModelNameCompanyPage)
+		return nil, 0, uc.errorWrapper.Wrap(err)
 	}
 
 	if countItems == 0 {

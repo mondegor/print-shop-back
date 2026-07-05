@@ -1,0 +1,92 @@
+get:
+  summary: Метод получения типа материала
+  description: Метод предназначен для получения информации о типе материала из БД
+  operationId: getMaterialType
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.MaterialTypes.Request.Path.TypeID.yaml"
+
+  responses:
+    "200":
+      description: Получена информация о типе материала
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: "../components/models/Dictionaries.MaterialTypes.Response.Model.MaterialType.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+put:
+  summary: Метод сохранения типа материала
+  description: |-
+    Метод предназначен для сохранения информации о типе материала в БД
+
+    **Ограничения и ошибки полей:**
+    - caption: required,max=64
+
+  operationId: storeMaterialType
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.MaterialTypes.Request.Path.TypeID.yaml"
+
+  requestBody:
+    required: true
+    content:
+      application/json;charset=UTF-8:
+        schema:
+          $ref: "../components/models/Dictionaries.MaterialTypes.Request.Model.StoreMaterialType.yaml"
+
+  responses:
+    "204":
+      description: Информация о типе материала успешно сохранена
+    "400":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error400.yaml"
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"
+
+delete:
+  summary: Метод удаления типа материала
+  description: Метод предназначен для удаления информации о типе материала из БД
+  operationId: removeMaterialType
+  tags:
+    - Dictionaries
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Dictionaries.MaterialTypes.Request.Path.TypeID.yaml"
+
+  responses:
+    "204":
+      description: Информация о типе материала успешно удалена
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

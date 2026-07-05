@@ -1,0 +1,28 @@
+patch:
+  summary: Метод подготовки формы к тестированию
+  description: |-
+    Метод предназначен для подготовки формы и её элеменов к тестированию в рабочей среде.
+    При этом создаётся новая версия с готовым json файлом, в который входят все элементы формы.
+    Но если последняя версия находится на этапе тестирования, то происходит только её обновление.
+
+  operationId: prepareSubmitFormForTest
+  tags:
+    - Controls
+
+  parameters:
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.AcceptLanguage.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Header.CorrelationID.yaml"
+    # - $ref: "../../_shared/components/parameters/Api.Request.Query.Language.yaml"
+    - $ref: "../components/parameters/Controls.SubmitForms.Request.Path.FormID.yaml"
+
+  responses:
+    "204":
+      description: Для формы выпущена новая версия, которая переведена в статус тестирования
+    "401":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error401.yaml"
+    "403":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error403.yaml"
+    "404":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error404.yaml"
+    "500":
+      $ref: "../../_shared/components/responses/Api.ResponseJson.Error5xx.yaml"

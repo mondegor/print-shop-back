@@ -4,20 +4,20 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrtype"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/module"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/shared/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/controls/submitform/module"
+	"print-shop-back/internal/controls/submitform/section/adm"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/internal/controls/submitform/shared/validate"
+	"print-shop-back/pkg/transport/model"
 )
 
 const (
@@ -37,7 +37,8 @@ type (
 		sender         mrserver.FileResponseSender
 		useCase        adm.SubmitFormUseCase
 		useCaseVersion adm.FormVersionUseCase
-		listSorter     mrview.ListSorter
+		listSorter     mrtype.ListSorter
+		errorWrapper   errors.CustomWrapper
 	}
 )
 
@@ -47,7 +48,7 @@ func NewSubmitForm(
 	sender mrserver.FileResponseSender,
 	useCase adm.SubmitFormUseCase,
 	useCaseVersion adm.FormVersionUseCase,
-	listSorter mrview.ListSorter,
+	listSorter mrtype.ListSorter,
 ) *SubmitForm {
 	return &SubmitForm{
 		parser:         parser,
@@ -55,6 +56,12 @@ func NewSubmitForm(
 		useCase:        useCase,
 		useCaseVersion: useCaseVersion,
 		listSorter:     listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+			module.ErrSubmitFormRewriteNameAlreadyExists.Code(), "rewriteName",
+			module.ErrSubmitFormParamNameAlreadyExists.Code(), "paramName",
+		),
 	}
 }
 
@@ -65,7 +72,7 @@ func (ht *SubmitForm) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: submitFormListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: submitFormItemURL, Func: ht.Get},
-		{Method: http.MethodPatch, URL: submitFormItemURL, Func: ht.Store},
+		{Method: http.MethodPatch, URL: submitFormItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: submitFormItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: submitFormItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -117,17 +124,17 @@ func (ht *SubmitForm) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateSubmitFormRequest{}
+	req := CreateSubmitFormRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
-		RewriteName: request.RewriteName,
-		ParamName:   request.ParamName,
-		Caption:     request.Caption,
-		Detailing:   request.Detailing,
+		RewriteName: req.RewriteName,
+		ParamName:   req.ParamName,
+		Caption:     req.Caption,
+		Detailing:   req.Detailing,
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -138,29 +145,29 @@ func (ht *SubmitForm) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemResponse{
+		model.SuccessCreatedItemResponse{
 			ItemID: itemID.String(),
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreSubmitFormRequest{}
+// Save - comment method.
+func (ht *SubmitForm) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreSubmitFormRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
 		ID:          ht.getItemID(r),
-		TagVersion:  request.TagVersion,
-		RewriteName: request.RewriteName,
-		ParamName:   request.ParamName,
-		Caption:     request.Caption,
+		TagVersion:  req.TagVersion,
+		RewriteName: req.RewriteName,
+		ParamName:   req.ParamName,
+		Caption:     req.Caption,
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -169,16 +176,16 @@ func (ht *SubmitForm) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *SubmitForm) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.SubmitForm{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -212,11 +219,11 @@ func (ht *SubmitForm) GetVersionJson(w http.ResponseWriter, r *http.Request) err
 	return ht.sender.SendAttachmentFile(
 		r.Context(),
 		w,
-		mrtype.File{
-			FileInfo: mrtype.FileInfo{
+		mrmodel.File{
+			FileInfo: mrmodel.FileInfo{
 				ContentType:  "application/json",
 				OriginalName: fmt.Sprintf(module.JsonFileNamePattern, primary.FormID, primary.Version),
-				Size:         uint64(len(body)),
+				Size:         int64(len(body)),
 			},
 			Body: io.NopCloser(bytes.NewReader(body)),
 		},
@@ -246,7 +253,12 @@ func (ht *SubmitForm) getItemID(r *http.Request) uuid.UUID {
 }
 
 func (ht *SubmitForm) getItemVersion(r *http.Request) int32 {
-	return int32(ht.parser.PathParamUint64(r, "version"))
+	ver := ht.parser.PathParamUint64(r, "version")
+	if ver > math.MaxInt32 {
+		return math.MaxInt32
+	}
+
+	return int32(ver)
 }
 
 func (ht *SubmitForm) getRawItemID(r *http.Request) string {
@@ -254,25 +266,9 @@ func (ht *SubmitForm) getRawItemID(r *http.Request) string {
 }
 
 func (ht *SubmitForm) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrSubmitFormNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrSubmitFormRewriteNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("rewriteName", err)
-	}
-
-	if module.ErrSubmitFormParamNameAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("paramName", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

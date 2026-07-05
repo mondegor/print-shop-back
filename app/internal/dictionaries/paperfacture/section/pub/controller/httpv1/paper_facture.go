@@ -5,9 +5,9 @@ import (
 
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/validate"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/entity"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -41,7 +41,7 @@ func (ht *PaperFacture) Handlers() []mrserver.HttpHandler {
 
 // GetList - comment method.
 func (ht *PaperFacture) GetList(w http.ResponseWriter, r *http.Request) error {
-	items, err := ht.useCase.GetList(r.Context(), ht.listParams(r))
+	items, err := ht.useCase.GetList(r.Context(), ht.parser.Localizer(r), ht.listParams(r))
 	if err != nil {
 		return err
 	}

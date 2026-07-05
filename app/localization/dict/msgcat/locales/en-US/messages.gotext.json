@@ -1,0 +1,12 @@
+{
+    "language": "en-US",
+    "messages": [
+        {
+            "id": "Confirm your identity to sign in",
+            "message": "Confirm your identity to sign in",
+            "translation": "To sign in, enter the confirmation code sent to your email",
+            "translatorComment": "Copied from source.",
+            "fuzzy": true
+        }
+    ]
+}

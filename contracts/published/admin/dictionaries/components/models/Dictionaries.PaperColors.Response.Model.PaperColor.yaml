@@ -1,0 +1,25 @@
+description: DTO - цвет бумаги
+type: object
+required:
+  - id
+  - tagVersion
+  - caption
+  - status
+  - createdAt
+  - updatedAt
+properties:
+  id: # colorId
+    $ref: "../fields/Dictionaries.Field.PaperColorID.yaml"
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Белый"
+  status:
+    $ref: "../../../_shared/components/enums/Api.Enum.Status.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

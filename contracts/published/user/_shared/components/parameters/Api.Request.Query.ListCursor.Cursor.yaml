@@ -1,0 +1,8 @@
+description: Текущая позиция в списке записей
+name: cursor
+in: query
+required: false
+schema:
+  type: string
+  maxLength: 256
+example: "Y3Vyc29yLTQwMjc5"

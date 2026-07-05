@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/materialtype"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/controller/httpv1"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/repository"
+	"print-shop-back/internal/dictionaries/materialtype/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitMaterialType(ctx context.Context, opts materialtype.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitMaterialType(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitMaterialType(_ context.Context, opts materialtype.Options) (*httpv1.MaterialType, error) { //nolint:unparam
+func initMaterialTypeController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewMaterialTypePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewMaterialType(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewMaterialType(storage)
+
 	controller := httpv1.NewMaterialType(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

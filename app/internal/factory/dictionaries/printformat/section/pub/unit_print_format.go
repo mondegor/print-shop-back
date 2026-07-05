@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/printformat/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/printformat"
+	"print-shop-back/internal/dictionaries/printformat/section/pub/controller/httpv1"
+	"print-shop-back/internal/dictionaries/printformat/section/pub/repository"
+	"print-shop-back/internal/dictionaries/printformat/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitPrintFormat(ctx context.Context, opts printformat.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPrintFormat(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPrintFormat(_ context.Context, opts printformat.Options) (*httpv1.PrintFormat, error) { //nolint:unparam
+func initPrintFormatController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewPrintFormatPostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewPrintFormat(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewPrintFormat(storage)
+
 	controller := httpv1.NewPrintFormat(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

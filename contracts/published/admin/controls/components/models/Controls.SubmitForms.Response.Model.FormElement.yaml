@@ -1,0 +1,34 @@
+description: |-
+  DTO - элемент формы пользовательского интерфейса
+  Спецификация https://printrobot.atlassian.net/wiki/spaces/prdsh/pages/54919268
+type: object
+properties:
+  id: # elementId
+    $ref: "../fields/Controls.Field.FormElementID.yaml"
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  paramName:
+    $ref: "../../../_shared/components/fields/Api.Field.VariableCamelCase.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Процесс печати"
+  templateId:
+    $ref: "../fields/Controls.Field.ElementTemplateID.yaml"
+  templateVersion:
+    description: Последняя актуальная версия шаблона
+    type: integer
+    format: int32
+    minimum: 1
+    example: 5
+  elementRequired:
+    $ref: "../fields/Controls.SubmitForms.Field.ElementRequired.yaml"
+  elementType:
+    $ref: "../enums/Controls.Enum.FormElementType.yaml"
+  detailing:
+    $ref: "../enums/Controls.Enum.FormElementDetailing.yaml"
+  createdAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeCreatedAt.yaml"
+  updatedAt:
+    $ref: "../../../_shared/components/fields/Api.Field.DateTimeUpdatedAt.yaml"

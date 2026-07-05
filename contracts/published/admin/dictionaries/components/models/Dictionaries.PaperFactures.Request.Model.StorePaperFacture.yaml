@@ -1,0 +1,13 @@
+description: DTO сохранения фактуры бумаги
+type: object
+required:
+  - tagVersion
+  - caption
+properties:
+  tagVersion:
+    $ref: "../../../_shared/components/fields/Api.Field.TagVersion.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "Гладкая"

@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/util/casttype"
 
-	"github.com/mondegor/print-shop-back/internal/controls/submitform/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/controls/enum"
-	"github.com/mondegor/print-shop-back/pkg/libs/components/uiform"
+	"print-shop-back/internal/controls/submitform/section/adm/entity"
+	"print-shop-back/pkg/controls/enum/elementtype"
+	"print-shop-back/pkg/libs/components/uiform"
 )
 
 type (
@@ -34,7 +34,7 @@ func (uc *FormCompilerJson) Compile(_ context.Context, form entity.SubmitForm) (
 		paramName := uiForm.ID + " " + item.ParamName
 
 		switch item.Type {
-		case enum.ElementTypeList:
+		case elementtype.List:
 			var fields []uiform.UIFieldItem
 
 			if err := json.Unmarshal(item.Body, &fields); err != nil {
@@ -54,7 +54,7 @@ func (uc *FormCompilerJson) Compile(_ context.Context, form entity.SubmitForm) (
 
 				uiForm.Fields = append(uiForm.Fields, field)
 			}
-		case enum.ElementTypeGroup:
+		case elementtype.Group:
 			group := uiform.UIFieldItem{
 				ID:         paramName,
 				Caption:    item.Caption,
@@ -98,8 +98,8 @@ func (uc *FormCompilerJson) correctField(parentName string, field *uiform.UIFiel
 
 		if !isNullOrRequired {
 			field.EnabledValues = []uiform.UIFieldItem{
-				{ID: parentName + "_Disabled", IsChecked: mrtype.CastBoolToPointer(false)},
-				{ID: parentName + "_Enabled", IsChecked: mrtype.CastBoolToPointer(true)},
+				{ID: parentName + "_Disabled", IsChecked: casttype.BoolToPointer(false)},
+				{ID: parentName + "_Enabled", IsChecked: casttype.BoolToPointer(true)},
 			}
 		}
 	}

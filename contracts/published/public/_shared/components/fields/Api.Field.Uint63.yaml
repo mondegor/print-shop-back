@@ -1,0 +1,6 @@
+description: Целое положительное число
+type: integer
+format: int64
+minimum: 0
+maximum: 9223372036854775807
+example: 250000000000001

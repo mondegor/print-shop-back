@@ -3,11 +3,11 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage"
 
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/module"
-	"github.com/mondegor/print-shop-back/internal/provideraccounts/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/provideraccounts/enum"
+	"print-shop-back/internal/provideraccounts/module"
+	"print-shop-back/internal/provideraccounts/section/pub/entity"
+	"print-shop-back/pkg/provideraccounts/enum/publicstatus"
 )
 
 type (
@@ -43,8 +43,8 @@ func (re *CompanyPagePostgres) FetchByRewriteName(ctx context.Context, rewriteNa
 		ctx,
 		sql,
 		rewriteName,
-		enum.PublicStatusPublished,
-		enum.PublicStatusPublishedShared,
+		publicstatus.Published,
+		publicstatus.PublishedShared,
 	).Scan(
 		&row.PageTitle,
 		&row.LogoURL,

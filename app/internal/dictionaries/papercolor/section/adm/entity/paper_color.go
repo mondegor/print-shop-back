@@ -3,23 +3,25 @@ package entity
 import (
 	"time"
 
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrtype"
+
+	"print-shop-back/internal/adapter/workflow"
 )
 
 const (
-	ModelNamePaperColor = "admin-api.Dictionaries.PaperColor" // ModelNamePaperColor - название сущности
+	// ModelNamePaperColor - название сущности.
+	ModelNamePaperColor = "admin-api.Dictionaries.PaperColor"
 )
 
 type (
 	// PaperColor - comment struct.
 	PaperColor struct { // DB: printshop_dictionaries.paper_colors
-		ID         uint64            `json:"id"` // color_id
-		TagVersion uint32            `json:"tagVersion"`
-		Caption    string            `json:"caption" sort:"caption,default"`
-		Status     mrenum.ItemStatus `json:"status"`
-		CreatedAt  time.Time         `json:"createdAt" sort:"createdAt"`
-		UpdatedAt  time.Time         `json:"updatedAt" sort:"updatedAt"`
+		ID         uint64              `json:"id"` // color_id
+		TagVersion uint32              `json:"tagVersion"`
+		Caption    string              `json:"caption" sort:"caption,default"`
+		Status     workflow.ItemStatus `json:"status"`
+		CreatedAt  time.Time           `json:"createdAt" sort:"createdAt"`
+		UpdatedAt  time.Time           `json:"updatedAt" sort:"updatedAt"`
 	}
 
 	// PaperColorParams - comment struct.
@@ -32,6 +34,6 @@ type (
 	// PaperColorListFilter - comment struct.
 	PaperColorListFilter struct {
 		SearchText string
-		Statuses   []mrenum.ItemStatus
+		Statuses   []workflow.ItemStatus
 	}
 )

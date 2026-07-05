@@ -1,0 +1,4 @@
+description: DTO - список типов ламината
+type: array
+items:
+  $ref: "./Controls.SubmitForms.Response.Model.Form.yaml"

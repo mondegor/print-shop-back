@@ -1,25 +1,25 @@
 package validate
 
 import (
-	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrserver/mrparser"
+	"github.com/mondegor/go-webcore/mrserver/request"
+	"github.com/mondegor/go-webcore/mrserver/request/parser"
 
-	"github.com/mondegor/print-shop-back/pkg/controls/validate"
-	pkgvalidate "github.com/mondegor/print-shop-back/pkg/validate"
+	"print-shop-back/pkg/controls/validate"
+	pkgvalidate "print-shop-back/pkg/transport/validate"
 )
 
 type (
 	// RequestElementTemplateParser - comment interface.
 	RequestElementTemplateParser interface {
 		pkgvalidate.RequestExtendParser
-		mrserver.RequestParserFile
+		request.ParserFile
 		validate.RequestDetailingParser
 	}
 
 	// Parser - comment struct.
 	Parser struct {
 		*pkgvalidate.ExtendParser
-		*mrparser.File
+		*parser.File
 		*validate.DetailingParser
 	}
 )
@@ -27,7 +27,7 @@ type (
 // NewParser - создаёт объект Parser.
 func NewParser(
 	p1 *pkgvalidate.ExtendParser,
-	p2 *mrparser.File,
+	p2 *parser.File,
 	p3 *validate.DetailingParser,
 ) *Parser {
 	return &Parser{

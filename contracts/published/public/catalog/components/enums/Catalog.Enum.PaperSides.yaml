@@ -1,0 +1,9 @@
+description: |-
+  Стороны бумаги:
+  - SAME - одинаковые;
+  - DIFFERENT - разные;
+type: string
+enum:
+  - SAME
+  - DIFFERENT
+example: "SAME"

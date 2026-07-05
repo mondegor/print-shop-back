@@ -1,46 +1,45 @@
 package factory
 
 import (
-	"context"
-	"strings"
+	"github.com/mondegor/go-sysmess/wire/mrlog"
+	"github.com/mondegor/go-sysmess/wire/mrlog/slog"
+	"github.com/mondegor/go-sysmess/wire/mrtrace"
 
-	"github.com/mondegor/go-webcore/mrcore"
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrlog/zerolog"
-	"github.com/mondegor/go-webcore/mrlog/zerolog/factory"
-
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
 )
 
-// InitLogger - инициализирует логгер указанный в ctx,
-// если он не был создан, то предварительно создаёт его и регистрирует в контексте.
-func InitLogger(ctx context.Context, cfg config.Config) (context.Context, error) {
-	if mrlog.HasCtx(ctx) {
-		mrlog.Ctx(ctx).Info().Msg("Init logger")
-
-		return ctx, nil
+// InitLoggerAndTracer - создаёт и инициализирует логгер и трейсер на основе логгера.
+func InitLoggerAndTracer(cfg config.Config) (log.Logger, trace.Tracer, error) {
+	logger, err := slog.InitLogger(
+		mrlog.LoggerConfig{
+			Environment:       cfg.Environment,
+			Version:           cfg.AppVersion,
+			Level:             cfg.LogLevel,
+			JsonFormat:        cfg.LogJsonFormat,
+			TimeFormat:        cfg.LogTimeFormat,
+			ColorMode:         cfg.LogColorMode,
+			ContextProcessIDs: mrlog.DefaultProcessIDs(),
+		},
+	)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	logger, err := NewZeroLogger(cfg)
+	log.Info(logger, "Create and init logger and tracer")
+
+	return logger, slog.InitTracer(logger), nil
+}
+
+// InitTraceContextManager - создаёт и инициализирует менеджер.
+func InitTraceContextManager(_ config.Config, logger log.Logger) (manager trace.ContextManager, err error) {
+	manager, err = mrtrace.InitTraceContextManager(mrlog.DefaultProcessIDs(), logger)
 	if err != nil {
 		return nil, err
 	}
 
-	logger.Info().Msg("Create and init Zero logger")
+	log.Info(logger, "Create and init trace context manager")
 
-	return mrlog.WithContext(ctx, logger), nil
-}
-
-// NewZeroLogger - создаёт объект zerolog.LoggerAdapter.
-func NewZeroLogger(cfg config.Config) (*zerolog.LoggerAdapter, error) {
-	return factory.NewZeroLogAdapter(
-		factory.Options{
-			Stdout:           cfg.Os.Stdout,
-			Level:            strings.ToUpper(cfg.Log.Level),
-			JsonFormat:       cfg.Log.JsonFormat,
-			TimestampFormat:  cfg.Log.TimestampFormat,
-			ConsoleColor:     cfg.Log.ConsoleColor,
-			PrepareErrorFunc: mrcore.PrepareError,
-		},
-	)
+	return manager, nil
 }

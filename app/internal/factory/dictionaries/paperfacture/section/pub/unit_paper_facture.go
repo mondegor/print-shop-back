@@ -1,36 +1,29 @@
 package pub
 
 import (
-	"context"
-
+	"github.com/mondegor/go-sysmess/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/repository"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/dictionaries/paperfacture"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/controller/httpv1"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/repository"
+	"print-shop-back/internal/dictionaries/paperfacture/section/pub/usecase"
+	"print-shop-back/pkg/transport/validate"
 )
 
-func createUnitPaperFacture(ctx context.Context, opts paperfacture.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitPaperFacture(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitPaperFacture(_ context.Context, opts paperfacture.Options) (*httpv1.PaperFacture, error) { //nolint:unparam
+func initPaperFactureController(
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseSender mrserver.ResponseSender,
+) (mrserver.HttpController, error) {
 	storage := repository.NewPaperFacturePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 	)
-	useCase := usecase.NewPaperFacture(storage, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewPaperFacture(storage)
+
 	controller := httpv1.NewPaperFacture(
-		opts.RequestParsers.Parser,
-		opts.ResponseSender,
+		requestParser,
+		responseSender,
 		useCase,
 	)
 

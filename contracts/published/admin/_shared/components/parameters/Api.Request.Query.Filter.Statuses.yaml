@@ -1,0 +1,8 @@
+description: Список статусов через "," (см. Api.Enum.Status)
+name: statuses
+in: query
+required: false
+schema:
+  type: string
+  default: "ENABLED"
+example: "DRAFT,ENABLED"

@@ -1,0 +1,23 @@
+---
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Monitoring API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Monitoring REST API проекта print-shop
+servers:
+  - url: http://print-shop.internal
+    description: Local Domain
+  - url: http://localhost:8084
+    description: Local Host
+tags:
+  - name: System
+    description: API System Methods
+paths:
+  /health:
+    $ref: "./system/paths/health.yaml"
+  /v1/system-info:
+    $ref: "./system/paths/v1_system-info.yaml"

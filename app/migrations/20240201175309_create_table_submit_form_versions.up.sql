@@ -8,7 +8,7 @@ CREATE TABLE printshop_controls.submit_form_versions (
     activity_status int2 NOT NULL, -- 1=DRAFT, 2=TESTING, 3=PUBLISHED, 4=ARCHIVED
     created_at timestamp with time zone NOT NULL DEFAULT NOW(),
     updated_at timestamp with time zone NOT NULL DEFAULT NOW(),
-    CONSTRAINT pk_submit_form_versions_form_id_version PRIMARY KEY (form_id, version)
+    CONSTRAINT pk_submit_form_versions PRIMARY KEY (form_id, version)
 );
 
 CREATE UNIQUE INDEX uk_submit_form_versions_rewrite_name_activity_status ON printshop_controls.submit_form_versions (rewrite_name, activity_status) WHERE activity_status IN (2/*=TESTING*/, 3/*=PUBLISHED*/);

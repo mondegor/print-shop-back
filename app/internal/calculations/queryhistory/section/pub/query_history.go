@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/mondegor/print-shop-back/internal/calculations/queryhistory/section/pub/entity"
+	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"
 )
 
 type (

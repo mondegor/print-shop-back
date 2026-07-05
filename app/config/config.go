@@ -4,331 +4,184 @@ import (
 	"io"
 	"time"
 
-	"github.com/mondegor/go-webcore/mrlib"
+	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
+	maliercfg "github.com/mondegor/go-components/wire/mrmailer/config"
+	notifiercfg "github.com/mondegor/go-components/wire/mrnotifier/config"
+	modelcfg "github.com/mondegor/go-sysmess/mrmodel/config"
+	processcfg "github.com/mondegor/go-sysmess/mrprocess/config"
+	"github.com/mondegor/go-sysmess/util/mime"
 )
 
 type (
-	// Args - разобранные аргументы, которые передаются из командной строки.
-	// Эти аргументы более приоритетны аналогичным, которые определены в конфигурации или переданы через .env файл.
-	Args struct {
-		WorkDir     string // путь к рабочей директории приложения
-		ConfigPath  string // путь к файлу конфигурации приложения
-		DotEnvPath  string // путь к .env файлу (переменные из этого файла более приоритетны переменных из ConfigPath)
-		Environment string // внешнее окружение: local, dev, test, prod
-		LogLevel    string // уровень логирования: info, warn, error, fatal, debug, trace
-		Stdout      io.Writer
-	}
-
 	// Config - comment struct.
 	Config struct {
-		Os
-		App             `yaml:"app"`
-		Debugging       `yaml:"debugging"`
-		Log             `yaml:"logger"`
-		Sentry          `yaml:"sentry"`
-		Servers         `yaml:"servers"`
-		Storage         `yaml:"storage"`
-		Redis           `yaml:"redis"`
-		FileSystem      `yaml:"file_system"`
-		FileProviders   `yaml:"file_providers"`
-		Cors            `yaml:"cors"`
-		Translation     `yaml:"translation"`
-		Senders         `yaml:"senders"`
-		AppSections     `yaml:"app_sections"`
-		AccessControl   `yaml:"access_control"`
-		ModulesSettings `yaml:"modules_settings"`
-		Validation      `yaml:"validation"`
-		TaskSchedule    `yaml:"task_schedule"`
-	}
-
-	// Os - comment struct.
-	Os struct {
-		Stdout io.Writer
-	}
-
-	// App - comment struct.
-	App struct {
-		Name        string `yaml:"name" env:"APPX_NAME"`
-		Version     string `yaml:"version" env:"APPX_VER"`
-		Environment string `yaml:"environment" env:"APPX_ENV"`
-		WorkDir     string
-		ConfigPath  string
-		DotEnvPath  string
+		WorkDir     string // cmd ARG:work-dir
+		ConfigPaths []string
+		DotEnvPath  string // cmd ARG:dot-env-path
 		StartedAt   time.Time
-	}
+		Stdout      io.Writer
 
-	// Debugging - comment struct.
-	Debugging struct {
-		Debug                bool `yaml:"debug" env:"APPX_DEBUG"`
-		UnexpectedHttpStatus int  `yaml:"unexpected_http_status"`
-		ErrorCaller          `yaml:"error_caller"`
-	}
+		AppName      string   `yaml:"app_name" env:"APPX_NAME" env-required:"true"`
+		AppVersion   string   `yaml:"app_version" env:"APPX_VER" env-default:"v0.0.0"`    // v0.0.0 - autodetect
+		Environment  string   `env:"APPX_ENV" env-required:"true"`                        // ENV or cmd ARG:environment (local, dev, test, prod)
+		AppLanguages []string `yaml:"app_languages" env:"APPX_LANGS" env-required:"true"` // language by "," separated
 
-	// ErrorCaller - comment struct.
-	ErrorCaller struct {
-		Enable       bool     `yaml:"enable" env:"APPX_ERR_CALLER_ENABLE"`
-		Depth        uint8    `yaml:"depth" env:"APPX_ERR_CALLER_DEPTH"`
-		ShowFuncName bool     `yaml:"show_func_name"`
-		UpperBounds  []string `yaml:"upper_bounds"`
-	}
+		// Log - настройки логирования и отладки
+		LogLevel          string `yaml:"log_level"` // YAML or cmd ARG:log-level
+		LogTimeFormat     string `yaml:"log_time_format"`
+		LogJsonFormat     bool   `yaml:"log_json_format"`
+		LogColorMode      bool   `yaml:"log_color_mode"`
+		LogTraceIsEnabled bool   `yaml:"log_trace_is_enabled"`
+		DebugIsEnabled    bool   `yaml:"debug_is_enabled"`
 
-	// Log - comment struct.
-	Log struct {
-		Level           string `yaml:"level" env:"APPX_LOG_LEVEL"`
-		TimestampFormat string `yaml:"timestamp_format" env:"APPX_LOG_TIMESTAMP"`
-		JsonFormat      bool   `yaml:"json_format" env:"APPX_LOG_JSON"`
-		ConsoleColor    bool   `yaml:"console_color" env:"APPX_LOG_COLOR"`
-	}
+		// StackTrace - настройки стека вызовов формируемого в runtime ошибках
+		StackTraceIsEnabled   bool     `yaml:"stack_trace_is_enabled"`
+		StackTraceDepth       uint8    `yaml:"stack_trace_depth"`
+		StackTraceShowFunc    bool     `yaml:"stack_trace_show_func"`
+		StackTraceUpperBounds []string `yaml:"stack_trace_upper_bounds"`
 
-	// Sentry - comment struct.
-	Sentry struct {
-		DSN              string        `yaml:"dsn" env:"APPX_SENTRY_DSN"`
-		TracesSampleRate float64       `yaml:"traces_sample_rate" env:"APPX_SENTRY_TRACES_SAMPLE_RATE"`
-		FlushTimeout     time.Duration `yaml:"flush_timeout"`
-	}
+		// Http статус вместо http.StatusInternalServerError
+		// для необработанной ошибки (явно не обёрнутую в runtime ошибку)
+		UnexpectedErrorHttpStatus uint16 `yaml:"unexpected_error_http_status"`
 
-	// Servers - comment struct.
-	Servers struct {
-		// RestServer - comment struct.
-		RestServer struct {
-			ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_SERVER_READ_TIMEOUT"`
-			WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_SERVER_WRITE_TIMEOUT"`
-			ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_SERVER_SHUTDOWN_TIMEOUT"`
-			Listen          struct {
-				BindIP string `yaml:"bind_ip" env:"APPX_SERVER_LISTEN_BIND"`
-				Port   string `yaml:"port" env:"APPX_SERVER_LISTEN_PORT"`
-			} `yaml:"listen"`
-		} `yaml:"rest_server"`
+		// Sentry - настройки мониторинга и отслеживание ошибок [OPTIONAL]
+		SentryDSN              string        `yaml:"sentry_dsn" env:"APPX_SENTRY_SENTRY_DSN"`
+		SentryTracesSampleRate float64       `yaml:"sentry_traces_sample_rate"`
+		SentryFlushTimeout     time.Duration `yaml:"sentry_flush_timeout"`
 
-		// InternalServer - comment struct.
-		InternalServer struct {
-			ReadTimeout     time.Duration `yaml:"read_timeout" env:"APPX_INTERNAL_SERVER_READ_TIMEOUT"`
-			WriteTimeout    time.Duration `yaml:"write_timeout" env:"APPX_INTERNAL_SERVER_WRITE_TIMEOUT"`
-			ShutdownTimeout time.Duration `yaml:"shutdown_timeout" env:"APPX_INTERNAL_SERVER_SHUTDOWN_TIMEOUT"`
-			Listen          struct {
-				BindIP string `yaml:"bind_ip" env:"APPX_INTERNAL_SERVER_LISTEN_BIND"`
-				Port   string `yaml:"port" env:"APPX_INTERNAL_SERVER_LISTEN_PORT"`
-			} `yaml:"listen"`
-		} `yaml:"internal_server"`
-	}
+		// Postgres storage
+		DBHost            string        `yaml:"db_host" env:"APPX_DB_HOST" env-required:"true"`
+		DBPort            string        `yaml:"db_port" env:"APPX_DB_PORT" env-required:"true"`
+		DBUsername        string        `yaml:"db_username" env:"APPX_DB_USER" env-required:"true"`
+		DBPassword        string        `yaml:"db_password" env:"APPX_DB_PASSWORD" env-required:"true"`
+		DBDatabase        string        `yaml:"db_database" env:"APPX_DB_NAME" env-required:"true"`
+		DBMigrationsDir   string        `yaml:"db_migrations_dir"`
+		DBMigrationsTable string        `yaml:"db_migrations_table" env:"APPX_DB_MIGRATIONS_TABLE"`
+		DBMaxPoolSize     uint16        `yaml:"db_max_pool_size"`
+		DBMaxConnLifetime time.Duration `yaml:"db_max_conn_lifetime"`
+		DBMaxConnIdleTime time.Duration `yaml:"db_max_conn_idle_time"`
+		DBTimeout         time.Duration `yaml:"db_timeout"`
 
-	// Storage - comment struct.
-	Storage struct {
-		Host            string        `yaml:"host" env:"APPX_DB_HOST"`
-		Port            string        `yaml:"port" env:"APPX_DB_PORT"`
-		Username        string        `yaml:"username" env:"APPX_DB_USER"`
-		Password        string        `yaml:"password" env:"APPX_DB_PASSWORD"`
-		Database        string        `yaml:"database" env:"APPX_DB_NAME"`
-		MigrationsDir   string        `yaml:"migrations_dir"`
-		MigrationsTable string        `yaml:"migrations_table" env:"APPX_DB_MIGRATIONS_TABLE"`
-		MaxPoolSize     int           `yaml:"max_pool_size" env:"APPX_DB_MAX_POOL_SIZE"`
-		MaxConnLifetime time.Duration `yaml:"max_conn_lifetime" env:"APPX_DB_MAX_CONN_LIFETIME"`
-		MaxConnIdleTime time.Duration `yaml:"max_conn_idle_time" env:"APPX_DB_MAX_CONN_IDLE_TIME"`
-		Timeout         time.Duration `yaml:"timeout"`
-	}
+		// Redis storage
+		RedisHost         string        `yaml:"redis_host" env:"APPX_REDIS_HOST" env-required:"true"`
+		RedisPort         string        `yaml:"redis_port" env:"APPX_REDIS_PORT" env-required:"true"`
+		RedisPassword     string        `yaml:"redis_password" env:"APPX_REDIS_PASSWORD" env-required:"true"`
+		RedisReadTimeout  time.Duration `yaml:"redis_read_timeout"`
+		RedisWriteTimeout time.Duration `yaml:"redis_write_timeout"`
 
-	// Redis - comment struct.
-	Redis struct {
-		Host         string        `yaml:"host" env:"APPX_REDIS_HOST"`
-		Port         string        `yaml:"port" env:"APPX_REDIS_PORT"`
-		Password     string        `yaml:"password" env:"APPX_REDIS_PASSWORD"`
-		ReadTimeout  time.Duration `yaml:"read_timeout" env:"APPX_REDIS_READ_TIMEOUT"`
-		WriteTimeout time.Duration `yaml:"write_timeout" env:"APPX_REDIS_WRITE_TIMEOUT"`
-	}
+		// FileSystem storage (disabled)
+		FSDirMode    uint32 `yaml:"fs_dir_mode"`
+		FSCreateDirs bool   `yaml:"fs_create_dirs"`
 
-	// FileSystem - comment struct.
-	FileSystem struct {
-		DirMode    uint32 `yaml:"dir_mode" env:"APPX_FILESYSTEM_DIR_MODE"`
-		CreateDirs bool   `yaml:"create_dirs" env:"APPX_FILESYSTEM_CREATE_DIRS"`
-	}
+		// S3 storage
+		S3Host          string `yaml:"s3_host" env:"APPX_S3_HOST" env-required:"true"`
+		S3Port          string `yaml:"s3_port" env:"APPX_S3_PORT" env-required:"true"`
+		S3UseSSL        bool   `yaml:"s3_use_ssl" env:"APPX_S3_USE_SSL"`
+		S3Username      string `yaml:"s3_username" env:"APPX_S3_USER" env-required:"true"`
+		S3Password      string `yaml:"s3_password" env:"APPX_S3_PASSWORD" env-required:"true"`
+		S3CreateBuckets bool   `yaml:"s3_create_buckets"`
 
-	// FileProviders - comment struct.
-	FileProviders struct {
-		// ImageStorage - comment struct.
-		ImageStorage struct {
-			Name    string `yaml:"name"`
-			RootDir string `yaml:"root_dir" env:"APPX_IMAGESTORAGE_ROOT_DIR"`
-		} `yaml:"image_storage"`
-	}
+		// FileProviders - провайдеры хранения файлов и изображений
+		FileProviders struct {
+			// S3
+			ImageStorageName       string `yaml:"image_storage_name"`
+			ImageStorageBucketName string `yaml:"image_storage_bucket_name"`
 
-	// Cors - comment struct.
-	Cors struct {
-		AllowedOrigins   []string `yaml:"allowed_origins" env:"APPX_CORS_ALLOWED_ORIGINS"` // items by "," separated
-		AllowedMethods   []string `yaml:"allowed_methods"`
-		AllowedHeaders   []string `yaml:"allowed_headers"`
-		ExposedHeaders   []string `yaml:"exposed_headers"`
-		AllowCredentials bool     `yaml:"allow_credentials"`
-	}
+			// FileSystem (disabled)
+			ImageStorage2Name    string `yaml:"image_storage2_name"`
+			ImageStorage2RootDir string `yaml:"image_storage2_root_dir" env:"APPX_IMAGE_STORAGE2_ROOT_DIR" env-required:"true"`
+		} `yaml:"file_providers"`
 
-	// Translation - comment struct.
-	Translation struct {
-		DirPath   string   `yaml:"dir_path" env:"APPX_TRANSLATION_DIR_PATH"`
-		LangCodes []string `yaml:"lang_codes" env:"APPX_TRANSLATION_LANGS"` // items by "," separated
-		// Dictionaries - comment struct.
-		Dictionaries struct {
-			DirPath string   `yaml:"dir_path" env:"APPX_TRANSLATION_DICTIONARIES_DIR_PATH"`
-			List    []string `yaml:"list"`
-		} `yaml:"dictionaries"`
-	}
+		// Mail - настройки службы отправки электронных писем
+		// MailDefaultFrom - e-mail от которого отправляются письма [OPTIONAL].
+		MailDefaultFrom string `yaml:"mail_default_from" env:"APPX_MAIL_DEFAULT_FROM" env-required:"true"`
+		// MailSmtpHost - SMTP сервер для отправки почты (домен или IP).
+		MailSmtpHost string `yaml:"mail_smtp_host" env:"APPX_MAIL_SMTP_HOST" env-required:"true"`
+		// MailSmtpPort - порт SMTP сервера для отправки почты.
+		MailSmtpPort string `yaml:"mail_smtp_port" env:"APPX_MAIL_SMTP_PORT" env-required:"true"`
+		// MailSmtpUserName - адрес почтового ящика на SMTP сервере.
+		MailSmtpUserName string `yaml:"mail_smtp_user_name" env:"APPX_MAIL_SMTP_USERNAME" env-required:"true"`
+		// MailSmtpPassword - пароль почтового ящика на SMTP сервере.
+		MailSmtpPassword string `yaml:"mail_smtp_password" env:"APPX_MAIL_SMTP_PASSWORD" env-required:"true"`
 
-	// Senders - comment struct.
-	Senders struct {
-		Mail        SenderMail        `yaml:"mail"`
-		TelegramBot SenderTelegramBot `yaml:"telegram_bot"`
-	}
+		// Telegram - настройки службы отправки сообщений [OPTIONAL]
+		TelegramChannelName  string `yaml:"telegram_channel_name" env:"APPX_TELEGRAM_CHANNEL_NAME"`
+		TelegramChannelToken string `yaml:"telegram_channel_token" env:"APPX_TELEGRAM_CHANNEL_TOKEN"`
 
-	SenderMail struct {
-		DefaultFrom  string `yaml:"default_from" env:"APPX_SENDER_MAIL_DEFAULT_FROM"`    // e-mail от которого отправляются письма [по умолчанию]
-		SmtpHost     string `yaml:"smtp_host" env:"APPX_SENDER_MAIL_SMTP_HOST"`          // SMTP сервер для отправки почты (домен или IP)
-		SmtpPort     string `yaml:"smtp_port" env:"APPX_SENDER_MAIL_SMTP_PORT"`          // порт SMTP сервера для отправки почты
-		SmtpUserName string `yaml:"smtp_user_name" env:"APPX_SENDER_MAIL_SMTP_USERNAME"` // адрес почтового ящика на SMTP сервере
-		SmtpPassword string `yaml:"smtp_password" env:"APPX_SENDER_MAIL_SMTP_PASSWORD"`  // пароль почтового ящика на SMTP сервере
-	}
+		// API HTTP server - настройки HTTP сервера, принимающего запросы из вне
+		HttpServerReadTimeout     time.Duration `yaml:"http_server_read_timeout"`
+		HttpServerWriteTimeout    time.Duration `yaml:"http_server_write_timeout"`
+		HttpServerShutdownTimeout time.Duration `yaml:"http_server_shutdown_timeout"`
+		HttpServerBindIP          string        `yaml:"http_server_bind_ip" env:"APPX_HTTP_SERVER_BIND_IP" env-required:"true"`
+		HttpServerPort            string        `yaml:"http_server_port" env:"APPX_HTTP_SERVER_PORT" env-required:"true"`
 
-	// SenderTelegramBot - comment struct.
-	SenderTelegramBot struct {
-		Name  string `yaml:"name" env:"APPX_SENDER_TELEGRAMBOT_NAME"`
-		Token string `yaml:"token" env:"APPX_SENDER_TELEGRAMBOT_TOKEN"`
-	}
+		// Monitoring HTTP server - настройки HTTP сервера для мониторинга системы
+		MonitoringServerReadTimeout     time.Duration `yaml:"monitoring_server_read_timeout"`
+		MonitoringServerWriteTimeout    time.Duration `yaml:"monitoring_server_write_timeout"`
+		MonitoringServerShutdownTimeout time.Duration `yaml:"monitoring_server_shutdown_timeout"`
+		MonitoringServerBindIP          string        `yaml:"monitoring_server_bind_ip" env:"APPX_MONITORING_SERVER_BIND_IP" env-required:"true"`
+		MonitoringServerPort            string        `yaml:"monitoring_server_port" env:"APPX_MONITORING_SERVER_PORT" env-required:"true"`
 
-	// AppSections - comment struct.
-	AppSections struct {
-		// AdminAPI - comment struct.
-		AdminAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_ADMIN_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_ADMIN_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"admin_api"`
-		// ProvidersAPI - comment struct.
-		ProvidersAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_PROVIDERS_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_PROVIDERS_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"providers_api"`
-		// PublicAPI - comment struct.
-		PublicAPI struct {
-			Privilege string `yaml:"privilege"`
-			Auth      struct {
-				Secret   string `yaml:"secret" env:"APPX_PUBLIC_API_AUTH_SECRET"`
-				Audience string `yaml:"audience" env:"APPX_PUBLIC_API_AUTH_AUDIENCE"`
-			} `yaml:"auth"`
-		} `yaml:"public_api"`
-	}
+		// Cors - настройки Cross-Origin Resource Sharing
+		CorsAllowedOrigins   []string `yaml:"cors_allowed_origins" env:"APPX_CORS_ALLOWED_ORIGINS" env-required:"true"` // items by "," separated
+		CorsAllowedMethods   []string `yaml:"cors_allowed_methods"`
+		CorsAllowedHeaders   []string `yaml:"cors_allowed_headers"`
+		CorsExposedHeaders   []string `yaml:"cors_exposed_headers"`
+		CorsAllowCredentials bool     `yaml:"cors_allow_credentials"`
 
-	// AccessControl - comment struct.
-	AccessControl struct {
-		Roles       `yaml:"roles"`
-		Privileges  []string `yaml:"privileges"`
-		Permissions []string `yaml:"permissions"`
-	}
+		// RefreshCookie - настройки cookie с refresh токеном (web-версия)
+		RefreshCookie authcfg.RefreshCookie `yaml:"refresh_cookie"`
 
-	// Roles - comment struct.
-	Roles struct {
-		DirPath  string   `yaml:"dir_path" env:"APPX_ROLES_DIR_PATH"`
-		FileType string   `yaml:"file_type"`
-		List     []string `yaml:"list"`
-	}
+		// AccessControl - настройки доступа к системе
+		AccessControl authcfg.AccessControl `yaml:"access_control"`
 
-	// ModulesSettings - comment struct.
-	ModulesSettings struct {
-		// General - comment struct.
-		General struct {
-			PageSizeMax     uint64 `yaml:"page_size_max"`
-			PageSizeDefault uint64 `yaml:"page_size_default"`
-		} `yaml:"general"`
-		// ProviderAccount - comment struct.
-		ProviderAccount struct {
-			// CompanyPageLogo - comment struct.
-			CompanyPageLogo struct {
-				FileProvider string `yaml:"file_provider"` // FileProviders.ImageStorage
-			} `yaml:"company_page_logo"`
-		} `yaml:"provider_account"`
-		// FileStation - comment struct.
-		FileStation struct {
-			// ImageProxy - comment struct.
-			ImageProxy struct {
-				Host         string `yaml:"host" env:"APPX_IMAGE_HOST"`
-				BasePath     string `yaml:"base_path"`
-				FileProvider string `yaml:"file_provider"` // FileProviders.ImageStorage
-			} `yaml:"image_proxy"`
-		} `yaml:"file_station"`
-	}
+		// JWT - крипто ключи для шифрования JWT токенов [OPTIONAL]
+		JWT authcfg.JWT `yaml:"jwt"`
 
-	// Validation - comment struct.
-	Validation struct {
-		Files struct {
-			Json FileType `yaml:"json"`
-		} `yaml:"files"`
-		Images struct {
-			Logo ImageType `yaml:"logo"`
-		} `yaml:"images"`
-		MimeTypes []mrlib.MimeType `yaml:"mime_types"`
-	}
+		// Module settings - настройки модулей системы
+		ModuleSettings struct {
+			General struct {
+				PageSizeMax     uint16 `yaml:"page_size_max"`
+				PageSizeDefault uint16 `yaml:"page_size_default"`
+			} `yaml:"general"`
 
-	// FileType - comment struct.
-	FileType struct {
-		MinSize                 uint64   `yaml:"min_size"`
-		MaxSize                 uint64   `yaml:"max_size"`
-		MaxFiles                uint32   `yaml:"max_files"`
-		CheckRequestContentType bool     `yaml:"check_request_content_type"`
-		Extensions              []string `yaml:"extensions"`
-	}
+			ProviderAccount struct {
+				CompanyPageLogoProvider string `yaml:"company_page_logo_provider"` // FileProviders.ImageStorageName
+			} `yaml:"provider_account"`
 
-	// ImageType - comment struct.
-	ImageType struct {
-		MaxWidth  uint64   `yaml:"max_width"`
-		MaxHeight uint64   `yaml:"max_height"`
-		CheckBody bool     `yaml:"check_body"`
-		File      FileType `yaml:"file"`
-	}
+			FileStation struct {
+				ImageProxyHost     string `yaml:"image_proxy_host" env:"APPX_IMAGE_PROXY_HOST" env-required:"true"`
+				ImageProxyBasePath string `yaml:"image_proxy_base_path"`
+				ImageProxyProvider string `yaml:"image_proxy_provider"` // FileProviders.ImageStorageName
+			} `yaml:"file_station"`
+		} `yaml:"module_settings"`
 
-	// TaskSchedule - comment struct.
-	TaskSchedule struct {
-		ReloadSettings SchedulerTask `yaml:"reload_settings"`
-		Mailer         struct {
-			SendProcessor       MessageProcessor `yaml:"send_processor"`
-			ChangeFromToRetry   SchedulerTask    `yaml:"change_from_to_retry"`
-			CleanQueue          SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts   uint32           `yaml:"send_retry_attempts"`
-			SendDelayCorrection time.Duration    `yaml:"send_delay_correction"`
-			ChangeQueueLimit    uint32           `yaml:"change_queue_limit"`
-			ChangeRetryTimeout  time.Duration    `yaml:"change_retry_timeout"`
-			ChangeRetryDelayed  time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit     uint32           `yaml:"clean_queue_limit"`
-		} `yaml:"mailer"`
-		Notifier struct {
-			SendProcessor      MessageProcessor `yaml:"send_processor"`
-			ChangeFromToRetry  SchedulerTask    `yaml:"change_from_to_retry"`
-			CleanQueue         SchedulerTask    `yaml:"clean_queue"`
-			SendRetryAttempts  uint32           `yaml:"send_retry_attempts"`
-			ChangeQueueLimit   uint32           `yaml:"change_queue_limit"`
-			ChangeRetryTimeout time.Duration    `yaml:"change_retry_timeout"`
-			ChangeRetryDelayed time.Duration    `yaml:"change_retry_delayed"`
-			CleanQueueLimit    uint32           `yaml:"clean_queue_limit"`
-		} `yaml:"notifier"`
-	}
+		// Validation - настройки валидации типов файлов и изображений
+		ValidationFilesJson  modelcfg.FileType  `yaml:"validation_files_json"`
+		ValidationImagesLogo modelcfg.ImageType `yaml:"validation_images_logo"`
+		AllowedMimeTypes     []mime.Type        `yaml:"allowed_mime_types"`
 
-	// MessageProcessor - comment struct.
-	MessageProcessor struct {
-		Caption           string        `yaml:"caption"`
-		ReadyTimeout      time.Duration `yaml:"ready_timeout"`
-		StartReadDelay    time.Duration `yaml:"start_read_delay"`
-		ReadPeriod        time.Duration `yaml:"read_period"`
-		CancelReadTimeout time.Duration `yaml:"cancel_read_timeout"`
-		HandlerTimeout    time.Duration `yaml:"handler_timeout"`
-		QueueSize         uint32        `yaml:"queue_size"`
-		WorkersCount      uint16        `yaml:"workers_count"`
-	}
+		// TaskSchedule - настройки задач, запускаемых по расписанию
+		TaskScheduleSettings struct {
+			// Caption        string        `yaml:"caption"`
+			ReloadSettings              processcfg.SchedulerTask `yaml:"reload_settings"`
+			NotificationCheckConnPeriod time.Duration            `yaml:"notification_check_conn_period"`
+			DefaultPeriodRatio          float64                  `yaml:"default_period_ratio"`
+		} `yaml:"task_schedule_settings"`
 
-	// SchedulerTask - comment struct.
-	SchedulerTask struct {
-		Caption string        `yaml:"caption"`
-		Startup bool          `yaml:"startup"`
-		Period  time.Duration `yaml:"period"`
-		Timeout time.Duration `yaml:"timeout"`
+		// TaskSchedule Auth - настройки задач модуля Auth, запускаемых по расписанию
+		TaskScheduleAuth authcfg.TaskSchedule `yaml:"task_schedule_auth"`
+
+		// TaskSchedule Mailer - настройки задач модуля Mailer, запускаемых по расписанию
+		TaskScheduleMailer maliercfg.TaskSchedule `yaml:"task_schedule_mailer"`
+
+		// TaskSchedule Notifier - настройки задач модуля Notifier, запускаемых по расписанию
+		TaskScheduleNotifier notifiercfg.TaskSchedule `yaml:"task_schedule_notifier"`
+
+		// TestUser - тестовый пользователь с указанными разрешениями [OPTIONAL]
+		TestUserID       string `env:"TEST_USER_ID"`
+		TestUserRealm    string `env:"TEST_USER_REALM"`
+		TestUserKind     string `env:"TEST_USER_KIND"`
+		TestUserLangCode string `env:"TEST_USER_LANG_CODE"`
 	}
 )

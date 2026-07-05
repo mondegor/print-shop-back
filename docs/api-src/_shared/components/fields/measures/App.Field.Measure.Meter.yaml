@@ -1,7 +1,0 @@
-App.Field.Measure.Meter:
-  description: Метр (m)
-  type: number
-  format: double
-  maxLength: 16
-  minimum: 0
-  example: 10

@@ -4,13 +4,13 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
-	"github.com/mondegor/go-webcore/mrtype"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
 
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/module"
-	"github.com/mondegor/print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/dictionaries/materialtype/module"
+	"print-shop-back/internal/dictionaries/materialtype/section/adm/entity"
 )
 
 type (
@@ -18,9 +18,9 @@ type (
 	MaterialTypePostgres struct {
 		client          mrstorage.DBConnManager
 		sqlBuilder      mrstorage.SQLBuilder
-		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus]
+		repoStatus      db.FieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus]
 		repoSoftDeleter db.RowSoftDeleter[uint64]
-		repoTotalRows   db.TotalRowsFetcher[uint64]
+		repoTotalRows   db.TotalRowsFetcher[int]
 	}
 )
 
@@ -29,7 +29,7 @@ func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 	return &MaterialTypePostgres{
 		client:     client,
 		sqlBuilder: sqlBuilder,
-		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, mrenum.ItemStatus](
+		repoStatus: db.NewFieldWithVersionUpdater[uint64, uint32, workflow.ItemStatus](
 			client,
 			module.DBTableNameMaterialTypes,
 			"type_id",
@@ -44,7 +44,7 @@ func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 			module.DBFieldTagVersion,
 			module.DBFieldDeletedAt,
 		),
-		repoTotalRows: db.NewTotalRowsFetcher[uint64](
+		repoTotalRows: db.NewTotalRowsFetcher[int](
 			client,
 			module.DBTableNameMaterialTypes,
 		),
@@ -55,8 +55,16 @@ func NewMaterialTypePostgres(client mrstorage.DBConnManager, sqlBuilder mrstorag
 func (re *MaterialTypePostgres) FetchWithTotal(
 	ctx context.Context,
 	params entity.MaterialTypeParams,
-) (rows []entity.MaterialType, countRows uint64, err error) {
-	condition := re.sqlBuilder.Condition().Build(re.fetchCondition(params.Filter))
+) (rows []entity.MaterialType, countRows int, err error) {
+	condition := re.sqlBuilder.Condition().BuildFunc(
+		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
+			return c.JoinAnd(
+				c.Expr("deleted_at IS NULL"),
+				c.FilterLike("UPPER(type_caption)", strings.ToUpper(params.Filter.SearchText)),
+				c.FilterAnyOf("type_status", params.Filter.Statuses),
+			)
+		},
+	)
 
 	total, err := re.repoTotalRows.Fetch(ctx, condition)
 	if err != nil || total == 0 {
@@ -67,7 +75,14 @@ func (re *MaterialTypePostgres) FetchWithTotal(
 		params.Pager.Size = total
 	}
 
-	orderBy := re.sqlBuilder.OrderBy().Build(re.fetchOrderBy(params.Sorter))
+	orderBy := re.sqlBuilder.OrderBy().BuildFunc(
+		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
+			return o.JoinComma(
+				o.Field(params.Sorter.Column, params.Sorter.Direction),
+				o.Field("type_id", sortdirection.ASC),
+			)
+		},
+	)
 	limit := re.sqlBuilder.Limit().Build(params.Pager.Index, params.Pager.Size)
 
 	rows, err = re.fetch(ctx, condition, orderBy, limit, params.Pager.Size)
@@ -84,7 +99,7 @@ func (re *MaterialTypePostgres) fetch(
 	condition mrstorage.SQLPart,
 	orderBy mrstorage.SQLPart,
 	limit mrstorage.SQLPart,
-	maxRows uint64,
+	maxRows int,
 ) ([]entity.MaterialType, error) {
 	whereStr, whereArgs := condition.ToSQL()
 
@@ -101,7 +116,7 @@ func (re *MaterialTypePostgres) fetch(
         WHERE
             ` + whereStr + `
         ORDER BY
-            ` + orderBy.String() + limit.String() + `;`
+            ` + mrstorage.ToSQL(orderBy) + mrstorage.ToSQL(limit) + `;`
 
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
@@ -170,8 +185,8 @@ func (re *MaterialTypePostgres) FetchOne(ctx context.Context, rowID uint64) (ent
 }
 
 // FetchStatus - comment method.
-// result: mrenum.ItemStatus - exists, ErrStorageNoRowFound - not exists, error - query error.
-func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error) {
+// result: workflow.ItemStatus - exists, errors.ErrEventStorageNoRecordFound - not exists, error - query error.
+func (re *MaterialTypePostgres) FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error) {
 	return re.repoStatus.Fetch(ctx, rowID)
 }
 
@@ -213,27 +228,4 @@ func (re *MaterialTypePostgres) UpdateStatus(ctx context.Context, row entity.Mat
 // Delete - comment method.
 func (re *MaterialTypePostgres) Delete(ctx context.Context, rowID uint64) error {
 	return re.repoSoftDeleter.Delete(ctx, rowID)
-}
-
-func (re *MaterialTypePostgres) fetchCondition(filter entity.MaterialTypeListFilter) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.Condition().HelpFunc(
-		func(c mrstorage.SQLConditionHelper) mrstorage.SQLPartFunc {
-			return c.JoinAnd(
-				c.Expr("deleted_at IS NULL"),
-				c.FilterLike("UPPER(type_caption)", strings.ToUpper(filter.SearchText)),
-				c.FilterAnyOf("type_status", filter.Statuses),
-			)
-		},
-	)
-}
-
-func (re *MaterialTypePostgres) fetchOrderBy(sorter mrtype.SortParams) mrstorage.SQLPartFunc {
-	return re.sqlBuilder.OrderBy().HelpFunc(
-		func(o mrstorage.SQLOrderByHelper) mrstorage.SQLPartFunc {
-			return o.JoinComma(
-				o.Field(sorter.FieldName, sorter.Direction),
-				o.Field("type_id", mrenum.SortDirectionASC),
-			)
-		},
-	)
 }

@@ -1,8 +1,8 @@
 package httpv1
 
 import (
-	"github.com/mondegor/print-shop-back/internal/catalog/box/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/catalog/box/section/adm/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
@@ -32,6 +32,6 @@ type (
 	// BoxListResponse - comment struct.
 	BoxListResponse struct {
 		Items []entity.Box `json:"items"`
-		Total uint64       `json:"total"`
+		Total int          `json:"total"`
 	}
 )

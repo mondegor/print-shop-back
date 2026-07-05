@@ -1,11 +1,24 @@
 package module
 
 const (
-	Name       = "Dictionaries.PaperColor"   // Name - название модуля
-	Permission = "modDictionariesPaperColor" // Permission - разрешение модуля
+	// Name - название модуля.
+	Name = "Dictionaries.PaperColor"
 
-	DBSchema               = "printshop_dictionaries"   // DBSchema - схема БД используемая модулем
-	DBTableNamePaperColors = DBSchema + ".paper_colors" // DBTableNamePaperColors - таблица БД используемая модулем
-	DBFieldTagVersion      = "tag_version"              // DBFieldTagVersion - поле для хранения версии записи
-	DBFieldDeletedAt       = "deleted_at"               // DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена
+	// Permission - разрешение модуля.
+	Permission = "modDictionariesPaperColor"
+
+	// LocaleDomain - домен локализации записей.
+	LocaleDomain = "dictionaries.paper-colors"
+
+	// DBSchema - схема БД используемая модулем.
+	DBSchema = "printshop_dictionaries"
+
+	// DBTableNamePaperColors - таблица БД используемая модулем.
+	DBTableNamePaperColors = DBSchema + ".paper_colors"
+
+	// DBFieldTagVersion - поле для хранения версии записи.
+	DBFieldTagVersion = "tag_version"
+
+	// DBFieldDeletedAt - поле содержит дату удаления записи, если NULL, то запись не удалена.
+	DBFieldDeletedAt = "deleted_at"
 )

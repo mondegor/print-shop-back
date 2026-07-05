@@ -3,18 +3,17 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/mrerr"
-	"github.com/mondegor/go-webcore/mrcore"
+	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-sysmess/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
-	"github.com/mondegor/go-webcore/mrview"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm"
-	"github.com/mondegor/print-shop-back/internal/catalog/laminate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/pkg/dictionaries/api"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
-	"github.com/mondegor/print-shop-back/pkg/validate"
-	"github.com/mondegor/print-shop-back/pkg/view"
+	"print-shop-back/internal/catalog/laminate/module"
+	"print-shop-back/internal/catalog/laminate/section/adm"
+	"print-shop-back/internal/catalog/laminate/section/adm/entity"
+	"print-shop-back/pkg/dictionaries/api"
+	"print-shop-back/pkg/mrcalc/measure"
+	"print-shop-back/pkg/transport/model"
+	"print-shop-back/pkg/transport/validate"
 )
 
 const (
@@ -26,20 +25,28 @@ const (
 type (
 	// Laminate - comment struct.
 	Laminate struct {
-		parser     validate.RequestExtendParser
-		sender     mrserver.ResponseSender
-		useCase    adm.LaminateUseCase
-		listSorter mrview.ListSorter
+		parser       validate.RequestExtendParser
+		sender       mrserver.ResponseSender
+		useCase      adm.LaminateUseCase
+		listSorter   mrtype.ListSorter
+		errorWrapper errors.CustomWrapper
 	}
 )
 
 // NewLaminate - создаёт контроллер Laminate.
-func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.LaminateUseCase, listSorter mrview.ListSorter) *Laminate {
+func NewLaminate(parser validate.RequestExtendParser, sender mrserver.ResponseSender, useCase adm.LaminateUseCase, listSorter mrtype.ListSorter) *Laminate {
 	return &Laminate{
 		parser:     parser,
 		sender:     sender,
 		useCase:    useCase,
 		listSorter: listSorter,
+		errorWrapper: errors.NewCustomWrapper(
+			errors.ErrRecordVersionConflict.Code(), "tagVersion",
+			errors.ErrSwitchStatusRejected.Code(), "status",
+			module.ErrLaminateArticleAlreadyExists.Code(), "article",
+			api.ErrMaterialTypeRequired.Code(), "typeId",
+			api.ErrMaterialTypeNotFound.Code(), "typeId",
+		),
 	}
 }
 
@@ -50,7 +57,7 @@ func (ht *Laminate) Handlers() []mrserver.HttpHandler {
 		{Method: http.MethodPost, URL: laminateListURL, Func: ht.Create},
 
 		{Method: http.MethodGet, URL: laminateItemURL, Func: ht.Get},
-		{Method: http.MethodPut, URL: laminateItemURL, Func: ht.Store},
+		{Method: http.MethodPut, URL: laminateItemURL, Func: ht.Save},
 		{Method: http.MethodDelete, URL: laminateItemURL, Func: ht.Remove},
 
 		{Method: http.MethodPatch, URL: laminateItemChangeStatusURL, Func: ht.ChangeStatus},
@@ -100,20 +107,20 @@ func (ht *Laminate) Get(w http.ResponseWriter, r *http.Request) error {
 
 // Create - comment method.
 func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
-	request := CreateLaminateRequest{}
+	req := CreateLaminateRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Laminate{
-		Article:   request.Article,
-		Caption:   request.Caption,
-		TypeID:    request.TypeID,
-		Length:    request.Length,
-		Width:     measure.Meter(request.Width * measure.OneThousandth),
-		Thickness: measure.Meter(request.Thickness * measure.OneMillionth),
-		WeightM2:  measure.KilogramPerMeter2(request.WeightM2 * measure.OneThousandth),
+		Article:   req.Article,
+		Caption:   req.Caption,
+		TypeID:    req.TypeID,
+		Length:    req.Length,
+		Width:     measure.Meter(req.Width * measure.OneThousandth),
+		Thickness: measure.Meter(req.Thickness * measure.OneMillionth),
+		WeightM2:  measure.KilogramPerMeter2(req.WeightM2 * measure.OneThousandth),
 	}
 
 	itemID, err := ht.useCase.Create(r.Context(), item)
@@ -124,33 +131,33 @@ func (ht *Laminate) Create(w http.ResponseWriter, r *http.Request) error {
 	return ht.sender.Send(
 		w,
 		http.StatusCreated,
-		view.SuccessCreatedItemInt32Response{
+		model.SuccessCreatedItemUintResponse{
 			ItemID: itemID,
 		},
 	)
 }
 
-// Store - comment method.
-func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
-	request := StoreLaminateRequest{}
+// Save - comment method.
+func (ht *Laminate) Save(w http.ResponseWriter, r *http.Request) error {
+	req := StoreLaminateRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Laminate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Article:    request.Article,
-		Caption:    request.Caption,
-		TypeID:     request.TypeID,
-		Length:     request.Length,
-		Width:      measure.Meter(request.Width * measure.OneThousandth),
-		Thickness:  measure.Meter(request.Thickness * measure.OneMillionth),
-		WeightM2:   measure.KilogramPerMeter2(request.WeightM2 * measure.OneThousandth),
+		TagVersion: req.TagVersion,
+		Article:    req.Article,
+		Caption:    req.Caption,
+		TypeID:     req.TypeID,
+		Length:     req.Length,
+		Width:      measure.Meter(req.Width * measure.OneThousandth),
+		Thickness:  measure.Meter(req.Thickness * measure.OneMillionth),
+		WeightM2:   measure.KilogramPerMeter2(req.WeightM2 * measure.OneThousandth),
 	}
 
-	if err := ht.useCase.Store(r.Context(), item); err != nil {
+	if err := ht.useCase.Save(r.Context(), item); err != nil {
 		return ht.wrapError(err, r)
 	}
 
@@ -159,16 +166,16 @@ func (ht *Laminate) Store(w http.ResponseWriter, r *http.Request) error {
 
 // ChangeStatus - comment method.
 func (ht *Laminate) ChangeStatus(w http.ResponseWriter, r *http.Request) error {
-	request := view.ChangeItemStatusRequest{}
+	req := model.ChangeItemStatusRequest{}
 
-	if err := ht.parser.Validate(r, &request); err != nil {
+	if err := ht.parser.Validate(r, &req); err != nil {
 		return err
 	}
 
 	item := entity.Laminate{
 		ID:         ht.getItemID(r),
-		TagVersion: request.TagVersion,
-		Status:     request.Status,
+		TagVersion: req.TagVersion,
+		Status:     req.Status,
 	}
 
 	if err := ht.useCase.ChangeStatus(r.Context(), item); err != nil {
@@ -196,26 +203,9 @@ func (ht *Laminate) getRawItemID(r *http.Request) string {
 }
 
 func (ht *Laminate) wrapError(err error, r *http.Request) error {
-	if mrcore.ErrUseCaseEntityNotFound.Is(err) {
+	if errors.Is(err, errors.ErrRecordNotFound) {
 		return module.ErrLaminateNotFound.Wrap(err, ht.getRawItemID(r))
 	}
 
-	if mrcore.ErrUseCaseEntityVersionInvalid.Is(err) {
-		return mrerr.NewCustomError("tagVersion", err)
-	}
-
-	if mrcore.ErrUseCaseSwitchStatusRejected.Is(err) {
-		return mrerr.NewCustomError("status", err)
-	}
-
-	if module.ErrLaminateArticleAlreadyExists.Is(err) {
-		return mrerr.NewCustomError("article", err)
-	}
-
-	if api.ErrMaterialTypeRequired.Is(err) ||
-		api.ErrMaterialTypeNotFound.Is(err) {
-		return mrerr.NewCustomError("typeId", err)
-	}
-
-	return err
+	return ht.errorWrapper.Wrap(err)
 }

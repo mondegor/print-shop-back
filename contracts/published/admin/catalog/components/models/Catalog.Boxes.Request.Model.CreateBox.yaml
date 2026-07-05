@@ -1,0 +1,28 @@
+description: DTO создания новой упаковочной коробки
+type: object
+required:
+  - article
+  - caption
+  - length
+  - width
+  - height
+  - thickness
+  - weight
+properties:
+  article:
+    $ref: "../../../_shared/components/fields/Api.Field.Article.yaml"
+  caption:
+    allOf:
+      - $ref: "../../../_shared/components/fields/Api.Field.Caption.yaml"
+      - maxLength: 64
+      - example: "СДЭК"
+  length:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  width:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  height:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Millimeter.yaml"
+  thickness:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Micrometer.yaml"
+  weight:
+    $ref: "../../../_shared/components/fields/measures/Api.Field.Measure.Gram.yaml"

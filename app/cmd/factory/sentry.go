@@ -1,29 +1,32 @@
 package factory
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/mondegor/go-webcore/mrlog"
-	"github.com/mondegor/go-webcore/mrsentry"
+	"github.com/mondegor/go-webcore/mrclient/sentry"
+	"github.com/pkg/errors"
 
-	"github.com/mondegor/print-shop-back/config"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
 )
 
-// NewSentry - создаёт объект mrsentry.Adapter.
-func NewSentry(ctx context.Context, cfg config.Config) (*mrsentry.Adapter, error) {
-	mrlog.Ctx(ctx).Info().Msg("Create and init sentry")
+var errSentryDisabled = errors.New("sentry disabled")
 
-	client, err := mrsentry.New(
-		mrsentry.Options{
-			DSN:              cfg.Sentry.DSN,
-			Environment:      cfg.App.Environment,
-			AppVersion:       cfg.App.Version,
-			TracesSampleRate: cfg.Sentry.TracesSampleRate,
-			FlushTimeout:     cfg.Sentry.FlushTimeout,
-			StackTraceBounds: cfg.Debugging.ErrorCaller.UpperBounds,
-			IsDebug:          cfg.Debugging.Debug,
-		},
+// InitSentry - создаёт объект sentry.Adapter.
+func InitSentry(logger log.Logger, cfg config.Config) (*sentry.Adapter, error) {
+	if cfg.SentryDSN == "" {
+		return nil, errSentryDisabled
+	}
+
+	log.Info(logger, "Create and init sentry")
+
+	client, err := sentry.New(
+		cfg.SentryDSN,
+		sentry.WithEnvironment(cfg.Environment),
+		sentry.WithRelease(cfg.AppVersion),
+		sentry.WithDebugMode(cfg.DebugIsEnabled),
+		sentry.WithTracesSampleRate(cfg.SentryTracesSampleRate),
+		sentry.WithFlushTimeout(cfg.SentryFlushTimeout),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("sentry.Init: %w", err)

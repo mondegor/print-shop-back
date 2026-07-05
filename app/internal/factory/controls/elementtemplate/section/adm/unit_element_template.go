@@ -1,50 +1,47 @@
 package adm
 
 import (
-	"context"
-
-	"github.com/mondegor/go-storage/mrpostgres/builder"
-	"github.com/mondegor/go-storage/mrsql"
-	"github.com/mondegor/go-webcore/mrlog"
+	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-sysmess/mrpostgres/builder"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
 	"github.com/mondegor/go-webcore/mrserver"
 
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/controller/httpv1"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/entity"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/repository"
-	"github.com/mondegor/print-shop-back/internal/controls/elementtemplate/section/adm/usecase"
-	"github.com/mondegor/print-shop-back/internal/factory/controls/elementtemplate"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/controller/httpv1"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/entity"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/repository"
+	"print-shop-back/internal/controls/elementtemplate/section/adm/usecase"
+	"print-shop-back/internal/controls/elementtemplate/shared/validate"
 )
 
-func createUnitElementTemplate(ctx context.Context, opts elementtemplate.Options) ([]mrserver.HttpController, error) {
-	var list []mrserver.HttpController
-
-	if c, err := newUnitElementTemplate(ctx, opts); err != nil {
-		return nil, err
-	} else {
-		list = append(list, c)
-	}
-
-	return list, nil
-}
-
-func newUnitElementTemplate(ctx context.Context, opts elementtemplate.Options) (*httpv1.ElementTemplate, error) {
-	entityMeta, err := mrsql.ParseEntity(mrlog.Ctx(ctx), entity.ElementTemplate{})
+func initElementTemplateController(
+	logger log.Logger,
+	eventEmitter mrevent.Emitter,
+	dbConnManager mrstorage.DBConnManager,
+	requestParser *validate.Parser,
+	responseFileSender mrserver.FileResponseSender,
+	pageSizeMax int,
+) (mrserver.HttpController, error) {
+	entityMeta, err := mrsql.ParseEntity(logger, entity.ElementTemplate{})
 	if err != nil {
 		return nil, err
 	}
 
 	storage := repository.NewElementTemplatePostgres(
-		opts.DBConnManager,
+		dbConnManager,
 		builder.NewSQL(
 			builder.WithSQLSetMetaEntity(entityMeta.MetaUpdate()),
 			builder.WithSQLOrderByDefaultSort(entityMeta.MetaOrderBy().DefaultSort()),
-			builder.WithSQLLimitMaxSize(opts.PageSizeMax),
+			builder.WithSQLLimitMaxSize(pageSizeMax),
 		),
 	)
-	useCase := usecase.NewElementTemplate(storage, opts.EventEmitter, opts.UseCaseErrorWrapper)
+
+	useCase := usecase.NewElementTemplate(storage, eventEmitter)
+
 	controller := httpv1.NewElementTemplate(
-		opts.RequestParsers.ModuleParser,
-		opts.ResponseSender,
+		requestParser,
+		responseFileSender,
 		useCase,
 		entityMeta.MetaOrderBy(),
 	)

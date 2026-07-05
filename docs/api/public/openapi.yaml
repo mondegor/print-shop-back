@@ -1,0 +1,1847 @@
+openapi: 3.0.3
+info:
+  version: LATEST
+  title: Public API print-shop
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  description: |-
+    Public REST API проекта print-shop
+
+    ### Пользовательские ограничения полей и ошибки
+
+    #### Ограничения полей
+    - required - поле обязательно для заполнения;
+    - omitempty - поле может не указываться (будет игнорироваться при обновлении записи целиком);
+    - unique - уникальное значение поля;
+    - min=N - поле должно быть не менее N символов;
+    - max=N - поле должно быть не более N символов;
+    - gte=N - числовое поле должно быть равно или более N;
+    - lte=N - числовое поле должно быть равно или менее N;
+    - enum - поле должно содержать одно из ENUM значений;
+    - UUID - поле формата UUID;
+    - pattern=P - поле должно соответствовать регулярному выражению P;
+
+    #### Ошибки
+    - ErrVersionInvalid - если передаваемая версия объекта не совпала с текущей версией объекта.\
+      Как правило, это означает, что объект был ранее изменён другим процессом;
+    - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
+      WorkFlow объекта запрещает переключение в указанный статус;
+servers:
+  - url: http://api.print-shop.local
+    description: Local Domain
+  - url: http://localhost:8080
+    description: Local Host
+security: []
+tags:
+  - name: Calculations
+    description: Public API Calculations
+  - name: Catalog
+    description: Public API Catalog
+  - name: CompanyPage
+    description: Public API Companies' pages
+  - name: Controls.SubmitForm
+    description: Public API Controls submit forms
+  - name: Dictionaries
+    description: Public API Dictionaries
+  - name: FileStation
+    description: Public API Files and images
+paths:
+  /v1/calculations:
+    post:
+      summary: Метод расчёта указанной формы
+      description: Метод предназначен для расчёта указанной формы
+      operationId: createCalc
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Calculations.Request.Model.CreateForm'
+      responses:
+        '201':
+          description: Форма была рассчитана
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItem'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/box/pack-in-box:
+    post:
+      summary: Метод расчёта количества и веса коробок для тиража
+      description: |-
+        Возвращает количество коробок для упаковки тиража, вес коробок, процент заполнения.
+
+        1. Расчет раскладки по дну коробки Imposition (Box.width, Box.length, Product.length, Product.height)
+        Если результат раскладки items = 0, значит не помещается в коробку, останавливаем дальнейшие расчеты.
+
+        2. Расчет кол-ва коробок.
+        Высота всего тиража TotalHeight = Product.thickness * Product.quantity
+        QuantityBoxes =  TotalHeight / (Box.height * items)
+        Если QuantityBoxes < 1 значит неполная коробка, округляем до 1.
+        Если QuantityBoxes >= 1, то отбрасываем дробную часть получаем кол-во коробок. Дробная часть это + 1 неполная коробка.
+
+        3. Вес одной коробки
+        Вес одной детали:
+        productWeight = Product.weightM2 * Product.length * Product.height
+        BoxWeight = productWeight * Box.height * items + Box.weight
+
+        4. Вес коробки с остатком
+        BoxRestWeight = productWeight * (TotalHeight - QuantityBoxes * Box.height * items) + Box.weight
+
+        5. Общий вес упакованного тиража
+        TotalWeight = BoxWeight * QuantityBoxes + BoxRestWeight
+
+        6. Тираж в одной коробке
+        Тираж в коробке с остатком:
+        ProductsInRestBox = (TotalHeight - QuantityBoxes * Box.height * items) / Product.thickness
+        Тираж в каждой коробке:
+        ProductsInBox = (Product.quantity - ProductsInRestBox) / QuantityBoxes
+
+        7. Доля пустого места в коробках
+        Объем всего тиража:
+        TotalVolume = TotalHeight * Product.length * Product.height
+        Объем всех коробок:
+        BoxesVolume = Box.width * Box.height * Box.height
+        Доля пустого места:
+        UnusedVolume = (BoxesVolume - TotalVolume) / BoxesVolume
+
+        Пример_1:
+        Box.width = 630 мм
+        Box.length = 320 мм
+        Box.height = 340 мм
+        Box.weigth = 524 г
+        https://app.ronbel.ru/raschety/box_weight
+        https://gofro-karton.com/blog/rasschitat_ves_korobki/
+
+        Product.length = 210 мм
+        Product.height = 297 мм
+        Product.thickness = 0.3 мм
+        Product.quantity = 1000
+        marginX, marginY = 0
+        items = 3
+        QuantityBoxes = 0.3 мм * 1000 / (330 мм * 3) = 0.303 округлить до 1.
+      operationId: calcAlgoBoxPackInBox
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Request.Model.PackInBox'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Response.Model.PackInBox'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/cutting-quantity:
+    post:
+      summary: Метод расчёта количества резов на печатном формате
+      description: |-
+        Возвращает общее количество резов необходимых совершить резательным оборудованием
+        на печатном формате, чтобы получить заданное кол-во элементов нужного формата.
+      operationId: calcAlgoRectCuttingQuantity
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.Cutting.Request.Model.CuttingQuantity'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Sheet.Cutting.Response.Model.CuttingQuantity'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/imposition:
+    post:
+      summary: Метод расчёта спуска полос
+      description: Спуск полос - расположения элементов указанного формата на указанном печатном формате
+      operationId: calcAlgoRectImposition
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.Imposition.Request.Model.Imposition'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Sheet.Imposition.Response.Model.Imposition'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/imposition/variants:
+    post:
+      summary: Метод расчёта спуска полос в двух вариантах
+      description: |-
+        Спуск полос - расположения элементов указанного формата на указанном печатном формате
+        Первый вариант: изделие раскладывается в указанном формате;
+        Второй вариант: изделие повёрнутое на 90 градусов;
+        Возвращаются все возможные варианты, если ни один вариант невозможен, то возвращается ошибка.
+      operationId: calcAlgoRectImpositionVariants
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.Imposition.Request.Model.Imposition'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Calculations.Algo.Sheet.Imposition.Response.Model.Imposition'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/inside-on-outside-quantity:
+    post:
+      summary: Метод расчёта количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает количество единиц указанного внутреннего формата, которое можно разместить
+        по вертикали и горизонтали во внешнем указанном формате (без использования поворотов).
+      operationId: calcAlgoRectInsideOutsideQuantity
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.InsideOutside.Request.Model.InsideOutsideQuantity'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Sheet.InsideOutside.Response.Model.InsideOutsideQuantity'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/inside-on-outside-max:
+    post:
+      summary: Метод расчёта максимальное количества размещений элементов на внешнем формате
+      description: |-
+        Возвращает максимальное количество единиц указанного
+        внутреннего формата, которое можно разместить во внешнем указанном формате.
+      operationId: calcAlgoRectInsideOutsideMax
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.InsideOutside.Request.Model.InsideOutsideMax'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Sheet.InsideOutside.Response.Model.InsideOutsideMax'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/algo/sheet/pack-in-stack:
+    post:
+      summary: Метод расчёта количества пачек, изделий в пачке и веса пачки
+      description: Возвращает количество пачек с изделиями, формат пачки, вес пачки.
+      operationId: calcAlgoSheetPackInStack
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Request.Model.PackInStack'
+      responses:
+        '200':
+          description: Получен расчет алгоритма
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Response.Model.PackInStack'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/query-history:
+    post:
+      summary: Метод сохранения расчёта запроса
+      description: Метод предназначен для сохранения расчётов запроса в БД
+      operationId: storeCalcQuery
+      tags:
+        - Calculations
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Calculations.QueryHistory.Request.Model.Query'
+      responses:
+        '201':
+          description: Информация о запросе успешно сохранена
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Api.Response.Model.SuccessCreatedItemWithStringID'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '403':
+          $ref: '#/components/responses/Api.ResponseJson.Error403'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/calculations/query-history/{queryId}:
+    get:
+      summary: Метод получения расчёта по указанному ID запроса
+      description: |-
+        Метод предназначен для получения расчёта по указанному ID запроса сохранённого ранее в БД,
+        со следующими условиями:
+        - query.isDeleted = false;
+      operationId: getCalcQueryId
+      tags:
+        - Calculations
+      parameters:
+        - $ref: '#/components/parameters/Calculations.QueryHistory.Request.Path.QueryID'
+      responses:
+        '200':
+          description: Получен расчёт об указанном запросе
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Calculations.QueryHistory.Response.Model.Query'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/boxes:
+    get:
+      summary: Метод получения списка упаковочных коробок
+      description: |-
+        Метод предназначен для получения списка упаковочных коробок, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getBoxList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список упаковочных коробок
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Boxes.Response.Model.BoxList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/laminates:
+    get:
+      summary: Метод получения списка ламината
+      description: |-
+        Метод предназначен для получения списка ламината, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getLaminateList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Laminates.Response.Model.LaminateList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/laminates/types:
+    get:
+      summary: Метод получения списка ID типов ламината
+      description: |-
+        Метод предназначен для получения списка ID типов ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+      operationId: getLaminateTypeIDList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список ID типов ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Laminates.Response.Model.LaminateTypeIDList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/laminates/thicknesses:
+    get:
+      summary: Метод получения списка толщин ламината
+      description: |-
+        Метод предназначен для получения списка толщин ламината, сохраненных в БД,
+        со следующими условиями:
+        - laminate.isEnabled = true;
+
+        Порядок следования списка:
+        - thickness ASC
+      operationId: getLaminateThicknessList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список толщин ламината
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Laminates.Response.Model.LaminateThicknessList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/papers:
+    get:
+      summary: Метод получения списка бумаги
+      description: |-
+        Метод предназначен для получения списка бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getPaperList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Papers.Response.Model.PaperList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/papers/types:
+    get:
+      summary: Метод получения списка ID типов бумаги
+      description: |-
+        Метод предназначен для получения списка ID типов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+      operationId: getPaperTypeIDList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список ID типов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Papers.Response.Model.PaperTypeIDList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/papers/colors:
+    get:
+      summary: Метод получения списка ID цветов бумаги
+      description: |-
+        Метод предназначен для получения списка ID цветов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+      operationId: getPaperColorIDList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список ID цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Papers.Response.Model.PaperColorIDList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/papers/densities:
+    get:
+      summary: Метод получения списка плотностей бумаги
+      description: |-
+        Метод предназначен для получения списка плотностей бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+
+        Порядок следования списка:
+        - density ASC
+      operationId: getPaperDensityList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список плотностей бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Papers.Response.Model.PaperDensityList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/catalog/papers/factures:
+    get:
+      summary: Метод получения списка ID фактур бумаги
+      description: |-
+        Метод предназначен для получения списка ID фактур бумаги, сохраненных в БД,
+        со следующими условиями:
+        - paper.isEnabled = true;
+      operationId: getPaperFactureIDList
+      tags:
+        - Catalog
+      responses:
+        '200':
+          description: Получен список ID фактур бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Catalog.Papers.Response.Model.PaperFactureIDList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/company/{pageName}:
+    get:
+      summary: Метод получения страницы компании
+      description: Метод предназначен для получения информации об указанной странице компании из БД
+      operationId: getCompanyPage
+      tags:
+        - CompanyPage
+      parameters:
+        - $ref: '#/components/parameters/CompanyPage.Request.Path.PageName'
+      responses:
+        '200':
+          description: Получена информация об указанной странице компании
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CompanyPage.Response.Model.CompanyPage'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/controls/submit-forms:
+    get:
+      summary: Метод получения списка форм
+      description: |-
+        Метод предназначен для получения списка всех форм, сохраненных в БД,
+        со следующими условиями:
+        - isPublished = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getSubmitFormList
+      tags:
+        - Controls.SubmitForm
+      responses:
+        '200':
+          description: Получен список форм
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Controls.SubmitForms.Response.Model.FormList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/controls/submit-forms/{rewriteName}:
+    get:
+      summary: Метод получения формы
+      description: Метод предназначен для получения формы из БД
+      operationId: getSubmitForm
+      tags:
+        - Controls.SubmitForm
+      parameters:
+        - $ref: '#/components/parameters/Controls.SubmitForms.Request.Path.FormRewriteName'
+      responses:
+        '200':
+          description: Получена информация о форме
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Controls.SubmitForms.Response.Model.Form'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/dictionaries/material-types:
+    get:
+      summary: Метод получения списка типов материала
+      description: |-
+        Метод предназначен для получения списка типов материала, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getMaterialTypeList
+      tags:
+        - Dictionaries
+      responses:
+        '200':
+          description: Получен список типов материала
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Dictionaries.MaterialTypes.Response.Model.MaterialTypeList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/dictionaries/paper-colors:
+    get:
+      summary: Метод получения списка цветов бумаги
+      description: |-
+        Метод предназначен для получения списка цветов бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getPaperColorList
+      tags:
+        - Dictionaries
+      responses:
+        '200':
+          description: Получен список цветов бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Dictionaries.PaperColors.Response.Model.PaperColorList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/dictionaries/paper-factures:
+    get:
+      summary: Метод получения списка фактуры бумаги
+      description: |-
+        Метод предназначен для получения списка фактуры бумаги, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getPaperFactureList
+      tags:
+        - Dictionaries
+      responses:
+        '200':
+          description: Получен список фактуры бумаги
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Dictionaries.PaperFactures.Response.Model.PaperFactureList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/dictionaries/print-formats:
+    get:
+      summary: Метод получения списка печатных форматов
+      description: |-
+        Метод предназначен для получения списка печатных форматов, сохраненных в БД,
+        со следующими условиями:
+        - isEnabled = true;
+
+        Записи выводятся на языке пользователя или на языке по умолчанию;
+
+        Порядок следования списка:
+        - caption ASC
+      operationId: getPrintFormatList
+      tags:
+        - Dictionaries
+      responses:
+        '200':
+          description: Получен список печатных форматов
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Dictionaries.PrintFormats.Response.Model.PrintFormatList'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /img/{filePath}:
+    get:
+      summary: Метод получения указанного изображения
+      description: Метод предназначен для получения указанного файла изображения из файлового хранилища
+      operationId: getImageFile
+      tags:
+        - FileStation
+      parameters:
+        - $ref: '#/components/parameters/FileStation.Request.Path.FilePath'
+      responses:
+        '200':
+          description: Получен файл указанного изображения
+          content:
+            image/png:
+              schema:
+                $ref: '#/components/schemas/Api.Response.Model.BinaryImage'
+            image/jpeg:
+              schema:
+                $ref: '#/components/schemas/Api.Response.Model.BinaryImage'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+components:
+  schemas:
+    Api.Field.UUID:
+      description: Идентификатор записи
+      type: string
+      format: uuid
+      example: 2d292cea-4e69-4bc2-8d61-2c705aefd26e
+    Api.Field.Caption:
+      description: Название записи
+      type: string
+      maxLength: 128
+      example: Название
+    Calculations.Request.Model.CreateForm:
+      description: DTO - расчёт
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id:
+          $ref: '#/components/schemas/Api.Field.UUID'
+        caption:
+          $ref: '#/components/schemas/Api.Field.Caption'
+    Api.Field.TagVersion:
+      description: Текущая версия записи
+      type: integer
+      format: int32
+      minimum: 1
+      example: 5
+    Api.Response.Model.SuccessCreatedItem:
+      description: DTO результата создания записи (uint64 ID)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: integer
+          format: int64
+          minimum: 0
+          maximum: 9223372036854776000
+          example: 800700600500
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+    Api.Response.Model.ErrorAttribute:
+      description: DTO пользовательской ошибки 400
+      type: object
+      required:
+        - code
+        - detail
+      properties:
+        code:
+          description: Название атрибута, где произошла ошибка
+          type: string
+          example: attributeName
+        detail:
+          description: Описание ошибки
+          type: string
+          example: Атрибут не может быть пустым | Указано недопустимое значение атрибута
+    Api.Response.Model.ErrorList:
+      description: DTO списка пользовательских ошибок 400
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Response.Model.ErrorAttribute'
+    Api.Response.Model.Error400:
+      description: DTO ошибки 400
+      type: object
+      required:
+        - status
+        - instance
+        - errors
+        - time
+      properties:
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 400
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        errors:
+          $ref: '#/components/schemas/Api.Response.Model.ErrorList'
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+    Api.Response.Model.ErrorDetails:
+      description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
+      type: object
+      required:
+        - title
+        - status
+        - detail
+        - instance
+        - time
+      properties:
+        type:
+          description: Ссылки на ресурс с описанием проблемы данного типа
+          type: string
+          default: about:blank
+          example: https://api.example.com/problem/type
+        title:
+          description: Краткое описание проблемы, понятное человеку
+          type: string
+          example: Resource not found
+        status:
+          description: Код HTTP статуса (дублируется из заголовка)
+          type: integer
+          example: 404
+        detail:
+          description: Описание конкретно возникшей ошибки, понятное человеку
+          type: string
+          example: Resource [User] with id = [123456] not found. You MUST use PUT to add a resource instead of GET
+        instance:
+          description: Метод и URL запроса
+          type: string
+          example: POST /users/123456
+        time:
+          description: Время возникновения ошибки с точностью до миллисекунд (UTC)
+          type: string
+          format: date-time
+          example: '2023-01-01T12:00:00.000+03:00'
+        error_trace_id:
+          description: Идентификатор экземпляра конкретной ошибки
+          type: string
+          example: 5add1be1-90ab5d42-02fa8b1f-672503f2
+    Api.Field.Measure.Millimeter3:
+      description: Три целых числа {first}x{second}x{third} в миллиметрах (mm x mm x mm)
+      type: string
+      maxLength: 16
+      example: 100x200x300
+    Api.Field.Measure.Gram:
+      description: Грамм (g)
+      type: integer
+      format: int64
+      maxLength: 8
+      minimum: 0
+      example: 1000
+    Api.Field.Uint63:
+      description: Целое положительное число
+      type: integer
+      format: int64
+      minimum: 0
+      maximum: 9223372036854776000
+      example: 250000000000001
+    Calculations.Algo.Box.PackInBox.Request.Model.Product:
+      description: DTO изделия
+      type: object
+      required:
+        - format
+        - weight
+        - quantity
+      properties:
+        format:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter3'
+        weight:
+          $ref: '#/components/schemas/Api.Field.Measure.Gram'
+        quantity:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество изделий
+            - example: 315
+    Api.Field.Measure.Micrometer:
+      description: Микрометр (µm, 0.001mm)
+      type: integer
+      format: int64
+      maxLength: 8
+      minimum: 0
+      example: 1000000
+    Calculations.Algo.Box.PackInBox.Request.Model.Box:
+      description: DTO коробки
+      type: object
+      required:
+        - format
+        - thickness
+        - margins
+        - weight
+      properties:
+        format:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter3'
+        thickness:
+          $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+        margins:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter3'
+        weight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Gram'
+            - description: Вес коробки
+        maxWeight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Gram'
+            - description: Максимальная грузоподъёмность коробки
+    Calculations.Algo.Box.PackInBox.Request.Model.PackInBox:
+      description: DTO параметров алгоритма "Количество коробок"
+      type: object
+      required:
+        - product
+        - box
+      properties:
+        product:
+          $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Request.Model.Product'
+        box:
+          allOf:
+            - $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Request.Model.Box'
+            - description: Параметры коробки, в которую помещаются изделия
+    Api.Field.Measure.Kilogram:
+      description: Килограмм (kg)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 10
+    Api.Field.Measure.Meter3:
+      description: Метр кубический (m3)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 178.2
+    Api.Field.Percent:
+      description: Процент (%)
+      type: number
+      format: double
+      maxLength: 8
+      example: 93.17
+    Calculations.Algo.Box.PackInBox.Response.Model.Box:
+      description: DTO коробки
+      type: object
+      required:
+        - weight
+        - volume
+        - innerVolume
+        - productQuantity
+        - productVolume
+        - unusedVolumePercent
+      properties:
+        weight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Kilogram'
+            - description: Вес коробки с изделиями
+            - example: 24.75
+        volume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Внешний объём коробки
+            - example: 0.4
+        innerVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Внутренний объём коробки
+            - example: 0.375
+        productQuantity:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество изделий в коробке
+            - example: 15
+        productVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Объём изделий в коробке
+            - example: 4.21
+        unusedVolumePercent:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Percent'
+            - description: Незаполненный объём коробки в %
+            - example: 23.71
+    Calculations.Algo.Box.PackInBox.Response.Model.PackInBox:
+      description: DTO - результат алгоритма "Количество коробок с изделиями"
+      type: object
+      required:
+        - fullBox
+        - boxesQuantity
+        - boxesWeight
+        - productsVolume
+        - boxesInnerVolume
+        - boxesVolume
+      properties:
+        fullBox:
+          allOf:
+            - $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Response.Model.Box'
+            - description: Полностью заполненная коробка
+        restBox:
+          allOf:
+            - $ref: '#/components/schemas/Calculations.Algo.Box.PackInBox.Response.Model.Box'
+            - description: Коробка с остатком изделий
+        boxesQuantity:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество коробок
+            - example: 17
+        boxesWeight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Kilogram'
+            - description: Общий вес коробок с изделиями
+            - example: 371.25
+        productsVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Общий объём изделий
+            - example: 17.25
+        boxesVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Общий внешний объём коробок
+            - example: 19.6
+        boxesInnerVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Общий внутренний объём коробок
+            - example: 18.1
+    Api.Field.Size2D:
+      description: Два целых числа в формате {first}x{second}
+      type: string
+      maxLength: 16
+      example: 100x200
+    Api.Field.Measure.Millimeter2:
+      description: Два целых числа {width}x{height} в миллиметрах (mm x mm)
+      type: string
+      maxLength: 16
+      minimum: 0
+      example: 100x200
+    Calculations.Algo.Sheet.Cutting.Request.Model.CuttingQuantity:
+      description: DTO параметров алгоритма "Количество резов"
+      type: object
+      required:
+        - layouts
+        - distance
+      properties:
+        layouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Api.Field.Size2D'
+        distance:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+    Calculations.Algo.Sheet.Cutting.Response.Model.CuttingQuantity:
+      description: DTO - результат алгоритма "Количество резов"
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          $ref: '#/components/schemas/Api.Field.Uint63'
+    Api.Field.Boolean:
+      description: Значение флага записи
+      type: boolean
+      example: true
+    Calculations.Algo.Sheet.Imposition.Request.Model.Imposition:
+      description: DTO параметров алгоритма "Спуск полос"
+      type: object
+      required:
+        - itemFormat
+        - itemDistance
+        - outFormat
+      properties:
+        itemFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        itemDistance:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+            - description: Расстояние между элементами ({по горизонтали}x{по вертикали})
+        outFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        disableRotation:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Boolean'
+            - description: Запретить поворот остатка на 90 градусов
+        useMirror:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Boolean'
+            - description: Использовать зеркальное размещение элементов
+    Calculations.Field.Rect2dFormat:
+      description: Прямоугольный формат
+      type: object
+      required:
+        - width
+        - height
+      properties:
+        width:
+          description: Ширина в метрах
+          type: number
+          format: double
+          example: 0.21
+        height:
+          description: Высота в метрах
+          type: number
+          format: double
+          example: 0.297
+    Api.Field.Measure.Meter:
+      description: Метр (m)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 10
+    Calculations.Field.Layout:
+      description: Табличная схема размещения элементов
+      type: object
+      required:
+        - byWidth
+        - byHeight
+      properties:
+        byWidth:
+          description: Кол-во элементов по ширине
+          type: integer
+          format: int64
+          example: 27
+        byHeight:
+          description: Кол-во элементов по высоте
+          type: integer
+          format: int64
+          example: 43
+    Calculations.Enum.FragmentPosition:
+      description: |-
+        Размещение прямоугольного фрагмента:
+        - TOP - сверху;
+        - ONSIDE - сбоку;
+        - BOTTOM - внизу;
+      type: string
+      enum:
+        - TOP
+        - ONSIDE
+        - BOTTOM
+      example: ONSIDE
+    Calculations.Field.Fragment:
+      description: Фрагмент прямоугольного формата на котором размещены элементы указанного формата на указанной дистанции между ними
+      type: object
+      required:
+        - element
+        - distance
+        - layout
+        - position
+      properties:
+        element:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        distance:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        layout:
+          $ref: '#/components/schemas/Calculations.Field.Layout'
+        position:
+          $ref: '#/components/schemas/Calculations.Enum.FragmentPosition'
+    Api.Field.Measure.Meter2:
+      description: Метр квадратный (m2)
+      type: number
+      format: double
+      maxLength: 16
+      minimum: 0
+      example: 43.08
+    Calculations.Algo.Sheet.Imposition.Response.Model.Imposition:
+      description: DTO - расчёта алгоритма "Спуск полос"
+      type: object
+      required:
+        - containerFormat
+        - fragmentDistance
+        - fragments
+        - totalElements
+        - garbage
+        - allowRotation
+        - useMirror
+      properties:
+        containerFormat:
+          $ref: '#/components/schemas/Calculations.Field.Rect2dFormat'
+        fragmentDistance:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter'
+        fragments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Calculations.Field.Fragment'
+        totalElements:
+          $ref: '#/components/schemas/Api.Field.Uint63'
+        garbage:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter2'
+        allowRotation:
+          $ref: '#/components/schemas/Api.Field.Boolean'
+        useMirror:
+          $ref: '#/components/schemas/Api.Field.Boolean'
+    Calculations.Algo.Sheet.InsideOutside.Request.Model.InsideOutsideQuantity:
+      description: DTO - параметров алгоритмов размещений элементов на внешнем формате
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        outFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+    Calculations.Algo.Sheet.InsideOutside.Response.Model.InsideOutsideQuantity:
+      description: DTO - расчёта алгоритма "Количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - layout
+        - total
+      properties:
+        layout:
+          $ref: '#/components/schemas/Calculations.Field.Layout'
+        total:
+          $ref: '#/components/schemas/Api.Field.Uint63'
+    Calculations.Algo.Sheet.InsideOutside.Request.Model.InsideOutsideMax:
+      description: DTO - параметров алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - inFormat
+        - outFormat
+      properties:
+        inFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        outFormat:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+    Calculations.Algo.Sheet.InsideOutside.Response.Model.InsideOutsideMax:
+      description: DTO - расчёта алгоритма "Максимальное количество размещений элементов на внешнем формате"
+      type: object
+      required:
+        - fragments
+        - total
+      properties:
+        fragments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Calculations.Field.Fragment'
+        total:
+          $ref: '#/components/schemas/Api.Field.Uint63'
+    Api.Field.Measure.GramPerMeter2:
+      description: Поверхностная плотность (g/m2)
+      type: integer
+      format: int64
+      maxLength: 8
+      minimum: 0
+      example: 1000
+    Calculations.Algo.Sheet.PackInStack.Request.Model.Sheet:
+      description: DTO изделия прямоугольного формата
+      type: object
+      required:
+        - format
+        - thickness
+        - density
+        - quantity
+      properties:
+        format:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter2'
+        thickness:
+          $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+        density:
+          $ref: '#/components/schemas/Api.Field.Measure.GramPerMeter2'
+        quantity:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество изделий
+            - example: 2600
+    Calculations.Algo.Sheet.PackInStack.Request.Model.PackInStack:
+      description: DTO параметров алгоритма "Количество пачек пачек"
+      type: object
+      required:
+        - sheet
+        - quantityInStack
+      properties:
+        sheet:
+          $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Request.Model.Sheet'
+        quantityInStack:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество изделий в пачке
+            - example: 200
+    Calculations.Algo.Sheet.PackInStack.Response.Model.Product:
+      description: DTO пачки с изделиями
+      type: object
+      required:
+        - format
+        - weight
+        - volume
+      properties:
+        format:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Millimeter3'
+        weight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Kilogram'
+            - description: Вес пачки с изделиями
+            - example: 2.5
+        volume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Внешний объём пачки
+            - example: 0.04
+    Calculations.Algo.Sheet.PackInStack.Response.Model.PackInStack:
+      description: DTO - результат алгоритма "Количество пачек"
+      type: object
+      required:
+        - fullProduct
+        - totalQuantity
+        - totalWeight
+        - totalVolume
+      properties:
+        fullProduct:
+          allOf:
+            - $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Response.Model.Product'
+            - description: Полностью заполненная пачка с изделиями
+        restProduct:
+          allOf:
+            - $ref: '#/components/schemas/Calculations.Algo.Sheet.PackInStack.Response.Model.Product'
+            - description: Пачка с остатком изделий
+        totalQuantity:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Uint63'
+            - description: Количество пачек
+            - example: 17
+        totalWeight:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Kilogram'
+            - description: Общий вес пачек с изделиями
+            - example: 371.25
+        totalVolume:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Measure.Meter3'
+            - description: Общий объём пачек
+            - example: 17.25
+    Api.Field.JsonData:
+      description: Данные в формате json
+      type: string
+      maxLength: 16384
+      example: '{''data'': ''value''}'
+    Calculations.QueryHistory.Request.Model.Query:
+      description: DTO параметров сохранения расчётов запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+      properties:
+        caption:
+          $ref: '#/components/schemas/Api.Field.Caption'
+        params:
+          $ref: '#/components/schemas/Api.Field.JsonData'
+        result:
+          $ref: '#/components/schemas/Api.Field.JsonData'
+    Api.Response.Model.SuccessCreatedItemWithStringID:
+      description: DTO результата создания записи (string ID)
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: Идентификатор созданной записи
+          type: string
+          example: f7479171-83d2-4f64-84ac-892f8c0aaf48
+        tag_version:
+          $ref: '#/components/schemas/Api.Field.TagVersion'
+    Api.Field.DateTimeCreatedAt:
+      description: Дата и время создания записи (UTC)
+      type: string
+      format: date-time
+      example: '2023-01-01T12:00:00.000+03:00'
+    Calculations.QueryHistory.Response.Model.Query:
+      description: DTO - расчёты запроса
+      type: object
+      required:
+        - caption
+        - params
+        - result
+        - createdAt
+        - updatedAt
+      properties:
+        caption:
+          $ref: '#/components/schemas/Api.Field.Caption'
+        params:
+          $ref: '#/components/schemas/Api.Field.JsonData'
+        result:
+          $ref: '#/components/schemas/Api.Field.JsonData'
+        createdAt:
+          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
+    Catalog.Field.BoxID:
+      description: Идентификатор коробки (модуль - Catalog.Box)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Api.Field.Article:
+      description: |
+        Уникальный артикул записи (любые буквы без пробелов)
+        - pattern: ^S+$
+      type: string
+      minLength: 2
+      maxLength: 64
+      example: item-FLEX-92744
+    Api.Field.Measure.Millimeter:
+      description: Миллиметр (mm)
+      type: integer
+      format: int64
+      maxLength: 8
+      minimum: 0
+      example: 1000
+    Catalog.Boxes.Response.Model.Box:
+      description: DTO - упаковочная коробка
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - length
+        - width
+        - height
+        - thickness
+        - weight
+      properties:
+        id:
+          $ref: '#/components/schemas/Catalog.Field.BoxID'
+        article:
+          $ref: '#/components/schemas/Api.Field.Article'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: СДЭК
+        length:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        width:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        height:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        thickness:
+          $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+        weight:
+          $ref: '#/components/schemas/Api.Field.Measure.Gram'
+    Catalog.Boxes.Response.Model.BoxList:
+      description: DTO - список упаковочных коробок
+      type: array
+      items:
+        $ref: '#/components/schemas/Catalog.Boxes.Response.Model.Box'
+    Catalog.Field.LaminateID:
+      description: Идентификатор ламината (модуль - Catalog.Laminate)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Dictionaries.Field.MaterialTypeID:
+      description: Идентификатор типа материала (модуль - Dictionaries.MaterialType)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Catalog.Laminates.Response.Model.Laminate:
+      description: DTO - ламинат
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - typeId
+        - length
+        - width
+        - thickness
+        - weight
+      properties:
+        id:
+          $ref: '#/components/schemas/Catalog.Field.LaminateID'
+        article:
+          $ref: '#/components/schemas/Api.Field.Article'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: Глянцевый 450
+        typeId:
+          $ref: '#/components/schemas/Dictionaries.Field.MaterialTypeID'
+        length:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter'
+        width:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        thickness:
+          $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+        weight:
+          $ref: '#/components/schemas/Api.Field.Measure.GramPerMeter2'
+    Catalog.Laminates.Response.Model.LaminateList:
+      description: DTO - список ламината
+      type: array
+      items:
+        $ref: '#/components/schemas/Catalog.Laminates.Response.Model.Laminate'
+    Catalog.Laminates.Response.Model.LaminateTypeIDList:
+      description: DTO - список ID типов ламината
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.Field.MaterialTypeID'
+    Catalog.Laminates.Response.Model.LaminateThicknessList:
+      description: DTO - список толщин ламината
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+    Catalog.Field.PaperID:
+      description: Идентификатор бумаги (модуль - Catalog.Paper)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Dictionaries.Field.PaperColorID:
+      description: Идентификатор цвета материала (модуль - Dictionaries.PaperColor)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Dictionaries.Field.PaperFactureID:
+      description: Идентификатор фактуры материала (модуль - Dictionaries.PaperFacture)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Catalog.Enum.PaperSides:
+      description: |-
+        Стороны бумаги:
+        - SAME - одинаковые;
+        - DIFFERENT - разные;
+      type: string
+      enum:
+        - SAME
+        - DIFFERENT
+      example: SAME
+    Catalog.Papers.Response.Model.Paper:
+      description: DTO - бумага
+      type: object
+      required:
+        - id
+        - article
+        - caption
+        - typeId
+        - colorId
+        - factureId
+        - width
+        - height
+        - thickness
+        - density
+        - sides
+      properties:
+        id:
+          $ref: '#/components/schemas/Catalog.Field.PaperID'
+        article:
+          $ref: '#/components/schemas/Api.Field.Article'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: Мелованная
+        typeId:
+          $ref: '#/components/schemas/Dictionaries.Field.MaterialTypeID'
+        colorId:
+          $ref: '#/components/schemas/Dictionaries.Field.PaperColorID'
+        factureId:
+          $ref: '#/components/schemas/Dictionaries.Field.PaperFactureID'
+        width:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        height:
+          $ref: '#/components/schemas/Api.Field.Measure.Millimeter'
+        thickness:
+          $ref: '#/components/schemas/Api.Field.Measure.Micrometer'
+        density:
+          $ref: '#/components/schemas/Api.Field.Measure.GramPerMeter2'
+        sides:
+          $ref: '#/components/schemas/Catalog.Enum.PaperSides'
+    Catalog.Papers.Response.Model.PaperList:
+      description: DTO - список бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Catalog.Papers.Response.Model.Paper'
+    Catalog.Papers.Response.Model.PaperTypeIDList:
+      description: DTO - список ID типов бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.Field.MaterialTypeID'
+    Catalog.Papers.Response.Model.PaperColorIDList:
+      description: DTO - список ID цветов бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.Field.PaperColorID'
+    Catalog.Papers.Response.Model.PaperDensityList:
+      description: DTO - список плотностей бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Api.Field.Measure.GramPerMeter2'
+    Catalog.Papers.Response.Model.PaperFactureIDList:
+      description: DTO - список ID фактур бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.Field.PaperFactureID'
+    CompanyPage.Response.Model.CompanyPage:
+      description: DTO - публичная страница компании
+      type: object
+      properties:
+        pageTitle:
+          description: Заголовок страницы компании
+          type: string
+          maxLength: 128
+          example: Компания 0001
+        logoUrl:
+          description: URL логотипа компании
+          type: string
+          maxLength: 128
+          example: https://example.com/company-logo.png
+        siteUrl:
+          description: URL страницы сайта компании
+          type: string
+          maxLength: 256
+          example: https://site.example.com/
+    Api.Field.RewriteName:
+      description: |
+        Человекопонятное название используемое в URL
+        - pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
+      type: string
+      minLength: 4
+      maxLength: 32
+      example: rewrite-name
+    Controls.SubmitForms.Response.Model.Form:
+      description: DTO - собранная форма пользовательского интерфейса
+      type: object
+      required:
+        - rewriteName
+        - caption
+      properties:
+        rewriteName:
+          $ref: '#/components/schemas/Api.Field.RewriteName'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - example: Листовая продукция
+    Controls.SubmitForms.Response.Model.FormList:
+      description: DTO - список типов ламината
+      type: array
+      items:
+        $ref: '#/components/schemas/Controls.SubmitForms.Response.Model.Form'
+    Dictionaries.MaterialTypes.Response.Model.MaterialType:
+      description: DTO - тип материала
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id:
+          $ref: '#/components/schemas/Dictionaries.Field.MaterialTypeID'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: Глянцевый
+    Dictionaries.MaterialTypes.Response.Model.MaterialTypeList:
+      description: DTO - список типов материала
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.MaterialTypes.Response.Model.MaterialType'
+    Dictionaries.PaperColors.Response.Model.PaperColor:
+      description: DTO - цвет бумаги
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id:
+          $ref: '#/components/schemas/Dictionaries.Field.PaperColorID'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: Белый
+    Dictionaries.PaperColors.Response.Model.PaperColorList:
+      description: DTO - список цветов бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.PaperColors.Response.Model.PaperColor'
+    Dictionaries.PaperFactures.Response.Model.PaperFacture:
+      description: DTO - фактура бумаги
+      type: object
+      required:
+        - id
+        - caption
+      properties:
+        id:
+          $ref: '#/components/schemas/Dictionaries.Field.PaperFactureID'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: Гладкая
+    Dictionaries.PaperFactures.Response.Model.PaperFactureList:
+      description: DTO - список фактуры бумаги
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.PaperFactures.Response.Model.PaperFacture'
+    Dictionaries.Field.PrintFormatID:
+      description: Идентификатор печатного формата (модуль - Dictionaries.PrintFormat)
+      type: integer
+      format: int64
+      minimum: 1
+      example: 2
+    Dictionaries.PrintFormats.Response.Model.PrintFormat:
+      description: DTO - печатный формат
+      type: object
+      required:
+        - id
+        - caption
+        - width
+        - height
+      properties:
+        id:
+          $ref: '#/components/schemas/Dictionaries.Field.PrintFormatID'
+        caption:
+          allOf:
+            - $ref: '#/components/schemas/Api.Field.Caption'
+            - maxLength: 64
+            - example: A4 (210 x 297 mm)
+        width:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter'
+        height:
+          $ref: '#/components/schemas/Api.Field.Measure.Meter'
+    Dictionaries.PrintFormats.Response.Model.PrintFormatList:
+      description: DTO - список печатных форматов
+      type: array
+      items:
+        $ref: '#/components/schemas/Dictionaries.PrintFormats.Response.Model.PrintFormat'
+    Api.Response.Model.BinaryImage:
+      description: Бинарный файл одного из типов - JPEG, PNG
+      type: string
+      format: binary
+      maxLength: 1048576
+  responses:
+    Api.ResponseJson.Error400:
+      description: Некорректные входные данные. Возвращается список атрибутов с ошибками
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.Error400'
+    Api.ResponseJson.Error5xx:
+      description: Внутренняя ошибка сервера
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error401:
+      description: Пользователь не был аутентифицирован
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error403:
+      description: Пользователю с текущими правами доступ отклонён
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+    Api.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
+  parameters:
+    Calculations.QueryHistory.Request.Path.QueryID:
+      description: Идентификатор запроса
+      name: queryId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: a9b95e74-654f-4a76-a97a-d378665f8815
+    CompanyPage.Request.Path.PageName:
+      description: Название страницы используемое в URL
+      name: pageName
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 5
+        maxLength: 64
+      example: printrobot
+    Controls.SubmitForms.Request.Path.FormRewriteName:
+      description: Человекопонятное название используемое в URL формы
+      name: rewriteName
+      in: path
+      required: true
+      schema:
+        type: string
+      example: form-name
+    FileStation.Request.Path.FilePath:
+      description: Относительный путь к файлу
+      name: filePath
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 5
+        maxLength: 128
+      example: category/item-name.jpg

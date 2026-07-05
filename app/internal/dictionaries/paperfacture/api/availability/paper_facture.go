@@ -3,12 +3,12 @@ package availability
 import (
 	"context"
 
-	"github.com/mondegor/go-webcore/mrenum"
+	"print-shop-back/internal/adapter/workflow"
 )
 
 type (
 	// PaperFactureStorage - comment interface.
 	PaperFactureStorage interface {
-		FetchStatus(ctx context.Context, rowID uint64) (mrenum.ItemStatus, error)
+		FetchStatus(ctx context.Context, rowID uint64) (workflow.ItemStatus, error)
 	}
 )

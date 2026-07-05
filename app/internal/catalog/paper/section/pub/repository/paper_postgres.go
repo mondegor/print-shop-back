@@ -3,23 +3,24 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-storage/mrpostgres/db"
-	"github.com/mondegor/go-storage/mrstorage"
-	"github.com/mondegor/go-webcore/mrenum"
+	"github.com/mondegor/go-sysmess/mrpostgres/db"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
 
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/module"
-	"github.com/mondegor/print-shop-back/internal/catalog/paper/section/pub/entity"
-	"github.com/mondegor/print-shop-back/pkg/libs/measure"
+	"print-shop-back/internal/adapter/workflow"
+	"print-shop-back/internal/catalog/paper/module"
+	"print-shop-back/internal/catalog/paper/section/pub/entity"
+	"print-shop-back/pkg/mrcalc/measure"
 )
 
 type (
 	// PaperPostgres - comment struct.
 	PaperPostgres struct {
 		client         mrstorage.DBConnManager
-		repoTypeIDs    db.ColumnFetcher[mrenum.ItemStatus, uint64]
-		repoColorIDs   db.ColumnFetcher[mrenum.ItemStatus, uint64]
-		repoDensities  db.ColumnFetcher[mrenum.ItemStatus, measure.KilogramPerMeter2]
-		repoFactureIDs db.ColumnFetcher[mrenum.ItemStatus, uint64]
+		repoTypeIDs    db.ColumnFetcher[workflow.ItemStatus, uint64]
+		repoColorIDs   db.ColumnFetcher[workflow.ItemStatus, uint64]
+		repoDensities  db.ColumnFetcher[workflow.ItemStatus, measure.KilogramPerMeter2]
+		repoFactureIDs db.ColumnFetcher[workflow.ItemStatus, uint64]
 	}
 )
 
@@ -27,28 +28,28 @@ type (
 func NewPaperPostgres(client mrstorage.DBConnManager) *PaperPostgres {
 	return &PaperPostgres{
 		client: client,
-		repoTypeIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+		repoTypeIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"type_id",
 			module.DBFieldDeletedAt,
 		),
-		repoColorIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+		repoColorIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"color_id",
 			module.DBFieldDeletedAt,
 		),
-		repoDensities: db.NewColumnFetcher[mrenum.ItemStatus, measure.KilogramPerMeter2](
+		repoDensities: db.NewColumnFetcher[workflow.ItemStatus, measure.KilogramPerMeter2](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
 			"paper_density",
 			module.DBFieldDeletedAt,
 		),
-		repoFactureIDs: db.NewColumnFetcher[mrenum.ItemStatus, uint64](
+		repoFactureIDs: db.NewColumnFetcher[workflow.ItemStatus, uint64](
 			client,
 			module.DBTableNamePapers,
 			"paper_status",
@@ -83,7 +84,7 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 	cursor, err := re.client.Conn(ctx).Query(
 		ctx,
 		sql,
-		mrenum.ItemStatusEnabled,
+		itemstatus.Enabled,
 	)
 	if err != nil {
 		return nil, err
@@ -121,20 +122,20 @@ func (re *PaperPostgres) Fetch(ctx context.Context, _ entity.PaperParams) ([]ent
 
 // FetchTypeIDs - comment method.
 func (re *PaperPostgres) FetchTypeIDs(ctx context.Context) ([]uint64, error) {
-	return re.repoTypeIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoTypeIDs.Fetch(ctx, itemstatus.Enabled)
 }
 
 // FetchColorIDs - comment method.
 func (re *PaperPostgres) FetchColorIDs(ctx context.Context) ([]uint64, error) {
-	return re.repoColorIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoColorIDs.Fetch(ctx, itemstatus.Enabled)
 }
 
 // FetchDensities - comment method.
 func (re *PaperPostgres) FetchDensities(ctx context.Context) ([]measure.KilogramPerMeter2, error) {
-	return re.repoDensities.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoDensities.Fetch(ctx, itemstatus.Enabled)
 }
 
 // FetchFactureIDs - comment method.
 func (re *PaperPostgres) FetchFactureIDs(ctx context.Context) ([]uint64, error) {
-	return re.repoFactureIDs.Fetch(ctx, mrenum.ItemStatusEnabled)
+	return re.repoFactureIDs.Fetch(ctx, itemstatus.Enabled)
 }

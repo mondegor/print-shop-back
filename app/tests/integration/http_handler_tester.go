@@ -6,16 +6,21 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mondegor/go-storage/mrstorage"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-webcore/mrlib"
+	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-sysmess/util/xio"
+	"github.com/mondegor/go-sysmess/wire/mrlog"
+	"github.com/mondegor/go-sysmess/wire/mrtrace"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mondegor/print-shop-back/cmd/factory"
-	"github.com/mondegor/print-shop-back/config"
-	"github.com/mondegor/print-shop-back/internal/app"
-	"github.com/mondegor/print-shop-back/tests"
+	"print-shop-back/cmd/factory"
+	"print-shop-back/cmd/factory/service/rest"
+	"print-shop-back/config"
+	"print-shop-back/internal/adapter/log"
+	"print-shop-back/internal/adapter/trace"
+	"print-shop-back/internal/app"
+	"print-shop-back/tests"
 )
 
 type (
@@ -35,14 +40,19 @@ type (
 func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	t.Helper()
 
-	ctx := helpers.ContextWithNopLogger()
+	ctx := context.Background()
 	cfg, err := config.Create(
-		config.Args{
-			WorkDir:    tests.AppWorkDir(),
-			DotEnvPath: tests.AppDotEnvPathForTests(),
-			Stdout:     os.Stdout,
+		config.CmdArgs{
+			WorkDir:     tests.AppWorkDir(),
+			Environment: "tests",
 		},
+		os.Stdout,
 	)
+	require.NoError(t, err)
+
+	logger := log.NopLogger()
+	tracer := trace.NopTracer()
+	traceManager, err := mrtrace.InitTraceContextManager(mrlog.DefaultProcessIDs(), logger)
 	require.NoError(t, err)
 
 	pgt := infra.NewPostgresTester(t, tests.DBSchemas(), tests.ExcludedDBTables())
@@ -50,13 +60,16 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 
 	rds := infra.NewRedisTester(t)
 
-	fpool, err := factory.NewFileProviderPool(ctx, cfg)
+	fpool, err := factory.InitFileProviderPool(logger, tracer, cfg)
 	require.NoError(t, err)
 
-	ctx, opts, err := factory.InitAppEnvironment(
-		ctx,
+	opts, err := factory.InitAppEnvironment(
 		app.Options{
 			Cfg:                 cfg,
+			Logger:              logger,
+			Tracer:              tracer,
+			TraceManager:        traceManager,
+			OpenedResources:     xio.NewCloseManager(logger),
 			PostgresConnManager: pgt.ConnManager(),
 			RedisAdapter:        rds.Conn(),
 			FileProviderPool:    fpool,
@@ -64,7 +77,7 @@ func NewHandlerTester(t *testing.T) *HttpHandlerTester {
 	)
 	require.NoError(t, err)
 
-	router, err := factory.NewRestRouterWithRegisterHandlers(ctx, opts)
+	router, err := rest.InitRestRouterWithHandlers(opts)
 	require.NoError(t, err)
 
 	return &HttpHandlerTester{
@@ -100,7 +113,7 @@ func (t *HttpHandlerTester) ExecRequest(r *helpers.HttpRequest, structResponse a
 
 // Clean - очищает ресурсы после завершения тестирования обработчика.
 func (t *HttpHandlerTester) Clean() {
-	mrlib.CallEachFunc(t.ctx, t.opts.OpenedResources)
+	t.opts.OpenedResources.Close()
 	t.pgt.Destroy(t.ctx)
 	t.rds.Destroy(t.ctx)
 

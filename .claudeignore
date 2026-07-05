@@ -1,0 +1,17 @@
+# Secrets are always ignored
+.env
+.env.*
+
+# IDE
+.idea
+.vscode
+
+# Temporary files
+.cache
+test-coverage-full.html
+out.gotext.json
+
+# Other
+.qwen
+Makefile.mk
+img
