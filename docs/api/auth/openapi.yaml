@@ -206,15 +206,29 @@ paths:
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
     delete:
       summary: Auth/R5. Метод закрытия текущей сессий пользователя
-      description: Метод предназначен для закрытия текущей сессии пользователя
+      description: |-
+        Метод предназначен для закрытия текущей сессии пользователя.
+
+        Если в заголовке запроса присутствует кука RTID, refreshToken берётся из неё и тело не требуется
+        (web-клиент). Иначе (мобайл/API-клиент) refreshToken должен быть передан в теле запроса.
       operationId: closeUserSession
       tags:
         - Auth
       x-auth-scopes:
         - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Request.Cookie.Web.RefreshToken'
+      requestBody:
+        required: false
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.ContinueSession'
       responses:
         '204':
           description: Текущая сессия пользователя была закрыта
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
           $ref: '#/components/responses/Api.ResponseJson.Error401'
         '500':
@@ -316,6 +330,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Auth.Check.ResponseJson.Jwks'
+        '404':
+          $ref: '#/components/responses/Api.ResponseJson.Error404'
         '500':
           $ref: '#/components/responses/Api.ResponseJson.Error5xx'
   /v1/operation/confirm:
@@ -361,7 +377,7 @@ paths:
         '200':
           $ref: '#/components/responses/Auth.ResponseJson.WaitingConfirmOperation'
         '400':
-          $ref: '#/components/responses/Api.ResponseJson.Error400'
+          $ref: '#/components/responses/Auth.ResponseJson.Error400'
         '403':
           $ref: '#/components/responses/Api.ResponseJson.Error403'
         '500':
@@ -763,6 +779,8 @@ paths:
         - Auth.Sessions
       x-auth-scopes:
         - any-users
+      parameters:
+        - $ref: '#/components/parameters/Auth.Sessions.Request.Query.Realm'
       responses:
         '200':
           description: Сформирован ответ со списком открытых сессий пользователя
@@ -794,6 +812,8 @@ paths:
       responses:
         '204':
           description: Указанные сессии пользователя были закрыты
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
           $ref: '#/components/responses/Api.ResponseJson.Error401'
         '403':
@@ -811,6 +831,7 @@ components:
     Auth.Request.Model.CreateUser:
       type: object
       required:
+        - realm
         - user_email
       properties:
         realm:
@@ -961,6 +982,7 @@ components:
     Auth.Request.Model.AuthorizeUser:
       type: object
       required:
+        - realm
         - user_login
       properties:
         realm:
@@ -1019,7 +1041,7 @@ components:
         message:
           type: string
           example: Ваш аккаунт был успешно зарегистрирован | Доступ к вашему аккаунту разрешён
-    Auth.Response.Model.ConfirmOperationStatus:
+    Auth.Response.Model.ConfirmOperationState:
       type: object
       required:
         - remaining_attempts
@@ -1361,9 +1383,9 @@ components:
     Auth.Security.Request.Model.ApplyOperation:
       type: object
       required:
-        - operation_token
+        - token
       properties:
-        operation_token:
+        token:
           description: Токен операции, которая подтверждена пользователем
           type: string
           minLength: 64
@@ -1504,8 +1526,8 @@ components:
                 description: Метод и URL запроса
                 type: string
                 example: POST /users/123456
-              operation_status:
-                $ref: '#/components/schemas/Auth.Response.Model.ConfirmOperationStatus'
+              operation_state:
+                $ref: '#/components/schemas/Auth.Response.Model.ConfirmOperationState'
               errors:
                 $ref: '#/components/schemas/Api.Response.Model.ErrorList'
               time:
@@ -1525,6 +1547,12 @@ components:
         application/json;charset=UTF-8:
           schema:
             $ref: '#/components/schemas/Auth.Check.Response.Model.Jwks'
+    Api.ResponseJson.Error404:
+      description: Запрашиваемый ресурс не был найден
+      content:
+        application/problem+json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/Api.Response.Model.ErrorDetails'
   parameters:
     Auth.Request.Header.Web.UseCookie:
       description: Признак, что значение refreshToken следует сохранять в куке RTID (без доступа к ней через js)
@@ -1553,9 +1581,22 @@ components:
         minLength: 64
         maxLength: 128
       example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
+    Auth.Sessions.Request.Query.Realm:
+      description: Область, пространство, чьи сессии нужно вернуть (если не указано, берётся realm текущей сессии)
+      name: realm
+      in: query
+      required: false
+      schema:
+        type: string
+        maxLength: 32
+      example: domain_name/user_group
   headers:
     Auth.Response.Cookie.Web.RefreshToken:
       schema:
-        description: Используется платформой WEB
+        description: |-
+          Используется платформой WEB. Кука с refreshToken.
+          Атрибуты по умолчанию: Path=/, Secure, HttpOnly, SameSite=Strict, Max-Age=15552000 (180 дней).
+          Domain задаётся host-приложением обязательно. Secure/SameSite настраиваемы (Secure=true,
+          SameSite=Strict по умолчанию; SameSite=None требует Secure=true). HttpOnly всегда включён.
         type: string
-        example: RTID=02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704; Path=/; HttpOnly
+        example: RTID=02fb5463db25b91568a1801dc0974b1d50cb1f3bc817f2be3a4b357929cee704; Path=/; Domain=example.com; Max-Age=15552000; HttpOnly; Secure; SameSite=Strict
