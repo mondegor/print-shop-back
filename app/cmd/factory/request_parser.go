@@ -5,7 +5,7 @@ import (
 
 	mrauthconf "github.com/mondegor/go-components/wire/mrauth/config"
 	"github.com/mondegor/go-components/wire/mrauth/mapping"
-	"github.com/mondegor/go-sysmess/util/mime"
+	"github.com/mondegor/go-core/util/mime"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/request/parser"

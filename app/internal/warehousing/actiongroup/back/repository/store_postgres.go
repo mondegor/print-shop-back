@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrstorage"
 
 	"print-shop-back/internal/warehousing/actiongroup/back/dto"
 	"print-shop-back/internal/warehousing/module"

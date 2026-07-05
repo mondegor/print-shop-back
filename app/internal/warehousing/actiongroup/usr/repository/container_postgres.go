@@ -5,9 +5,9 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrpostgres/builder/part"
-	"github.com/mondegor/go-sysmess/mrpostgres/db"
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrpostgres/builder/part"
+	"github.com/mondegor/go-core/mrpostgres/db"
+	"github.com/mondegor/go-core/mrstorage"
 
 	"print-shop-back/internal/warehousing/actiongroup/usr/dto"
 	"print-shop-back/internal/warehousing/actiongroup/usr/entity"

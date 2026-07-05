@@ -1,8 +1,8 @@
 package pub
 
 import (
-	"github.com/mondegor/go-sysmess/mrpath"
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrpath"
+	"github.com/mondegor/go-core/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/provideraccounts/section/pub/controller/httpv1"

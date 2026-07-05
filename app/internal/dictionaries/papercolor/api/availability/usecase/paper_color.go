@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
-	"github.com/mondegor/go-sysmess/util/conv"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrworkflow/itemstatus"
+	"github.com/mondegor/go-core/util/conv"
 
 	"print-shop-back/internal/adapter/trace"
 	"print-shop-back/internal/dictionaries/papercolor/api/availability"

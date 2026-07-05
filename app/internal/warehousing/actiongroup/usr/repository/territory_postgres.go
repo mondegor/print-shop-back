@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrstorage"
 
 	"print-shop-back/internal/warehousing/actiongroup/usr/entity"
 	"print-shop-back/internal/warehousing/module"

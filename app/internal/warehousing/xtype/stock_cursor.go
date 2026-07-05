@@ -3,7 +3,7 @@ package xtype
 import (
 	"strconv"
 
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-core/mrtype"
 )
 
 type (

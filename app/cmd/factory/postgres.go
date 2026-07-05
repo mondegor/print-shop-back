@@ -9,9 +9,9 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file" // используется в migrate.NewWithDatabaseInstance
 	"github.com/jackc/pgx/v5/stdlib"
-	"github.com/mondegor/go-sysmess/mrpostgres"
-	"github.com/mondegor/go-sysmess/mrpostgres/monitoring"
-	"github.com/mondegor/go-sysmess/mrstorage/gomigrate"
+	"github.com/mondegor/go-core/mrpostgres"
+	"github.com/mondegor/go-core/mrpostgres/monitoring"
+	"github.com/mondegor/go-core/mrstorage/gomigrate"
 
 	"print-shop-back/config"
 	"print-shop-back/internal/adapter/log"

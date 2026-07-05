@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrpath"
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/mrpath"
+	"github.com/mondegor/go-core/mrstorage"
 
 	"print-shop-back/internal/adapter/workflow"
 	"print-shop-back/internal/provideraccounts/module"

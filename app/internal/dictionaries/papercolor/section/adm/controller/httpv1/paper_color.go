@@ -3,8 +3,8 @@ package httpv1
 import (
 	"net/http"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/dictionaries/papercolor/module"

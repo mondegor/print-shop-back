@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-core/errors"
 
 	"print-shop-back/pkg/api"
 )

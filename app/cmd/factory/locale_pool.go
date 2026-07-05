@@ -3,9 +3,9 @@ package factory
 import (
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/errors/helper"
-	"github.com/mondegor/go-sysmess/mrlocale"
-	"github.com/mondegor/go-sysmess/mrlocale/provider/gotext"
+	"github.com/mondegor/go-core/errors/helper"
+	"github.com/mondegor/go-core/mrlocale"
+	"github.com/mondegor/go-core/mrlocale/provider/gotext"
 	"golang.org/x/text/language"
 
 	"print-shop-back/config"

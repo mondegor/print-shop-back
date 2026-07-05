@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/util/slices/ordered"
-	"github.com/mondegor/go-sysmess/util/xstrings"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/util/slices/ordered"
+	"github.com/mondegor/go-core/util/xstrings"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/warehousing/actiongroup/back/dto"

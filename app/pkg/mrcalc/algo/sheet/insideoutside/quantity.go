@@ -3,7 +3,7 @@ package insideoutside
 import (
 	"fmt"
 
-	"github.com/mondegor/go-sysmess/util/xmath"
+	"github.com/mondegor/go-core/util/xmath"
 
 	"print-shop-back/pkg/mrcalc/s2/rect2d"
 )

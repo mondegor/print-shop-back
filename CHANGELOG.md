@@ -192,7 +192,7 @@
 - Добавлены комментарии для некоторых структур данных;
 
 ### Changed
-- Обновлена система формирования ошибок на основе новой версии библиотеки `go-sysmess`:
+- Обновлена система формирования ошибок на основе новой версии библиотеки `go-core`:
     - изменён формат создания новых ошибок;
     - объект `AppErrorFactory` заменён на `ProtoAppError` который теперь сам является ошибкой;
 - `MimeTypeList` теперь задаётся из `config.yaml`;
@@ -246,7 +246,7 @@
     - `SuccessCreatedItemResponse`;
     - `ChangeItemStatusRequest`;
     - `MoveItemRequest`;
-- Внедрена новая версия библиотеки `go-sysmess`, в связи с этим:
+- Внедрена новая версия библиотеки `go-core`, в связи с этим:
     - в функции `IsAutoCallerOnFunc` изменено условие с использованием `HasCallStack()`;
 - В некоторых API методах тип `PUT` преобразован в `PATCH` для более строгого соответствия API спецификации;
 - Переработан модуль SubmitForm:
@@ -363,7 +363,7 @@
       `mrfactory.WithPermission`, `mrfactory.WithMiddlewareCheckAccess`;
     - `ModulesAccess -> AccessControl` (`modules_access -> access_control`) и добавлен интерфейс `mrcore.AccessControl`;
     - `ClientSection -> AppSection` (`client_section -> app_section`) удалена зависимость от `AccessControl`;
-- При внедрении новой версии библиотеки `go-sysmess` было заменено:
+- При внедрении новой версии библиотеки `go-core` было заменено:
     - `mrerr.FieldErrorList -> CustomErrorList`;
 
 ## 2024-01-19
@@ -409,7 +409,7 @@
 
 ## 2023-09-13
 ### Changed
-- Все общие компоненты были вынесены в отдельные проекты: `go-sysmess`, `go-webcore`,
+- Все общие компоненты были вынесены в отдельные проекты: `go-core`, `go-webcore`,
   `go-storage`, `go-components`, в связи с этим были полностью переработаны все связи проекта;
 - Обновлены все версии библиотек, от которых зависит проект;
 

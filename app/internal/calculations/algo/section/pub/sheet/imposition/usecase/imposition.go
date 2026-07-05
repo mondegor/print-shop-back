@@ -4,9 +4,9 @@ import (
 	"context"
 	"math"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/xmath"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/util/xmath"
 
 	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/controller/httpv1/model"
 	"print-shop-back/internal/calculations/algo/section/pub/sheet/imposition/dto"

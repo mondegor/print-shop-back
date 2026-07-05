@@ -7,10 +7,10 @@ import (
 	"io"
 	"os"
 
-	"github.com/mondegor/go-sysmess/mrprocess"
-	"github.com/mondegor/go-sysmess/mrprocess/onstartup"
-	"github.com/mondegor/go-sysmess/mrprocess/signal"
-	"github.com/mondegor/go-sysmess/mrrun"
+	"github.com/mondegor/go-core/mrprocess"
+	"github.com/mondegor/go-core/mrprocess/onstartup"
+	"github.com/mondegor/go-core/mrprocess/signal"
+	"github.com/mondegor/go-core/mrrun"
 	"github.com/oklog/run"
 
 	"print-shop-back/cmd/factory"

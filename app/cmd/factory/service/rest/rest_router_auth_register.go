@@ -5,7 +5,7 @@ import (
 
 	authvalidate "github.com/mondegor/go-components/mrauth/validate"
 	auth "github.com/mondegor/go-components/wire/mrauth/infra/pub"
-	"github.com/mondegor/go-sysmess/mraccess"
+	"github.com/mondegor/go-core/mraccess"
 	"github.com/mondegor/go-webcore/mrcore/initing"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"

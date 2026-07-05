@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-core/mrtype"
 
 	"print-shop-back/internal/adapter/workflow"
 	"print-shop-back/pkg/controls/enum/elementdetailing"

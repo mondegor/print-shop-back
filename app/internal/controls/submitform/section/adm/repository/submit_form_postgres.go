@@ -5,10 +5,10 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/mrpostgres/db"
-	"github.com/mondegor/go-sysmess/mrstorage"
-	"github.com/mondegor/go-sysmess/mrstorage/mrsql"
-	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-core/mrpostgres/db"
+	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/mrstorage/mrsql"
+	"github.com/mondegor/go-core/mrtype/sortdirection"
 
 	"print-shop-back/internal/adapter/workflow"
 	"print-shop-back/internal/controls/submitform/module"

@@ -1,7 +1,7 @@
 package measure
 
 import (
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-core/mrtype"
 )
 
 const (

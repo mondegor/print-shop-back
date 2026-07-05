@@ -4,8 +4,8 @@ import (
 	"context"
 	"math"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/util/slices/ordered"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/util/slices/ordered"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/warehousing/actiongroup/back/dto"

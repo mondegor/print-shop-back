@@ -7,10 +7,10 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlock"
-	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/mrlock"
+	"github.com/mondegor/go-core/mrworkflow/itemstatus"
 
 	"print-shop-back/internal/controls/submitform/module"
 	"print-shop-back/internal/controls/submitform/section/adm"

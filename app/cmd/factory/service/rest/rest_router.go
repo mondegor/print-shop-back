@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/mondegor/go-components/mrauth/component/produce"
-	"github.com/mondegor/go-sysmess/wire/mraccess"
+	"github.com/mondegor/go-core/wire/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/middleware"
 	"github.com/mondegor/go-webcore/mrserver/mrchi"

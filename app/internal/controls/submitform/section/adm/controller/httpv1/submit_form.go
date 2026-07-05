@@ -8,9 +8,9 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/errors"
-	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
-	"github.com/mondegor/go-sysmess/mrtype"
+	"github.com/mondegor/go-core/errors"
+	mrmodel "github.com/mondegor/go-core/mrmodel/media"
+	"github.com/mondegor/go-core/mrtype"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/controls/submitform/module"

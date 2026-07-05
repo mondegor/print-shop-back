@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-components/mrauth"
-	"github.com/mondegor/go-sysmess/errors/runtime/hint"
+	"github.com/mondegor/go-core/errors/runtime/hint"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/mrjson"
 	"github.com/mondegor/go-webcore/mrserver/mrresp"

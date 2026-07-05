@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/util/mime"
 	"github.com/mondegor/go-storage/mrfilestorage"
-	"github.com/mondegor/go-sysmess/mrstorage"
-	"github.com/mondegor/go-sysmess/util/mime"
 
 	"print-shop-back/config"
 	"print-shop-back/internal/adapter/log"

@@ -5,9 +5,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/mondegor/go-components/mrordering"
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/mrworkflow/itemstatus"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/controls/submitform/module"

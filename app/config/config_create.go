@@ -14,9 +14,9 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
-	accesscfg "github.com/mondegor/go-sysmess/mraccess/config"
-	"github.com/mondegor/go-sysmess/mrapp"
-	extfilecfg "github.com/mondegor/go-sysmess/util/mime/config"
+	accesscfg "github.com/mondegor/go-core/mraccess/config"
+	"github.com/mondegor/go-core/mrapp"
+	extfilecfg "github.com/mondegor/go-core/util/mime/config"
 )
 
 const (

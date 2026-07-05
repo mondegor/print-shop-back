@@ -7,9 +7,9 @@ import (
 	authcfg "github.com/mondegor/go-components/wire/mrauth/config"
 	maliercfg "github.com/mondegor/go-components/wire/mrmailer/config"
 	notifiercfg "github.com/mondegor/go-components/wire/mrnotifier/config"
-	modelcfg "github.com/mondegor/go-sysmess/mrmodel/config"
-	processcfg "github.com/mondegor/go-sysmess/mrprocess/config"
-	"github.com/mondegor/go-sysmess/util/mime"
+	modelcfg "github.com/mondegor/go-core/mrmodel/config"
+	processcfg "github.com/mondegor/go-core/mrprocess/config"
+	"github.com/mondegor/go-core/util/mime"
 )
 
 type (

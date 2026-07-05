@@ -6,11 +6,11 @@ import (
 	"os"
 	"testing"
 
+	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/util/xio"
+	"github.com/mondegor/go-core/wire/mrlog"
+	"github.com/mondegor/go-core/wire/mrtrace"
 	"github.com/mondegor/go-storage/mrtests/infra"
-	"github.com/mondegor/go-sysmess/mrstorage"
-	"github.com/mondegor/go-sysmess/util/xio"
-	"github.com/mondegor/go-sysmess/wire/mrlog"
-	"github.com/mondegor/go-sysmess/wire/mrtrace"
 	"github.com/mondegor/go-webcore/mrtests/helpers"
 	"github.com/stretchr/testify/require"
 
