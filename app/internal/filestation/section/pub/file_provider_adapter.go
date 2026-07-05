@@ -3,7 +3,7 @@ package pub
 import (
 	"context"
 
-	mrmodel "github.com/mondegor/go-sysmess/mrmodel/media"
+	mrmodel "github.com/mondegor/go-core/mrmodel/media"
 )
 
 type (

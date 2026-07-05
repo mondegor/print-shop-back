@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrstorage"
-	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/mrworkflow/itemstatus"
 
 	"print-shop-back/internal/dictionaries/printformat/module"
 	"print-shop-back/internal/dictionaries/printformat/section/pub/entity"

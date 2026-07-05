@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-core/mrevent"
 
 	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/controller/httpv1/model"
 	"print-shop-back/internal/calculations/algo/section/pub/sheet/cutting/dto"

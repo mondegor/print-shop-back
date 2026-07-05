@@ -1,8 +1,8 @@
 package workflow
 
 import (
-	"github.com/mondegor/go-sysmess/mrworkflow"
-	"github.com/mondegor/go-sysmess/mrworkflow/itemstatus"
+	"github.com/mondegor/go-core/mrworkflow"
+	"github.com/mondegor/go-core/mrworkflow/itemstatus"
 )
 
 type (

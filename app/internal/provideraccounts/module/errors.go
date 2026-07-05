@@ -1,7 +1,7 @@
 package module
 
 import (
-	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-core/errors"
 )
 
 // ErrCompanyPageRewriteNameAlreadyExists - rewrite name already exists.

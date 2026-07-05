@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/util/xmath"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/util/xmath"
 
 	"print-shop-back/internal/adapter/log"
 	"print-shop-back/internal/calculations/algo/section/pub/box/packinbox/controller/httpv1/model"

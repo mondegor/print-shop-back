@@ -3,7 +3,7 @@ package factory
 import (
 	authdebug "github.com/mondegor/go-components/mrauth/bag/debug"
 	"github.com/mondegor/go-components/mrauth/model/secureoperation"
-	"github.com/mondegor/go-sysmess/errors/runtime/hint"
+	"github.com/mondegor/go-core/errors/runtime/hint"
 )
 
 // InitDebugInfo - возвращает функцию, которая подготавливает

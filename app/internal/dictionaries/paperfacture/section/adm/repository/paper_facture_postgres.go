@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mondegor/go-sysmess/mrpostgres/db"
-	"github.com/mondegor/go-sysmess/mrstorage"
-	"github.com/mondegor/go-sysmess/mrtype/sortdirection"
+	"github.com/mondegor/go-core/mrpostgres/db"
+	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/mrtype/sortdirection"
 
 	"print-shop-back/internal/adapter/workflow"
 	"print-shop-back/internal/dictionaries/paperfacture/module"

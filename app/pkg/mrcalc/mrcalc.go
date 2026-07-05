@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/mondegor/go-sysmess/util/xmath"
+	"github.com/mondegor/go-core/util/xmath"
 )
 
 const (

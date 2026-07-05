@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-core/errors"
 	"github.com/mondegor/go-webcore/mrcore"
 
 	"print-shop-back/internal/catalog/paper/module"

@@ -1,7 +1,7 @@
 package module
 
 import (
-	"github.com/mondegor/go-sysmess/errors"
+	"github.com/mondegor/go-core/errors"
 )
 
 // ErrQueryHistoryNotFound - query with ShortLink not found.

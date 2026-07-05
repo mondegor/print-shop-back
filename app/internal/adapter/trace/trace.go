@@ -3,8 +3,8 @@ package trace
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrtrace"
-	tracectx "github.com/mondegor/go-sysmess/mrtrace/context"
+	"github.com/mondegor/go-core/mrtrace"
+	tracectx "github.com/mondegor/go-core/mrtrace/context"
 )
 
 const (

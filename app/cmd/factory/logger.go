@@ -1,9 +1,9 @@
 package factory
 
 import (
-	"github.com/mondegor/go-sysmess/wire/mrlog"
-	"github.com/mondegor/go-sysmess/wire/mrlog/slog"
-	"github.com/mondegor/go-sysmess/wire/mrtrace"
+	"github.com/mondegor/go-core/wire/mrlog"
+	"github.com/mondegor/go-core/wire/mrlog/slog"
+	"github.com/mondegor/go-core/wire/mrtrace"
 
 	"print-shop-back/config"
 	"print-shop-back/internal/adapter/log"

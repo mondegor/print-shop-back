@@ -1,7 +1,7 @@
 package pub
 
 import (
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/dictionaries/papercolor/section/pub/controller/httpv1"

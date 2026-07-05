@@ -3,7 +3,7 @@ package factory
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-core/mrevent"
 	"github.com/mondegor/go-webcore/mrserver/mrprometheus"
 
 	"print-shop-back/internal/app"

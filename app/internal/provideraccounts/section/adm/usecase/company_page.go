@@ -3,8 +3,8 @@ package usecase
 import (
 	"context"
 
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrpath"
 
 	"print-shop-back/internal/provideraccounts/section/adm"
 	"print-shop-back/internal/provideraccounts/section/adm/entity"

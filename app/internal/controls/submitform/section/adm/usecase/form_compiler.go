@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/mondegor/go-sysmess/util/casttype"
+	"github.com/mondegor/go-core/util/casttype"
 
 	"print-shop-back/internal/controls/submitform/section/adm/entity"
 	"print-shop-back/pkg/controls/enum/elementtype"

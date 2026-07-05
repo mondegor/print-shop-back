@@ -3,7 +3,7 @@ package factory
 import (
 	"strings"
 
-	"github.com/mondegor/go-sysmess/mrpath"
+	"github.com/mondegor/go-core/mrpath"
 
 	"print-shop-back/config"
 )

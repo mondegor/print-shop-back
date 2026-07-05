@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/mondegor/go-sysmess/errors"
-	"github.com/mondegor/go-sysmess/mrevent"
+	"github.com/mondegor/go-core/errors"
+	"github.com/mondegor/go-core/mrevent"
 
 	"print-shop-back/internal/calculations/queryhistory/section/pub"
 	"print-shop-back/internal/calculations/queryhistory/section/pub/entity"

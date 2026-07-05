@@ -1,10 +1,10 @@
 package provideraccounts
 
 import (
-	"github.com/mondegor/go-sysmess/mrevent"
-	"github.com/mondegor/go-sysmess/mrlock"
-	"github.com/mondegor/go-sysmess/mrpath"
-	"github.com/mondegor/go-sysmess/mrstorage"
+	"github.com/mondegor/go-core/mrevent"
+	"github.com/mondegor/go-core/mrlock"
+	"github.com/mondegor/go-core/mrpath"
+	"github.com/mondegor/go-core/mrstorage"
 	"github.com/mondegor/go-webcore/mrserver"
 
 	"print-shop-back/internal/adapter/log"
