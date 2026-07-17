@@ -9,10 +9,10 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/joho/godotenv v1.5.1
-	github.com/mondegor/go-components v0.8.3-0.20260705224014-7708ce4b9df4
-	github.com/mondegor/go-core v0.15.4-0.20260705220146-80f54d6dabeb
+	github.com/mondegor/go-components v0.8.3-0.20260717130646-205787aa882d
+	github.com/mondegor/go-core v0.15.4-0.20260713222443-f610c957d089
 	github.com/mondegor/go-storage v0.17.2-0.20260705222830-c29b13b1bbb8
-	github.com/mondegor/go-webcore v0.29.3-0.20260705222103-2bfe8f6957e3
+	github.com/mondegor/go-webcore v0.29.3-0.20260714104014-eae381adf415
 	github.com/oklog/run v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2

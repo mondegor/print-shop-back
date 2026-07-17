@@ -410,12 +410,12 @@ components:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: '2023-01-01T12:00:00.000+03:00'
+      example: '2020-01-01T12:00:00.000Z'
     Api.Field.DateTimeUpdatedAt:
       description: Дата и время обновления записи (UTC)
       type: string
       format: date-time
-      example: '2023-01-01T12:00:00.000+03:00'
+      example: '2020-01-01T12:00:00.000Z'
     Warehousing.Containers.Response.Model.Container:
       description: DTO - контейнер
       type: object
@@ -505,7 +505,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
         error_trace_id:
           description: Идентификатор экземпляра конкретной ошибки
           type: string
@@ -605,7 +605,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
     Warehousing.Containers.Request.Model.CreateContainerGroup:
       description: DTO создания новой группы контейнеров
       type: object

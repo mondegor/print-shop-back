@@ -843,7 +843,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
     Api.Response.Model.ErrorDetails:
       description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
       type: object
@@ -879,7 +879,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
         error_trace_id:
           description: Идентификатор экземпляра конкретной ошибки
           type: string
@@ -1408,7 +1408,7 @@ components:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: '2023-01-01T12:00:00.000+03:00'
+      example: '2020-01-01T12:00:00.000Z'
     Calculations.QueryHistory.Response.Model.Query:
       description: DTO - расчёты запроса
       type: object

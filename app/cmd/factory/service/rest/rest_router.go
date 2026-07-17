@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/mondegor/go-components/mrauth/component/produce"
+	"github.com/mondegor/go-components/wire/mrauth/mapping"
 	"github.com/mondegor/go-core/wire/mraccess"
 	"github.com/mondegor/go-webcore/mrserver"
 	"github.com/mondegor/go-webcore/mrserver/middleware"
@@ -76,6 +77,7 @@ func initRestRouter(opts app.Options) (*mrchi.RouterAdapter, error) {
 			opts.Logger,
 			opts.RequestParsers.ClientIP,
 			opts.RequestParsers.User,
+			mapping.OptionUserRealmsToRealmRegistry(opts.Cfg.AccessControl.Realms),
 		),
 	)
 
