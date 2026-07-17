@@ -71,6 +71,7 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 			opts.ResponseSenders.Sender,
 			opts.ResponseSenders.FileSender,
 			opts.NotifierAPI,
+			opts.SecureOperationLogCollectorService,
 			opts.Cfg.AccessControl.Realms,
 			opts.Cfg.AccessControl.DefaultOperationConfirm,
 			opts.Cfg.AccessControl.Auth2FA,

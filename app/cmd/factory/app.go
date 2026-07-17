@@ -276,6 +276,7 @@ func createSharedAPI(opts app.Options) app.Options {
 
 func createSharedServices(opts app.Options) (enrichedOpts app.Options, err error) {
 	opts.UserStatRequestCollectorService = service.InitUserStatRequestCollectorService(opts)
+	opts.SecureOperationLogCollectorService = service.InitSecureOperationLogCollectorService(opts)
 
 	opts.MailProcessorService, err = service.InitMailerProcessorService(opts)
 	if err != nil {

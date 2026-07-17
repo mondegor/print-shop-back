@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/mondegor/go-components/mrauth/dto"
+	authentity "github.com/mondegor/go-components/mrauth/entity"
 	"github.com/mondegor/go-components/mrmailer"
 	mailerentity "github.com/mondegor/go-components/mrmailer/entity"
 	"github.com/mondegor/go-components/mrnotifier"
@@ -77,12 +78,13 @@ type (
 		SettingsSetterAPI           mrsettings.Setter
 
 		// Services and Servers section
-		UserStatRequestCollectorService *collect.MessageCollector[dto.UserActivityLogMessage]
-		MailProcessorService            *consume.MessageProcessor[mailerentity.Message]
-		NoticeProcessorService          *consume.MessageProcessor[notifierentity.Note]
-		HttpServer                      *httpserver.Adapter
-		HttpMonitoringServer            *httpserver.Adapter
-		TaskSchedulerServices           []mrrun.Process // можно добавлять начиная с формирования API
+		UserStatRequestCollectorService    *collect.MessageCollector[dto.UserActivityLogMessage]
+		SecureOperationLogCollectorService *collect.MessageCollector[authentity.SecureOperationLog]
+		MailProcessorService               *consume.MessageProcessor[mailerentity.Message]
+		NoticeProcessorService             *consume.MessageProcessor[notifierentity.Note]
+		HttpServer                         *httpserver.Adapter
+		HttpMonitoringServer               *httpserver.Adapter
+		TaskSchedulerServices              []mrrun.Process // можно добавлять начиная с формирования API
 	}
 
 	// RequestParsers - comment struct.

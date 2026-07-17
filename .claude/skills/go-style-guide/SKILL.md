@@ -1,6 +1,6 @@
 ---
 name: go-style-guide
-description: Code style guide for Go library modules following this company style. Use whenever writing, editing, or reviewing Go code in such a repo so the result matches the established conventions and passes the strict golangci-lint config. Based on the Uber Go Style Guide, adapted with grouped type blocks, English or Russian doc comments, Proto/facade patterns, table-driven _test packages.
+description: Code style guide for Go library modules following this company style. Use whenever writing, editing, or reviewing Go code in such a repo — or its OpenAPI contracts under contracts/ — so the result matches the established conventions and passes the strict golangci-lint config. Based on the Uber Go Style Guide, adapted with grouped type blocks, English or Russian doc comments, Proto/facade patterns, table-driven _test packages, plus contract file placement/prefix rules.
 ---
 
 # Go Library Style Guide
@@ -340,6 +340,30 @@ by `.golangci.yaml` (`golangci-lint` runs strict — `make lint` must pass befor
 - Relaxed in tests (excluded linters): `dupl`, `gosec`, `forbidigo`, `forcetypeassert`,
   `noctx`, `revive`, `unparam`.
 - Benchmarks live in dedicated `*_bench_test.go` files; `go test -bench=. ./pkg/`.
+
+## Contracts (OpenAPI)
+
+The `contracts/<component>/` tree splits by **ownership**, and the filename prefix must match
+the directory — the two always move together:
+
+- `contracts/<component>/_shared/components/<kind>/` → prefix **`Api.`** — generic API primitives
+  reusable by any component (`Api.Field.DateTimeCreatedAt.yaml`, `Api.ResponseJson.Error401.yaml`).
+- `contracts/<component>/components/<kind>/` → prefix **`<Domain>.`** — component-specific
+  (`Auth.Field.DateTimeLastLoggedAt.yaml`, `Auth.Enum.UserStatus.yaml`,
+  `Auth.Response.Model.UserRealm.yaml`). Sub-domains extend the prefix: `Auth.Check.*`.
+
+`<kind>` is `fields` / `enums` / `models` / `responses` / `parameters` / `headers`.
+
+- **Don't reuse a shared field whose `description` doesn't describe your semantics.** A `$ref` pulls
+  in the description too, so reuse is semantic, not just structural. `last_logged_at` (time of the
+  user's last login) must not `$ref` `Api.Field.DateTimeUpdatedAt.yaml` ("Дата и время обновления
+  записи") — that puts a wrong, duplicated description next to the real `updated_at` in the bundled
+  spec. Add a component field (`Auth.Field.DateTimeLastLoggedAt.yaml`) instead. Reuse a shared field
+  only when the shared description is the one you want verbatim.
+- Match `required` to what the server actually emits: a field the handler omits (Go `omitempty`)
+  must not be `required`, or clients get a phantom-mandatory field. Zero-value Go times are the
+  usual trap — `time.Time{}` formats to `0001-01-01T00:00:00Z`, which is schema-valid and
+  semantically garbage.
 
 ## Before finishing
 

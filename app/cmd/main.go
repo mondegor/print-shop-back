@@ -56,6 +56,7 @@ func runApp(args []string, stdout io.Writer) error {
 
 		lastStarting = appRunner.AddNextProcess(ctx, opts.PostgresNotificationService, lastStarting)
 		lastStarting = appRunner.AddNextProcess(ctx, opts.UserStatRequestCollectorService, lastStarting)
+		lastStarting = appRunner.AddNextProcess(ctx, opts.SecureOperationLogCollectorService, lastStarting)
 		lastStarting = appRunner.AddNextProcess(ctx, opts.MailProcessorService, lastStarting)
 		lastStarting = appRunner.AddNextProcess(ctx, opts.NoticeProcessorService, lastStarting)
 	}

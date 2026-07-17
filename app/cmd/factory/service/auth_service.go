@@ -2,6 +2,8 @@ package service
 
 import (
 	"github.com/mondegor/go-components/mrauth/dto"
+	"github.com/mondegor/go-components/mrauth/entity"
+	oploggercollector "github.com/mondegor/go-components/wire/mrauth/oplogger/collector"
 	"github.com/mondegor/go-components/wire/mrauth/scheduler"
 	"github.com/mondegor/go-components/wire/mrauth/userstat/collector"
 	"github.com/mondegor/go-core/mrprocess"
@@ -52,6 +54,32 @@ func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageColle
 			collect.WithHandlerTimeout[dto.UserActivityLogMessage](opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.HandlerTimeout),
 			collect.WithBatchSize[dto.UserActivityLogMessage](int(opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.BatchSize)),
 			collect.WithWorkersCount[dto.UserActivityLogMessage](int(opts.Cfg.TaskScheduleAuth.UserStatRequestCollector.WorkersCount)),
+		),
+	)
+}
+
+// InitSecureOperationLogCollectorService - создаёт сервис для накопления и сохранения записей журнала защищённых операций.
+func InitSecureOperationLogCollectorService(opts app.Options) *collect.MessageCollector[entity.SecureOperationLog] {
+	log.Info(opts.Logger, "Create and init secure operation log collector service")
+
+	return oploggercollector.NewService(
+		opts.PostgresConnManager,
+		opts.ErrorHandler,
+		opts.Logger,
+		opts.TraceManager,
+		serviceSecureOperationLogTableName,
+		oploggercollector.WithMessageCollectorOpts(
+			collect.WithCaptionPrefix[entity.SecureOperationLog]("OperationLog/"),
+			collect.WithReadyTimeout[entity.SecureOperationLog](opts.Cfg.TaskScheduleAuth.OperationLogCollector.ReadyTimeout),
+			collect.WithFlushPeriodStrategy[entity.SecureOperationLog](
+				mrprocess.NewDoubleDelayedStartStrategy(
+					opts.Cfg.TaskScheduleAuth.OperationLogCollector.FlushPeriod,
+					opts.Cfg.TaskScheduleSettings.DefaultPeriodRatio,
+				),
+			),
+			collect.WithHandlerTimeout[entity.SecureOperationLog](opts.Cfg.TaskScheduleAuth.OperationLogCollector.HandlerTimeout),
+			collect.WithBatchSize[entity.SecureOperationLog](int(opts.Cfg.TaskScheduleAuth.OperationLogCollector.BatchSize)),
+			collect.WithWorkersCount[entity.SecureOperationLog](int(opts.Cfg.TaskScheduleAuth.OperationLogCollector.WorkersCount)),
 		),
 	)
 }

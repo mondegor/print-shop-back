@@ -938,7 +938,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
     Api.Response.Model.ErrorDetails:
       description: DTO следующих ошибок - 401, 403, 404, 5XX. RFC 9457 (Problem Details for HTTP APIs)
       type: object
@@ -974,7 +974,7 @@ components:
           description: Время возникновения ошибки с точностью до миллисекунд (UTC)
           type: string
           format: date-time
-          example: '2023-01-01T12:00:00.000+03:00'
+          example: '2020-01-01T12:00:00.000Z'
         error_trace_id:
           description: Идентификатор экземпляра конкретной ошибки
           type: string
@@ -1074,11 +1074,6 @@ components:
           minLength: 64
           maxLength: 128
           example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
-    Api.Field.DateTimeUpdatedAt:
-      description: Дата и время обновления записи (UTC)
-      type: string
-      format: date-time
-      example: '2023-01-01T12:00:00.000+03:00'
     Auth.Enum.UserAuth2fa:
       description: |-
         Тип двухфакторной аутентификации пользователя:
@@ -1091,11 +1086,21 @@ components:
         - PASSWORD
         - TOTP
       example: PASSWORD
+    Auth.Field.DateTimeLastLoggedAt:
+      description: Дата и время последнего входа пользователя (UTC)
+      type: string
+      format: date-time
+      example: '2020-01-01T12:00:00.000Z'
     Api.Field.DateTimeCreatedAt:
       description: Дата и время создания записи (UTC)
       type: string
       format: date-time
-      example: '2023-01-01T12:00:00.000+03:00'
+      example: '2020-01-01T12:00:00.000Z'
+    Api.Field.DateTimeUpdatedAt:
+      description: Дата и время обновления записи (UTC)
+      type: string
+      format: date-time
+      example: '2020-01-01T12:00:00.000Z'
     Auth.Response.Model.UserRealm:
       type: object
       required:
@@ -1112,6 +1117,12 @@ components:
           type: string
           maxLength: 16
           example: standard
+        last_location:
+          description: Местоположение последнего входа или IP
+          type: string
+          example: Saint-Petersburg, RU
+        last_logged_at:
+          $ref: '#/components/schemas/Auth.Field.DateTimeLastLoggedAt'
         created_at:
           $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
         updated_at:
@@ -1135,13 +1146,9 @@ components:
       required:
         - email
         - lang
-        - last_login_ip
-        - last_logged_at
         - auth_2fa_type
         - realms
         - status
-        - created_at
-        - updated_at
       properties:
         email:
           type: string
@@ -1157,11 +1164,6 @@ components:
           type: string
           maxLength: 5
           example: ru-RU
-        last_login_ip:
-          type: string
-          example: 95.165.01.01
-        last_logged_at:
-          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
         auth_2fa_type:
           $ref: '#/components/schemas/Auth.Enum.UserAuth2fa'
         realms:
@@ -1170,10 +1172,6 @@ components:
             $ref: '#/components/schemas/Auth.Response.Model.UserRealm'
         status:
           $ref: '#/components/schemas/Auth.Enum.UserStatus'
-        created_at:
-          $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
-        updated_at:
-          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
     Auth.Check.Request.Model.CheckLogin:
       type: object
       required:
@@ -1411,6 +1409,16 @@ components:
           minLength: 6
           maxLength: 6
           example: '183947'
+    Auth.Field.DateTimeLastSeenAt:
+      description: Дата и время последней активности сессии (UTC)
+      type: string
+      format: date-time
+      example: '2020-01-01T12:00:00.000Z'
+    Auth.Field.DateTimeExpiredAt:
+      description: Дата и время протухания сессии (UTC)
+      type: string
+      format: date-time
+      example: '2020-01-01T12:00:00.000Z'
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
@@ -1418,7 +1426,6 @@ components:
         - app_name
         - device_name
         - last_ip
-        - location
         - created_at
         - last_seen_at
         - is_current
@@ -1440,13 +1447,15 @@ components:
           type: string
           example: 95.165.01.01
         location:
-          description: Местоположение на основе IP
+          description: Местоположение (только если было вычислено)
           type: string
           example: Moscow, Russia
         created_at:
           $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
         last_seen_at:
-          $ref: '#/components/schemas/Api.Field.DateTimeUpdatedAt'
+          $ref: '#/components/schemas/Auth.Field.DateTimeLastSeenAt'
+        expired_at:
+          $ref: '#/components/schemas/Auth.Field.DateTimeExpiredAt'
         is_current:
           description: Признак, что сессия является текущей
           type: boolean
@@ -1534,7 +1543,7 @@ components:
                 description: Время возникновения ошибки с точностью до миллисекунд (UTC)
                 type: string
                 format: date-time
-                example: '2023-01-01T12:00:00.000+03:00'
+                example: '2020-01-01T12:00:00.000Z'
     Api.ResponseJson.Error401:
       description: Пользователь не был аутентифицирован
       content:
@@ -1582,7 +1591,7 @@ components:
         maxLength: 128
       example: b1d50cb1f3bc817f2be3a4b357929cee70402fb5463db25b91568a1801dc0974
     Auth.Sessions.Request.Query.Realm:
-      description: Область, пространство, чьи сессии нужно вернуть (если не указано, берётся realm текущей сессии)
+      description: Realm, чьи сессии нужно вернуть (если не указано, берётся realm текущей сессии)
       name: realm
       in: query
       required: false
