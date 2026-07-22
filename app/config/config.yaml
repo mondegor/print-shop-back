@@ -1,9 +1,58 @@
 ---
 app_name: "Print Shop Service" # env:APPX_NAME
 # app_version: "v0.0.0" # env:APPX_VER
-app_languages: # env:APPX_LANGS
+app_languages: # env:APPX_LANGS; keep in sync with -lang in localization/dict/*/generate.go
   - "ru-RU" # the first language is default
   - "en-US"
+
+app_time_zones: # IANA names
+  - "Etc/GMT+12"          # -12:00
+  - "Pacific/Pago_Pago"   # -11:00
+  - "Pacific/Tahiti"      # -10:00
+  - "Pacific/Marquesas"   # -09:30
+  - "America/Anchorage"   # -09:00, DST
+  - "America/Los_Angeles" # -08:00, DST
+  - "America/Phoenix"     # -07:00
+  - "America/Denver"      # -07:00, DST
+  - "America/Mexico_City" # -06:00
+  - "America/Chicago"     # -06:00, DST
+  - "America/New_York"    # -05:00, DST
+  - "America/Lima"        # -05:00
+  - "America/Santiago"    # -04:00, DST
+  - "America/Caracas"     # -04:00
+  - "America/St_Johns"    # -03:30, DST
+  - "America/Sao_Paulo"   # -03:00
+  - "America/Nuuk"        # -02:00, DST
+  - "Atlantic/Cape_Verde" # -01:00
+  - "Europe/London"       # +00:00, DST
+  - "Africa/Abidjan"      # +00:00
+  - "Africa/Lagos"        # +01:00
+  - "Europe/Paris"        # +01:00, DST
+  - "Africa/Cairo"        # +02:00, DST
+  - "Africa/Khartoum"     # +02:00
+  - "Europe/Moscow"       # +03:00
+  - "Asia/Tehran"         # +03:30
+  - "Asia/Baku"           # +04:00
+  - "Asia/Kabul"          # +04:30
+  - "Asia/Karachi"        # +05:00
+  - "Asia/Kolkata"        # +05:30
+  - "Asia/Kathmandu"      # +05:45
+  - "Asia/Dhaka"          # +06:00
+  - "Asia/Yangon"         # +06:30
+  - "Asia/Jakarta"        # +07:00
+  - "Asia/Shanghai"       # +08:00
+  - "Australia/Eucla"     # +08:45
+  - "Asia/Tokyo"          # +09:00
+  - "Australia/Darwin"    # +09:30
+  - "Australia/Sydney"    # +10:00, DST
+  - "Australia/Brisbane"  # +10:00
+  - "Australia/Lord_Howe" # +10:30, DST
+  - "Pacific/Noumea"      # +11:00
+  - "Pacific/Auckland"    # +12:00, DST
+  - "Pacific/Fiji"        # +12:00
+  - "Pacific/Chatham"     # +12:45, DST
+  - "Pacific/Apia"        # +13:00
+  - "Pacific/Kiritimati"  # +14:00
 
 log_level: info # debug, info, warn, error
 log_time_format: DateTime # RFC3339, RFC3339Nano, DateTime, TimeOnly, Kitchen
@@ -245,6 +294,7 @@ access_control:
       min_resend_time: 2m
 
   auth_2fa:
+    totp_issuer: "PrintShopApp"
     recovery_count: 10
     recovery_code_length: 17
     recovery_low_threshold: 3

@@ -49,7 +49,8 @@ func InitMailerAPI(opts app.Options) *produce.MessageProducer {
 	)
 }
 
-// InitMailerProcessorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
+// InitMailerProcessorService - создаёт обработчик очереди писем
+// (отправка через SMTP и/или мессенджер).
 func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[entity.Message], error) {
 	log.Info(opts.Logger, "Create and init mail processor service")
 
@@ -130,7 +131,8 @@ func InitMailerProcessorService(opts app.Options) (*consume.MessageProcessor[ent
 	), nil
 }
 
-// InitMailerSchedulerService - создаёт сервис для обработки сообщений и связанных с ним задачи.
+// InitMailerSchedulerService - создаёт планировщик задач рассылки писем
+// (перенос/повтор сообщений и очистка очереди).
 func InitMailerSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	log.Info(opts.Logger, "Create and init mail scheduler service")
 

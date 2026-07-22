@@ -32,7 +32,7 @@ func InitLoggerAndTracer(cfg config.Config) (log.Logger, trace.Tracer, error) {
 	return logger, slog.InitTracer(logger), nil
 }
 
-// InitTraceContextManager - создаёт и инициализирует менеджер.
+// InitTraceContextManager - создаёт и инициализирует менеджер контекста трассировки.
 func InitTraceContextManager(_ config.Config, logger log.Logger) (manager trace.ContextManager, err error) {
 	manager, err = mrtrace.InitTraceContextManager(mrlog.DefaultProcessIDs(), logger)
 	if err != nil {

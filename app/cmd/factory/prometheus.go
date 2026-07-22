@@ -11,8 +11,6 @@ import (
 	"print-shop-back/internal/app"
 )
 
-// go get -u github.com/prometheus/client_golang
-
 // InitPrometheus - создаёт объект mrinit.Prometheus.
 func InitPrometheus(opts app.Options) *mrinit.Prometheus {
 	prom := mrinit.NewPrometheus()

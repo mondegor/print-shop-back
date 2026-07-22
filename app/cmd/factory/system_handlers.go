@@ -38,7 +38,7 @@ func RegisterSystemHandlers(opts app.Options) error {
 		),
 	}
 
-	// :TODO: логировать регистрацию обработчиков
+	// TODO: логировать регистрацию обработчиков
 	opts.MonitoringRouter.Handle(
 		"/health",
 		mrresp.HandlerGetHealth(

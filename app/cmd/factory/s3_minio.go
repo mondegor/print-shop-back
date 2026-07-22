@@ -12,9 +12,9 @@ import (
 	"print-shop-back/internal/adapter/trace"
 )
 
-// NewS3Minio - создаёт объект mrminio.ConnAdapter.
-func NewS3Minio(ctx context.Context, logger log.Logger, tracer trace.Tracer, cfg config.Config) (*mrminio.ConnAdapter, error) {
-	log.Info(logger, "Create and init file provider pool")
+// InitS3Minio - создаёт объект mrminio.ConnAdapter.
+func InitS3Minio(ctx context.Context, logger log.Logger, tracer trace.Tracer, cfg config.Config) (*mrminio.ConnAdapter, error) {
+	log.Info(logger, "Create and init s3 minio connection")
 
 	opts := mrminio.Options{
 		Host:     cfg.S3Host,
@@ -37,7 +37,8 @@ func NewS3Minio(ctx context.Context, logger log.Logger, tracer trace.Tracer, cfg
 	return conn, nil
 }
 
-// RegisterS3ImageStorage - comment func.
+// RegisterS3ImageStorage - регистрирует в пуле S3-хранилище изображений
+// (создаёт бакет при необходимости).
 func RegisterS3ImageStorage(
 	logger log.Logger,
 	cfg config.Config,

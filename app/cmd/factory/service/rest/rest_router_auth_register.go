@@ -13,7 +13,7 @@ import (
 	"print-shop-back/internal/app"
 )
 
-// TODO: дублирование название таблиц.
+// TODO: дублирование названий таблиц.
 const (
 	serviceAuthTokensTableName      = "printshop_auth.auth_tokens" //nolint:gosec
 	serviceSecureOperationTableName = "printshop_auth.secure_operations"
@@ -68,6 +68,8 @@ func getAuthAPIControllers(opts app.Options) []initing.HttpModule {
 				opts.RequestParsers.User,
 				opts.RequestParsers.Locale,
 			),
+			opts.LocalePool,
+			opts.TimeZoneList,
 			opts.ResponseSenders.Sender,
 			opts.ResponseSenders.FileSender,
 			opts.NotifierAPI,

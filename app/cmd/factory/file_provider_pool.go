@@ -20,13 +20,13 @@ func InitFileProviderPool(logger log.Logger, tracer trace.Tracer, cfg config.Con
 
 	pool := mrstorage.NewFileProviderPool()
 
-	// fsAdapter := NewFileSystem(logger, cfg)
+	// fsAdapter := InitFileSystem(logger, cfg)
 	//
 	// if err := RegisterFileImageStorage(logger, tracer, cfg, pool, fsAdapter); err != nil {
 	// 	return nil, err
 	// }
 
-	minioAdapter, err := NewS3Minio(ctx, logger, tracer, cfg)
+	minioAdapter, err := InitS3Minio(ctx, logger, tracer, cfg)
 	if err != nil {
 		return nil, err
 	}

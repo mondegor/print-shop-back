@@ -23,11 +23,11 @@ const (
 	langURLParam = "lang"
 )
 
-// CreateRequestParsers - создаются и возвращаются парсеры запросов клиента.
-func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
+// InitRequestParsers - создаются и возвращаются парсеры запросов клиента.
+func InitRequestParsers(opts app.Options) (app.RequestParsers, error) {
 	log.Info(opts.Logger, "Create and init base request parsers")
 
-	validator, err := NewValidator(opts.Logger, opts.Cfg)
+	validator, err := initUserValidator(opts.Logger, opts.Cfg)
 	if err != nil {
 		return app.RequestParsers{}, err
 	}
@@ -73,7 +73,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 		UUID:       parser.NewUUID(pathFunc, opts.Logger),
 		Validator:  parser.NewValidator(mrjson.NewDecoder(), validator),
 		ClientIP:   parser.NewClientIP(opts.Logger),
-		User:       parser.NewUser(opts.Logger),
+		User:       parser.NewUser(opts.TimeZoneList, opts.Logger),
 		Locale:     parser.NewLocale(opts.LocalePool, opts.Logger, langURLParam),
 		FileJson: parser.NewFile(
 			opts.Logger,
@@ -120,8 +120,7 @@ func CreateRequestParsers(opts app.Options) (app.RequestParsers, error) {
 	return parsers, nil
 }
 
-// NewValidator - создаёт объект mrplayvalidator.ValidatorAdapter.
-func NewValidator(logger log.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
+func initUserValidator(logger log.Logger, cfg config.Config) (*mrplayvalidator.ValidatorAdapter, error) {
 	log.Info(logger, "Create and init data validator")
 
 	customTags := []mrview.Tag{
@@ -129,6 +128,8 @@ func NewValidator(logger log.Logger, cfg config.Config) (*mrplayvalidator.Valida
 		mrauthconf.TagEmail(),
 		mrauthconf.TagPhone(),
 		mrauthconf.TagEmailPhone(),
+		mrauthconf.TagLang(),
+		mrauthconf.TagTimeZone(),
 		mrview.TagVariable(),
 		mrview.TagName(),
 		mrview.TagRewriteName(),
