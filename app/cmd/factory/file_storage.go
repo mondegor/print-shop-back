@@ -13,8 +13,8 @@ import (
 	"print-shop-back/internal/adapter/trace"
 )
 
-// NewFileSystem - создаёт объект mrfilestorage.FileSystem.
-func NewFileSystem(logger log.Logger, cfg config.Config) *mrfilestorage.FileSystem {
+// InitFileSystem - создаёт объект mrfilestorage.FileSystem.
+func InitFileSystem(logger log.Logger, cfg config.Config) *mrfilestorage.FileSystem {
 	log.Info(logger, "Create and init file system")
 
 	return mrfilestorage.New(
@@ -24,7 +24,8 @@ func NewFileSystem(logger log.Logger, cfg config.Config) *mrfilestorage.FileSyst
 	)
 }
 
-// RegisterFileImageStorage - comment func.
+// RegisterFileImageStorage - регистрирует в пуле файловое хранилище изображений
+// на локальной файловой системе.
 func RegisterFileImageStorage(
 	logger log.Logger,
 	tracer trace.Tracer,

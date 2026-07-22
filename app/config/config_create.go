@@ -17,6 +17,7 @@ import (
 	accesscfg "github.com/mondegor/go-core/mraccess/config"
 	"github.com/mondegor/go-core/mrapp"
 	extfilecfg "github.com/mondegor/go-core/util/mime/config"
+	timezonecfg "github.com/mondegor/go-core/util/timezone/config"
 )
 
 const (
@@ -29,6 +30,9 @@ const (
 var regexpEnvironment = regexp.MustCompile(`^[a-z][a-z0-9]+$`)
 
 // Create - создаёт, инициализирует и возвращает конфигурацию приложения.
+// Сначала собирает сырую конфигурацию из всех слоёв (createConfig), затем
+// корректирует значения (CorrectValuesRealm) и проверяет их валидаторами
+// (ValidateRealms, ValidateLanguages, ValidateTimeZones и т.д.).
 func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 	if stdout == nil {
 		return Config{}, errors.New("stdout is required")
@@ -69,6 +73,18 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		}
 	}
 
+	if len(cfg.AppLanguages) == 0 {
+		cfg.AppLanguages = append(cfg.AppLanguages, "ru-RU")
+	}
+
+	if err = authcfg.ValidateLanguages(cfg.AppLanguages); err != nil {
+		return Config{}, err
+	}
+
+	if err = timezonecfg.ValidateTimeZones(cfg.AppTimeZones); err != nil {
+		return Config{}, err
+	}
+
 	if cfg.UnexpectedErrorHttpStatus < 400 || cfg.UnexpectedErrorHttpStatus > 599 {
 		return Config{}, fmt.Errorf("unexpected_error_http_status: min=400, max=599, got=%d", cfg.UnexpectedErrorHttpStatus)
 	}
@@ -77,10 +93,6 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 		if ver := mrapp.Version(); ver != "" {
 			cfg.AppVersion = ver
 		}
-	}
-
-	if len(cfg.AppLanguages) == 0 {
-		cfg.AppLanguages = append(cfg.AppLanguages, "ru-RU")
 	}
 
 	if cfg.WorkDir != "" {
@@ -100,6 +112,16 @@ func Create(args CmdArgs, stdout io.Writer) (cfg Config, err error) {
 	return cfg, nil
 }
 
+// createConfig - собирает сырую конфигурацию из слоёв. Слои применяются по порядку,
+// каждый следующий перекрывает значения предыдущего:
+//  1. .env-файл (godotenv.Overload) - если путь задан, значения кладутся в ENV процесса;
+//  2. unquoteEnvs() - снимает кавычки с ENV (docker может отдавать значения в кавычках);
+//  3. определение окружения: args.Environment -> APPX_ENV -> "prod";
+//  4. config.yaml - базовый слой (обязателен);
+//  5. config_<env>.yaml - накладывается поверх базового (необязателен);
+//     отсутствующие в нём ключи сохраняют значения из config.yaml;
+//  6. cleanenv.ReadEnv - ENV-переменные перекрывают yaml по тегам env:"...";
+//  7. args.LogLevel - точечный override уровня логирования из аргументов CLI.
 func createConfig(args CmdArgs) (cfg Config, err error) {
 	cfg.StartedAt = time.Now().UTC()
 
@@ -140,12 +162,15 @@ func createConfig(args CmdArgs) (cfg Config, err error) {
 		cfg.WorkDir = args.WorkDir
 	}
 
-	// загружается базовая конфигурация
+	// загружается базовая конфигурация (обязательный слой, задаёт значения по умолчанию)
 	if err = parseYAML(configDir+"config.yaml", &cfg, true); err != nil {
 		return Config{}, err
 	}
 
-	// основная конфигурация уточняется, если задана конфигурация для указанного окружения
+	// базовая конфигурация уточняется слоем для текущего окружения (необязательный):
+	// заданные в нём ключи перекрывают базовые, а отсутствующие - наследуются из config.yaml.
+	// Поэтому, например, config_tests.yaml задаёт только специфичное для тестов, а
+	// app_time_zones/totp_issuer/app_languages берутся из config.yaml.
 	if err = parseYAML(configDir+"config_"+cfg.Environment+".yaml", &cfg, false); err != nil {
 		return Config{}, err
 	}
@@ -162,6 +187,10 @@ func createConfig(args CmdArgs) (cfg Config, err error) {
 	return cfg, nil
 }
 
+// parseYAML - декодирует один yaml-файл в уже заполненный cfg (слияние, а не замена):
+// присутствующие в файле ключи перекрывают текущие значения (слайсы заменяются целиком),
+// отсутствующие - остаются нетронутыми. Если required=false и файла нет, он молча
+// пропускается (путь помечается как [SKIPPED]); при required=true отсутствие - ошибка.
 func parseYAML(configPath string, cfg *Config, required bool) error {
 	fp, err := os.Open(configPath) //nolint:gosec
 	if err != nil {

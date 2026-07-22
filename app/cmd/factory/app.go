@@ -24,12 +24,13 @@ import (
 	"print-shop-back/internal/app"
 )
 
-// TODO: дублирование название таблиц.
+// TODO: дублирование названий таблиц.
 const (
 	serviceAuthTokensTableName = "printshop_auth.auth_tokens" //nolint:gosec
 )
 
-// InitApp - Настраивает конфигурацию, внешнее окружение приложения, после этого создаёт её модули и компоненты.
+// InitApp - настраивает конфигурацию и внешнее окружение приложения, после чего создаёт
+// его модули и компоненты.
 func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 	parsedArgs, err := config.ParseCmdArgs(args)
 	if err != nil {
@@ -63,10 +64,10 @@ func InitApp(args []string, stdout io.Writer) (app.Options, error) {
 	)
 }
 
-// InitAppEnvironment - Настраивает внешнее окружение приложения на основе переданной конфигурации,
-// после этого создаёт её модули и компоненты.
-// Имеется возможность заранее задать некоторые параметры и компонентов приложения (актуально для использования в тестах):
-// К ним относится: opts.PostgresConnManager, opts.RedisAdapter, opts.FileProviderPool.
+// InitAppEnvironment - настраивает внешнее окружение приложения на основе переданной конфигурации,
+// после чего создаёт модули и компоненты приложения.
+// Часть компонентов можно задать заранее (актуально для тестов): opts.PostgresConnManager,
+// opts.RedisAdapter, opts.FileProviderPool - если они уже заданы, повторно не создаются.
 func InitAppEnvironment(opts app.Options) (app.Options, error) {
 	logger := opts.Logger
 
@@ -184,11 +185,13 @@ func createAppEnvironment(opts app.Options) (enrichedOpts app.Options, err error
 		opts.Tracer,
 	)
 
-	if opts.LocalePool, err = LocalePool(opts.Logger, opts.Cfg); err != nil {
+	if opts.LocalePool, err = InitLocalePool(opts.Logger, opts.Cfg); err != nil {
 		return app.Options{}, err
 	}
 
-	if opts.RequestParsers, err = CreateRequestParsers(opts); err != nil {
+	opts.TimeZoneList = InitTimeZones(opts.Logger, opts.Cfg)
+
+	if opts.RequestParsers, err = InitRequestParsers(opts); err != nil {
 		return app.Options{}, err
 	}
 

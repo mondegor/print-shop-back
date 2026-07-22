@@ -23,6 +23,7 @@ import (
 	"github.com/mondegor/go-core/mrprocess/consume"
 	"github.com/mondegor/go-core/mrrun"
 	"github.com/mondegor/go-core/mrstorage"
+	"github.com/mondegor/go-core/util/timezone"
 	"github.com/mondegor/go-core/util/xio"
 	"github.com/mondegor/go-storage/mrredis"
 	"github.com/mondegor/go-webcore/mrclient/sentry"
@@ -61,6 +62,7 @@ type (
 		FileProviderPool            *mrstorage.FileProviderPool
 		Locker                      mrlock.Locker
 		LocalePool                  *mrlocale.Pool
+		TimeZoneList                *timezone.LocationList
 		RequestParsers              RequestParsers
 		ResponseSenders             ResponseSenders
 		PermsProvider               *filestorage.PermsProvider

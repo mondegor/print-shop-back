@@ -44,7 +44,8 @@ func InitNotifierAPI(opts app.Options) *produce.NoteProducer {
 	)
 }
 
-// InitNotifierProcessorService - создаёт сервис для обработки уведомлений и связанных с ним задачи.
+// InitNotifierProcessorService - создаёт обработчик очереди уведомлений
+// (формирует письма по шаблонам и передаёт их в рассылку).
 func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[entity.Note] {
 	log.Info(opts.Logger, "Create and init notice processor service")
 
@@ -88,7 +89,8 @@ func InitNotifierProcessorService(opts app.Options) *consume.MessageProcessor[en
 	)
 }
 
-// InitNotifierSchedulerService - создаёт сервис для обработки уведомлений и связанных с ним задачи.
+// InitNotifierSchedulerService - создаёт планировщик задач уведомлений
+// (перенос/повтор уведомлений и очистка очереди).
 func InitNotifierSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	log.Info(opts.Logger, "Create and init notice scheduler service")
 

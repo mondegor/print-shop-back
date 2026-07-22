@@ -5,6 +5,7 @@ CREATE TABLE printshop_auth.users (
     user_email character varying(64) NOT NULL,
     user_phone int8 DEFAULT NULL,
     lang_code character varying(5) NOT NULL,
+    user_timezone character varying(64) NOT NULL, -- IANA-имя часового пояса пользователя
     registered_ip inet NOT NULL, -- remote addr на момент создания аккаунта (write-once)
     registered_proxy_ip inet NULL, -- proxy addr на момент создания аккаунта (для информации)
     user_status int2 NOT NULL, -- 1=DRAFT, 2=ENABLED, 3=DISABLED, 4=BLOCKED

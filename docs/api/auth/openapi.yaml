@@ -1,12 +1,12 @@
 openapi: 3.0.3
 info:
   version: LATEST
-  title: Auth API print-shop
+  title: Auth API
   license:
     name: Apache-2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   description: |-
-    Auth REST API проекта print-shop
+    Auth REST API
     - При создании нового аккаунта, пользователь, в качестве логина должен указать свой емаил, на который будет отправлен код, для подтверждения емаила и активации аккаунта;
     - Для последующего входа пользователем в систему, ему нужно указать свой емаил/телефон и далее ввести код подтверждения отправленный на его емаил. При включенной 2FA ему дополнительно нужно будет ввести пароль/TOTP код от своей учётной записи;
     - Авторизованный пользователь может:
@@ -15,6 +15,25 @@ info:
       - изменять свои емаил/телефон с их обязательным подтверждением;
       - следить за всеми своими открытыми сессиями и закрыть любую из них при необходимости;
       - осуществлять особые операции требующие дополнительного подтверждения по емаилу/телефону или 2FA методами;
+
+    ### Общие параметры запросов
+    Перечисленные ниже параметры необязательны и принимаются **всеми методами** API (поэтому у каждого метода отдельно не дублируются):
+    - `Accept-Language` (заголовок) / `lang` (query-параметр) — предпочтительный язык пользователя;
+    - `X-Correlation-Id` (заголовок) — уникальный идентификатор клиента для сквозной трассировки запроса.
+
+    Приоритет применения языка описан ниже в разделе «Локализация и время».
+
+    ### Локализация и время
+    - Все сущностные даты/время в ответах отдаются в **часовом поясе пользователя** в формате RFC3339 со смещением (например `2020-01-01T15:00:00+03:00`);
+    - Текстовые сообщения (`message`) и уведомления отдаются на **языке пользователя**;
+    - **Часовой пояс** берётся из access-токена, в котором он фиксируется на момент выпуска токена, и на конкретный запрос не переопределяется. Задать его можно при регистрации (`POST /v1/signup`) и изменить позже (`POST /v1/user/settings`); для гостевых запросов применяется `UTC`;
+    - Изменённые через `POST /v1/user/settings` язык и часовой пояс применяются к ответам **только после перевыпуска access-токена** — до этого сервер продолжает отвечать в прежнем языке и поясе. Поля `lang` и `tz` в `GET /v1/user` читаются из профиля, то есть отдают уже новые значения, поэтому в этом окне они могут не совпадать с языком и поясом, применёнными к тому же ответу;
+    - **Язык** определяется по приоритету:
+      1. query-параметр запроса — `lang` (например `ru-RU`) — наивысший приоритет, разовое переопределение на конкретный запрос;
+      2. access-токен — для **авторизованных** запросов сервер подставляет язык, зафиксированный в токене на момент его выпуска, вместо клиентского заголовка `Accept-Language` (клиентское значение при этом игнорируется); для гостевых запросов используется значение заголовка;
+      3. значение по умолчанию — язык системы;
+    - Невалидное значение источника языка пропускается — применяется следующий по приоритету;
+    - Время **возникновения ошибки** (`time` в объектах ошибок) — это системное время и всегда отдаётся в **UTC**, независимо от часового пояса пользователя.
 
     ### Пользовательские ограничения полей и ошибки
 
@@ -36,7 +55,7 @@ info:
     - ErrSwitchStatusRejected - перевод в указанный статус объекта отклонён.\
       WorkFlow объекта запрещает переключение в указанный статус;
 servers:
-  - url: http://api.print-shop.local/auth
+  - url: http://api.sample.local/auth
     description: Local Domain
   - url: http://localhost:8080/auth
     description: Local Host
@@ -249,6 +268,40 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Auth.Response.Model.UserInfo'
+        '401':
+          $ref: '#/components/responses/Api.ResponseJson.Error401'
+        '500':
+          $ref: '#/components/responses/Api.ResponseJson.Error5xx'
+  /v1/user/settings:
+    post:
+      summary: Auth/R7. Метод изменения языка и часового пояса пользователя
+      description: |-
+        Метод предназначен для изменения языка (локали) и часового пояса текущего пользователя.
+        В ответе возвращаются настройки, которые были реально сохранены, чтобы клиент применил
+        их у себя: часовой пояс может отличаться от запрошенного, если его имя приложению
+        неизвестно и пояс был подобран по смещению.
+        Сохранённые язык и часовой пояс начинают применяться к ответам API только после
+        перевыпуска access-токена, так как фиксируются в нём на момент выпуска
+      operationId: applyUserSettings
+      tags:
+        - Auth
+      x-auth-scopes:
+        - any-users
+      requestBody:
+        required: true
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Auth.Request.Model.ApplyUserSettings'
+      responses:
+        '200':
+          description: Язык и часовой пояс пользователя обновлены
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Auth.Response.Model.UserSettings'
+        '400':
+          $ref: '#/components/responses/Api.ResponseJson.Error400'
         '401':
           $ref: '#/components/responses/Api.ResponseJson.Error401'
         '500':
@@ -846,6 +899,33 @@ components:
           minLength: 7
           maxLength: 64
           example: user-email@example.com
+        tz:
+          description: |-
+            Часовой пояс пользователя (IANA-имя). Необязателен:
+            - пустая строка равнозначна отсутствию поля, поэтому минимальная длина не задана;
+              непустое значение короче 3 символов IANA-именем не является и отвергается
+            - значение "Local" не допускается, т.к. IANA-именем не является
+            - если имя не указано или приложению неизвестно, пояс подбирается
+              по полям tz_offset и tz_dst; UTC сохраняется, только если подобрать
+              пояс не удалось; сохранённый пояс доступен в поле tz информации
+              о пользователе (GET /v1/user)
+          type: string
+          maxLength: 64
+          example: Europe/Moscow
+        tz_offset:
+          description: |-
+            Смещение часового пояса относительно UTC в секундах на момент запроса
+            (диапазон соответствует существующим поясам: -12:00..+14:00)
+          type: integer
+          format: int32
+          minimum: -43200
+          maximum: 50400
+          example: 10800
+        tz_dst:
+          description: Признак того, что в часовом поясе на момент запроса действует летнее время
+          type: boolean
+          default: false
+          example: false
     Auth.Enum.ConfirmMethod:
       description: |-
         Метод подтверждения подлинности пользователя:
@@ -1087,20 +1167,20 @@ components:
         - TOTP
       example: PASSWORD
     Auth.Field.DateTimeLastLoggedAt:
-      description: Дата и время последнего входа пользователя (UTC)
+      description: Дата и время последнего входа пользователя в часовом поясе пользователя (RFC3339 со смещением; по умолчанию UTC)
       type: string
       format: date-time
-      example: '2020-01-01T12:00:00.000Z'
+      example: '2020-01-01T15:00:00+03:00'
     Api.Field.DateTimeCreatedAt:
-      description: Дата и время создания записи (UTC)
+      description: Дата и время создания записи в часовом поясе пользователя (RFC3339 со смещением; по умолчанию UTC)
       type: string
       format: date-time
-      example: '2020-01-01T12:00:00.000Z'
+      example: '2020-01-01T15:00:00+03:00'
     Api.Field.DateTimeUpdatedAt:
-      description: Дата и время обновления записи (UTC)
+      description: Дата и время обновления записи в часовом поясе пользователя (RFC3339 со смещением; по умолчанию UTC)
       type: string
       format: date-time
-      example: '2020-01-01T12:00:00.000Z'
+      example: '2020-01-01T15:00:00+03:00'
     Auth.Response.Model.UserRealm:
       type: object
       required:
@@ -1146,6 +1226,7 @@ components:
       required:
         - email
         - lang
+        - tz
         - auth_2fa_type
         - realms
         - status
@@ -1164,6 +1245,11 @@ components:
           type: string
           maxLength: 5
           example: ru-RU
+        tz:
+          description: Часовой пояс пользователя (IANA-имя), сохранённый в его профиле. Даты/время в ответах форматируются по поясу, зафиксированному в access-токене, поэтому после смены настроек и до перевыпуска токена значения могут отличаться
+          type: string
+          maxLength: 64
+          example: Europe/Moscow
         auth_2fa_type:
           $ref: '#/components/schemas/Auth.Enum.UserAuth2fa'
         realms:
@@ -1172,6 +1258,69 @@ components:
             $ref: '#/components/schemas/Auth.Response.Model.UserRealm'
         status:
           $ref: '#/components/schemas/Auth.Enum.UserStatus'
+    Auth.Request.Model.ApplyUserSettings:
+      type: object
+      required:
+        - lang
+        - tz
+      properties:
+        lang:
+          description: |-
+            Язык (локаль) пользователя: код языка и необязательный код региона
+            - канонический вид не требуется: регистр и разделитель произвольны ("ru_RU", "en-us"),
+              значение приводится к единому виду на сервере, и в ответе возвращается применённый язык
+            - если язык приложению неизвестен, подбирается ближайший доступный,
+              а при отсутствии подходящего применяется язык по умолчанию
+          type: string
+          minLength: 2
+          maxLength: 5
+          example: ru-RU
+        tz:
+          description: |-
+            Часовой пояс пользователя (IANA-имя)
+            - pattern: "^[A-Za-z][A-Za-z0-9+_-]*(/[A-Za-z0-9+_.-]+){0,2}$"
+            - значение "Local" не допускается, т.к. IANA-именем не является
+            - если пояс приложению неизвестен, он не отвергается, а подбирается
+              по полям tz_offset и tz_dst; применённый пояс возвращается в ответе
+          type: string
+          minLength: 3
+          maxLength: 64
+          example: Europe/Moscow
+        tz_offset:
+          description: |-
+            Смещение часового пояса относительно UTC в секундах на момент запроса
+            (диапазон соответствует существующим поясам: -12:00..+14:00)
+          type: integer
+          format: int32
+          minimum: -43200
+          maximum: 50400
+          example: 10800
+        tz_dst:
+          description: Признак того, что в часовом поясе на момент запроса действует летнее время
+          type: boolean
+          default: false
+          example: false
+    Auth.Response.Model.UserSettings:
+      type: object
+      required:
+        - lang
+        - tz
+      properties:
+        lang:
+          description: Язык (локаль) пользователя, который был сохранён
+          type: string
+          minLength: 2
+          maxLength: 5
+          example: ru-RU
+        tz:
+          description: |-
+            Часовой пояс пользователя (IANA-имя), который был сохранён.
+            Может отличаться от запрошенного, если его имя приложению неизвестно
+            и пояс был подобран по смещению; клиент применяет именно это значение
+          type: string
+          minLength: 3
+          maxLength: 64
+          example: Europe/Moscow
     Auth.Check.Request.Model.CheckLogin:
       type: object
       required:
@@ -1410,15 +1559,15 @@ components:
           maxLength: 6
           example: '183947'
     Auth.Field.DateTimeLastSeenAt:
-      description: Дата и время последней активности сессии (UTC)
+      description: Дата и время последней активности сессии в часовом поясе пользователя (RFC3339 со смещением; по умолчанию UTC)
       type: string
       format: date-time
-      example: '2020-01-01T12:00:00.000Z'
-    Auth.Field.DateTimeExpiredAt:
-      description: Дата и время протухания сессии (UTC)
+      example: '2020-01-01T15:00:00+03:00'
+    Auth.Field.DateTimeExpiresAt:
+      description: Дата и время протухания сессии в часовом поясе пользователя (RFC3339 со смещением; по умолчанию UTC)
       type: string
       format: date-time
-      example: '2020-01-01T12:00:00.000Z'
+      example: '2020-01-01T15:00:00+03:00'
     Auth.Sessions.Response.Model.UserSession:
       type: object
       required:
@@ -1454,8 +1603,8 @@ components:
           $ref: '#/components/schemas/Api.Field.DateTimeCreatedAt'
         last_seen_at:
           $ref: '#/components/schemas/Auth.Field.DateTimeLastSeenAt'
-        expired_at:
-          $ref: '#/components/schemas/Auth.Field.DateTimeExpiredAt'
+        expires_at:
+          $ref: '#/components/schemas/Auth.Field.DateTimeExpiresAt'
         is_current:
           description: Признак, что сессия является текущей
           type: boolean

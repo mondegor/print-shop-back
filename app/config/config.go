@@ -25,6 +25,7 @@ type (
 		AppVersion   string   `yaml:"app_version" env:"APPX_VER" env-default:"v0.0.0"`    // v0.0.0 - autodetect
 		Environment  string   `env:"APPX_ENV" env-required:"true"`                        // ENV or cmd ARG:environment (local, dev, test, prod)
 		AppLanguages []string `yaml:"app_languages" env:"APPX_LANGS" env-required:"true"` // language by "," separated
+		AppTimeZones []string `yaml:"app_time_zones"`                                     // IANA names by "," separated; UTC is always registered
 
 		// Log - настройки логирования и отладки
 		LogLevel          string `yaml:"log_level"` // YAML or cmd ARG:log-level

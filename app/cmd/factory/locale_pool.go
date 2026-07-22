@@ -21,8 +21,8 @@ import (
 	"print-shop-back/internal/localization/dict/msgcat"
 )
 
-// LocalePool - создаёт объект mrlang.LocalePool.
-func LocalePool(logger log.Logger, cfg config.Config) (*mrlocale.Pool, error) {
+// InitLocalePool - создаёт объект mrlocale.Pool.
+func InitLocalePool(logger log.Logger, cfg config.Config) (*mrlocale.Pool, error) {
 	log.Info(logger, "Create and init language translator")
 
 	var (
@@ -40,6 +40,15 @@ func LocalePool(logger log.Logger, cfg config.Config) (*mrlocale.Pool, error) {
 					languages,
 					gotext.WithDomainCatalog(mrlocale.DefaultMessagesDomain, msgcat.NewCatalog()),
 					gotext.WithDomainCatalog(mrlocale.DefaultErrorsDomain, errcat.NewCatalog()),
+					// TODO: имена доменов не совпадают с module.LocaleDomain, объявленными
+					// в модулях ("catalog.boxes" против "catalog.box", "dictionaries.papercolors"
+					// против "dictionaries.paper-colors" - и так все 7 доменов). Из-за этого
+					// lz.TranslateInDomain не находит каталог и молча отдаёт исходную строку:
+					// gotext.Provider.Localize при промахе берёт принтер без каталога, а Bundle
+					// проверяет при старте только домены messages и errors.
+					// Сейчас это ни на что не влияет - все 7 каталогов пусты ("messages": null),
+					// поэтому перевод справочников всё равно не выполняется. Приводить имена
+					// к общему виду имеет смысл вместе с наполнением каталогов переводами.
 					gotext.WithDomainCatalog("catalog.boxes", boxescat.NewCatalog()),
 					gotext.WithDomainCatalog("catalog.laminates", laminatescat.NewCatalog()),
 					gotext.WithDomainCatalog("catalog.papers", paperscat.NewCatalog()),
@@ -64,7 +73,7 @@ func LocalePool(logger log.Logger, cfg config.Config) (*mrlocale.Pool, error) {
 
 			buf = append(buf, "Locales:\n"...)
 
-			for _, lang := range localeProvider.Languages() {
+			for _, lang := range cfg.AppLanguages {
 				buf = append(buf, fmt.Sprintf("- Language=%s\n", lang)...)
 			}
 

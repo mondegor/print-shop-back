@@ -1,11 +1,16 @@
 package main
 
+// _ "time/tzdata" встраивает базу часовых поясов IANA прямо в бинарь, чтобы time.LoadLocation
+// (резолв и валидация часового пояса пользователя в mrauth) работал в минимальных образах
+// (scratch/distroless) без системного /usr/share/zoneinfo. Добавляет ~450 КБ к размеру бинаря.
+
 import (
 	"context"
 	"errors"
 	"fmt"
 	"io"
 	"os"
+	_ "time/tzdata"
 
 	"github.com/mondegor/go-core/mrprocess"
 	"github.com/mondegor/go-core/mrprocess/onstartup"
@@ -17,8 +22,6 @@ import (
 	"print-shop-back/config"
 	"print-shop-back/internal/adapter/log"
 )
-
-// go get -u github.com/oklog/run
 
 func main() {
 	if err := runApp(os.Args, os.Stdout); err != nil {

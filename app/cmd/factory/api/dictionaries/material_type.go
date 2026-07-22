@@ -9,7 +9,7 @@ import (
 
 // InitMaterialTypeAvailabilityAPI - создаёт объект usecase.MaterialType.
 func InitMaterialTypeAvailabilityAPI(opts app.Options) *usecase.MaterialType {
-	log.Info(opts.Logger, "Create and init dictionaries laminate type availability API")
+	log.Info(opts.Logger, "Create and init dictionaries material type availability API")
 
 	return availability.NewMaterialTypeAPI(opts.PostgresConnManager, opts.Tracer)
 }

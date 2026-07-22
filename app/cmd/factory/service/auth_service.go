@@ -15,7 +15,7 @@ import (
 	"print-shop-back/internal/app"
 )
 
-// TODO: дублирование название таблиц.
+// TODO: дублирование названий таблиц.
 const (
 	serviceAuthTokensTableName           = "printshop_auth.auth_tokens" //nolint:gosec
 	serviceSecureOperationTableName      = "printshop_auth.secure_operations"
@@ -30,7 +30,8 @@ const (
 	// serviceUsersRealmsTableName        = "printshop_auth.users_realms".
 )
 
-// InitUserStatRequestCollectorService - создаёт сервис для обработки сообщений и связанных с ним задачи.
+// InitUserStatRequestCollectorService - создаёт накопитель сообщений статистики активности
+// пользователей с периодическим сбросом накопленного в БД.
 func InitUserStatRequestCollectorService(opts app.Options) *collect.MessageCollector[dto.UserActivityLogMessage] {
 	log.Info(opts.Logger, "Create and init user request collector service")
 
@@ -84,7 +85,8 @@ func InitSecureOperationLogCollectorService(opts app.Options) *collect.MessageCo
 	)
 }
 
-// InitAuthSchedulerService - создаёт сервис для обработки сообщений и связанных с ним задачи.
+// InitAuthSchedulerService - создаёт планировщик обслуживающих задач auth
+// (очистка устаревших токенов, защищённых операций, сессий и журналов).
 func InitAuthSchedulerService(opts app.Options) *schedule.TaskScheduler {
 	log.Info(opts.Logger, "Create and init auth scheduler service")
 
